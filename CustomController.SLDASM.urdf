@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="自定义控制器（机械臂）.SLDASM">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.0671877108757556 0.172061648377535 0.893027165799705"
+        rpy="0 0 0" />
+      <mass
+        value="0.270248015535451" />
+      <inertia
+        ixx="9.39067434445233E-05"
+        ixy="-4.85413813505474E-07"
+        ixz="-3.57534188130589E-09"
+        iyy="0.000150913932405739"
+        iyz="-1.22985621440923E-08"
+        izz="9.27263432898784E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://自定义控制器（机械臂）.SLDASM/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.309803921568627 0.309803921568627 0.309803921568627 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://自定义控制器（机械臂）.SLDASM/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="Link 1">
+    <inertial>
+      <origin
+        xyz="0.00012665 0.0027454 -0.087945"
+        rpy="0 0 0" />
+      <mass
+        value="0.32012" />
+      <inertia
+        ixx="0.00013601"
+        ixy="3.5055E-06"
+        ixz="4.6983E-06"
+        iyy="0.00012842"
+        iyz="-1.3499E-05"
+        izz="0.00018856" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://自定义控制器（机械臂）.SLDASM/meshes/Link 1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.3098 0.3098 0.3098 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://自定义控制器（机械臂）.SLDASM/meshes/Link 1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Joint 1"
+    type="fixed">
+    <origin
+      xyz="0.067315 -0.89302 0.26604"
+      rpy="0 0 -2.618" />
+    <parent
+      link="base_link" />
+    <child
+      link="Link 1" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="Link 2">
+    <inertial>
+      <origin
+        xyz="0.00449336692411695 -0.013266870852651 0.0228460199055129"
+        rpy="0 0 0" />
+      <mass
+        value="0.498368280355236" />
+      <inertia
+        ixx="0.000612155842884354"
+        ixy="-1.50651594876299E-06"
+        ixz="-2.04482539140374E-05"
+        iyy="0.000727125182784281"
+        iyz="-5.28490511146749E-07"
+        izz="0.000220784230545138" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://自定义控制器（机械臂）.SLDASM/meshes/Link 2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.647058823529412 0.619607843137255 0.588235294117647 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://自定义控制器（机械臂）.SLDASM/meshes/Link 2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Joint 2"
+    type="fixed">
+    <origin
+      xyz="-0.017383 0.023892 -0.025048"
+      rpy="0 1.0472 -0.5236" />
+    <parent
+      link="Link 1" />
+    <child
+      link="Link 2" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="Link 3">
+    <inertial>
+      <origin
+        xyz="0.0095135 -5.7911E-05 -0.011956"
+        rpy="0 0 0" />
+      <mass
+        value="0.41544" />
+      <inertia
+        ixx="0.00014139"
+        ixy="3.3058E-07"
+        ixz="4.2908E-07"
+        iyy="0.00015218"
+        iyz="-9.5201E-07"
+        izz="0.00015994" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://自定义控制器（机械臂）.SLDASM/meshes/Link 3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.69804 0.69804 0.69804 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://自定义控制器（机械臂）.SLDASM/meshes/Link 3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Joint 3"
+    type="continuous">
+    <origin
+      xyz="0.0071381 0 0.14644"
+      rpy="1.5708 0.87266 3.1416" />
+    <parent
+      link="Link 2" />
+    <child
+      link="Link 3" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="Link 4">
+    <inertial>
+      <origin
+        xyz="0.003567 0.00070541 -0.048321"
+        rpy="0 0 0" />
+      <mass
+        value="0.067301" />
+      <inertia
+        ixx="2.3403E-05"
+        ixy="1.3935E-07"
+        ixz="2.4981E-06"
+        iyy="2.1898E-05"
+        iyz="-4.0653E-07"
+        izz="1.5651E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://自定义控制器（机械臂）.SLDASM/meshes/Link 4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://自定义控制器（机械臂）.SLDASM/meshes/Link 4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Joint 4"
+    type="continuous">
+    <origin
+      xyz="0.059563 0.005 -0.014"
+      rpy="-1.5708 0.81554 1.5708" />
+    <parent
+      link="Link 3" />
+    <child
+      link="Link 4" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <link
+    name="Link 5">
+    <inertial>
+      <origin
+        xyz="0.0046589 0.019494 0.036342"
+        rpy="0 0 0" />
+      <mass
+        value="0.064795" />
+      <inertia
+        ixx="2.0757E-05"
+        ixy="-2.078E-07"
+        ixz="-4.4635E-06"
+        iyy="2.2287E-05"
+        iyz="-7.4864E-07"
+        izz="2.1784E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://自定义控制器（机械臂）.SLDASM/meshes/Link 5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://自定义控制器（机械臂）.SLDASM/meshes/Link 5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Joint 5"
+    type="fixed">
+    <origin
+      xyz="-0.042394 -0.018759 -0.086904"
+      rpy="-1.5708 1.1826 -1.5433" />
+    <parent
+      link="Link 4" />
+    <child
+      link="Link 5" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>
