@@ -53,7 +53,8 @@ void CSystemCore::StartPopOreTask(void *arg) {
 			/*step 2*/
 			proc_waitUntilWithTimeout(
 				(core.parm_->armInfo.isAngleArrived_Pitch1 == true &&
-				core.parm_->armInfo.isAngleArrived_Pitch2 == true), 800
+				core.parm_->armInfo.isAngleArrived_Pitch2 == true && 
+				core.parm_->armInfo.isAngleArrived_End_Pitch == true), 800
 			);
 			core.psubgantry_->subGantryCmd.isAutoCtrl = true;
 			core.parm_->armCmd.isAutoCtrl = true;
@@ -124,7 +125,7 @@ void CSystemCore::StartPopOreTask(void *arg) {
 			core.parm_->armCmd.set_angle_Pitch1 = 49.600f;
 			core.parm_->armCmd.set_angle_Pitch2 = 36.754f;
 			core.parm_->armCmd.set_angle_Roll = -90.824f;
-			core.parm_->armCmd.set_angle_end_pitch = -105.970f;
+			core.parm_->armCmd.set_angle_end_pitch = -99.970f;
 			core.parm_->armCmd.set_angle_end_roll = -0.720f;
 			proc_waitMs(250);
 			core.psubgantry_->subGantryCmd.setPumpOn_Arm = false; // 关闭机械臂气泵
@@ -133,7 +134,8 @@ void CSystemCore::StartPopOreTask(void *arg) {
 			/*step 2*/
 			proc_waitUntilWithTimeout(
 				(core.parm_->armInfo.isAngleArrived_Pitch1 == true &&
-				core.parm_->armInfo.isAngleArrived_Pitch2 == true), 800
+				core.parm_->armInfo.isAngleArrived_Pitch2 == true && 
+				core.parm_->armInfo.isAngleArrived_End_Pitch == true), 800
 			);
 			core.psubgantry_->subGantryCmd.isAutoCtrl = true;
 			core.parm_->armCmd.isAutoCtrl = true;
@@ -141,7 +143,7 @@ void CSystemCore::StartPopOreTask(void *arg) {
 			core.psubgantry_->subGantryCmd.setPumpOn_Right = true; // 启动右气泵
 			proc_waitMs(250);
 			
-			core.parm_->armCmd.set_angle_Yaw = -16.0f;
+			core.parm_->armCmd.set_angle_Yaw = -19.0f;
 			// core.parm_->armCmd.set_angle_Pitch1 += 5.0f;
 			proc_waitMs(250);
 

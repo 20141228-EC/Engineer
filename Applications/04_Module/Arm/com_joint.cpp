@@ -119,7 +119,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 			else{
 				/*全部到位后才进入初始化 - 优先级最高*/
 				if(jointInfo.isPositArrived_pitch2 && jointInfo.isPositArrived_pitch1 && alreadySetYaw == true){
-					if(abs(jointInfo.posit_yaw - jointCmd.setPosit_yaw)<300){
+					if(abs(jointInfo.posit_yaw - jointCmd.setPosit_yaw)<500){
 						motor[Y]->motorData[CDevMtr::DATA_POSIT] = 0.0f;
 						jointCmd.setPosit_yaw = 0;
 						jointCmd.setPosit_pitch1 = POSIT_JOINT2_PITCH1_INIT_PHY * 182.04f;

@@ -146,10 +146,10 @@ void CSystemCore::StartGoldOreTask(void *arg) {
 		if (keyboard.mouse_R) {
 			/*Step 1*/
 			core.parm_->armCmd.set_angle_Yaw = -0.585f;
-			core.parm_->armCmd.set_angle_Pitch1 = 88.868f;
-			core.parm_->armCmd.set_angle_Pitch2 = 45.878f;
+			core.parm_->armCmd.set_angle_Pitch1 = 88.786f;
+			core.parm_->armCmd.set_angle_Pitch2 = 42.128f;
 			core.parm_->armCmd.set_angle_Roll = 180.000f;
-			core.parm_->armCmd.set_angle_end_pitch = -56.570f;
+			core.parm_->armCmd.set_angle_end_pitch = -63.314f;
 			core.parm_->armCmd.set_angle_end_roll = -1.440f;
 
 			core.psubgantry_->subGantryCmd.setLiftPosit_L = SUB_GANTRY_LIFT_PHYSICAL_RANGE_L;
@@ -207,18 +207,22 @@ void CSystemCore::StartGoldOreTask(void *arg) {
 
 			do {
 				proc_waitMs(1);
-				if (core.parm_->armCmd.set_angle_Pitch1 > 73.214f) {
-					core.parm_->armCmd.set_angle_Pitch1 -= 14.0 / core.freq; 
+				if (core.parm_->armCmd.set_angle_Pitch1 > 83.368f) {
+					core.parm_->armCmd.set_angle_Pitch1 -= 14.0f / core.freq;
 				}
-				if (core.parm_->armCmd.set_angle_Pitch2 > 43.240f) {
-					core.parm_->armCmd.set_angle_Pitch2 -= 14.0 / core.freq;
+				if (core.parm_->armCmd.set_angle_Pitch2 > 47.869f) {
+					core.parm_->armCmd.set_angle_Pitch2 -= 14.0f / core.freq;
 				}
-				if (core.parm_->armCmd.set_angle_end_pitch > -62.0f) {
-					core.parm_->armCmd.set_angle_end_pitch -= 14.0 / core.freq;
+				if (core.parm_->armCmd.set_angle_end_pitch > -70.26f) {
+					core.parm_->armCmd.set_angle_end_pitch -= 14.0f / core.freq;
 				}
-			}while (core.parm_->armCmd.set_angle_Pitch1 > 73.214f ||
-				core.parm_->armCmd.set_angle_Pitch2 > 43.240f ||
-				core.parm_->armCmd.set_angle_end_pitch > -62.0f);
+			}while (core.parm_->armCmd.set_angle_Pitch1 > 83.368f ||
+				core.parm_->armCmd.set_angle_Pitch2 > 47.869f ||
+				core.parm_->armCmd.set_angle_end_pitch > -70.26f);
+
+			core.parm_->armCmd.set_angle_Pitch1 = 83.368f;
+			core.parm_->armCmd.set_angle_Pitch2 = 47.869f;
+			core.parm_->armCmd.set_angle_end_pitch = -70.26f;
 
 			/* Wait for User Confirmation */
 			cnt = timeout;

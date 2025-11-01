@@ -101,7 +101,7 @@ void CSystemReferee::UI_InitDrawing() {
   RadarTextMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_TEXT;
   RadarTextMsg.message.figureConfig.figureName[0] = 0;    // Frame ID
   RadarTextMsg.message.figureConfig.figureName[1] = 0;    // Layer
-  RadarTextMsg.message.figureConfig.figureName[2] = 3;    // Figure ID
+  RadarTextMsg.message.figureConfig.figureName[2] = 3;    // Figure ID     ???为啥是3
   RadarTextMsg.message.figureConfig.operate = 1;
   RadarTextMsg.message.figureConfig.figureType = 7;
   RadarTextMsg.message.figureConfig.layerID = 1;
@@ -498,6 +498,7 @@ void CSystemReferee::UI_UpdateVisionFigureDrawing_() {
 }
 
 void CSystemReferee::UI_RADAR_WARNING_TextDrawing_() {
+  std::fill(&RadarTextMsg.message.text[0], &RadarTextMsg.message.text[29], 0);
   RadarTextMsg.message.figureConfig.operate = 2;
   RadarTextMsg.message.figureConfig.details_2 = 7;
   RadarTextMsg.message.figureConfig.posit_X = 960 - (25 * 3.5);
@@ -512,13 +513,14 @@ void CSystemReferee::UI_RADAR_WARNING_TextClearing_() {
   RadarTextMsg.message.figureConfig.details_2 = 1;
   RadarTextMsg.message.figureConfig.posit_X = 960 - (25 * 0.5);
   RadarTextMsg.message.figureConfig.posit_Y = 540 - 25;
-  strcpy(reinterpret_cast<char *>(RadarTextMsg.message.text), ".");
+  std::fill(&RadarTextMsg.message.text[0], &RadarTextMsg.message.text[29], 0);
+  // strcpy(reinterpret_cast<char *>(RadarTextMsg.message.text), ".");
   RadarTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&RadarTextMsg), sizeof(RadarTextMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&RadarTextMsg), sizeof(RadarTextMsg));
 }
 
 void CSystemReferee::StartSysRefereeUiTask(void *arg) {
-	proc_waitUntil(SysReferee.refereeInfo.robot.robotCamp != 0);
+	proc_waitUntil(SysReferee.refereeInfo.robot.robotCamp != 0 );
 
 	// 初始化UI
 	SysReferee.UI_InitDrawing();

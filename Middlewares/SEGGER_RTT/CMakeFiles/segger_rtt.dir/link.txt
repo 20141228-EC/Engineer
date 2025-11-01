@@ -1,0 +1,2 @@
+arm-none-eabi-ar qc libsegger_rtt.a CMakeFiles/segger_rtt.dir/SEGGER_RTT.c.obj CMakeFiles/segger_rtt.dir/SEGGER_RTT_Syscalls_GCC.c.obj CMakeFiles/segger_rtt.dir/SEGGER_RTT_printf.c.obj CMakeFiles/segger_rtt.dir/SEGGER_RTT_ASM_ARMv7M.S.obj
+/usr/bin/arm-none-eabi-ranlib libsegger_rtt.a

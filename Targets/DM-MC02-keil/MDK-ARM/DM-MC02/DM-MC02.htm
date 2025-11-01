@@ -3,7 +3,7 @@
 <title>Static Call Graph - [DM-MC02\DM-MC02.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image DM-MC02\DM-MC02.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6220000: Last Updated: Tue Jul 29 00:25:22 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6220000: Last Updated: Sat Aug  9 23:11:37 2025
 <BR><P>
 <H3>Maximum Stack Usage =       2672 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1380,7 +1380,6 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = strcpy
 </UL>
 <BR>[Called By]<UL><LI><a href="#[4ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CSystemReferee::UI_InitDrawing()
-<LI><a href="#[4fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CSystemReferee::UI_RADAR_WARNING_TextClearing_()
 <LI><a href="#[4fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CSystemReferee::UI_RADAR_WARNING_TextDrawing_()
 <LI><a href="#[4fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CSystemReferee::UI_UpdateCurModeTextDrawing_()
 <LI><a href="#[4f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CSystemReferee::UI_StartCurModeTextDrawing_()
@@ -5524,7 +5523,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> dev_referee.o(.rodata._ZTVN11my_engineer11CDevRefereeE)
 </UL>
-<P><STRONG><a name="[443]"></a>my_engineer::CDevReferee::ResolveRxPackage_()</STRONG> (Thumb, 742 bytes, Stack size 88 bytes, dev_referee.o(.text._ZN11my_engineer11CDevReferee17ResolveRxPackage_Ev))
+<P><STRONG><a name="[443]"></a>my_engineer::CDevReferee::ResolveRxPackage_()</STRONG> (Thumb, 754 bytes, Stack size 88 bytes, dev_referee.o(.text._ZN11my_engineer11CDevReferee17ResolveRxPackage_Ev))
 <BR><BR>[Stack]<UL><LI>Max Depth = 140<LI>Call Chain = my_engineer::CDevReferee::ResolveRxPackage_() &rArr; std::__2::array&lang;unsigned char, 512u&rang;::fill[abi:nn190000](unsigned char const&) &rArr; unsigned char* std::__2::fill_n[abi:nn190000]&lang;unsigned char*, unsigned int, unsigned char&rang;(unsigned char*, unsigned int, unsigned char const&) &rArr; unsigned char* std::__2::__fill_n[abi:nn190000]&lang;unsigned char*, unsigned int, unsigned char&rang;(unsigned char*, unsigned int, unsigned char const&)
 </UL>
 <BR>[Calls]<UL><LI><a href="#[293]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
@@ -6268,7 +6267,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> core.o(.text._ZN11my_engineer11CSystemCore18StartAutoCtrlTask_ENS0_16EAutoCtrlProcessE)
 </UL>
-<P><STRONG><a name="[c3]"></a>my_engineer::CSystemCore::StartGoldOreTask(void*)</STRONG> (Thumb, 2008 bytes, Stack size 48 bytes, proc_gold_ore.o(.text._ZN11my_engineer11CSystemCore16StartGoldOreTaskEPv))
+<P><STRONG><a name="[c3]"></a>my_engineer::CSystemCore::StartGoldOreTask(void*)</STRONG> (Thumb, 2016 bytes, Stack size 48 bytes, proc_gold_ore.o(.text._ZN11my_engineer11CSystemCore16StartGoldOreTaskEPv))
 <BR><BR>[Stack]<UL><LI>Max Depth = 208 + Unknown Stack Size
 <LI>Call Chain = my_engineer::CSystemCore::StartGoldOreTask(void*) &rArr; vTaskDelete &rArr; prvDeleteTCB &rArr; vPortFree &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
@@ -6278,7 +6277,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> core.o(.text._ZN11my_engineer11CSystemCore18StartAutoCtrlTask_ENS0_16EAutoCtrlProcessE)
 </UL>
-<P><STRONG><a name="[c4]"></a>my_engineer::CSystemCore::StartPushOreTask(void*)</STRONG> (Thumb, 1144 bytes, Stack size 80 bytes, proc_push.o(.text._ZN11my_engineer11CSystemCore16StartPushOreTaskEPv))
+<P><STRONG><a name="[c4]"></a>my_engineer::CSystemCore::StartPushOreTask(void*)</STRONG> (Thumb, 1152 bytes, Stack size 80 bytes, proc_push.o(.text._ZN11my_engineer11CSystemCore16StartPushOreTaskEPv))
 <BR><BR>[Stack]<UL><LI>Max Depth = 240 + Unknown Stack Size
 <LI>Call Chain = my_engineer::CSystemCore::StartPushOreTask(void*) &rArr; vTaskDelete &rArr; prvDeleteTCB &rArr; vPortFree &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
@@ -7403,8 +7402,8 @@ Global Symbols
 <P><STRONG><a name="[4ef]"></a>my_engineer::CSystemReferee::UI_InitDrawing()</STRONG> (Thumb, 2906 bytes, Stack size 120 bytes, referee_ui.o(.text._ZN11my_engineer14CSystemReferee14UI_InitDrawingEv))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = my_engineer::CSystemReferee::UI_InitDrawing() &rArr; my_engineer::CCrcValidator::Crc8Calculate(unsigned char const*, unsigned int) &rArr; my_engineer::Crc8Checksum_(unsigned char const*, unsigned char, unsigned int)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[412]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CCrcValidator::Crc8Calculate(unsigned char const*, unsigned int)
-<LI><a href="#[440]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CDevReferee::SPkgHeader::SPkgHeader__sub_object()
+<BR>[Calls]<UL><LI><a href="#[440]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CDevReferee::SPkgHeader::SPkgHeader__sub_object()
+<LI><a href="#[412]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CCrcValidator::Crc8Calculate(unsigned char const*, unsigned int)
 <LI><a href="#[4f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strcpy
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CSystemReferee::StartSysRefereeUiTask(void*)
@@ -7542,24 +7541,25 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CSystemReferee::StartSysRefereeUiTask(void*)
 </UL>
 
-<P><STRONG><a name="[4fc]"></a>my_engineer::CSystemReferee::UI_RADAR_WARNING_TextDrawing_()</STRONG> (Thumb, 166 bytes, Stack size 24 bytes, referee_ui.o(.text._ZN11my_engineer14CSystemReferee29UI_RADAR_WARNING_TextDrawing_Ev))
-<BR><BR>[Stack]<UL><LI>Max Depth = 556 + Unknown Stack Size
+<P><STRONG><a name="[4fc]"></a>my_engineer::CSystemReferee::UI_RADAR_WARNING_TextDrawing_()</STRONG> (Thumb, 180 bytes, Stack size 32 bytes, referee_ui.o(.text._ZN11my_engineer14CSystemReferee29UI_RADAR_WARNING_TextDrawing_Ev))
+<BR><BR>[Stack]<UL><LI>Max Depth = 564 + Unknown Stack Size
 <LI>Call Chain = my_engineer::CSystemReferee::UI_RADAR_WARNING_TextDrawing_() &rArr; my_engineer::CInfUART::Transmit(unsigned char const*, unsigned int) &rArr; void std::__2::vector&lang;unsigned char, std::__2::allocator&lang;unsigned char&rang;&rang;::assign&lang;unsigned char const*, 0&rang;(unsigned char const*, unsigned char const*) &rArr; void std::__2::vector&lang;unsigned char, std::__2::allocator&lang;unsigned char&rang;&rang;::__assign_with_size[abi:nn190000]&lang;unsigned char const*, unsigned char const*&rang;(unsigned char const*, unsigned char const*, int) &rArr; void std::__2::vector&lang;unsigned char, std::__2::allocator&lang;unsigned char&rang;&rang;::__construct_at_end&lang;unsigned char const*, unsigned char const*&rang;(unsigned char const*, unsigned char const*, unsigned int) &rArr; unsigned char* std::__2::__uninitialized_allocator_copy[abi:nn190000]&lang;std::__2::allocator&lang;unsigned char&rang;, unsigned char const*, unsigned char const*, unsigned char*&rang;(std::__2::allocator&lang;unsigned char&rang;&, unsigned char const*, unsigned char const*, unsigned char*) &rArr; unsigned char* std::__2::__uninitialized_allocator_copy_impl[abi:nn190000]&lang;std::__2::allocator&lang;unsigned char&rang;, unsigned char const, unsigned char, unsigned char, (void*)0&rang;(std::__2::allocator&lang;unsigned char&rang;&, unsigned char const*, unsigned char const*, unsigned char*) &rArr; unsigned char* std::__2::copy[abi:nn190000]&lang;unsigned char const*, unsigned char*&rang;(unsigned char const*, unsigned char const*, unsigned char*) &rArr; std::__2::pair&lang;unsigned char const*, unsigned char*&rang; std::__2::__copy[abi:nn190000]&lang;std::__2::_ClassicAlgPolicy, unsigned char const*, unsigned char const*, unsigned char*&rang;(unsigned char const*, unsigned char const*, unsigned char*) &rArr; std::__2::pair&lang;unsigned char const*, unsigned char*&rang; std::__2::__dispatch_copy_or_move[abi:nn190000]&lang;std::__2::_ClassicAlgPolicy, std::__2::__copy_loop&lang;std::__2::_ClassicAlgPolicy&rang;, std::__2::__copy_trivial, unsigned char const*, unsigned char const*, unsigned char*&rang;(unsigned char const*, unsigned char const*, unsigned char*) &rArr; std::__2::pair&lang;unsigned char const*, unsigned char*&rang; std::__2::__unwrap_and_dispatch[abi:nn190000]&lang;std::__2::__overload&lang;std::__2::__copy_loop&lang;std::__2::_ClassicAlgPolicy&rang;, std::__2::__copy_trivial&rang;, unsigned char const*, unsigned char const*, unsigned char*, 0&rang;(unsigned char const*, unsigned char const*, unsigned char*) &rArr; std::__2::pair&lang;unsigned char const*, unsigned char*&rang; std::__2::__copy_trivial::operator()[abi:nn190000]&lang;unsigned char const, unsigned char, 0&rang;(unsigned char const*, unsigned char const*, unsigned char*) const &rArr; std::__2::pair&lang;unsigned char const*, unsigned char*&rang; std::__2::__copy_trivial_impl[abi:nn190000]&lang;unsigned char const, unsigned char&rang;(unsigned char const*, unsigned char const*, unsigned char*) &rArr; std::__2::pair&lang;std::__2::__unwrap_ref_decay&lang;unsigned char const*&&rang;::type, std::__2::__unwrap_ref_decay&lang;unsigned char*&rang;::type&rang; std::__2::make_pair[abi:nn190000]&lang;unsigned char const*&, unsigned char*&rang;(unsigned char const*&, unsigned char*&&) &rArr; std::__2::pair&lang;unsigned char const*, unsigned char*&rang;::pair__sub_object[abi:nn190000]&lang;unsigned char const*&, unsigned char*, 0&rang;(unsigned char const*&, unsigned char*&&)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[4fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CInfUART::Transmit(unsigned char const*, unsigned int)
+<BR>[Calls]<UL><LI><a href="#[46b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;void std::__2::fill[abi:nn190000]&lang;unsigned char*, int&rang;(unsigned char*, unsigned char*, int const&)
+<LI><a href="#[4fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CInfUART::Transmit(unsigned char const*, unsigned int)
 <LI><a href="#[413]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CCrcValidator::Crc16Calculate(unsigned char const*, unsigned int)
 <LI><a href="#[4f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strcpy
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CSystemReferee::StartSysRefereeUiTask(void*)
 </UL>
 
-<P><STRONG><a name="[4fd]"></a>my_engineer::CSystemReferee::UI_RADAR_WARNING_TextClearing_()</STRONG> (Thumb, 166 bytes, Stack size 24 bytes, referee_ui.o(.text._ZN11my_engineer14CSystemReferee30UI_RADAR_WARNING_TextClearing_Ev))
+<P><STRONG><a name="[4fd]"></a>my_engineer::CSystemReferee::UI_RADAR_WARNING_TextClearing_()</STRONG> (Thumb, 168 bytes, Stack size 24 bytes, referee_ui.o(.text._ZN11my_engineer14CSystemReferee30UI_RADAR_WARNING_TextClearing_Ev))
 <BR><BR>[Stack]<UL><LI>Max Depth = 556 + Unknown Stack Size
 <LI>Call Chain = my_engineer::CSystemReferee::UI_RADAR_WARNING_TextClearing_() &rArr; my_engineer::CInfUART::Transmit(unsigned char const*, unsigned int) &rArr; void std::__2::vector&lang;unsigned char, std::__2::allocator&lang;unsigned char&rang;&rang;::assign&lang;unsigned char const*, 0&rang;(unsigned char const*, unsigned char const*) &rArr; void std::__2::vector&lang;unsigned char, std::__2::allocator&lang;unsigned char&rang;&rang;::__assign_with_size[abi:nn190000]&lang;unsigned char const*, unsigned char const*&rang;(unsigned char const*, unsigned char const*, int) &rArr; void std::__2::vector&lang;unsigned char, std::__2::allocator&lang;unsigned char&rang;&rang;::__construct_at_end&lang;unsigned char const*, unsigned char const*&rang;(unsigned char const*, unsigned char const*, unsigned int) &rArr; unsigned char* std::__2::__uninitialized_allocator_copy[abi:nn190000]&lang;std::__2::allocator&lang;unsigned char&rang;, unsigned char const*, unsigned char const*, unsigned char*&rang;(std::__2::allocator&lang;unsigned char&rang;&, unsigned char const*, unsigned char const*, unsigned char*) &rArr; unsigned char* std::__2::__uninitialized_allocator_copy_impl[abi:nn190000]&lang;std::__2::allocator&lang;unsigned char&rang;, unsigned char const, unsigned char, unsigned char, (void*)0&rang;(std::__2::allocator&lang;unsigned char&rang;&, unsigned char const*, unsigned char const*, unsigned char*) &rArr; unsigned char* std::__2::copy[abi:nn190000]&lang;unsigned char const*, unsigned char*&rang;(unsigned char const*, unsigned char const*, unsigned char*) &rArr; std::__2::pair&lang;unsigned char const*, unsigned char*&rang; std::__2::__copy[abi:nn190000]&lang;std::__2::_ClassicAlgPolicy, unsigned char const*, unsigned char const*, unsigned char*&rang;(unsigned char const*, unsigned char const*, unsigned char*) &rArr; std::__2::pair&lang;unsigned char const*, unsigned char*&rang; std::__2::__dispatch_copy_or_move[abi:nn190000]&lang;std::__2::_ClassicAlgPolicy, std::__2::__copy_loop&lang;std::__2::_ClassicAlgPolicy&rang;, std::__2::__copy_trivial, unsigned char const*, unsigned char const*, unsigned char*&rang;(unsigned char const*, unsigned char const*, unsigned char*) &rArr; std::__2::pair&lang;unsigned char const*, unsigned char*&rang; std::__2::__unwrap_and_dispatch[abi:nn190000]&lang;std::__2::__overload&lang;std::__2::__copy_loop&lang;std::__2::_ClassicAlgPolicy&rang;, std::__2::__copy_trivial&rang;, unsigned char const*, unsigned char const*, unsigned char*, 0&rang;(unsigned char const*, unsigned char const*, unsigned char*) &rArr; std::__2::pair&lang;unsigned char const*, unsigned char*&rang; std::__2::__copy_trivial::operator()[abi:nn190000]&lang;unsigned char const, unsigned char, 0&rang;(unsigned char const*, unsigned char const*, unsigned char*) const &rArr; std::__2::pair&lang;unsigned char const*, unsigned char*&rang; std::__2::__copy_trivial_impl[abi:nn190000]&lang;unsigned char const, unsigned char&rang;(unsigned char const*, unsigned char const*, unsigned char*) &rArr; std::__2::pair&lang;std::__2::__unwrap_ref_decay&lang;unsigned char const*&&rang;::type, std::__2::__unwrap_ref_decay&lang;unsigned char*&rang;::type&rang; std::__2::make_pair[abi:nn190000]&lang;unsigned char const*&, unsigned char*&rang;(unsigned char const*&, unsigned char*&&) &rArr; std::__2::pair&lang;unsigned char const*, unsigned char*&rang;::pair__sub_object[abi:nn190000]&lang;unsigned char const*&, unsigned char*, 0&rang;(unsigned char const*&, unsigned char*&&)
 </UL>
-<BR>[Calls]<UL><LI><a href="#[4fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CInfUART::Transmit(unsigned char const*, unsigned int)
+<BR>[Calls]<UL><LI><a href="#[46b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;void std::__2::fill[abi:nn190000]&lang;unsigned char*, int&rang;(unsigned char*, unsigned char*, int const&)
+<LI><a href="#[4fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CInfUART::Transmit(unsigned char const*, unsigned int)
 <LI><a href="#[413]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CCrcValidator::Crc16Calculate(unsigned char const*, unsigned int)
-<LI><a href="#[4f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strcpy
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CSystemReferee::StartSysRefereeUiTask(void*)
 </UL>
@@ -20105,7 +20105,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[abc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;void std::__2::__fill[abi:nn190000]&lang;unsigned char*, int&rang;(unsigned char*, unsigned char*, int const&, std::__2::random_access_iterator_tag)
 </UL>
-<BR>[Called By]<UL><LI><a href="#[4fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CSystemReferee::UI_UpdateCurModeTextDrawing_()
+<BR>[Called By]<UL><LI><a href="#[4fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CSystemReferee::UI_RADAR_WARNING_TextClearing_()
+<LI><a href="#[4fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CSystemReferee::UI_RADAR_WARNING_TextDrawing_()
+<LI><a href="#[4fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CSystemReferee::UI_UpdateCurModeTextDrawing_()
 <LI><a href="#[467]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CMemsBmi088::GyroUnitReadMultiRegisters_(unsigned char, unsigned char*, unsigned int)
 <LI><a href="#[466]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CMemsBmi088::AccelUnitReadMultiRegisters_(unsigned char, unsigned char*, unsigned int)
 <LI><a href="#[c67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_ZZN11my_engineer9CDevESP3210InitDeviceEPKNS_8CDevBase18SDevInitParam_BaseEENK3$_0clINSt3__26vectorIhNS7_9allocatorIhEEEEjEEDaRT_T0_
@@ -27853,7 +27855,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[3dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;signed char wait_until_with_timeout&lang;my_engineer::CSystemCore::StartPopOreTask(void*)::$_0&rang;(my_engineer::CSystemCore::StartPopOreTask(void*)::$_0, unsigned int)
 </UL>
 
-<P><STRONG><a name="[3e2]"></a>my_engineer::CSystemCore::StartPopOreTask(void*)::$_1::operator()() const</STRONG> (Thumb, 50 bytes, Stack size 12 bytes, proc_pop.o(.text._ZZN11my_engineer11CSystemCore15StartPopOreTaskEPvENK3$_1clEv))
+<P><STRONG><a name="[3e2]"></a>my_engineer::CSystemCore::StartPopOreTask(void*)::$_1::operator()() const</STRONG> (Thumb, 70 bytes, Stack size 12 bytes, proc_pop.o(.text._ZZN11my_engineer11CSystemCore15StartPopOreTaskEPvENK3$_1clEv))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = my_engineer::CSystemCore::StartPopOreTask(void*)::$_1::operator()() const
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;signed char wait_until_with_timeout&lang;my_engineer::CSystemCore::StartPopOreTask(void*)::$_1&rang;(my_engineer::CSystemCore::StartPopOreTask(void*)::$_1, unsigned int)
@@ -27877,7 +27879,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[3e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;signed char wait_until_with_timeout&lang;my_engineer::CSystemCore::StartPopOreTask(void*)::$_4&rang;(my_engineer::CSystemCore::StartPopOreTask(void*)::$_4, unsigned int)
 </UL>
 
-<P><STRONG><a name="[3ea]"></a>my_engineer::CSystemCore::StartPopOreTask(void*)::$_5::operator()() const</STRONG> (Thumb, 50 bytes, Stack size 12 bytes, proc_pop.o(.text._ZZN11my_engineer11CSystemCore15StartPopOreTaskEPvENK3$_5clEv))
+<P><STRONG><a name="[3ea]"></a>my_engineer::CSystemCore::StartPopOreTask(void*)::$_5::operator()() const</STRONG> (Thumb, 70 bytes, Stack size 12 bytes, proc_pop.o(.text._ZZN11my_engineer11CSystemCore15StartPopOreTaskEPvENK3$_5clEv))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = my_engineer::CSystemCore::StartPopOreTask(void*)::$_5::operator()() const
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;signed char wait_until_with_timeout&lang;my_engineer::CSystemCore::StartPopOreTask(void*)::$_5&rang;(my_engineer::CSystemCore::StartPopOreTask(void*)::$_5, unsigned int)

@@ -40,6 +40,11 @@ void InitProcess() {
   xTaskCreate(StartSystemUpdateTask, "System Update Task",
               1024, nullptr, proc_SystemTaskPriority,
               &SystemUpdateTaskHandle);
+
+  /* Create Monitor Task */
+  xTaskCreate(StartMonitorTask, "Monitor Task",
+              2048, nullptr, proc_MonitorTaskPriority,
+              &MonitorTaskHandle);
 }
 
 }   // namespace my_engineer

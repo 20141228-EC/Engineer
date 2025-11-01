@@ -11,9 +11,11 @@
         "request": "launch",
         "type": "cortex-debug",
         "servertype": "openocd",
+        "gdbTarget": "localhost:3333",
         "configFiles": [
-          "interface/cmsis-dap.cfg",
-          "target/stm32h7x.cfg"
+          // "interface/cmsis-dap.cfg",
+          // "target/stm32h7x.cfg"
+          "Utilities/openocd-cmsisdap-stm32h7x.cfg"
         ],
         "runToEntryPoint": "main",
         "showDevDebugOutput": "none",
@@ -22,6 +24,18 @@
           "enabled": true,
           "samplesPerSecond": 4
         },
+        // ],
+        "rttConfig": {
+          "enabled": true,
+          "address": "auto",
+          "decoders": [
+            {
+              "port": 0,
+              "type": "console"
+            }
+          ]
+        },
+        // "armToolchainPath": "/usr/bin/gdb-multiarch",
         //"preLaunchCommands": ["Build"]
       }
     ]

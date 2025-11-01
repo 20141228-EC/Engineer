@@ -1,0 +1,2 @@
+arm-none-eabi-ar qc libfreertos_kernel_port.a CMakeFiles/freertos_kernel_port.dir/GCC/ARM_CM7/r0p1/port.c.obj
+/usr/bin/arm-none-eabi-ranlib libfreertos_kernel_port.a

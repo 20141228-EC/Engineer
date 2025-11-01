@@ -175,7 +175,7 @@ EAppStatus CDevReferee::ResolveRxPackage_() {
 				if (i + sizeof(SRadarMsgPkg) > rxBuffer_.size())
 					break;
 				auto pkg = reinterpret_cast<SRadarMsgPkg *>(header);
-				if (pkg->transmitterID != 0x109 || pkg->messageID != EMessageID::ID_RADAR_MSG) {
+				if ((pkg->transmitterID != 0x109 && pkg->transmitterID != 0x9) || pkg->messageID != EMessageID::ID_RADAR_MSG) {
 					continue; // 只处理特定的transmitterID
 				}
 				if (CCrcValidator::Crc16Verify(reinterpret_cast<uint8_t *>(pkg), pkg->CRC16, sizeof(SRadarMsgPkg) - 2) != APP_OK)

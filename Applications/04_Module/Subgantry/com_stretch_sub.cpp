@@ -92,8 +92,8 @@ EAppStatus CModSubGantry::CComStretch_sub::UpdateComponent() {
           && motor[1]->motorStatus == CDevMtr::EMotorStatus::STALL) {
         stretchCmd = SStretchCmd();
         // 补偿超出限位的值
-        motor[0]->motorData[CDevMtr::DATA_POSIT] = -static_cast<int32_t>(8192 * 0.5) * SUB_GANTRY_STRETCH_MOTOR_DIR_L;
-        motor[1]->motorData[CDevMtr::DATA_POSIT] = -static_cast<int32_t>(8192 * 0.5) * SUB_GANTRY_STRETCH_MOTOR_DIR_R;
+        motor[0]->motorData[CDevMtr::DATA_POSIT] = -static_cast<int32_t>(8192 * 0.2) * SUB_GANTRY_STRETCH_MOTOR_DIR_L;
+        motor[1]->motorData[CDevMtr::DATA_POSIT] = -static_cast<int32_t>(8192 * 0.2) * SUB_GANTRY_STRETCH_MOTOR_DIR_R;
         pidPosCtrl.ResetPidController();
         pidSpdCtrl.ResetPidController();
         Component_FSMFlag_ = FSM_CTRL;

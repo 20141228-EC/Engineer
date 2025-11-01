@@ -15,7 +15,7 @@
 #define ARM_YAW_PHYSICAL_RANGE_MIN -97.5f
 #define ARM_YAW_PHYSICAL_RANGE_MAX 97.5f
 #define ARM_PITCH1_PHYSICAL_RANGE_MIN 4.0f
-#define ARM_PITCH1_PHYSICAL_RANGE_MAX 118.0f
+#define ARM_PITCH1_PHYSICAL_RANGE_MAX 104.0f  ///< 118.0f
 #define ARM_PITCH2_PHYSICAL_RANGE_MIN 11.0f
 #define ARM_PITCH2_PHYSICAL_RANGE_MAX 132.0f
 #define ARM_ROLL_PHYSICAL_RANGE_MIN -169.0f
@@ -281,7 +281,7 @@ private:
 
 		const int32_t rangeLimit_Pitch = ARM_END_PITCH_MOTOR_RANGE; ///< 电机位置范围限制
 
-		// 定义机械臂末端信息结构体并实例化
+		// 定义机械臂末端信息结构体并实例化~
 		struct SEndInfo {
 			int32_t posit_Pitch = 0;    ///< End Posit Pitch
 			int32_t posit_Roll = 0;    ///< End Posit Roll

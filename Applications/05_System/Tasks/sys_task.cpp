@@ -120,4 +120,19 @@ void StartHeartbeatTask(void *argument) {
     }
 }
 
+/**
+ * @brief 监控任务,用于测试RTT的调试功能
+ */
+void StartMonitorTask(void *argument) {
+
+    while (true) {
+
+        // 监控系统状态
+        RTT_INFO("System Monitor: Free Heap: %u bytes\n", xPortGetFreeHeapSize());
+        RTT_INFO("System Monitor: Stack High Water: %u words\n", uxTaskGetStackHighWaterMark(NULL));
+
+        proc_waitMs(1000); // 1秒
+    }
+}
+
 }   // namespace my_engineer

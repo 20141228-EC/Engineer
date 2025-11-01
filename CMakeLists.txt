@@ -103,7 +103,7 @@ target_link_options(FIRMWARE.elf PUBLIC -T ${PROJECT_SOURCE_DIR}/${LINKERSCRIPT}
 # 引入CMake项目模块
 #####################################
 include(Drivers/Drivers.cmake) # 引入驱动模块
-include(Middlewares/Middlewares.cmake) # 引入中间件模块
+include(Middlewares/Midd lewares.cmake) # 引入中间件模块
 include(Applications/Applications.cmake) # 引入应用模块
 
 #####################################
@@ -115,4 +115,4 @@ set(BIN_FILE ${PROJECT_BINARY_DIR}/FIRMWARE.bin) # 指定BIN文件输出路径
 add_custom_command(TARGET FIRMWARE.elf POST_BUILD
         COMMAND ${CMAKE_OBJCOPY} -Oihex $<TARGET_FILE:FIRMWARE.elf> ${HEX_FILE} # 将ELF转换为HEX
         COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:FIRMWARE.elf> ${BIN_FILE} # 将ELF转换为BIN
-        COMMENT "Building ${HEX_FILE}\nBuilding ${BIN_FILE}") # 在构建日志中显示
+        COMMENT "Building ${HEX_FILE} and Building ${BIN_FILE}") # 在构建日志中显示

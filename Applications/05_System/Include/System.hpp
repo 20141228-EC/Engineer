@@ -13,7 +13,7 @@
 #define SYSTEM_HPP
 
 #include "sys_common.hpp"
-
+#include "rtt_test.hpp"
 #include "sys_remote.hpp"
 #include "sys_vision.hpp"
 #include "sys_referee.hpp"
