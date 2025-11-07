@@ -10,8 +10,10 @@
         "name": "Debug with OpenOCD",
         "request": "launch",
         "type": "cortex-debug",
-        "servertype": "openocd",
-        "gdbTarget": "localhost:3333",
+        "servertype": "jlink",
+        "interface": "swd",
+        "device": "STM32H723VG",
+        "gdbTarget": "localhost:7890",
         "configFiles": [
           // "interface/cmsis-dap.cfg",
           // "target/stm32h7x.cfg"
