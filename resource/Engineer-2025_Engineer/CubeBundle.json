@@ -1,0 +1,60 @@
+{
+  "name": "Bundle name",
+  "version": "0.0.1",
+  "platform": "all",
+  "description": "Put a bundle description here (max 80 characters)",
+  "documentation": "README.md",
+  "licenses": [
+    "Put a license name here"
+  ],
+  "license_files": [
+    "Put path(s) to license file(s) here"
+  ],
+  "license_is_mandatory": false,
+  "sbom_files": [
+    "Put path(s) to SBOM file(s) here"
+  ],
+  "author": [
+    "STMicroelectronics"
+  ],
+  "dependencies": [],
+  "tags": [
+    "Descriptive",
+    "Tags"
+  ],
+  "properties": {
+    "simple.property.string": "property_value",
+    "simple.property.boolean": true,
+    "complex.property": {
+      "objprop1": "objvval1",
+      "objprop2": false
+    }
+  },
+  "variables": {
+    "LOCAL_VARIABLE": "A local variable to use in commands",
+    "VARIABLE_TO_EXPORT": "A variable to be exported to use by dependent packages",
+    "PATH": {
+      "prepend": [
+        "Put a value to prepend to the PATH here"
+      ],
+      "append": [
+        "Put a variable to append to the PATH here"
+      ]
+    }
+  },
+  "export": [
+    "VARIABLE_TO_EXPORT"
+  ],
+  "commands": [
+    {
+      "name": "Name of the command. Single word.",
+      "exec": "${CUBE_BUNDLE_ROOT}/myApp"
+    }
+  ],
+  "runtimes": [
+    {
+      "name": "Name of the runtime. Single word.",
+      "exec": "${CUBE_BUNDLE_ROOT}/node"
+    }
+  ]
+}

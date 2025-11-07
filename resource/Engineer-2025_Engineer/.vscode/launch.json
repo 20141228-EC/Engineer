@@ -1,0 +1,32 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "cwd": "${workspaceRoot}",
+        "executable": "./build/FIRMWARE.elf",
+        "name": "Debug with J-link",
+        "request": "launch",
+        "type": "cortex-debug",
+        "servertype": "jlink",
+        "device": "STM32H723VG",
+        "interface": "swd",
+        // "configFiles": [
+        //   "ultilies/openocd-jlink-stm32h7x.cfg"
+        // ],
+        "jlinkpath":"D:/Program Files/SEGGER/JLink/JLinkGDBServerCL.exe",
+        "gdbPath": "D:/ARM_Toolchain/Arm GNU Toolchain arm-none-eabi/14.3 rel1/bin/arm-none-eabi-gdb.exe",
+        "runToEntryPoint": "main",
+        "showDevDebugOutput": "none",
+         "svdFile": ".\\Utilities\\SVD\\STM32H723.svd",
+        "liveWatch": {
+          "enabled": true,
+          "samplesPerSecond": 4
+        },
+        //"preLaunchCommands": ["Build"]
+      }
+    ]
+  }
+  

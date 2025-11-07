@@ -1,0 +1,7 @@
+.bundleignore
+.bundle-ignore
+.git/
+.repo/
+.vscode/
+.theia/
+*.bundle
