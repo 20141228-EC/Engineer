@@ -105,9 +105,9 @@ EAppStatus CModGimbal::RestrictGimbalCommand_(){
 		return APP_ERROR;
 	}
 
-	// 限制云台各模块的控制命令大
+	// 限制云台各模块的控制命令大小
 	gimbalCmd.set_posit_lift = 
-		std::clamp(gimbalCmd.set_posit_lift, 0.0f, GIMBAL_LIFT_PHYSICAL_RANGE);
+		std::clamp(gimbalCmd.set_posit_lift, 0.0f, GIMBAL_LIFT_PHYSICAL_RANGE);//限制目标位置在0-100之间
 	
 	// 自动控制启用，则不继续做限制
 	if (gimbalCmd.isAutoCtrl) return APP_OK;

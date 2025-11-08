@@ -103,7 +103,7 @@ target_link_options(FIRMWARE.elf PUBLIC -T ${PROJECT_SOURCE_DIR}/${LINKERSCRIPT}
 # 引入CMake项目模块
 #####################################
 include(Drivers/Drivers.cmake) # 引入驱动模块
-include(Middlewares/Midd lewares.cmake) # 引入中间件模块
+include(Middlewares/Middlewares.cmake) # 引入中间件模块
 include(Applications/Applications.cmake) # 引入应用模块
 
 #####################################
