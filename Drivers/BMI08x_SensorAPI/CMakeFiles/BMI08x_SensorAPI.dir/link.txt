@@ -1,0 +1,2 @@
+arm-none-eabi-ar qc libBMI08x_SensorAPI.a CMakeFiles/BMI08x_SensorAPI.dir/bmi08a.c.obj CMakeFiles/BMI08x_SensorAPI.dir/bmi08g.c.obj CMakeFiles/BMI08x_SensorAPI.dir/bmi08xa.c.obj CMakeFiles/BMI08x_SensorAPI.dir/bmi088_anymotiona.c.obj CMakeFiles/BMI08x_SensorAPI.dir/bmi088_mma.c.obj
+/usr/bin/arm-none-eabi-ranlib libBMI08x_SensorAPI.a
