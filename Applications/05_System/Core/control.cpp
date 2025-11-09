@@ -17,16 +17,16 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
 
     if (!pchassis_->chassisInfo.isModuleAvailable
         && pchassis_->moduleStatus == APP_OK) {
-        pchassis_->StartModule();
+        pchassis_->StartModule(); // 启动底盘模块
     }
 
     if (!pgimbal_->gimbalInfo.isModuleAvailable
         && pgimbal_->moduleStatus == APP_OK) {
-        pgimbal_->StartModule();
+        pgimbal_->StartModule(); // 启动云台模块
     }
 
     if(if_remote_control) {
-        enum { HIG = 1, LOW = 2, MID = 3 };
+        enum { HIG = 1, LOW = 2, MID = 3 }; // 拨杆位置
         auto &remote = SysRemote.remoteInfo.remote;
 
         static uint8_t last_switch_L = LOW; // 遥控器系统层的数据更新比设备层的状态更新要慢
@@ -34,13 +34,13 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
         if (!parm_->armInfo.isModuleAvailable
             && parm_->moduleStatus == APP_OK
             && remote.switch_L == HIG && last_switch_L != HIG) {
-            parm_->StartModule();
+            parm_->StartModule(); // 左拨杆拨到最上机械臂模块启动
         }
 
         if (!psubgantry_->subGantryInfo.isModuleAvailable
             && psubgantry_->moduleStatus == APP_OK
             && remote.switch_L == HIG && last_switch_L != HIG) {
-            psubgantry_->StartModule();
+            psubgantry_->StartModule(); // 左拨杆拨到最上子龙门模块启动
         }
 
         last_switch_L = remote.switch_L;

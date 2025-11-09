@@ -13,6 +13,7 @@
 #define MOD_GIMBAL_HPP
 
 #include "mod_common.hpp"
+#include <algorithm>
 
 #define GIMBAL_LIFT_PHYSICAL_RANGE 100.0f
 #define GIMBAL_LIFT_MOTOR_RANGE 184000

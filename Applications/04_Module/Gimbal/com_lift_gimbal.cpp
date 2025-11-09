@@ -92,6 +92,7 @@ EAppStatus CModGimbal::CComLift::UpdateComponent() {
 				pidSpdCtrl.ResetPidController();
 				Component_FSMFlag_ = FSM_CTRL;
 				componentStatus = APP_OK;
+				return APP_OK;//堵转后直接退出 不要执行后面的+=400操作
 			}
 			liftCmd.setPosit += 400;
 			return _UpdateOutput(static_cast<float_t>(liftCmd.setPosit));

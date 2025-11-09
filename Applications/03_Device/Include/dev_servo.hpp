@@ -17,6 +17,7 @@
 #define DEV_SERVO_HPP
 
 #include "dev_common.hpp"
+#include <algorithm>
 
 namespace my_engineer {
 
