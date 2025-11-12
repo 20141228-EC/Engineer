@@ -1,4 +1,5 @@
 build/
 .vscode/
+Targets/DM-MC02-keil/
 *.bin
 *.log

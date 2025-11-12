@@ -114,7 +114,10 @@ void CModSubGantry::HeartbeatHandler_(){
 EAppStatus CModSubGantry::CreateModuleTask_(){
     
     // 任务已存在，删除任务
-    if(moduleTaskHandle != nullptr) vTaskDelete(moduleTaskHandle);
+    if (moduleTaskHandle != nullptr){ 
+		vTaskDelete(moduleTaskHandle);
+		moduleTaskHandle = nullptr; // 将任务句柄置空
+	}
 
     // 创建任务
     xTaskCreate(StartSubGantryModuleTask, "SubGantry Module Task", 

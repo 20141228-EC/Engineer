@@ -24,8 +24,9 @@ void CRcBase::HeartbeatHandler_(){
 
     if(deviceStatus == APP_RESET) return;
 
-    // 检查遥控器是否在线(根据是否在500ms内收到数据包来判断)
-    rcStatus = ((HAL_GetTick() - lastHeartbeatTime_) > 500) ? ERcStatus::OFFLINE : ERcStatus::ONLINE;
+    // 检查遥控器是否在线(根据是否在100ms内收到数据包来判断)
+    rcStatus = ((HAL_GetTick() - lastHeartbeatTime_) > RC_OFFLINE_CNT) ? ERcStatus::OFFLINE : ERcStatus::ONLINE;
+    // 调车的时候怕疯车，想关控快一点，所以离线阈值给100ms
     
     // 如果在线，更新所有通道状态
     if(rcStatus == ERcStatus::ONLINE)
@@ -46,7 +47,7 @@ EAppStatus CRcBase::InitChannel_(size_t channelNum, ERcChannelType chType){
 
     // 初始化通道
     remoteData[channelNum].chType = chType;
-    remoteData[channelNum].chStatus = ERcChannelStatus::RESET;
+    remoteData[channelNum].chStatus = ERcChannelStatus::RESET; // 初始化为重置状态
     remoteData[channelNum].chValue = 0;
 
     return APP_OK;

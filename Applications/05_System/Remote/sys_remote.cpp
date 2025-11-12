@@ -67,7 +67,7 @@ void CSystemRemote::HeartbeatHandler_() {
     if(pRemoteDev_->rcStatus ==  ERcStatus::ONLINE)
         systemStatus = APP_OK;
     else
-        systemStatus = APP_ERROR;
+        systemStatus = APP_ERROR; // 遥控器离线则置系统状态为错误
 }
 
 /**
@@ -157,7 +157,7 @@ EAppStatus CSystemRemote::UpdateRemote_with_deadzone_() {
 
 void CSystemRemote::SetRemoteDeadZone(float_t deadZone) {
     
-    remoteDeadZone_ = deadZone > 100.f ? 100.f : deadZone;
+    remoteDeadZone_ = deadZone > 100.f ? 100.f : deadZone; // 死区限在100内
 }
 
 

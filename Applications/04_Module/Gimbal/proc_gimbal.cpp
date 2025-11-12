@@ -82,7 +82,7 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 	}
 
 	// 任务退出
-	gimbal.moduleTaskHandle = nullptr;
+	gimbal.moduleTaskHandle = nullptr; // 事实上这里永远不会被执行到，因为上面的while永远不能跳出 其他模块的任务同
 	proc_return();
 	
 }

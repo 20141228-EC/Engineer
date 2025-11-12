@@ -22,11 +22,11 @@ void ApplicationEntryPoint(){
     // 调用各配置初始化函数
     // 顺序一定不要搞错啊！！
     InitAllInterface();
-    InitAllDevice();
-    InitAllModule();
-    InitProcess();
+    InitAllDevice(); // 初始化设备的接口与参数 调用各设备的构造函数
+    InitAllModule(); // 初始化模块的CAN发送结点与PID参数 调用各模块的构造函数
+    InitProcess(); // 创建所有任务
     
-    Print("Application Entry Point: All configurations initialized successfully.\n");
+    Print("Application Entry Point: All configurations initialized successfully.\n"); // 在esp32打印信息
 
     vTaskStartScheduler(); // 启动任务调度器
 }

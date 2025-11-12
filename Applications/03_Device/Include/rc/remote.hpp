@@ -15,6 +15,8 @@
 #include "rc_common.hpp"
 #include "rc_dr16.hpp"
 
+#define RC_OFFLINE_CNT 100 // 遥控器离线计数阈值(100ms)
+
 namespace my_engineer {
     
 } // namespace my_engineer

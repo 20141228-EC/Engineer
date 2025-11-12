@@ -215,7 +215,8 @@ void CSystemCore::HeartbeatHandler_() {
         pgimbal_->StopModule();
         psubgantry_->StopModule();
         parm_->StopModule();
-        
+        //机械臂的关控待改，不能直接卸力
+
     }
 
     lastRemoteState = currentRemoteState;
