@@ -63,19 +63,19 @@ EAppStatus CModArm::CComJoint::InitComponent(SModInitParam_Base &param) {
  * @return EAppStatus 
  */
 EAppStatus CModArm::CComJoint::UpdateComponent() {
-	static bool isreset_flag = false;
-	static bool alreadySetYaw = false;
+	static bool isreset_flag = false;	///<总初始化标志位
+	static bool alreadySetYaw = false;	///<yaw设置标志位
 	if (componentStatus == APP_RESET) {
 		return APP_ERROR;
 	}
 
 	jointInfo.posit_yaw = motor[Y]->motorData[CDevMtr::DATA_POSIT] * ARM_YAW_MOTOR_DIR;
 	jointInfo.posit_pitch1 = motor[P1]->motorData[CDevMtr::DATA_POSIT] * ARM_PITCH1_MOTOR_DIR;
-	jointInfo.posit_pitch2 = motor[P2]->motorData[CDevMtr::DATA_POSIT] * ARM_PITCH2_MOTOR_DIR;
+	jointInfo.posit_pitch2 = motor[P2]->motorData[CDevMtr::DATA_POSIT] * ARM_PITCH2_MOTOR_DIR;	  ///<将电机的机械角度更新到关节类中
 	
 	jointInfo.isPositArrived_yaw = abs(jointInfo.posit_yaw - jointCmd.setPosit_yaw) < 700;
 	jointInfo.isPositArrived_pitch1 = abs(jointInfo.posit_pitch1 - jointCmd.setPosit_pitch1) < 700;
-	jointInfo.isPositArrived_pitch2 = abs(jointInfo.posit_pitch2 - jointCmd.setPosit_pitch2) < 700;
+	jointInfo.isPositArrived_pitch2 = abs(jointInfo.posit_pitch2 - jointCmd.setPosit_pitch2) < 700;///<要求机械臂每一次运动到要在目标位置的限制范围内才能够进行下一步的动作
 
 	switch (Component_FSMFlag_) {
 
@@ -102,9 +102,9 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				pidSpdCtrl_pitch2.ResetPidController();
 				/*设置每个关节的绝对角度*/
 				motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] * ARM_YAW_MOTOR_DIR;
-				motor[P1]->motorData[CDevMtr::DATA_POSIT] = motor[P1]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT2_PITCH1_MACH;
+				motor[P1]->motorData[CDevMtr::DATA_POSIT] = motor[P1]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT2_PITCH1_MACH;		///<刚上电的时候获取初始值.距离机械中值的偏差
 				while(motor[P1]->motorData[CDevMtr::DATA_POSIT] < -32767)
-					motor[P1]->motorData[CDevMtr::DATA_POSIT] += 65535;
+					motor[P1]->motorData[CDevMtr::DATA_POSIT] += 65535;//归位到-32767~32768范围内
 				motor[P1]->motorData[CDevMtr::DATA_POSIT] +=	POSIT_JOINT2_PITCH1_MACH_PHY * 182.04f * ARM_PITCH1_MOTOR_DIR;			///<这个是等效连杆和水平面的夹角
 				jointCmd.setPosit_pitch1 = static_cast<int32_t>(70.0f * 182.04f);																		///<这个初始角度
 
@@ -112,22 +112,22 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				while(motor[P2]->motorData[CDevMtr::DATA_POSIT] < -32767)
 					motor[P2]->motorData[CDevMtr::DATA_POSIT] += 65535;
 				motor[P2]->motorData[CDevMtr::DATA_POSIT]  += ARM_PITCH2_MOTOR_DIR * POSIT_JOINT3_PITCH2_MACH_PHY * 182.04f;			///<这个是等效连杆和水平面的夹角
-				jointCmd.setPosit_pitch2 = static_cast<int32_t>(70.0f * 182.04f);																		///<这个复位角度是90度
+				jointCmd.setPosit_pitch2 = static_cast<int32_t>(90.0f * 182.04f);																		///<这个复位角度是90度
 				alreadySetYaw = false;
 				isreset_flag = true;  // 重置标志
 			}	
 			else{
 				/*全部到位后才进入初始化 - 优先级最高*/
 				if(jointInfo.isPositArrived_pitch2 && jointInfo.isPositArrived_pitch1 && alreadySetYaw == true){
-					if(abs(jointInfo.posit_yaw - jointCmd.setPosit_yaw)<500){
+					if(abs(jointInfo.posit_yaw - jointCmd.setPosit_yaw)<500){									///<包含了堵转和未堵转两种标定yaw零点的情况
 						motor[Y]->motorData[CDevMtr::DATA_POSIT] = 0.0f;
 						jointCmd.setPosit_yaw = 0;
 						jointCmd.setPosit_pitch1 = POSIT_JOINT2_PITCH1_INIT_PHY * 182.04f;
-						jointCmd.setPosit_pitch2 = POSIT_JOINT3_PITCH2_INIT_PHY * 182.04f;
+						jointCmd.setPosit_pitch2 = POSIT_JOINT3_PITCH2_INIT_PHY * 182.04f;						///<初始化完成之后，yaw归位，p1,p2抬升到一定的角度
 						Component_FSMFlag_ = FSM_INIT;
 						return APP_OK;
 					}
-					else if(motor[Y]->motorStatus == CDevMtr::EMotorStatus::STALL){
+					else if(motor[Y]->motorStatus == CDevMtr::EMotorStatus::STALL){				///<通过堵转来重新标定零点				
 						motor[Y]->motorData[CDevMtr::DATA_POSIT] = 36484 * ARM_YAW_MOTOR_DIR; ///< 36484是Yaw电机的初始位置
 						jointCmd.setPosit_yaw = 0;
 					}
@@ -137,13 +137,13 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				}
 				/*全部到位后才进入初始化*/
 				else if(jointInfo.isPositArrived_pitch2 && jointInfo.isPositArrived_pitch1 && alreadySetYaw == false){
-					jointCmd.setPosit_yaw = POSIT_JOINT1_YAW_MACH ;
+					jointCmd.setPosit_yaw = POSIT_JOINT1_YAW_MACH ;								///<yaw轴在p1,p2抬升到安全位置之后才动。
 					alreadySetYaw = true;
 					return _UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 						static_cast<float_t>(jointCmd.setPosit_pitch1),
 						static_cast<float_t>(jointCmd.setPosit_pitch2));
 				}
-				/*先抬起两个臂yaw才能动 - 至少有一个pitch没到位*/
+				/*先抬起两个臂后，yaw才能动 - 至少有一个pitch没到位*/
 				else {
 					_UpdateOutput_Pitch2(jointCmd.setPosit_pitch2);
 					_UpdateOutput_Pitch1(jointCmd.setPosit_pitch1);
@@ -157,11 +157,11 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 		}
 
 		case FSM_INIT: {
-			if (jointInfo.isPositArrived_yaw && jointInfo.isPositArrived_pitch1 && jointInfo.isPositArrived_pitch2) {
+			if (jointInfo.isPositArrived_yaw && jointInfo.isPositArrived_pitch1 && jointInfo.isPositArrived_pitch2) {			///<如果到了目标的位置
 				jointCmd.setPosit_yaw = 0;
 				jointCmd.setPosit_pitch1 = POSIT_JOINT2_PITCH1_INIT_PHY * 182.04f;
-				jointCmd.setPosit_pitch2 = POSIT_JOINT3_PITCH2_INIT_PHY * 182.04f;
-				pidPosCtrl_yaw.ResetPidController();
+				jointCmd.setPosit_pitch2 = POSIT_JOINT3_PITCH2_INIT_PHY * 182.04f;									   			///<这里似乎重复可删去
+				pidPosCtrl_yaw.ResetPidController();																			
 				pidSpdCtrl_yaw.ResetPidController();
 				pidPosCtrl_pitch1.ResetPidController();
 				pidSpdCtrl_pitch1.ResetPidController();
@@ -175,7 +175,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 		}
 
 		case FSM_CTRL: {
-			jointCmd.setPosit_yaw = std::clamp(jointCmd.setPosit_yaw, static_cast<int32_t>(-rangeLimit_yaw/2),  static_cast<int32_t>(rangeLimit_yaw/2));
+			jointCmd.setPosit_yaw = std::clamp(jointCmd.setPosit_yaw, static_cast<int32_t>(-rangeLimit_yaw/2),  static_cast<int32_t>(rangeLimit_yaw/2));///<对Yaw进行机械限位
 
 			return _UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 				static_cast<float_t>(jointCmd.setPosit_pitch1),
@@ -254,13 +254,13 @@ EAppStatus CModArm::CComJoint::_UpdateOutput(float_t posit_yaw, float_t posit_pi
 
 	DataBuffer<float_t> Pos_yaw = { static_cast<float_t>(posit_yaw * ARM_YAW_MOTOR_DIR) };
 	DataBuffer<float_t> Pos_pitch1 = { static_cast<float_t>(posit_pitch1 * ARM_PITCH1_MOTOR_DIR) };
-	DataBuffer<float_t> Pos_pitch2 = { static_cast<float_t>(posit_pitch2 * ARM_PITCH2_MOTOR_DIR) };
+	DataBuffer<float_t> Pos_pitch2 = { static_cast<float_t>(posit_pitch2 * ARM_PITCH2_MOTOR_DIR) };			 ///<更新目标角度
 
 	DataBuffer<float_t> PosMeasure_yaw = {static_cast<float_t>(motor[Y]->motorData[CDevMtr::DATA_POSIT])};
 	DataBuffer<float_t> PosMeasure_pitch1 = {static_cast<float_t>(motor[P1]->motorData[CDevMtr::DATA_POSIT])};
-	DataBuffer<float_t> PosMeasure_pitch2 = {static_cast<float_t>(motor[P2]->motorData[CDevMtr::DATA_POSIT])};
+	DataBuffer<float_t> PosMeasure_pitch2 = {static_cast<float_t>(motor[P2]->motorData[CDevMtr::DATA_POSIT])};///<获取测量值
 
-	auto Spd_yaw = pidPosCtrl_yaw.UpdatePidController(Pos_yaw, PosMeasure_yaw);
+	auto Spd_yaw = pidPosCtrl_yaw.UpdatePidController(Pos_yaw, PosMeasure_yaw);								///<角度环
 	auto Spd_pitch1 = pidPosCtrl_pitch1.UpdatePidController(Pos_pitch1, PosMeasure_pitch1);
 	auto Spd_pitch2 = pidPosCtrl_pitch2.UpdatePidController(Pos_pitch2, PosMeasure_pitch2);
 
@@ -268,7 +268,7 @@ EAppStatus CModArm::CComJoint::_UpdateOutput(float_t posit_yaw, float_t posit_pi
 	DataBuffer<float_t> SpdMeasure_pitch1 = {static_cast<float_t>(motor[P1]->motorData[CDevMtr::DATA_SPEED])};
 	DataBuffer<float_t> SpdMeasure_pitch2 = {static_cast<float_t>(motor[P2]->motorData[CDevMtr::DATA_SPEED])};
 
-	auto output_yaw = pidSpdCtrl_yaw.UpdatePidController(Spd_yaw, SpdMeasure_yaw);
+	auto output_yaw = pidSpdCtrl_yaw.UpdatePidController(Spd_yaw, SpdMeasure_yaw);							///<速度环
 	auto output_pitch1 = pidSpdCtrl_pitch1.UpdatePidController(Spd_pitch1, SpdMeasure_pitch1);
 	auto output_pitch2 = pidSpdCtrl_pitch2.UpdatePidController(Spd_pitch2, SpdMeasure_pitch2);
 

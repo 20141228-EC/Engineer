@@ -63,17 +63,17 @@ void CModArm::UpdateHandler_() {
 	// 更新组件
 	comjoint_.UpdateComponent();
 	comEnd_.UpdateComponent();
-	comRoll_.UpdateComponent();
+	comRoll_.UpdateComponent();			
 
 	// 更新模块信息
 	armInfo.angle_Yaw = comjoint_.MtrPositToPhyPosit_yaw(comjoint_.jointInfo.posit_yaw);
 	armInfo.angle_Pitch1 = comjoint_.MtrPositToPhyPosit_pitch1(comjoint_.jointInfo.posit_pitch1);
-	armInfo.angle_Pitch2 = comjoint_.MtrPositToPhyPosit_pitch2(comjoint_.jointInfo.posit_pitch2);
+	armInfo.angle_Pitch2 = comjoint_.MtrPositToPhyPosit_pitch2(comjoint_.jointInfo.posit_pitch2);	///<这里是将底层的关节信息转换为用户层的arm信息
 	armInfo.angle_Roll = comRoll_.MtrAngleToPhyAngle(comRoll_.rollInfo.angle);
 	armInfo.angle_end_pitch =
 		comEnd_.MtrPositToPhyPosit_Pitch(comEnd_.endInfo.posit_Pitch);
 	armInfo.angle_end_roll =
-		comEnd_.MtrPositToPhyPosit_Roll(comEnd_.endInfo.posit_Roll);
+		comEnd_.MtrPositToPhyPosit_Roll(comEnd_.endInfo.posit_Roll);								///<将电机的机械角度转换为物理角度
 	armInfo.isAngleArrived_Yaw = comjoint_.jointInfo.isPositArrived_yaw;
 	armInfo.isAngleArrived_Pitch1 = comjoint_.jointInfo.isPositArrived_pitch1;
 	armInfo.isAngleArrived_Pitch2 = comjoint_.jointInfo.isPositArrived_pitch2;
@@ -82,9 +82,9 @@ void CModArm::UpdateHandler_() {
 	armInfo.isAngleArrived_End_Roll = comEnd_.endInfo.isPositArrived_Roll;
 
 	// 填充电机发送缓冲区
-	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P1],
+	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P1],							///<用的是关节底层信息的发送
 								comjoint_.mtrCanTxNode[CComJoint::P1]->dataBuffer,
-								comjoint_.mtrOutputBuffer[CComJoint::P1]);
+								comjoint_.mtrOutputBuffer[CComJoint::P1]);		///< 1.电机 2.can节点信息 3. 输出缓冲区
 	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P2],
 								comjoint_.mtrCanTxNode[CComJoint::P2]->dataBuffer,
 								comjoint_.mtrOutputBuffer[CComJoint::P2]);
@@ -96,7 +96,7 @@ void CModArm::UpdateHandler_() {
 								comEnd_.mtrOutputBuffer[CComEnd::L]);
 	CDevMtrDJI::FillCanTxBuffer(comEnd_.motor[CComEnd::R],
 								comEnd_.mtrCanTxNode[CComEnd::R]->dataBuffer,
-								comEnd_.mtrOutputBuffer[CComEnd::R]);
+								comEnd_.mtrOutputBuffer[CComEnd::R]);			
 
 }
 

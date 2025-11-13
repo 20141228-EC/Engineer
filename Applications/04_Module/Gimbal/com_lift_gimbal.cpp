@@ -58,7 +58,7 @@ EAppStatus CModGimbal::CComLift::UpdateComponent() {
 
 	// 更新组件信息
 	liftInfo.posit = (motor->motorData[CDevMtr::DATA_POSIT] * GIMBAL_LIFT_MOTOR_DIR);
-	liftInfo.isPositArrived = (abs(liftCmd.setPosit - liftInfo.posit) < 8192 * 1);
+	liftInfo.isPositArrived = (abs(liftCmd.setPosit - liftInfo.posit) < 8192 * 1);			///< 10°
 
 	switch (Component_FSMFlag_){
 		case FSM_RESET: {
@@ -75,25 +75,25 @@ EAppStatus CModGimbal::CComLift::UpdateComponent() {
 			// motor->motorData[CDevMtr::DATA_POSIT] = liftCmd.setPosit * GIMBAL_LIFT_MOTOR_DIR;
 			liftCmd.setPosit = static_cast<int32_t>(0);
 			motor->motorData[CDevMtr::DATA_POSIT] = 0;
-			mtrOutputBuffer.fill(0);
+			mtrOutputBuffer.fill(0);					
 			pidPosCtrl.ResetPidController();
 			pidSpdCtrl.ResetPidController();
-			Component_FSMFlag_ = FSM_INIT;
+			Component_FSMFlag_ = FSM_INIT;						///<目标值设置为0，输出值设置为0，pid输出缓冲区清空
 			return APP_OK;
 		}
 
 		case FSM_INIT: {
 			// 电机堵转，说明初始化完成
 			if (motor->motorStatus == CDevMtr::EMotorStatus::STALL) {
-				liftCmd = SLiftCmd();
+				liftCmd = SLiftCmd();							///<到达限位之后调用构造函数全部清零
 				// 补偿超出限位的值
-				motor->motorData[CDevMtr::DATA_POSIT] = static_cast<int32_t>(0.1 * 8192 + rangeLimit) * GIMBAL_LIFT_MOTOR_DIR;
+				motor->motorData[CDevMtr::DATA_POSIT] = static_cast<int32_t>(0.1 * 8192 + rangeLimit) * GIMBAL_LIFT_MOTOR_DIR;///<通过堵转来标定绝对零点
 				pidPosCtrl.ResetPidController();
 				pidSpdCtrl.ResetPidController();
 				Component_FSMFlag_ = FSM_CTRL;
 				componentStatus = APP_OK;
-			}
-			liftCmd.setPosit += 400;
+			}						///<在未堵转之前一直 +400
+			liftCmd.setPosit += 400;///<此处在堵转瞬间目标值清零，然后再加上400 ,（0 + 400），所以pid的errror是400 - 184819.2，这个时候云台会下降，所以就实现了先升标定后降的逻辑
 			return _UpdateOutput(static_cast<float_t>(liftCmd.setPosit));
 		}
 

@@ -10,14 +10,14 @@
         "name": "Debug with OpenOCD",
         "request": "launch",
         "type": "cortex-debug",
-        "servertype": "jlink",
-        "interface": "swd",
+        "servertype": "jlink",               ///<若是使用daplink修改为："openocd"
+        "interface": "swd",                 ///<此处端口不用修改，两种调试器同时支持swd
         "device": "STM32H723VG",
-        "gdbTarget": "localhost:7890",
+        "gdbTarget": "localhost:7890",      ///<若是改为daplink出现端口冲突可将端口改为: "localhost:3333" (OpenOCD 调试的默认端口)
         "configFiles": [
           // "interface/cmsis-dap.cfg",
           // "target/stm32h7x.cfg"
-          "Utilities/openocd-cmsisdap-stm32h7x.cfg"
+          "Utilities/openocd-cmsisdap-stm32h7x.cfg"       ///<此处是openocd的编译配置文件，若使用jlink编译器会自动忽略
         ],
         "runToEntryPoint": "main",
         "showDevDebugOutput": "none",
