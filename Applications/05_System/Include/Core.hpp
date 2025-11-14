@@ -59,7 +59,7 @@ private:
     // 定义系统核心响应频率
     const float_t freq = 1000.f;
 
-    // 模块指针
+    // 模块指针 初始化为空
     CModChassis *pchassis_ = nullptr;
     CModGimbal *pgimbal_ = nullptr;
     // CModGantry *pgantry_ = nullptr;
@@ -67,6 +67,7 @@ private:
     CModSubGantry *psubgantry_ = nullptr;
     CModArm *parm_ = nullptr;
 
+    // 自动控制任务句柄
     TaskHandle_t autoCtrlTaskHandle_ = nullptr;
 
     // 定义系统核心的更新处理
@@ -90,6 +91,15 @@ private:
 
     // 软件复位
     void RESET_SYSTEM();
+
+    // 指针合法性检查
+    EAppStatus Pointer_Check(void *ptr);
+
+    // 模块可用性检查
+    bool HasChassis() const noexcept;
+    bool HasGimbal() const noexcept;
+    bool HasArm() const noexcept;
+    bool HasSubGantry() const noexcept;
 
     // 声明自动操作的任务函数
     static void StartReturnOriginTask(void *arg);
