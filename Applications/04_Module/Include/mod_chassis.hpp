@@ -103,9 +103,9 @@ private:
         CDevMtr *motor[4] = {nullptr};
 
         // 定义底盘PID控制器
-        CAlgoPid pidYawCtrl;                    ///<角度控制pid修正器
-        CAlgoPid pidLineCorrectionCtrl;         ///<直线控制pid修正器
-        CAlgoPid pidSpdCtrl;                    ///<pid控制
+        CAlgoPid pidYawCtrl;                    ///<控制底盘角速度（Yaw旋转）
+        CAlgoPid pidLineCorrectionCtrl;         ///<修正X、Y、W三个方向的误差
+        CAlgoPid pidSpdCtrl;                    ///<控制4个轮子的速度
 
         // 电机数据输出缓冲区
         std::array<int16_t, 4> mtrOutputBuffer = {0};

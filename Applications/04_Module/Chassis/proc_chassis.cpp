@@ -29,7 +29,7 @@ void CModChassis::StartChassisModuleTask(void *argument) {
     // 任务循环
     while (true) {
         // FSM
-        switch (chassis.Module_FSMFlag_) {
+        switch (chassis.Module_FSMFlag_) {          ///<这里是静态的成员函数没有隐式的this指针，所以要用对应的模快来访问
             
             case FSM_RESET: {
 
