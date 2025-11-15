@@ -21,7 +21,7 @@ namespace my_engineer {
  * @brief 系统层更新任务
  * @note 与其它层独立开来是因为频率不需要那么高
  */
-void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠、裁判系统、视觉系统、esp32
+void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠、裁判系统、视觉系统、esp32数据
 
     while (true) {
 
@@ -59,8 +59,8 @@ void StartUpdateTask(void *argument) {
         }
 
         // 更新系统核心
-        SystemCore.UpdateHandler_();
-
+        SystemCore.UpdateHandler_();            ///<系统核心的更新放在设备更新之后，模块更新之前,以便模块可以使用系统核心的数据   
+                                                ///<包括遥控器数据、键盘数据控制命令，自动任务的更新
         // 更新所有模块
         for (const auto &item : ModuleIDMap) {
             item.second->UpdateHandler_();
