@@ -92,15 +92,6 @@ private:
     // 软件复位
     void RESET_SYSTEM();
 
-    // 指针合法性检查
-    EAppStatus Pointer_Check(void *ptr);
-
-    // 模块可用性检查
-    bool HasChassis() const noexcept;
-    bool HasGimbal() const noexcept;
-    bool HasArm() const noexcept;
-    bool HasSubGantry() const noexcept;
-
     // 声明自动操作的任务函数
     static void StartReturnOriginTask(void *arg);
 
