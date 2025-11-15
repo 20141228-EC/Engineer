@@ -82,13 +82,12 @@ void CSystemReferee::HeartbeatHandler_() {
 
 	// 检查系统状态
 	if (systemStatus == APP_RESET) return;
+	if (!pRefereeDev_) return;
 
-	if (pRefereeDev_) {
-		if (pRefereeDev_->refereeState == CDevReferee::ERefereeStatus::ONLINE)
-			systemStatus = APP_OK;
-		else
-			systemStatus = APP_ERROR;
-	}
+	if (pRefereeDev_->refereeState == CDevReferee::ERefereeStatus::ONLINE)
+		systemStatus = APP_OK;
+	else
+		systemStatus = APP_ERROR;
 }
 
 /**
@@ -98,20 +97,18 @@ void CSystemReferee::HeartbeatHandler_() {
  */
 EAppStatus CSystemReferee::UpdateRaceInfo_() {
 
-	if (pRefereeDev_) {
-		refereeInfo.unixTimestamp =
-			pRefereeDev_->raceStatusPkg.timestamp;
+	if (!pRefereeDev_) return APP_ERROR;
 
-		refereeInfo.race.raceType =
-			pRefereeDev_->raceStatusPkg.raceType;
+	refereeInfo.unixTimestamp =
+		pRefereeDev_->raceStatusPkg.timestamp;
 
-		refereeInfo.race.raceStage =
-			pRefereeDev_->raceStatusPkg.raceStage;
+	refereeInfo.race.raceType =
+		pRefereeDev_->raceStatusPkg.raceType;
 
-		return APP_OK;
-	}
+	refereeInfo.race.raceStage =
+		pRefereeDev_->raceStatusPkg.raceStage;
 
-	return APP_ERROR;
+	return APP_OK;
 }
 
 /**
@@ -121,21 +118,19 @@ EAppStatus CSystemReferee::UpdateRaceInfo_() {
  */
 EAppStatus CSystemReferee::UpdateRobotInfo_() {
 
-	if (pRefereeDev_) {
-		if (pRefereeDev_->robotStatusPkg.robotId == 0) {
-			refereeInfo.robot.robotCamp = 0;
-		}
-		else {
-			refereeInfo.robot.robotCamp =
-				pRefereeDev_->robotStatusPkg.robotId < 100 ? 1 : 2;
-		}
-		refereeInfo.robot.robotID =
-			pRefereeDev_->robotStatusPkg.robotId % 100;
+	if (!pRefereeDev_) return APP_ERROR;
 
-		return APP_OK;
+	if (pRefereeDev_->robotStatusPkg.robotId == 0) {
+		refereeInfo.robot.robotCamp = 0;
 	}
+	else {
+		refereeInfo.robot.robotCamp =
+			pRefereeDev_->robotStatusPkg.robotId < 100 ? 1 : 2;
+	}
+	refereeInfo.robot.robotID =
+		pRefereeDev_->robotStatusPkg.robotId % 100;
 
-	return APP_ERROR;
+	return APP_OK;
 }
 
 /**
@@ -145,14 +140,12 @@ EAppStatus CSystemReferee::UpdateRobotInfo_() {
  */
 EAppStatus CSystemReferee::UpdateRadarInfo_() {
 
-	if (pRefereeDev_) {
-		refereeInfo.radar.if_dart_comming =
-			pRefereeDev_->radarPkg.message.if_dart_comming;
+	if (!pRefereeDev_) return APP_ERROR;
 
-		return APP_OK;
-	}
+	refereeInfo.radar.if_dart_comming =
+		pRefereeDev_->radarPkg.message.if_dart_comming;
 
-	return APP_ERROR;
+	return APP_OK;
 }
 
 }	// namespace my_engineer

@@ -191,7 +191,7 @@ void CSystemCore::ControlFromKeyboard_() {
 
     // 将模块启动
     if (SysRemote.systemStatus == APP_OK) {
-        StartRobot(false);
+        StartRobot(false);                  ///<转换为键盘操作
     }
 
     // parm_->should_limit_yaw = 1;

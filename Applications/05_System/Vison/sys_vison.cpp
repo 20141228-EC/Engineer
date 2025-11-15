@@ -50,9 +50,10 @@ EAppStatus CSystemVision::InitSystem(SSystemInitParam_Base *param) {
  ******************************************************************************/
 void CSystemVision::UpdateHandler_() {
 
-	if (pVision_) {
-		// 发送数据
-		CDevVision::SRaceinfoPkg raceInfo;
+	if (!pVision_) return;
+
+	// 发送数据
+	CDevVision::SRaceinfoPkg raceInfo;
 
 // 	 if (SysReferee.systemState == RP_OK) {
 //     raceInfo.raceCamp = SysReferee.refereeInfo.robot.robotCamp;
@@ -61,14 +62,13 @@ void CSystemVision::UpdateHandler_() {
 //     raceInfo.raceCamp = 0;
 //     raceInfo.raceState = 0;
 //   }
-		raceInfo.raceCamp = 2;
-		raceInfo.raceState = 1;
+	raceInfo.raceCamp = 2;
+	raceInfo.raceState = 1;
 
-		raceInfo.exchangeState =
-		(SystemCore.currentAutoCtrlProcess_ == CSystemCore::EAutoCtrlProcess::EXCHANGE) || (SystemCore.use_Controller_ == true) ? 1 : 0;
+	raceInfo.exchangeState =
+	(SystemCore.currentAutoCtrlProcess_ == CSystemCore::EAutoCtrlProcess::EXCHANGE) || (SystemCore.use_Controller_ == true) ? 1 : 0;
 
-		pVision_->SendPackage(CDevVision::ID_RACE_INFO, raceInfo.header);
-	}
+	pVision_->SendPackage(CDevVision::ID_RACE_INFO, raceInfo.header);
 
 	// 检查系统状态
 	if (systemStatus != APP_OK) return;

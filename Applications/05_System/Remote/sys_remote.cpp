@@ -25,7 +25,7 @@ CSystemRemote SysRemote;
  * @return EAppStatus 
  */
 EAppStatus CSystemRemote::InitSystem(SSystemInitParam_Base *pStruct) {
-    
+
     // 检查参数及ID是否为空
     if (pStruct == nullptr) return APP_ERROR;
     if (pStruct->systemID == ESystemID::SYS_NULL) return APP_ERROR;
@@ -35,7 +35,10 @@ EAppStatus CSystemRemote::InitSystem(SSystemInitParam_Base *pStruct) {
 
     // 初始化遥控器设备
     systemID = param.systemID;
-    pRemoteDev_ = static_cast<CRcBase *>(DeviceIDMap.at(param.remoteDevID));
+    auto it = DeviceIDMap.find(param.remoteDevID);
+    if (it != DeviceIDMap.end() && it->second != nullptr) {
+        pRemoteDev_ = static_cast<CRcBase *>(it->second);
+    }
 
     // 注册系统
     RegisterSystem_();
@@ -63,6 +66,7 @@ void CSystemRemote::UpdateHandler_() {
 void CSystemRemote::HeartbeatHandler_() {
     // 检查系统状态
     if (systemStatus == APP_RESET) return;
+    if (!pRemoteDev_) return;
 
     if(pRemoteDev_->rcStatus ==  ERcStatus::ONLINE)
         systemStatus = APP_OK;
@@ -76,6 +80,8 @@ void CSystemRemote::HeartbeatHandler_() {
  * @return EAppStatus 
  */
 EAppStatus CSystemRemote::UpdateRemote_() {
+
+    if (!pRemoteDev_) return APP_ERROR;
 
     /* 软件复位 */
     // 复位顺序：右边在中间，然后左边在下面，最后右边在下面
@@ -104,6 +110,9 @@ EAppStatus CSystemRemote::UpdateRemote_() {
  * @return EAppStatus 
  */
 EAppStatus CSystemRemote::UpdateKeyboard_() {
+
+    if (!pRemoteDev_) return APP_ERROR;
+
     /* 软件复位 */
     if (pRemoteDev_->remoteData[CRcDR16::CH_KEY_CTRL] == 1
         && pRemoteDev_->remoteData[CRcDR16::CH_KEY_SHIFT].chValue == 1

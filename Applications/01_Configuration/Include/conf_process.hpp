@@ -16,8 +16,8 @@
 
 #define proc_DeviceInitTaskPriority     30             ///<专门用于陀螺仪的更新
 #define proc_UpdateTaskPriority         24             ///<用于所有设备的更新
-#define proc_SystemTaskPriority         20              
-#define proc_SystemCoreTaskPriority     18             ///<用于系统核心的更新   （遥控器，键盘）         
+#define proc_SystemTaskPriority         20             ///<用于系统控制指令的更新
+#define proc_SystemCoreTaskPriority     18             ///<用于系统核心数据的更新   （遥控器，键盘）         
 #define proc_ModuleTaskPriority         16             ///<用于模块的更新
 #define proc_HeartbeatTaskPriority      4              ///<用于心跳包的发送
 #define proc_MonitorTaskPriority        4              ///<用于监视系统状态    
