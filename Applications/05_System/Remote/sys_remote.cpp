@@ -40,7 +40,7 @@ EAppStatus CSystemRemote::InitSystem(SSystemInitParam_Base *pStruct) {
     // 注册系统
     RegisterSystem_();
 
-    systemStatus = APP_ERROR;
+    systemStatus = APP_ERROR;     ///<刚初始化的时候遥控器是离线状态，等到心跳函数确认之后才是正确状态
     return APP_OK;
 }
 

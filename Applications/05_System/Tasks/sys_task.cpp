@@ -21,7 +21,7 @@ namespace my_engineer {
  * @brief 系统层更新任务
  * @note 与其它层独立开来是因为频率不需要那么高
  */
-void StartSystemUpdateTask(void *argument) {
+void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠、裁判系统、视觉系统、esp32
 
     while (true) {
 
@@ -46,12 +46,12 @@ void StartUpdateTask(void *argument) {
 	static uint8_t HalfTickRate = 1;
     
     // 初始化系统核心
-    SystemCore.InitSystemCore();
+    SystemCore.InitSystemCore();                ///<等所有模块初始化完成之后再初始化系统核心，并且是在任务创建的时候初始化
 
     while (true) {
 
         sys_test_n++;
-		HalfTickRate = 1 - HalfTickRate;
+		HalfTickRate = 1 - HalfTickRate;        
         
         // 更新所有设备
         for (const auto &item : DeviceIDMap) {
@@ -73,7 +73,7 @@ void StartUpdateTask(void *argument) {
 		TxNode_Can3_280.Transmit();
 
 		if(HalfTickRate) {
-			TxNode_Can2_1FF.Transmit();
+			TxNode_Can2_1FF.Transmit();         ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载
         }
 
 

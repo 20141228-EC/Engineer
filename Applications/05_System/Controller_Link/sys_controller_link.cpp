@@ -36,7 +36,10 @@ EAppStatus CSystemControllerLink::InitSystem(SSystemInitParam_Base *pStruct) {
 
 	// 初始化控制器通信设备
 	systemID = param.systemID;
-	pcontrollerLink_ = static_cast<CDevControllerLink *>(DeviceIDMap.at(param.controllerLinkDevID));
+	auto it = DeviceIDMap.find(param.controllerLinkDevID);
+	if (it != DeviceIDMap.end() && it->second != nullptr) {
+		pcontrollerLink_ = static_cast<CDevControllerLink *>(it->second);
+	}
 
 	// 注册系统
 	RegisterSystem_();
@@ -58,21 +61,23 @@ void CSystemControllerLink::UpdateHandler_() {
 	if (delay > 0) return;
 	delay = 40;
 
-	#if I_AM_CONTROLLER == 0
-		// 更新控制器信息
-		UpdateControllerLinkInfo_();
-		// 更新发送数据包
-		UpdateRobotDataPkg_();
-		// 发送机器人信息
-		pcontrollerLink_->SendPackage(CDevControllerLink::ID_ROBOT_DATA, pcontrollerLink_->robotData_info_pkg.header);
-	#else
-		// 更新机器人信息
-		UpdateRobotInfo_();
-		// 更新发送数据包
-		UpdateControllerDataPkg_();
-		// 发送控制器信息
-		pcontrollerLink_->SendPackage(CDevControllerLink::ID_CONTROLLER_DATA, pcontrollerLink_->controllerData_info_pkg.header);
-	#endif
+	if (pcontrollerLink_) {
+		#if I_AM_CONTROLLER == 0
+			// 更新控制器信息
+			UpdateControllerLinkInfo_();
+			// 更新发送数据包
+			UpdateRobotDataPkg_();
+			// 发送机器人信息
+			pcontrollerLink_->SendPackage(CDevControllerLink::ID_ROBOT_DATA, pcontrollerLink_->robotData_info_pkg.header);
+		#else
+			// 更新机器人信息
+			UpdateRobotInfo_();
+			// 更新发送数据包
+			UpdateControllerDataPkg_();
+			// 发送控制器信息
+			pcontrollerLink_->SendPackage(CDevControllerLink::ID_CONTROLLER_DATA, pcontrollerLink_->controllerData_info_pkg.header);
+		#endif
+	}
 
 }
 
@@ -83,17 +88,19 @@ void CSystemControllerLink::UpdateHandler_() {
 void CSystemControllerLink::UpdateControllerLinkInfo_() {
 	if (systemStatus != APP_OK) return;
 
-	// 更新控制器信息
-	controllerInfo.controller_OK = pcontrollerLink_->controllerData_info_pkg.controller_OK;
-	controllerInfo.return_success = pcontrollerLink_->controllerData_info_pkg.return_success;
-	// controllerInfo.Rocker_X = pcontrollerLink_->controllerData_info_pkg.rocker_X;
-	// controllerInfo.Rocker_Y = pcontrollerLink_->controllerData_info_pkg.rocker_Y;
-	// controllerInfo.Rocker_Key = static_cast<KEY_STATUS>(pcontrollerLink_->controllerData_info_pkg.rocker_Key);
-	controllerInfo.angle_yaw 				= pcontrollerLink_->controllerData_info_pkg.angle_yaw;
-	controllerInfo.angle_pitch1	 		= pcontrollerLink_->controllerData_info_pkg.angle_pitch1;
-	controllerInfo.angle_pitch2 		= pcontrollerLink_->controllerData_info_pkg.angle_pitch2;
-	controllerInfo.angle_roll 			= pcontrollerLink_->controllerData_info_pkg.angle_roll;
-	controllerInfo.angle_pitch_end = pcontrollerLink_->controllerData_info_pkg.angle_pitch_end;
+	if (pcontrollerLink_) {
+		// 更新控制器信息
+		controllerInfo.controller_OK = pcontrollerLink_->controllerData_info_pkg.controller_OK;
+		controllerInfo.return_success = pcontrollerLink_->controllerData_info_pkg.return_success;
+		// controllerInfo.Rocker_X = pcontrollerLink_->controllerData_info_pkg.rocker_X;
+		// controllerInfo.Rocker_Y = pcontrollerLink_->controllerData_info_pkg.rocker_Y;
+		// controllerInfo.Rocker_Key = static_cast<KEY_STATUS>(pcontrollerLink_->controllerData_info_pkg.rocker_Key);
+		controllerInfo.angle_yaw 				= pcontrollerLink_->controllerData_info_pkg.angle_yaw;
+		controllerInfo.angle_pitch1	 		= pcontrollerLink_->controllerData_info_pkg.angle_pitch1;
+		controllerInfo.angle_pitch2 		= pcontrollerLink_->controllerData_info_pkg.angle_pitch2;
+		controllerInfo.angle_roll 			= pcontrollerLink_->controllerData_info_pkg.angle_roll;
+		controllerInfo.angle_pitch_end = pcontrollerLink_->controllerData_info_pkg.angle_pitch_end;
+	}
 }
 
 /**
@@ -103,16 +110,17 @@ void CSystemControllerLink::UpdateControllerLinkInfo_() {
 void CSystemControllerLink::UpdateRobotInfo_() {
 	if (systemStatus != APP_OK) return;
 
-	// 更新机器人信息
-	robotInfo.ask_reset_flag = pcontrollerLink_->robotData_info_pkg.ask_reset_flag;
-	robotInfo.controlled_by_controller = pcontrollerLink_->robotData_info_pkg.controlled_by_controller;
-	robotInfo.ask_return_flag = pcontrollerLink_->robotData_info_pkg.ask_return_flag;
-	robotInfo.angle_yaw = pcontrollerLink_->robotData_info_pkg.angle_yaw;
-	robotInfo.angle_pitch1 = pcontrollerLink_->robotData_info_pkg.angle_pitch1;
-	robotInfo.angle_pitch2 = pcontrollerLink_->robotData_info_pkg.angle_pitch2;
-	robotInfo.angle_roll = pcontrollerLink_->robotData_info_pkg.angle_roll;
-	robotInfo.angle_pitch_end = pcontrollerLink_->robotData_info_pkg.angle_pitch_end;
-
+	if (pcontrollerLink_) {
+		// 更新机器人信息
+		robotInfo.ask_reset_flag = pcontrollerLink_->robotData_info_pkg.ask_reset_flag;
+		robotInfo.controlled_by_controller = pcontrollerLink_->robotData_info_pkg.controlled_by_controller;
+		robotInfo.ask_return_flag = pcontrollerLink_->robotData_info_pkg.ask_return_flag;
+		robotInfo.angle_yaw = pcontrollerLink_->robotData_info_pkg.angle_yaw;
+		robotInfo.angle_pitch1 = pcontrollerLink_->robotData_info_pkg.angle_pitch1;
+		robotInfo.angle_pitch2 = pcontrollerLink_->robotData_info_pkg.angle_pitch2;
+		robotInfo.angle_roll = pcontrollerLink_->robotData_info_pkg.angle_roll;
+		robotInfo.angle_pitch_end = pcontrollerLink_->robotData_info_pkg.angle_pitch_end;
+	}
 }
 
 /**
@@ -121,15 +129,17 @@ void CSystemControllerLink::UpdateRobotInfo_() {
 void CSystemControllerLink::UpdateRobotDataPkg_() {
 	if (systemStatus != APP_OK) return;
 
-	// 更新发送包的信息
-	pcontrollerLink_->robotData_info_pkg.ask_reset_flag = robotInfo.ask_reset_flag;
-	pcontrollerLink_->robotData_info_pkg.controlled_by_controller = robotInfo.controlled_by_controller;
-	pcontrollerLink_->robotData_info_pkg.ask_return_flag = robotInfo.ask_return_flag;
-	pcontrollerLink_->robotData_info_pkg.angle_yaw= robotInfo.angle_yaw;
-	pcontrollerLink_->robotData_info_pkg.angle_pitch1 = robotInfo.angle_pitch1;
-	pcontrollerLink_->robotData_info_pkg.angle_pitch2 = robotInfo.angle_pitch2;
-	pcontrollerLink_->robotData_info_pkg.angle_roll = robotInfo.angle_roll;
-	pcontrollerLink_->robotData_info_pkg.angle_pitch_end = robotInfo.angle_pitch_end;
+	if (pcontrollerLink_) {
+		// 更新发送包的信息
+		pcontrollerLink_->robotData_info_pkg.ask_reset_flag = robotInfo.ask_reset_flag;
+		pcontrollerLink_->robotData_info_pkg.controlled_by_controller = robotInfo.controlled_by_controller;
+		pcontrollerLink_->robotData_info_pkg.ask_return_flag = robotInfo.ask_return_flag;
+		pcontrollerLink_->robotData_info_pkg.angle_yaw= robotInfo.angle_yaw;
+		pcontrollerLink_->robotData_info_pkg.angle_pitch1 = robotInfo.angle_pitch1;
+		pcontrollerLink_->robotData_info_pkg.angle_pitch2 = robotInfo.angle_pitch2;
+		pcontrollerLink_->robotData_info_pkg.angle_roll = robotInfo.angle_roll;
+		pcontrollerLink_->robotData_info_pkg.angle_pitch_end = robotInfo.angle_pitch_end;
+	}
 }
 
 /**
@@ -138,17 +148,19 @@ void CSystemControllerLink::UpdateRobotDataPkg_() {
 void CSystemControllerLink::UpdateControllerDataPkg_() {
 	if (systemStatus != APP_OK) return;
 
-	// 更新发送包的信息
-	pcontrollerLink_->controllerData_info_pkg.controller_OK = controllerInfo.controller_OK;
-	pcontrollerLink_->controllerData_info_pkg.return_success = controllerInfo.return_success;
-	// pcontrollerLink_->controllerData_info_pkg.rocker_X = controllerInfo.Rocker_X;
-	// pcontrollerLink_->controllerData_info_pkg.rocker_Y = controllerInfo.Rocker_Y;
-	// pcontrollerLink_->controllerData_info_pkg.rocker_Key = static_cast<uint8_t>(controllerInfo.Rocker_Key);
-	pcontrollerLink_->controllerData_info_pkg.angle_yaw = controllerInfo.angle_yaw;
-	pcontrollerLink_->controllerData_info_pkg.angle_pitch1 = controllerInfo.angle_pitch1;
-	pcontrollerLink_->controllerData_info_pkg.angle_pitch2 = controllerInfo.angle_pitch2;
-	pcontrollerLink_->controllerData_info_pkg.angle_roll = controllerInfo.angle_roll;
-	pcontrollerLink_->controllerData_info_pkg.angle_pitch_end = controllerInfo.angle_pitch_end;
+	if (pcontrollerLink_) {
+		// 更新发送包的信息
+		pcontrollerLink_->controllerData_info_pkg.controller_OK = controllerInfo.controller_OK;
+		pcontrollerLink_->controllerData_info_pkg.return_success = controllerInfo.return_success;
+		// pcontrollerLink_->controllerData_info_pkg.rocker_X = controllerInfo.Rocker_X;
+		// pcontrollerLink_->controllerData_info_pkg.rocker_Y = controllerInfo.Rocker_Y;
+		// pcontrollerLink_->controllerData_info_pkg.rocker_Key = static_cast<uint8_t>(controllerInfo.Rocker_Key);
+		pcontrollerLink_->controllerData_info_pkg.angle_yaw = controllerInfo.angle_yaw;
+		pcontrollerLink_->controllerData_info_pkg.angle_pitch1 = controllerInfo.angle_pitch1;
+		pcontrollerLink_->controllerData_info_pkg.angle_pitch2 = controllerInfo.angle_pitch2;
+		pcontrollerLink_->controllerData_info_pkg.angle_roll = controllerInfo.angle_roll;
+		pcontrollerLink_->controllerData_info_pkg.angle_pitch_end = controllerInfo.angle_pitch_end;
+	}
 }
 
 /**

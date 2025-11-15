@@ -35,8 +35,15 @@ EAppStatus CSystemReferee::InitSystem(SSystemInitParam_Base *pStruct) {
 
 	// 初始化裁判设备
 	systemID = param.systemID;
-	pRefereeDev_ = static_cast<CDevReferee *>(DeviceIDMap.at(param.refereeDevID));
-	pInterface_ = reinterpret_cast<CInfUART *>(InterfaceIDMap.at(EInterfaceID::INF_UART1));
+	auto it_dev = DeviceIDMap.find(param.refereeDevID);
+	if (it_dev != DeviceIDMap.end() && it_dev->second != nullptr) {
+		pRefereeDev_ = static_cast<CDevReferee *>(it_dev->second);
+	}
+
+	auto it_inf = InterfaceIDMap.find(EInterfaceID::INF_UART1);
+	if (it_inf != InterfaceIDMap.end() && it_inf->second != nullptr) {
+		pInterface_ = reinterpret_cast<CInfUART *>(it_inf->second);
+	}
 
 	if (systemTaskHandle != nullptr) {
 		vTaskDelete(systemTaskHandle);
@@ -76,10 +83,12 @@ void CSystemReferee::HeartbeatHandler_() {
 	// 检查系统状态
 	if (systemStatus == APP_RESET) return;
 
-	if (pRefereeDev_->refereeState == CDevReferee::ERefereeStatus::ONLINE)
-		systemStatus = APP_OK;
-	else
-		systemStatus = APP_ERROR;
+	if (pRefereeDev_) {
+		if (pRefereeDev_->refereeState == CDevReferee::ERefereeStatus::ONLINE)
+			systemStatus = APP_OK;
+		else
+			systemStatus = APP_ERROR;
+	}
 }
 
 /**
@@ -89,16 +98,20 @@ void CSystemReferee::HeartbeatHandler_() {
  */
 EAppStatus CSystemReferee::UpdateRaceInfo_() {
 
-	refereeInfo.unixTimestamp =
-		pRefereeDev_->raceStatusPkg.timestamp;
+	if (pRefereeDev_) {
+		refereeInfo.unixTimestamp =
+			pRefereeDev_->raceStatusPkg.timestamp;
 
-	refereeInfo.race.raceType =
-		pRefereeDev_->raceStatusPkg.raceType;
+		refereeInfo.race.raceType =
+			pRefereeDev_->raceStatusPkg.raceType;
 
-	refereeInfo.race.raceStage =
-		pRefereeDev_->raceStatusPkg.raceStage;
+		refereeInfo.race.raceStage =
+			pRefereeDev_->raceStatusPkg.raceStage;
 
-	return APP_OK;
+		return APP_OK;
+	}
+
+	return APP_ERROR;
 }
 
 /**
@@ -108,30 +121,38 @@ EAppStatus CSystemReferee::UpdateRaceInfo_() {
  */
 EAppStatus CSystemReferee::UpdateRobotInfo_() {
 
-	if (pRefereeDev_->robotStatusPkg.robotId == 0) {
-		refereeInfo.robot.robotCamp = 0;
-	}
-	else {
-		refereeInfo.robot.robotCamp =
-			pRefereeDev_->robotStatusPkg.robotId < 100 ? 1 : 2;
-	}
-	refereeInfo.robot.robotID =
-		pRefereeDev_->robotStatusPkg.robotId % 100;
+	if (pRefereeDev_) {
+		if (pRefereeDev_->robotStatusPkg.robotId == 0) {
+			refereeInfo.robot.robotCamp = 0;
+		}
+		else {
+			refereeInfo.robot.robotCamp =
+				pRefereeDev_->robotStatusPkg.robotId < 100 ? 1 : 2;
+		}
+		refereeInfo.robot.robotID =
+			pRefereeDev_->robotStatusPkg.robotId % 100;
 
-	return APP_OK;
+		return APP_OK;
+	}
+
+	return APP_ERROR;
 }
 
 /**
  * @brief 更新雷达信息
- * 
- * @return EAppStatus 
+ *
+ * @return EAppStatus
  */
 EAppStatus CSystemReferee::UpdateRadarInfo_() {
 
-	refereeInfo.radar.if_dart_comming =
-		pRefereeDev_->radarPkg.message.if_dart_comming;
+	if (pRefereeDev_) {
+		refereeInfo.radar.if_dart_comming =
+			pRefereeDev_->radarPkg.message.if_dart_comming;
 
-	return APP_OK;
+		return APP_OK;
+	}
+
+	return APP_ERROR;
 }
 
 }	// namespace my_engineer
