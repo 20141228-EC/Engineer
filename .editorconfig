@@ -1,0 +1,31 @@
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{c,cc,cpp,cxx,h,hh,hpp,hxx,s,S,asm,ld,lds}]
+indent_style = space
+indent_size = 4
+
+[CMakeLists.txt]
+indent_style = space
+indent_size = 2
+
+[*.cmake]
+indent_style = space
+indent_size = 2
+
+[*.{py,sh}]
+indent_style = space
+indent_size = 4
+
+[*.{json,yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[Makefile]
+# Makefile recipe lines require a literal tab
+indent_style = tab

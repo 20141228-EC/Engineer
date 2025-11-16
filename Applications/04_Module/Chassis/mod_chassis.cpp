@@ -58,6 +58,7 @@ void CModChassis::UpdateHandler_(){
     // 更新底盘轮组
     comWheelset_.UpdateComponent();
 
+
     // 填充电机发送缓冲区
     CDevMtrDJI::FillCanTxBuffer(comWheelset_.motor[CComWheelset::LF],
                                 comWheelset_.mtrCanTxNode[CComWheelset::LF]->dataBuffer,

@@ -14,7 +14,6 @@
 
 #include "inf_common.hpp"
 #include "stm32h7xx_hal_fdcan.h"
-#include <algorithm>
 
 namespace my_engineer {
 

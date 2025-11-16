@@ -1,4 +1,6 @@
+#对于编译生成的文件和IDE配置文件的忽略
 build/
 .vscode/
-*.bin
+.history/
+#对日志文件的忽略
 *.log

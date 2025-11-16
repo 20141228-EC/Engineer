@@ -13,7 +13,6 @@
 #define ALGO_PID_HPP
 
 #include "Configuration.hpp"
-#include <algorithm>
 
 namespace my_engineer {
 
