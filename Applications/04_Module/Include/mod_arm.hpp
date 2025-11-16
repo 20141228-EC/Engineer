@@ -145,7 +145,7 @@ public:
 	CModArm() = default;
 
 	// 定义带参数的模块构造函数，创建模块时自动调用初始化函数
-	explicit CModArm(SModInitParam_Arm &param) { InitModule(param); }
+	explicit CModArm(SModInitParam_Arm &param) { InitModule(param); }        ///<要求**带参数**的构造函数要用explicit修饰，防止隐式转换
 
 	// 模块析构函数
 	~CModArm() final { UnregisterModule_(); }

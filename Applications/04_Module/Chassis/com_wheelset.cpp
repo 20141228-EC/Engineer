@@ -120,7 +120,7 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
 
 /**
  * @brief 更新输出
- * 
+ *        通过麦轮的逆解计算出误差，pid修正之后，加上原先的目标速度，再正解到各轮上。实现逆解补偿，正解输出的逻辑。
  * @param speed_X 
  * @param speed_Y 
  * @param speed_W 
@@ -137,7 +137,7 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     };
 
     // 直线校准
-    DataBuffer<float_t> target_speed = {
+    DataBuffer<float_t> target_speed = {                             ///<输入的目标速度
         speed_X,
         speed_Y,
         speed_W,
@@ -146,10 +146,10 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     DataBuffer<float_t> current_speed = {
         (wheelSpdMeasure[LF] + wheelSpdMeasure[RF] - wheelSpdMeasure[LB] - wheelSpdMeasure[RB]) / 4,
         (wheelSpdMeasure[LF] - wheelSpdMeasure[RF] + wheelSpdMeasure[LB] - wheelSpdMeasure[RB]) / 4,
-        (wheelSpdMeasure[LF] + wheelSpdMeasure[RF] + wheelSpdMeasure[LB] + wheelSpdMeasure[RB]) / 4,
+        (wheelSpdMeasure[LF] + wheelSpdMeasure[RF] + wheelSpdMeasure[LB] + wheelSpdMeasure[RB]) / 4,        ///<麦轮逆解
     };
 
-    auto lineCorrection_output = pidLineCorrectionCtrl.UpdatePidController(target_speed, current_speed);
+    auto lineCorrection_output = pidLineCorrectionCtrl.UpdatePidController(target_speed, current_speed);    
 
     // 根据直线校准的输出值调整底盘目标速度
     speed_X += lineCorrection_output[0];
@@ -159,13 +159,13 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     // 根据底盘目标速度解算出四个轮子的速度
     DataBuffer<float_t> wheelSpd = {
         speed_Y + speed_X + speed_W,
-      - speed_Y + speed_X + speed_W,
+      - speed_Y + speed_X + speed_W,                        ///<麦轮正解
         speed_Y - speed_X + speed_W,
       - speed_Y - speed_X + speed_W,
     };
      
     // 计算输出
-    auto output = pidSpdCtrl.UpdatePidController(wheelSpd, wheelSpdMeasure);
+    auto output = pidSpdCtrl.UpdatePidController(wheelSpd, wheelSpdMeasure);            
 
     // 将输出值存入电机数据输出缓冲区
     mtrOutputBuffer = {

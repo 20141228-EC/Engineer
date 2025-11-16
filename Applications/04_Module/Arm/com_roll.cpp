@@ -28,7 +28,7 @@ EAppStatus CModArm::CComRoll::InitComponent(SModInitParam_Base &param) {
 	auto armParam = static_cast<SModInitParam_Arm &>(param);
 
 	// 保存电机指针
-	motor = MotorIDMap.at(armParam.MotorID_Roll);
+	motor = MotorIDMap.at(armParam.MotorID_Roll);					///<通过对arm类图的索引找到初始注册的电机
 
 	// 初始化PID控制器
 	mitCtrl.kp = armParam.MIT_Roll_kp;
@@ -57,7 +57,7 @@ EAppStatus CModArm::CComRoll::UpdateComponent() {
 
 	uint8_t test1 = 0;
 	if(test1 == 1) {
-		pMtr->SetZero();
+		pMtr->SetZero();			///<测试用，将当前角度设为零点
 	}
 
 	// 缓慢移动控制逻辑
@@ -65,15 +65,22 @@ EAppStatus CModArm::CComRoll::UpdateComponent() {
 	static float_t gradual_kp = 0.005f;
 	static float_t gradual_min = 0.03f;
 
-	next_angle += (rollCmd.setAngle - next_angle) * gradual_kp;
+	next_angle += (rollCmd.setAngle - next_angle) * gradual_kp;			///<一阶低通滤波，避免角度突变
 	if (fabs(next_angle - rollCmd.setAngle) < gradual_min) {
-		next_angle = rollCmd.setAngle;
+		next_angle = rollCmd.setAngle;									///<设定最小的分辨率
 	}
+
+	/*MIT 模式参数：
+  - kp：位置刚度系数（范围 0-500 N/rad）
+  - kd：阻尼系数（范围 0-5 N·s/rad）
+  - position：目标位置（弧度）
+  - velocity：速度给定（这里设为0）
+  - torque：力矩前馈（这里设为0）*/
 
 	switch (Component_FSMFlag_) {
 		case FSM_RESET: {
 			pMtr->Control_MIT(0.0f, 0.0f, deg2rad(0.0f) * ARM_ROLL_MOTOR_DIR, 0.0f, 0.0f);
-			rollCmd = SRollCmd();
+			rollCmd = SRollCmd();																	///<调用默认构造函数初始化
 			return APP_OK;
 		}
 

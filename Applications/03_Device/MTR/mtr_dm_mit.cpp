@@ -126,7 +126,7 @@ void CDevMtrDM_MIT::EnableMotor()
 		return;
 
 	// 使能电机
-	std::array<uint8_t, 8> data_buf = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfc};
+	std::array<uint8_t, 8> data_buf = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfc};		///<使能电机	
 	Modify_CanTxData(data_buf.data());
 	canTxNode_.Transmit();
 }
@@ -136,7 +136,7 @@ void CDevMtrDM_MIT::SetZero() {
 	if (deviceStatus == APP_RESET)
 		return;
 
-	std::array<uint8_t, 8> data_buf = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe};
+	std::array<uint8_t, 8> data_buf = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe};		///<保存位置零点
 	Modify_CanTxData(data_buf.data());
 	canTxNode_.Transmit();
 }
@@ -145,7 +145,7 @@ void CDevMtrDM_MIT::ClearError() {
 	if (deviceStatus == APP_RESET)
 		return;
 
-	std::array<uint8_t, 8> data_buf = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfb};
+	std::array<uint8_t, 8> data_buf = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfb};		///<清除错误
 	// 填充数据帧
 	Modify_CanTxData(data_buf.data());
 	// 发送数据帧
@@ -163,7 +163,7 @@ void CDevMtrDM_MIT::DisableMotor()
 		return;
 
 	// 禁用电机
-	std::array<uint8_t, 8> data_buf = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfd};
+	std::array<uint8_t, 8> data_buf = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfd};		///<禁用电机
 	Modify_CanTxData(data_buf.data());
 	canTxNode_.Transmit();
 }
