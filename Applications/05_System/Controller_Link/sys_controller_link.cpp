@@ -36,7 +36,10 @@ EAppStatus CSystemControllerLink::InitSystem(SSystemInitParam_Base *pStruct) {
 
 	// 初始化控制器通信设备
 	systemID = param.systemID;
-	pcontrollerLink_ = static_cast<CDevControllerLink *>(DeviceIDMap.at(param.controllerLinkDevID));
+	auto it = DeviceIDMap.find(param.controllerLinkDevID);
+	if (it != DeviceIDMap.end() && it->second != nullptr) {
+		pcontrollerLink_ = static_cast<CDevControllerLink *>(it->second);
+	}
 
 	// 注册系统
 	RegisterSystem_();
@@ -58,6 +61,8 @@ void CSystemControllerLink::UpdateHandler_() {
 	if (delay > 0) return;
 	delay = 40;
 
+	if (!pcontrollerLink_) return;
+
 	#if I_AM_CONTROLLER == 0
 		// 更新控制器信息
 		UpdateControllerLinkInfo_();
@@ -73,7 +78,6 @@ void CSystemControllerLink::UpdateHandler_() {
 		// 发送控制器信息
 		pcontrollerLink_->SendPackage(CDevControllerLink::ID_CONTROLLER_DATA, pcontrollerLink_->controllerData_info_pkg.header);
 	#endif
-
 }
 
 /**
@@ -82,6 +86,7 @@ void CSystemControllerLink::UpdateHandler_() {
  */
 void CSystemControllerLink::UpdateControllerLinkInfo_() {
 	if (systemStatus != APP_OK) return;
+	if (!pcontrollerLink_) return;
 
 	// 更新控制器信息
 	controllerInfo.controller_OK = pcontrollerLink_->controllerData_info_pkg.controller_OK;
@@ -102,6 +107,7 @@ void CSystemControllerLink::UpdateControllerLinkInfo_() {
  */
 void CSystemControllerLink::UpdateRobotInfo_() {
 	if (systemStatus != APP_OK) return;
+	if (!pcontrollerLink_) return;
 
 	// 更新机器人信息
 	robotInfo.ask_reset_flag = pcontrollerLink_->robotData_info_pkg.ask_reset_flag;
@@ -112,7 +118,6 @@ void CSystemControllerLink::UpdateRobotInfo_() {
 	robotInfo.angle_pitch2 = pcontrollerLink_->robotData_info_pkg.angle_pitch2;
 	robotInfo.angle_roll = pcontrollerLink_->robotData_info_pkg.angle_roll;
 	robotInfo.angle_pitch_end = pcontrollerLink_->robotData_info_pkg.angle_pitch_end;
-
 }
 
 /**
@@ -120,6 +125,7 @@ void CSystemControllerLink::UpdateRobotInfo_() {
  */
 void CSystemControllerLink::UpdateRobotDataPkg_() {
 	if (systemStatus != APP_OK) return;
+	if (!pcontrollerLink_) return;
 
 	// 更新发送包的信息
 	pcontrollerLink_->robotData_info_pkg.ask_reset_flag = robotInfo.ask_reset_flag;
@@ -137,6 +143,7 @@ void CSystemControllerLink::UpdateRobotDataPkg_() {
  */
 void CSystemControllerLink::UpdateControllerDataPkg_() {
 	if (systemStatus != APP_OK) return;
+	if (!pcontrollerLink_) return;
 
 	// 更新发送包的信息
 	pcontrollerLink_->controllerData_info_pkg.controller_OK = controllerInfo.controller_OK;

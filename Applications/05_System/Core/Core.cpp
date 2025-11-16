@@ -55,13 +55,30 @@ EAppStatus CSystemCore::InitSystemCore() {
     esp32InitParam.esp32DevID = EDeviceID::DEV_ESP32;
     SysESP32.InitSystem(&esp32InitParam);
 
-    // 获取模块的指针
-    pchassis_ = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS));
-    pgimbal_ = reinterpret_cast<CModGimbal *>(ModuleIDMap.at(EModuleID::MOD_GIMBAL));
+    // 获取模块的指针（安全查找，避免异常）
+    auto it_chassis = ModuleIDMap.find(EModuleID::MOD_CHASSIS);
+    if (it_chassis != ModuleIDMap.end() && it_chassis->second != nullptr) {
+        pchassis_ = reinterpret_cast<CModChassis *>(it_chassis->second);
+    }
+
+    auto it_gimbal = ModuleIDMap.find(EModuleID::MOD_GIMBAL);
+    if (it_gimbal != ModuleIDMap.end() && it_gimbal->second != nullptr) {
+        pgimbal_ = reinterpret_cast<CModGimbal *>(it_gimbal->second);
+    }
+
     // pgantry_ = reinterpret_cast<CModGantry *>(ModuleIDMap.at(EModuleID::MOD_GANTRY));
     // pclimber_ = reinterpret_cast<CModClimber *>(ModuleIDMap.at(EModuleID::MOD_CLIMBER));
-    psubgantry_ = reinterpret_cast<CModSubGantry *>(ModuleIDMap.at(EModuleID::MOD_SUBGANTRY));
-    parm_ = reinterpret_cast<CModArm *>(ModuleIDMap.at(EModuleID::MOD_ARM));
+
+    auto it_subgantry = ModuleIDMap.find(EModuleID::MOD_SUBGANTRY);
+    if (it_subgantry != ModuleIDMap.end() && it_subgantry->second != nullptr) {
+        psubgantry_ = reinterpret_cast<CModSubGantry *>(it_subgantry->second);
+    }
+
+    auto it_arm = ModuleIDMap.find(EModuleID::MOD_ARM);
+    if (it_arm != ModuleIDMap.end() && it_arm->second != nullptr) {
+        parm_ = reinterpret_cast<CModArm *>(it_arm->second);
+    }
+
     // pmantis_ = reinterpret_cast<CModMantis *>(ModuleIDMap.at(EModuleID::MOD_MANTIS));
 
     proc_waitMs(1200); // 等待系统初始化完成
@@ -91,36 +108,40 @@ void CSystemCore::UpdateHandler_() {
     if (print_cnt-- == 0) {
         print_cnt = 200;
         Print("------------------------------\n");
-        Print("Arm_Yaw_Cmd: %d, Info: %d, Err: %d\n",
-              static_cast<int>(parm_->armCmd.set_angle_Yaw), static_cast<int>(parm_->armInfo.angle_Yaw),
-              static_cast<int>(parm_->armInfo.angle_Yaw - parm_->armCmd.set_angle_Yaw));
-        Print("Arm_Pitch1_Cmd: %d, Info: %d, Err: %d\n",
-              static_cast<int>(parm_->armCmd.set_angle_Pitch1), static_cast<int>(parm_->armInfo.angle_Pitch1),
-              static_cast<int>(parm_->armInfo.angle_Pitch1 - parm_->armCmd.set_angle_Pitch1));
-        Print("Arm_Pitch2_Cmd: %d, Info: %d, Err: %d\n",
-              static_cast<int>(parm_->armCmd.set_angle_Pitch2), static_cast<int>(parm_->armInfo.angle_Pitch2),
-              static_cast<int>(parm_->armInfo.angle_Pitch2 - parm_->armCmd.set_angle_Pitch2));
-        Print("Arm_Roll_Cmd: %d, Info: %d, Err: %d\n",
-              static_cast<int>(parm_->armCmd.set_angle_Roll), static_cast<int>(parm_->armInfo.angle_Roll),
-              static_cast<int>(parm_->armInfo.angle_Roll - parm_->armCmd.set_angle_Roll));
-        Print("Arm_EndPitch_Cmd: %d, Info: %d, Err: %d\n",
-              static_cast<int>(parm_->armCmd.set_angle_end_pitch), static_cast<int>(parm_->armInfo.angle_end_pitch),
-              static_cast<int>(parm_->armInfo.angle_end_pitch - parm_->armCmd.set_angle_end_pitch));
-        Print("Arm_EndRoll_Cmd: %d, Info: %d, Err: %d\n",
-              static_cast<int>(parm_->armCmd.set_angle_end_roll), static_cast<int>(parm_->armInfo.angle_end_roll),
-              static_cast<int>(parm_->armInfo.angle_end_roll - parm_->armCmd.set_angle_end_roll));
-        Print("Subgantry_Stretch_L_Cmd: %d, Info: %d, Err: %d\n",
-              static_cast<int>(psubgantry_->subGantryCmd.setStretchPosit_L), static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_L),
-              static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_L - psubgantry_->subGantryCmd.setStretchPosit_L));
-        Print("Subgantry_Stretch_R_Cmd: %d, Info: %d, Err: %d\n",
-              static_cast<int>(psubgantry_->subGantryCmd.setStretchPosit_R), static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_R),
-              static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_R - psubgantry_->subGantryCmd.setStretchPosit_R));
-        Print("Subgantry_Lift_L_Cmd: %d, Info: %d, Err: %d\n",
-              static_cast<int>(psubgantry_->subGantryCmd.setLiftPosit_L), static_cast<int>(psubgantry_->subGantryInfo.liftPosit_L),
-              static_cast<int>(psubgantry_->subGantryInfo.liftPosit_L - psubgantry_->subGantryCmd.setLiftPosit_L));
-        Print("Subgantry_Lift_R_Cmd: %d, Info: %d, Err: %d\n",
-              static_cast<int>(psubgantry_->subGantryCmd.setLiftPosit_R), static_cast<int>(psubgantry_->subGantryInfo.liftPosit_R),
-              static_cast<int>(psubgantry_->subGantryInfo.liftPosit_R - psubgantry_->subGantryCmd.setLiftPosit_R));
+        if (parm_) {
+            Print("Arm_Yaw_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(parm_->armCmd.set_angle_Yaw), static_cast<int>(parm_->armInfo.angle_Yaw),
+                  static_cast<int>(parm_->armInfo.angle_Yaw - parm_->armCmd.set_angle_Yaw));
+            Print("Arm_Pitch1_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(parm_->armCmd.set_angle_Pitch1), static_cast<int>(parm_->armInfo.angle_Pitch1),
+                  static_cast<int>(parm_->armInfo.angle_Pitch1 - parm_->armCmd.set_angle_Pitch1));
+            Print("Arm_Pitch2_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(parm_->armCmd.set_angle_Pitch2), static_cast<int>(parm_->armInfo.angle_Pitch2),
+                  static_cast<int>(parm_->armInfo.angle_Pitch2 - parm_->armCmd.set_angle_Pitch2));
+            Print("Arm_Roll_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(parm_->armCmd.set_angle_Roll), static_cast<int>(parm_->armInfo.angle_Roll),
+                  static_cast<int>(parm_->armInfo.angle_Roll - parm_->armCmd.set_angle_Roll));
+            Print("Arm_EndPitch_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(parm_->armCmd.set_angle_end_pitch), static_cast<int>(parm_->armInfo.angle_end_pitch),
+                  static_cast<int>(parm_->armInfo.angle_end_pitch - parm_->armCmd.set_angle_end_pitch));
+            Print("Arm_EndRoll_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(parm_->armCmd.set_angle_end_roll), static_cast<int>(parm_->armInfo.angle_end_roll),
+                  static_cast<int>(parm_->armInfo.angle_end_roll - parm_->armCmd.set_angle_end_roll));
+        }
+        if (psubgantry_) {
+            Print("Subgantry_Stretch_L_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(psubgantry_->subGantryCmd.setStretchPosit_L), static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_L),
+                  static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_L - psubgantry_->subGantryCmd.setStretchPosit_L));
+            Print("Subgantry_Stretch_R_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(psubgantry_->subGantryCmd.setStretchPosit_R), static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_R),
+                  static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_R - psubgantry_->subGantryCmd.setStretchPosit_R));
+            Print("Subgantry_Lift_L_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(psubgantry_->subGantryCmd.setLiftPosit_L), static_cast<int>(psubgantry_->subGantryInfo.liftPosit_L),
+                  static_cast<int>(psubgantry_->subGantryInfo.liftPosit_L - psubgantry_->subGantryCmd.setLiftPosit_L));
+            Print("Subgantry_Lift_R_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(psubgantry_->subGantryCmd.setLiftPosit_R), static_cast<int>(psubgantry_->subGantryInfo.liftPosit_R),
+                  static_cast<int>(psubgantry_->subGantryInfo.liftPosit_R - psubgantry_->subGantryCmd.setLiftPosit_R));
+        }
     }
 
     bool zx = SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X;
@@ -181,15 +202,17 @@ void CSystemCore::UpdateHandler_() {
     }
 
     // 拇指轮控制气泵
-    if (SysRemote.remoteInfo.remote.thumbWheel > 50) {
-        psubgantry_->subGantryCmd.setPumpOn_Left = true;
-        psubgantry_->subGantryCmd.setPumpOn_Right = true;
-        psubgantry_->subGantryCmd.setPumpOn_Arm = true;
-    }
-    else if (SysRemote.remoteInfo.remote.thumbWheel < -50) {
-        psubgantry_->subGantryCmd.setPumpOn_Left = false;
-        psubgantry_->subGantryCmd.setPumpOn_Right = false;
-        psubgantry_->subGantryCmd.setPumpOn_Arm = false;
+    if (psubgantry_) {
+        if (SysRemote.remoteInfo.remote.thumbWheel > 50) {
+            psubgantry_->subGantryCmd.setPumpOn_Left = true;
+            psubgantry_->subGantryCmd.setPumpOn_Right = true;
+            psubgantry_->subGantryCmd.setPumpOn_Arm = true;
+        }
+        else if (SysRemote.remoteInfo.remote.thumbWheel < -50) {
+            psubgantry_->subGantryCmd.setPumpOn_Left = false;
+            psubgantry_->subGantryCmd.setPumpOn_Right = false;
+            psubgantry_->subGantryCmd.setPumpOn_Arm = false;
+        }
     }
 
 }
@@ -210,11 +233,11 @@ void CSystemCore::HeartbeatHandler_() {
         // 停止所有自动操作
         // StopAutoCtrlTask_();
         
-        // 停止所有模块
-        pchassis_->StopModule();
-        pgimbal_->StopModule();
-        psubgantry_->StopModule();
-        parm_->StopModule();
+        // 停止所有模块（添加空指针检查）
+        if (pchassis_) pchassis_->StopModule();
+        if (pgimbal_) pgimbal_->StopModule();
+        if (psubgantry_) psubgantry_->StopModule();
+        if (parm_) parm_->StopModule();
         
     }
 
@@ -224,10 +247,10 @@ void CSystemCore::HeartbeatHandler_() {
 // 软件复位
 void CSystemCore::RESET_SYSTEM() {
 
-    pchassis_->StopModule();
-    pgimbal_->StopModule();
-    psubgantry_->StopModule();
-    parm_->StopModule();
+    if (pchassis_) pchassis_->StopModule();
+    if (pgimbal_) pgimbal_->StopModule();
+    if (psubgantry_) psubgantry_->StopModule();
+    if (parm_) parm_->StopModule();
 
     // 给段延迟让电机收到停止指令
     static uint16_t resetCnt = 200;

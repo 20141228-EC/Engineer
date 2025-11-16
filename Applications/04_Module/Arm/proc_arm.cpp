@@ -19,7 +19,7 @@ namespace my_engineer {
  * 
  * @param argument 
  */
-void CModArm::StartArmModuleTask(void *argument) {
+void CModArm::StartArmModuleTask(void *argument) {					///<该任务在mod_arm.cpp被创建，然后在任务调度器调度
 
 	// 要求参数为CModArm类的实例，如果传入为空则删除任务并返回
 	if (argument == nullptr) proc_return();
@@ -48,13 +48,13 @@ void CModArm::StartArmModuleTask(void *argument) {
 
 				proc_waitMs(250); // 等待系统稳定
 				
-				arm.comjoint_.StartComponent();
-				proc_waitUntil(arm.comjoint_.componentStatus == APP_OK);
+				arm.comjoint_.StartComponent();												///<刚开始的时候设置为busy状态，当初始化以后就设置为ok状态
+				proc_waitUntil(arm.comjoint_.componentStatus == APP_OK);					///<此处先挂起10ms之后，一直等待关节电机任务初始化结束否者就一直10ms的等
 				
 				
 
 				arm.comEnd_.StartComponent();
-				arm.comRoll_.StartComponent();
+				arm.comRoll_.StartComponent();		///<当关节电机初始化完成之后，启动末端夹爪和夹爪roll电机任务
 				proc_waitUntil(arm.comEnd_.componentStatus == APP_OK &&
 							   arm.comRoll_.componentStatus == APP_OK);
 
@@ -76,7 +76,7 @@ void CModArm::StartArmModuleTask(void *argument) {
 				arm.RestrictArmCommand_();
 
 				arm.comjoint_.jointCmd.setPosit_yaw = 
-					CComJoint::PhyPositToMtrPosit_yaw(arm.armCmd.set_angle_Yaw);
+					CComJoint::PhyPositToMtrPosit_yaw(arm.armCmd.set_angle_Yaw);			///<在这个文件中设置目标的位置，在com_joint.cpp中进行pid计算
 				arm.comjoint_.jointCmd.setPosit_pitch1 =
 					CComJoint::PhyPositToMtrPosit_pitch1(arm.armCmd.set_angle_Pitch1);
 				arm.comjoint_.jointCmd.setPosit_pitch2 =

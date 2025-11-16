@@ -17,7 +17,7 @@ CModGimbal *pGimbal_test = nullptr;
 
 /**
  * @brief 初始化云台模块
- * 
+ * 		  像这种函数就是在初始化的时候调用，创建模块，注册id，方便任务调度的时候通过map的id索引来update数据
  * @param param 
  * @return EAppStatus 
  */

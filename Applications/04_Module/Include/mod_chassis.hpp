@@ -17,6 +17,8 @@
 #define LASER_ZERO_OFFSET_L 0
 #define LASER_ZERO_OFFSET_R 0
 
+/* public定义用户层方便调试和获取信息，private定义了底层用于直接驱动电机，而不会因为外界的干扰影响了输出的值 */
+
 namespace my_engineer {
 
 /**
@@ -43,7 +45,7 @@ public:
 
     // 定义底盘信息结构体并实例化
     struct SChassisInfo{
-        EVarStatus isModuleAvailable  = false; ///< 模块是否可用
+        EVarStatus isModuleAvailable  = false; ///< 模块是否可用                         ///<这里定义了info用于接收用户指令
 
         // 下面这三个变量由于没有传感器可以直接读取，所以并不会更新
         float_t speed_X = 0.0f; ///< 底盘X轴速度
@@ -84,14 +86,14 @@ private:
             float_t speed_LF = 0.0f;    ///< Chassis Speed LF (Unit: rpm)
             float_t speed_RF = 0.0f;    ///< Chassis Speed RF (Unit: rpm)
             float_t speed_LB = 0.0f;    ///< Chassis Speed LB (Unit: rpm)
-            float_t speed_RB = 0.0f;    ///< Chassis Speed RB (Unit: rpm)
+            float_t speed_RB = 0.0f;    ///< Chassis Speed RB (Unit: rpm)                   ///<这里定义了组件用于底层驱动
         } wheelsetInfo;
 
         // 定义底盘轮组控制命令结构体并实例化
         struct SWheelsetCommand {
             float_t speed_X = 0.0f;    ///< Chassis Speed X (Range: -100% ~ 100%)
             float_t speed_Y = 0.0f;    ///< Chassis Speed Y (Range: -100% ~ 100%)
-            float_t speed_W = 0.0f;    ///< Chassis Speed W (Range: -100% ~ 100%)
+            float_t speed_W = 0.0f;    ///< Chassis Speed W (Range: -100% ~ 100%)          
         } wheelsetCmd;
 
         // 传感器实例指针
@@ -101,9 +103,9 @@ private:
         CDevMtr *motor[4] = {nullptr};
 
         // 定义底盘PID控制器
-        CAlgoPid pidYawCtrl;
-        CAlgoPid pidLineCorrectionCtrl;
-        CAlgoPid pidSpdCtrl;
+        CAlgoPid pidYawCtrl;                    ///<控制底盘角速度（Yaw旋转）
+        CAlgoPid pidLineCorrectionCtrl;         ///<修正X、Y、W三个方向的误差
+        CAlgoPid pidSpdCtrl;                    ///<控制4个轮子的速度
 
         // 电机数据输出缓冲区
         std::array<int16_t, 4> mtrOutputBuffer = {0};

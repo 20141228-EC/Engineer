@@ -46,7 +46,7 @@ EAppStatus CInfUSB_CDC::InitInterface(const SInfInitParam_Base *pStructInitParam
 
 	// 注册USB CDC在IDmap和Handlemap中的实例
 	RegisterInterface_();  
-	UsbCdcHandleMap.insert(std::make_pair(halUsbHandle_, this));
+	UsbCdcHandleMap.insert(std::make_pair(halUsbHandle_, this));///<方便底层的串口中断查找对象
 
 	interfaceStatus = APP_BUSY;
 

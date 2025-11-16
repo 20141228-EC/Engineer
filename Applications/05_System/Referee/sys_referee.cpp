@@ -35,8 +35,15 @@ EAppStatus CSystemReferee::InitSystem(SSystemInitParam_Base *pStruct) {
 
 	// 初始化裁判设备
 	systemID = param.systemID;
-	pRefereeDev_ = static_cast<CDevReferee *>(DeviceIDMap.at(param.refereeDevID));
-	pInterface_ = reinterpret_cast<CInfUART *>(InterfaceIDMap.at(EInterfaceID::INF_UART1));
+	auto it_dev = DeviceIDMap.find(param.refereeDevID);
+	if (it_dev != DeviceIDMap.end() && it_dev->second != nullptr) {
+		pRefereeDev_ = static_cast<CDevReferee *>(it_dev->second);
+	}
+
+	auto it_inf = InterfaceIDMap.find(EInterfaceID::INF_UART1);
+	if (it_inf != InterfaceIDMap.end() && it_inf->second != nullptr) {
+		pInterface_ = reinterpret_cast<CInfUART *>(it_inf->second);
+	}
 
 	if (systemTaskHandle != nullptr) {
 		vTaskDelete(systemTaskHandle);
@@ -75,6 +82,7 @@ void CSystemReferee::HeartbeatHandler_() {
 
 	// 检查系统状态
 	if (systemStatus == APP_RESET) return;
+	if (!pRefereeDev_) return;
 
 	if (pRefereeDev_->refereeState == CDevReferee::ERefereeStatus::ONLINE)
 		systemStatus = APP_OK;
@@ -88,6 +96,8 @@ void CSystemReferee::HeartbeatHandler_() {
  * @return EAppStatus 
  */
 EAppStatus CSystemReferee::UpdateRaceInfo_() {
+
+	if (!pRefereeDev_) return APP_ERROR;
 
 	refereeInfo.unixTimestamp =
 		pRefereeDev_->raceStatusPkg.timestamp;
@@ -108,6 +118,8 @@ EAppStatus CSystemReferee::UpdateRaceInfo_() {
  */
 EAppStatus CSystemReferee::UpdateRobotInfo_() {
 
+	if (!pRefereeDev_) return APP_ERROR;
+
 	if (pRefereeDev_->robotStatusPkg.robotId == 0) {
 		refereeInfo.robot.robotCamp = 0;
 	}
@@ -123,10 +135,12 @@ EAppStatus CSystemReferee::UpdateRobotInfo_() {
 
 /**
  * @brief 更新雷达信息
- * 
- * @return EAppStatus 
+ *
+ * @return EAppStatus
  */
 EAppStatus CSystemReferee::UpdateRadarInfo_() {
+
+	if (!pRefereeDev_) return APP_ERROR;
 
 	refereeInfo.radar.if_dart_comming =
 		pRefereeDev_->radarPkg.message.if_dart_comming;

@@ -22,7 +22,7 @@
 
 namespace my_engineer {
 
-class CModGimbal final: public CModBase{
+class CModGimbal final: public CModBase{						///<final的重要含义：提升编译器的性能（不用查找虚函数表），优化节省 CPU 周期，减少调用开销，同时防止被继承
 public:
 
 	// 定义云台模块初始化参数结构体
@@ -56,7 +56,7 @@ public:
 	// 初始化模块
 	EAppStatus InitModule(SModInitParam_Base &param) final;
 
-private:
+private:														///<不做类型暴露，所以此处也不使用final
 	// 定义云台升降组件类并实例化
 	class CComLift: public CComponentBase{
 	public:
