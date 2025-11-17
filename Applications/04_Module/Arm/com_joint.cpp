@@ -29,10 +29,18 @@ EAppStatus CModArm::CComJoint::InitComponent(SModInitParam_Base &param) {
 	motor[Y] = MotorIDMap.at(armParam.MotorID_Yaw);
 	motor[P1] = MotorIDMap.at(armParam.MotorID_Pitch1);
 	motor[P2] = MotorIDMap.at(armParam.MotorID_Pitch2);
+	if(motor[Y] == nullptr || motor[P1] == nullptr || motor[P2] == nullptr){ // 电机指针为空，初始化失败
+		componentStatus = APP_ERROR;
+		return APP_ERROR;
+	}
 
 	mtrCanTxNode[Y] = armParam.MotorTxNode_Yaw;
 	mtrCanTxNode[P1] = armParam.MotorTxNode_Pitch1;
 	mtrCanTxNode[P2] = armParam.MotorTxNode_Pitch2;
+	if(mtrCanTxNode[Y] == nullptr || mtrCanTxNode[P1] == nullptr || mtrCanTxNode[P2] == nullptr){ // 发送节点指针为空，初始化失败
+		componentStatus = APP_ERROR;
+		return APP_ERROR;
+	}
 
 	armParam.YawPosPidParam.threadNum = 1;
 	pidPosCtrl_yaw.InitPID(&armParam.YawPosPidParam);
@@ -119,7 +127,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 			else{
 				/*全部到位后才进入初始化 - 优先级最高*/
 				if(jointInfo.isPositArrived_pitch2 && jointInfo.isPositArrived_pitch1 && alreadySetYaw == true){
-					if(abs(jointInfo.posit_yaw - jointCmd.setPosit_yaw)<500){									///<包含了堵转和未堵转两种标定yaw零点的情况
+					if(abs(jointInfo.posit_yaw - jointCmd.setPosit_yaw)<500){
 						motor[Y]->motorData[CDevMtr::DATA_POSIT] = 0.0f;
 						jointCmd.setPosit_yaw = 0;
 						jointCmd.setPosit_pitch1 = POSIT_JOINT2_PITCH1_INIT_PHY * 182.04f;

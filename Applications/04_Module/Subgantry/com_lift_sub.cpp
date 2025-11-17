@@ -29,11 +29,17 @@ EAppStatus CModSubGantry::CComLift_sub::InitComponent(SModInitParam_Base &param)
     // 保存电机指针
     motor[0] = MotorIDMap.at(subGantryParam.liftMotorID_L);
     motor[1] = MotorIDMap.at(subGantryParam.liftMotorID_R);
-
+    if(motor[0] == nullptr || motor[1] == nullptr){ // 电机指针为空，初始化失败
+        componentStatus = APP_ERROR;
+        return APP_ERROR;
+    }
     // 设置发送节点
     mtrCanTxNode[0] = subGantryParam.liftMotorTxNode_L;
     mtrCanTxNode[1] = subGantryParam.liftMotorTxNode_R;
-
+    if(mtrCanTxNode[0] == nullptr || mtrCanTxNode[1] == nullptr){ // 发送节点指针为空，初始化失败
+        componentStatus = APP_ERROR;
+        return APP_ERROR;
+    }
     // 初始化PID控制器
     subGantryParam.liftPosPidParam_L.threadNum = 1;
     pidPosCtrl_L.InitPID(&subGantryParam.liftPosPidParam_L);

@@ -10,6 +10,7 @@
  * 
  ******************************************************************************/
 
+#include "conf_common.hpp"
 #include "mod_arm.hpp"
 
 namespace my_engineer {
@@ -28,8 +29,11 @@ EAppStatus CModArm::CComRoll::InitComponent(SModInitParam_Base &param) {
 	auto armParam = static_cast<SModInitParam_Arm &>(param);
 
 	// 保存电机指针
-	motor = MotorIDMap.at(armParam.MotorID_Roll);					///<通过对arm类图的索引找到初始注册的电机
-
+	motor = MotorIDMap.at(armParam.MotorID_Roll);
+	if(motor == nullptr){ // 电机指针为空，初始化失败
+		componentStatus = APP_ERROR;
+		return APP_ERROR;
+	}
 	// 初始化PID控制器
 	mitCtrl.kp = armParam.MIT_Roll_kp;
 	mitCtrl.kd = armParam.MIT_Roll_kd;
@@ -48,7 +52,10 @@ EAppStatus CModArm::CComRoll::InitComponent(SModInitParam_Base &param) {
 EAppStatus CModArm::CComRoll::UpdateComponent() {
 	// 检查组件状态
 	if (componentStatus == APP_RESET) return APP_ERROR;
-
+	if (motor == nullptr){ // 电机指针为空，更新失败
+		componentStatus = APP_ERROR;
+		return APP_ERROR;
+	}
 	CDevMtrDM_MIT *pMtr = static_cast<CDevMtrDM_MIT *>(motor);
 
 	// 更新组件信息

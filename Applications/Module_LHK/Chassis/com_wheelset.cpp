@@ -28,12 +28,19 @@ EAppStatus C_ModChassis::C_ComWheelset::InitComponent(S_ModInitParam &param) {
   /* Initialize Component */
   auto chassisParam = static_cast<S_ModInitParam_Chassis &>(param);
   mems = MemsMap.at(chassisParam.memsDevID);
+  if (mems == nullptr){ // 传感器指针为空，初始化失败
+        componentStatus = APP_ERROR;
+        return APP_ERROR;
+    }
   /*Attention! if you don't register motor in motorMap, you may enter an endless loop*/
   motor[LF] = MotorMap.at(chassisParam.wheelsetMotorID_LF);
   motor[RF] = MotorMap.at(chassisParam.wheelsetMotorID_RF);
   motor[LB] = MotorMap.at(chassisParam.wheelsetMotorID_LB);
   motor[RB] = MotorMap.at(chassisParam.wheelsetMotorID_RB);
-
+  if(motor[LF] == nullptr || motor[RF] == nullptr || motor[LB] == nullptr || motor[RB] == nullptr){ // 电机指针为空，初始化失败
+        componentStatus = APP_ERROR;
+        return APP_ERROR;
+  }
   /*Set CAN sending Node*/
   mtrCanTxNode[LF] = chassisParam.wheelsetMotorTxNode_LF;
   mtrCanTxNode[RF] = chassisParam.wheelsetMotorTxNode_RF;

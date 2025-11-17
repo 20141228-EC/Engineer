@@ -32,6 +32,10 @@ EAppStatus CModGimbal::CComLift::InitComponent(SModInitParam_Base &param){
 	// 设置发送节点
 	mtrCanTxNode = gimbalParam.liftMotorTxNode;
 
+	if(motor == nullptr || mtrCanTxNode == nullptr){ //	电机指针或发送节点指针为空，初始化失败
+		componentStatus = APP_ERROR;
+		return APP_ERROR;
+	}
 	// 初始化PID控制器
 	gimbalParam.liftPosPidParam.threadNum = 1;
 	pidPosCtrl.InitPID(&gimbalParam.liftPosPidParam);

@@ -31,17 +31,27 @@ EAppStatus CModChassis::CComWheelset::InitComponent(SModInitParam_Base &param){
 
     // 保存电机和传感器指针
     mems = MemsIDMap.at(chassisParam.memsDevID);
-    motor[LF] = MotorIDMap.at(chassisParam.wheelsetMotorID_LF);
+    if (mems == nullptr){ // 传感器指针为空，初始化失败
+        componentStatus = APP_ERROR;
+        return APP_ERROR;
+    }
+    motor[LF] = MotorIDMap.at(chassisParam.wheelsetMotorID_LF);//
     motor[RF] = MotorIDMap.at(chassisParam.wheelsetMotorID_RF);
     motor[LB] = MotorIDMap.at(chassisParam.wheelsetMotorID_LB);
     motor[RB] = MotorIDMap.at(chassisParam.wheelsetMotorID_RB);
-
+    if(motor[LF] == nullptr || motor[RF] == nullptr || motor[LB] == nullptr || motor[RB] == nullptr){ // 电机指针为空，初始化失败
+        componentStatus = APP_ERROR;
+        return APP_ERROR;
+    }
     // 设置发送节点
     mtrCanTxNode[LF] = chassisParam.wheelsetMotorTxNode_LF;
     mtrCanTxNode[RF] = chassisParam.wheelsetMotorTxNode_RF;
     mtrCanTxNode[LB] = chassisParam.wheelsetMotorTxNode_LB;
     mtrCanTxNode[RB] = chassisParam.wheelsetMotorTxNode_RB;
-
+    if(mtrCanTxNode[LF] == nullptr || mtrCanTxNode[RF] == nullptr || mtrCanTxNode[LB] == nullptr || mtrCanTxNode[RB] == nullptr){ // 发送节点指针为空，初始化失败
+        componentStatus = APP_ERROR;
+        return APP_ERROR;
+    }
     // 初始化PID控制器
     chassisParam.wheelsetSpdPidParam.threadNum = 4;
     pidSpdCtrl.InitPID(&chassisParam.wheelsetSpdPidParam);
@@ -49,7 +59,7 @@ EAppStatus CModChassis::CComWheelset::InitComponent(SModInitParam_Base &param){
     chassisParam.lineCorrectionPidParam.threadNum = 3;
     pidLineCorrectionCtrl.InitPID(&chassisParam.lineCorrectionPidParam);
 
-    chassisParam.yawCorrectionPidParam.threadNum = 1;
+    chassisParam.yawCorrectionPidParam.threadNum = 1; //
     pidYawCtrl.InitPID(&chassisParam.yawCorrectionPidParam);
 
     // test

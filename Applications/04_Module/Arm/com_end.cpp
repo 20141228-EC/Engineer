@@ -28,6 +28,11 @@ EAppStatus CModArm::CComEnd::InitComponent(SModInitParam_Base &param) {
 	motor[L] = MotorIDMap.at(armParam.MotorID_End_L);
 	motor[R] = MotorIDMap.at(armParam.MotorID_End_R);
 
+	if (motor[L] == nullptr || motor[R] == nullptr){ // 电机指针为空，初始化失败
+		componentStatus = APP_ERROR;
+		return APP_ERROR;
+	}
+
 	mtrCanTxNode[L] = armParam.MotorTxNode_End_L;
 	mtrCanTxNode[R] = armParam.MotorTxNode_End_R;
 
@@ -52,8 +57,8 @@ EAppStatus CModArm::CComEnd::InitComponent(SModInitParam_Base &param) {
 EAppStatus CModArm::CComEnd::UpdateComponent() {
 	if (componentStatus == APP_RESET) return APP_ERROR;
 
-	endInfo.posit_Roll 	=  (motor[L]->motorData[CDevMtr::DATA_POSIT] + motor[R]->motorData[CDevMtr::DATA_POSIT]) / 2;
-	endInfo.posit_Pitch = ((motor[R]->motorData[CDevMtr::DATA_POSIT] - endInfo.posit_Roll) - (motor[L]->motorData[CDevMtr::DATA_POSIT] - endInfo.posit_Roll))/2.0;
+	endInfo.posit_Roll 	=  (motor[L]->motorData[CDevMtr::DATA_POSIT] + motor[R]->motorData[CDevMtr::DATA_POSIT]) / 2; // 计算滚转角位置
+	endInfo.posit_Pitch = ((motor[R]->motorData[CDevMtr::DATA_POSIT] - endInfo.posit_Roll) - (motor[L]->motorData[CDevMtr::DATA_POSIT] - endInfo.posit_Roll))/2.0; // 计算俯仰角位置
 
 	endInfo.isPositArrived_Pitch = (abs(endCmd.setPosit_Pitch - endInfo.posit_Pitch) < 8192 * 2);
 	endInfo.isPositArrived_Roll = (abs(endCmd.setPosit_Roll - endInfo.posit_Roll) < 8192 * 2);

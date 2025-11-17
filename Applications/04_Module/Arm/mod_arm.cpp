@@ -82,22 +82,35 @@ void CModArm::UpdateHandler_() {
 	armInfo.isAngleArrived_End_Roll = comEnd_.endInfo.isPositArrived_Roll;
 
 	// 填充电机发送缓冲区
-	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P1],							///<用的是关节底层信息的发送
-								comjoint_.mtrCanTxNode[CComJoint::P1]->dataBuffer,
-								comjoint_.mtrOutputBuffer[CComJoint::P1]);		///< 1.电机 2.can节点信息 3. 输出缓冲区
+	if (comjoint_.motor[CComJoint::P1] && comjoint_.mtrCanTxNode[CComJoint::P1]) {
+    CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P1],
+                               comjoint_.mtrCanTxNode[CComJoint::P1]->dataBuffer,
+                               comjoint_.mtrOutputBuffer[CComJoint::P1]);
+	}
+
+	if (comjoint_.motor[CComJoint::P2] && comjoint_.mtrCanTxNode[CComJoint::P2]) {
 	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P2],
 								comjoint_.mtrCanTxNode[CComJoint::P2]->dataBuffer,
 								comjoint_.mtrOutputBuffer[CComJoint::P2]);
+	}
+
+	if (comjoint_.motor[CComJoint::Y] && comjoint_.mtrCanTxNode[CComJoint::Y]) {
 	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::Y],
 								comjoint_.mtrCanTxNode[CComJoint::Y]->dataBuffer,
 								comjoint_.mtrOutputBuffer[CComJoint::Y]);
+	}
+
+	if (comEnd_.motor[CComEnd::L] && comEnd_.mtrCanTxNode[CComEnd::L]) {
 	CDevMtrDJI::FillCanTxBuffer(comEnd_.motor[CComEnd::L],
 								comEnd_.mtrCanTxNode[CComEnd::L]->dataBuffer,
 								comEnd_.mtrOutputBuffer[CComEnd::L]);
+	}
+
+	if (comEnd_.motor[CComEnd::R] && comEnd_.mtrCanTxNode[CComEnd::R]) {
 	CDevMtrDJI::FillCanTxBuffer(comEnd_.motor[CComEnd::R],
 								comEnd_.mtrCanTxNode[CComEnd::R]->dataBuffer,
-								comEnd_.mtrOutputBuffer[CComEnd::R]);			
-
+								comEnd_.mtrOutputBuffer[CComEnd::R]);
+	}
 }
 
 /**
