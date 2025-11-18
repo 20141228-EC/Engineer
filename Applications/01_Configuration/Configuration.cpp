@@ -21,10 +21,10 @@ void ApplicationEntryPoint(){
 
     // 调用各配置初始化函数
     // 顺序一定不要搞错啊！！
-    InitAllInterface();
-    InitAllDevice();
-    InitAllModule();
-    InitProcess();
+    InitAllInterface(); 
+    InitAllDevice(); // 初始化所有设备配置 如电机can总线 帧头 id等
+    InitAllModule(); // 初始化模块PID等
+    InitProcess(); // 初始化四个汇总任务
     
     Print("Application Entry Point: All configurations initialized successfully.\n");
 

@@ -24,8 +24,8 @@ void CRcBase::HeartbeatHandler_(){
 
     if(deviceStatus == APP_RESET) return;
 
-    // 检查遥控器是否在线(根据是否在500ms内收到数据包来判断)
-    rcStatus = ((HAL_GetTick() - lastHeartbeatTime_) > 500) ? ERcStatus::OFFLINE : ERcStatus::ONLINE;
+    // 检查遥控器是否在线(根据是否在100ms内收到数据包来判断)
+    rcStatus = ((HAL_GetTick() - lastHeartbeatTime_) > 100) ? ERcStatus::OFFLINE : ERcStatus::ONLINE;
     
     // 如果在线，更新所有通道状态
     if(rcStatus == ERcStatus::ONLINE)
