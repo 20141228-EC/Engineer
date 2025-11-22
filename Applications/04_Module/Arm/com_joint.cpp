@@ -112,7 +112,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				while(motor[P2]->motorData[CDevMtr::DATA_POSIT] < -32767)
 					motor[P2]->motorData[CDevMtr::DATA_POSIT] += 65535;
 				motor[P2]->motorData[CDevMtr::DATA_POSIT]  += ARM_PITCH2_MOTOR_DIR * POSIT_JOINT3_PITCH2_MACH_PHY * 182.04f;			///<这个是等效连杆和水平面的夹角
-				jointCmd.setPosit_pitch2 = static_cast<int32_t>(90.0f * 182.04f);																		///<这个复位角度是90度
+				jointCmd.setPosit_pitch2 = static_cast<int32_t>(70.0f * 182.04f);																		///<这个复位角度是90度
 				alreadySetYaw = false;
 				isreset_flag = true;  // 重置标志
 			}	
