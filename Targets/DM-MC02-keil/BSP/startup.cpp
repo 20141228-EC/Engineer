@@ -11,7 +11,7 @@
 
 #include "main.h"
 #include "Configuration.hpp"
-#include "rtt_test.hpp"
+#include "RTT_DEBUG.h"
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -94,8 +94,7 @@ int main() {
   // __enable_irq();  // 所有外设初始化完成后重新启用全局中断
 
   /* RTT Initialize - 在应用程序启动前初始化RTT */
-  my_engineer::RTT_Init();
-  my_engineer::RTT_Test_Basic();
+  RTT_Init();
 
   /* User Application Entry Point */
   my_engineer::ApplicationEntryPoint();

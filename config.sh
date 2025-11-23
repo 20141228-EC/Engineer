@@ -10,6 +10,7 @@ set -e
 dirs=(
   "Targets/DM-MC02-keil/MDK-ARM"
   "Targets/DM-MC02/MDK-ARM"
+  ".vscode"
 )
 
 usage() {
