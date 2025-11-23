@@ -85,15 +85,16 @@ EAppStatus CModGimbal::CComLift::UpdateComponent() {
 		case FSM_INIT: {
 			// 电机堵转，说明初始化完成
 			if (motor->motorStatus == CDevMtr::EMotorStatus::STALL) {
-				liftCmd = SLiftCmd();							///<到达限位之后调用构造函数全部清零
+				liftCmd = SLiftCmd();							// 堵转之后清零目标值
 				// 补偿超出限位的值
-				motor->motorData[CDevMtr::DATA_POSIT] = static_cast<int32_t>(0.1 * 8192 + rangeLimit) * GIMBAL_LIFT_MOTOR_DIR;///<通过堵转来标定绝对零点
+				motor->motorData[CDevMtr::DATA_POSIT] = static_cast<int32_t>(0.1 * 8192 + rangeLimit) * GIMBAL_LIFT_MOTOR_DIR; // 堵转之后将当前位置值设为高出限位的值 目的是确保之后不再碰到机械限位
 				pidPosCtrl.ResetPidController();
 				pidSpdCtrl.ResetPidController();
 				Component_FSMFlag_ = FSM_CTRL;
 				componentStatus = APP_OK;
-			}						///<在未堵转之前一直 +400
-			liftCmd.setPosit += 400;///<此处在堵转瞬间目标值清零，然后再加上400 ,（0 + 400），所以pid的errror是400 - 184819.2，这个时候云台会下降，所以就实现了先升标定后降的逻辑
+				return APP_OK; // 堵转了就直接退出 不要执行+400
+			}
+			liftCmd.setPosit += 400;
 			return _UpdateOutput(static_cast<float_t>(liftCmd.setPosit));
 		}
 
