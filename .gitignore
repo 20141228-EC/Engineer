@@ -2,5 +2,7 @@
 build/
 .vscode/
 .history/
+Targets/DM-MC02-keil/MDK-ARM/
+Targets/DM-MC02/MDK-ARM/
 #对日志文件的忽略
 *.log
