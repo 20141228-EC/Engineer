@@ -129,11 +129,22 @@ void CSystemCore::UpdateHandler_() {
                   static_cast<int>(parm_->armCmd.set_angle_end_roll), static_cast<int>(parm_->armInfo.angle_end_roll),
                   static_cast<int>(parm_->armInfo.angle_end_roll - parm_->armCmd.set_angle_end_roll));
         }
-        // 已删除子龙门调试打印信息
-        // if (psubgantry_) {
-        //     Print("Subgantry_Stretch_L_Cmd: %d, Info: %d, Err: %d\n", ...);
-        //     ...
-        // }
+        // 删除子龙门调试打印信息
+        /* if (psubgantry_) {
+            Print("Subgantry_Stretch_L_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(psubgantry_->subGantryCmd.setStretchPosit_L), static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_L),
+                  static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_L - psubgantry_->subGantryCmd.setStretchPosit_L));
+            Print("Subgantry_Stretch_R_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(psubgantry_->subGantryCmd.setStretchPosit_R), static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_R),
+                  static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_R - psubgantry_->subGantryCmd.setStretchPosit_R));
+            Print("Subgantry_Lift_L_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(psubgantry_->subGantryCmd.setLiftPosit_L), static_cast<int>(psubgantry_->subGantryInfo.liftPosit_L),
+                  static_cast<int>(psubgantry_->subGantryInfo.liftPosit_L - psubgantry_->subGantryCmd.setLiftPosit_L));
+            Print("Subgantry_Lift_R_Cmd: %d, Info: %d, Err: %d\n",
+                  static_cast<int>(psubgantry_->subGantryCmd.setLiftPosit_R), static_cast<int>(psubgantry_->subGantryInfo.liftPosit_R),
+                  static_cast<int>(psubgantry_->subGantryInfo.liftPosit_R - psubgantry_->subGantryCmd.setLiftPosit_R));
+        }*/
+
     }
 
     bool zx = SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X;
@@ -194,11 +205,19 @@ void CSystemCore::UpdateHandler_() {
         RESET_SYSTEM();
     }
 
-    // 已删除拇指轮控制气泵代码
-    // if (psubgantry_) {
-    //     if (SysRemote.remoteInfo.remote.thumbWheel > 50) { ... }
-    //     else if (SysRemote.remoteInfo.remote.thumbWheel < -50) { ... }
-    // }
+    // 删除拇指轮控制气泵代码
+    /* if (psubgantry_) {
+         if (SysRemote.remoteInfo.remote.thumbWheel > 50) {
+            psubgantry_->subGantryCmd.setPumpOn_Left = true;
+            psubgantry_->subGantryCmd.setPumpOn_Right = true;
+            psubgantry_->subGantryCmd.setPumpOn_Arm = true;
+        }
+        else if (SysRemote.remoteInfo.remote.thumbWheel < -50) {
+            psubgantry_->subGantryCmd.setPumpOn_Left = false;
+            psubgantry_->subGantryCmd.setPumpOn_Right = false;
+            psubgantry_->subGantryCmd.setPumpOn_Arm = false;
+        }
+     }*/
 
 }
 
