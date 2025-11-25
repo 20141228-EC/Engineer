@@ -212,7 +212,7 @@ void CSystemReferee::UI_InitDrawing() {
   stateFigureMsg.message.figureConfig[6].details_5 = 360 - 40;      // End Posit Y
   stateFigureMsg.message.figureConfig[6].width = 3;            // Line Width
 
-  // /* Figure - Vision Config */ - 删除子龙门视觉UI显示代码
+  // /* Figure - Vision Config */ 
   // visionFigureMsg.header = CDevReferee::SPkgHeader();
   // visionFigureMsg.header.len = sizeof(visionFigureMsg) - 9;
   // visionFigureMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
