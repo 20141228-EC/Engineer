@@ -78,8 +78,9 @@ EAppStatus InitAllDevice(){
     esp32.InitDevice(&esp32_initparam);
 
     /******************************************
-    * 子龙门电机
+    * 子龙门电机 - 已删除 
     ******************************************/
+   /*
     static CDevMtrM2006 subGantryMotor_Lift_L;
     CDevMtrM2006::SMtrInitParam_M2006 subGantryMotor_Lift_L_initparam;
     subGantryMotor_Lift_L_initparam.deviceID = EDeviceID::DEV_SUBGANTRY_MTR_LIFT_L;
@@ -119,7 +120,7 @@ EAppStatus InitAllDevice(){
     subGantryMotor_Stretch_R_initparam.useStallMonit = true;
     subGantryMotor_Stretch_R_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
     subGantryMotor_Stretch_R.InitDevice(&subGantryMotor_Stretch_R_initparam);
-
+*/
     /******************************************
     * 底盘电机
     ******************************************/

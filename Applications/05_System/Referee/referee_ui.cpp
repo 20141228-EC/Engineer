@@ -212,7 +212,7 @@ void CSystemReferee::UI_InitDrawing() {
   stateFigureMsg.message.figureConfig[6].details_5 = 360 - 40;      // End Posit Y
   stateFigureMsg.message.figureConfig[6].width = 3;            // Line Width
 
-  // /* Figure - Vision Config */
+  // /* Figure - Vision Config */ - 删除子龙门视觉UI显示代码
   // visionFigureMsg.header = CDevReferee::SPkgHeader();
   // visionFigureMsg.header.len = sizeof(visionFigureMsg) - 9;
   // visionFigureMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
@@ -439,17 +439,18 @@ void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
 
 void CSystemReferee::UI_UpdateStateFigureDrawing_() {
 
-	static auto &subgantry = reinterpret_cast<CModSubGantry *>(ModuleIDMap.at(EModuleID::MOD_SUBGANTRY))->subGantryInfo;
+	// 删除子龙门气泵状态显示代码
+	// static auto &subgantry = reinterpret_cast<CModSubGantry *>(ModuleIDMap.at(EModuleID::MOD_SUBGANTRY))->subGantryInfo;
+	// stateFigureMsg.message.figureConfig[0].operate = 2;
+	// stateFigureMsg.message.figureConfig[0].color = (subgantry.isPumpOn_Arm) ? 2 : 7;
+	// stateFigureMsg.message.figureConfig[1].operate = 2;
+	// stateFigureMsg.message.figureConfig[1].color = (subgantry.isPumpOn_Left) ? 2 : 7;
+	// stateFigureMsg.message.figureConfig[2].operate = 2;
+	// stateFigureMsg.message.figureConfig[2].color = (subgantry.isPumpOn_Right) ? 2 : 7;
 
 	stateFigureMsg.message.figureConfig[0].operate = 2;
-	stateFigureMsg.message.figureConfig[0].color = (subgantry.isPumpOn_Arm) ? 2 : 7;
-
 	stateFigureMsg.message.figureConfig[1].operate = 2;
-	stateFigureMsg.message.figureConfig[1].color = (subgantry.isPumpOn_Left) ? 2 : 7;
-
 	stateFigureMsg.message.figureConfig[2].operate = 2;
-	stateFigureMsg.message.figureConfig[2].color = (subgantry.isPumpOn_Right) ? 2 : 7;
-
 	stateFigureMsg.message.figureConfig[3].operate = 2;
 	stateFigureMsg.message.figureConfig[4].operate = 2;
 	stateFigureMsg.message.figureConfig[5].operate = 2;

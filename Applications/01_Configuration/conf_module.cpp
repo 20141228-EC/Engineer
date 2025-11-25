@@ -85,7 +85,8 @@ EAppStatus InitAllModule() {
     static auto armModule = CModArm(armInitParam);
 
 
-    /******初始化子龙门模块******/
+    /******初始化子龙门模块******/ //-删除
+/*
     CModSubGantry::SModInitParam_SubGantry subGantryInitParam;
     subGantryInitParam.moduleID = EModuleID::MOD_SUBGANTRY;
     subGantryInitParam.liftMotorID_L = EDeviceID::DEV_SUBGANTRY_MTR_LIFT_L;
@@ -135,7 +136,7 @@ EAppStatus InitAllModule() {
     subGantryInitParam.stretchSpdPidParam.maxOutput = 8000.0f;
     // 使用初始化后的参数创建 subGantryModule 实例
     static auto subGantryModule = CModSubGantry(subGantryInitParam);
-
+*/
     /******初始化云台模块******/
     CModGimbal::SModInitParam_Gimbal gimbalInitParam;
     gimbalInitParam.moduleID = EModuleID::MOD_GIMBAL;
