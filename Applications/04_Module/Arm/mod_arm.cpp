@@ -35,6 +35,7 @@ EAppStatus CModArm::InitModule(SModInitParam_Base &param) {
 	comjoint_.InitComponent(param);
 	comRoll_.InitComponent(param);
 	comEnd_.InitComponent(param);
+	comGrip_.InitComponent(param);
 
 	// 创建任务并注册模块
 	CreateModuleTask_();
@@ -63,7 +64,8 @@ void CModArm::UpdateHandler_() {
 	// 更新组件
 	comjoint_.UpdateComponent();
 	comEnd_.UpdateComponent();
-	comRoll_.UpdateComponent();			
+	comRoll_.UpdateComponent();
+	comGrip_.UpdateComponent();			///<更新电机数据
 
 	// 更新模块信息
 	armInfo.angle_Yaw = comjoint_.MtrPositToPhyPosit_yaw(comjoint_.jointInfo.posit_yaw);
@@ -74,12 +76,14 @@ void CModArm::UpdateHandler_() {
 		comEnd_.MtrPositToPhyPosit_Pitch(comEnd_.endInfo.posit_Pitch);
 	armInfo.angle_end_roll =
 		comEnd_.MtrPositToPhyPosit_Roll(comEnd_.endInfo.posit_Roll);								///<将电机的机械角度转换为物理角度
+	armInfo.length_grip = comGrip_.MtrPositToPhyPosit(comGrip_.gripInfo.posit_grip);
 	armInfo.isAngleArrived_Yaw = comjoint_.jointInfo.isPositArrived_yaw;
 	armInfo.isAngleArrived_Pitch1 = comjoint_.jointInfo.isPositArrived_pitch1;
 	armInfo.isAngleArrived_Pitch2 = comjoint_.jointInfo.isPositArrived_pitch2;
 	armInfo.isAngleArrived_Roll = comRoll_.rollInfo.isAngleArrived;
 	armInfo.isAngleArrived_End_Pitch = comEnd_.endInfo.isPositArrived_Pitch;
 	armInfo.isAngleArrived_End_Roll = comEnd_.endInfo.isPositArrived_Roll;
+	armInfo.isAngleArrived_Grip = comGrip_.gripInfo.isPositArrived_Grip;
 
 	// 填充电机发送缓冲区
 	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P1],							///<用的是关节底层信息的发送
@@ -96,7 +100,10 @@ void CModArm::UpdateHandler_() {
 								comEnd_.mtrOutputBuffer[CComEnd::L]);
 	CDevMtrDJI::FillCanTxBuffer(comEnd_.motor[CComEnd::R],
 								comEnd_.mtrCanTxNode[CComEnd::R]->dataBuffer,
-								comEnd_.mtrOutputBuffer[CComEnd::R]);			
+								comEnd_.mtrOutputBuffer[CComEnd::R]);
+	CDevMtrDJI::FillCanTxBuffer(comGrip_.motor,
+								comGrip_.mtrCanTxNode->dataBuffer,
+								comGrip_.mtrOutputBuffer);								
 
 }
 
@@ -141,7 +148,7 @@ EAppStatus CModArm::RestrictArmCommand_() {
 	armCmd.set_angle_Pitch1 =
 		std::clamp(armCmd.set_angle_Pitch1,
 				   ARM_PITCH1_PHYSICAL_RANGE_MIN, ARM_PITCH1_PHYSICAL_RANGE_MAX);
-	if (armCmd.set_angle_Pitch2 < ARM_PITCH2_PHYSICAL_RANGE_MIN) {
+	if (armCmd.set_angle_Pitch2 < ARM_PITCH2_PHYSICAL_RANGE_MIN) {					///<p2的动态限位
 		armCmd.set_angle_Pitch2 = ARM_PITCH2_PHYSICAL_RANGE_MIN;
 	} else {
 		armCmd.set_angle_Pitch2 =
@@ -157,11 +164,13 @@ EAppStatus CModArm::RestrictArmCommand_() {
 	armCmd.set_angle_end_pitch =
 		std::clamp(armCmd.set_angle_end_pitch,
 				   ARM_END_PITCH_PHYSICAL_RANGE_MIN, ARM_END_PITCH_PHYSICAL_RANGE_MAX);
+	armCmd.set_length_grip = 
+		std::clamp(armCmd.set_length_grip,0.f,ARM_END_GRIP_PHYSICAL_RANGE);///<接口层的限幅
 
 	if(armCmd.isCustomCtrl)
 	armCmd.set_angle_Pitch1 =
 		std::clamp(armCmd.set_angle_Pitch1,
-				   18.0f, ARM_PITCH1_PHYSICAL_RANGE_MAX);
+				   18.0f, ARM_PITCH1_PHYSICAL_RANGE_MAX);			///<自定义控制模式下
 
 	// 自动控制启用，则不继续做限制
 	if (armCmd.isAutoCtrl) return APP_OK;

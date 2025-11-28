@@ -109,7 +109,7 @@ void CSystemCore::ControlFromRemote_() {
     }
 
     //用于调试，免去遥控器上电
-    // StartRobot(true, true);
+    StartRobot(true, true);
 
     if (parm_) {
         parm_->should_limit_yaw = 0;
@@ -146,7 +146,7 @@ void CSystemCore::ControlFromRemote_() {
         }
     }
 
-    // MID + MID 机械臂后四轴
+    // MID + MID 机械臂后四轴 + 夹爪
     if (remote.switch_L == MID && remote.switch_R == MID) {
         SysRemote.SetRemoteDeadZone(10.f);
         if (parm_) {
@@ -158,6 +158,9 @@ void CSystemCore::ControlFromRemote_() {
                 (remote.joystick_RY / 100.f) * 90.f / freq;
             parm_->armCmd.set_angle_end_roll +=
                 (remote.joystick_RX / 100.f) * 90.f / freq;
+            // 拨轮控制夹爪开合（0~106mm）
+            parm_->armCmd.set_length_grip +=
+                (remote.thumbWheel / 100.f) * 80.f / freq;
         }
     }
 
@@ -272,6 +275,9 @@ void CSystemCore::ControlFromKeyboard_() {
             // end_roll(C键)
             if(keyboard.key_C)
                 parm_->armCmd.set_angle_end_roll += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 90.0f / freq;
+            // 夹爪(V键)
+            if(keyboard.key_V)
+                parm_->armCmd.set_length_grip += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 80.0f / freq;
             // 气泵(B键)
             if (psubgantry_) {
                 if(keyboard.key_B) {

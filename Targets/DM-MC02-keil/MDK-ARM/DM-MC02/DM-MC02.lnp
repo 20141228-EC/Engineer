@@ -30,6 +30,7 @@
 "dm-mc02\mod_arm.o"
 "dm-mc02\proc_arm.o"
 "dm-mc02\com_joint.o"
+"dm-mc02\com_grip.o"
 "dm-mc02\com_wheelset.o"
 "dm-mc02\mod_chassis.o"
 "dm-mc02\proc_chassis.o"
@@ -164,6 +165,9 @@
 "dm-mc02\usbd_ctlreq.o"
 "dm-mc02\usbd_ioreq.o"
 "dm-mc02\usbd_cdc.o"
+"dm-mc02\segger_rtt.o"
+"dm-mc02\segger_rtt_printf.o"
+"dm-mc02\segger_rtt_syscalls_gcc.o"
 --strict --scatter "DM-MC02\DM-MC02.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
