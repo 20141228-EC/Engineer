@@ -126,9 +126,11 @@ dm-mc02/sys_vison.o: ..\..\..\Applications\05_System\Vison\sys_vison.cpp \
   ..\..\..\Applications\04_Module\Include\mod_chassis.hpp \
   ..\..\..\Applications\04_Module\Include\mod_gimbal.hpp \
   ..\..\..\Applications\04_Module\Include\mod_arm.hpp \
-  ..\..\..\Applications\04_Module\Include\mod_subgantry.hpp \
   ..\..\..\Applications\05_System\Include\System.hpp \
   ..\..\..\Applications\05_System\Include\sys_common.hpp \
+  ..\..\..\Applications\05_System\Include\RTT_DEBUG.h \
+  ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT.h \
+  ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT_Conf.h \
   ..\..\..\Applications\05_System\Include\sys_remote.hpp \
   ..\..\..\Applications\05_System\Include\sys_vision.hpp \
   ..\..\..\Applications\05_System\Include\sys_referee.hpp \

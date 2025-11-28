@@ -82,6 +82,9 @@ dm-mc02/sys_referee.o: \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\05_System\Include\RTT_DEBUG.h \
+  ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT.h \
+  ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT_Conf.h \
   ..\..\..\Applications\05_System\Include\sys_remote.hpp \
   ..\..\..\Applications\03_Device\Include\Device.hpp \
   ..\..\..\Applications\03_Device\Include\dev_common.hpp \
@@ -132,5 +135,4 @@ dm-mc02/sys_referee.o: \
   ..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp \
   ..\..\..\Applications\04_Module\Include\mod_chassis.hpp \
   ..\..\..\Applications\04_Module\Include\mod_gimbal.hpp \
-  ..\..\..\Applications\04_Module\Include\mod_arm.hpp \
-  ..\..\..\Applications\04_Module\Include\mod_subgantry.hpp
+  ..\..\..\Applications\04_Module\Include\mod_arm.hpp
