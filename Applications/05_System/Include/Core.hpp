@@ -64,7 +64,7 @@ private:
     CModGimbal *pgimbal_ = nullptr;
     // CModGantry *pgantry_ = nullptr;
     // CModClimber *pclimber_ = nullptr;
-    CModSubGantry *psubgantry_ = nullptr;
+    // CModSubGantry *psubgantry_ = nullptr; // 已删除子龙门模块
     CModArm *parm_ = nullptr;
 
     TaskHandle_t autoCtrlTaskHandle_ = nullptr;
@@ -92,28 +92,19 @@ private:
     void RESET_SYSTEM();
 
     // 声明自动操作的任务函数
-    static void StartReturnOriginTask(void *arg);
+    // 以下任务函数已注释（对应流程文件已删除）
+    // static void StartReturnOriginTask(void *arg);
+    // static void StartReturnDriveTask(void *arg);
+    // static void StartDogHoleTask(void *arg);
+    // static void StartGroundOreTask(void *arg);
+    // static void StartSilverOreTask(void *arg);
+    // static void StartGoldOreTask(void *arg);
+    // static void StartExchangeTask(void *arg);
+    // static void StartPopOreTask(void *arg);
+    // static void StartPushOreTask(void *arg);
+    // static void StartVisionExchangeTask(void *arg);
+    // static void StartTurnoverTask(void *arg);
 
-    static void StartReturnDriveTask(void *arg);
-
-    static void StartDogHoleTask(void *arg);
-
-    static void StartGroundOreTask(void *arg);
-
-    static void StartSilverOreTask(void *arg);
-
-    static void StartGoldOreTask(void *arg);
-
-    static void StartExchangeTask(void *arg);
-
-    static void StartPopOreTask(void *arg);
-
-    static void StartPushOreTask(void *arg);
-
-    static void StartVisionExchangeTask(void *arg);
-
-    static void StartTurnoverTask(void *arg);
-    
 };
 
 void JointAngleToEulerAngle(const float_t *jointAngle, float_t *eulerAngle);

@@ -73,10 +73,14 @@ void CSystemESP32::UpdateHandler_() {
 	pESP32_->robotInfo.Chassis_LB = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_CHAS_MTR_LB))->IsMotorOnline();
 	pESP32_->robotInfo.Chassis_RB = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_CHAS_MTR_RB))->IsMotorOnline();
 	pESP32_->robotInfo.Gimbal = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_GIMBAL_MTR))->IsMotorOnline();
+	// 删除子龙门电机在线状态检查
+	/*
 	pESP32_->robotInfo.SubGantry_Lift_L = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_SUBGANTRY_MTR_LIFT_L))->IsMotorOnline();
 	pESP32_->robotInfo.SubGantry_Lift_R = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_SUBGANTRY_MTR_LIFT_R))->IsMotorOnline();
 	pESP32_->robotInfo.SubGantry_Stretch_L = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_SUBGANTRY_MTR_STRETCH_L))->IsMotorOnline();
 	pESP32_->robotInfo.SubGantry_Stretch_R = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_SUBGANTRY_MTR_STRETCH_R))->IsMotorOnline();
+	pESP32_->robotInfo.SubGantry_Winch = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_SUBGANTRY_MTR_WINCH))->IsMotorOnline();
+	*/
 	pESP32_->robotInfo.Arm_Yaw = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_ARM_MTR_YAW))->IsMotorOnline();
 	pESP32_->robotInfo.Arm_Pitch1 = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_ARM_MTR_PITCH1))->IsMotorOnline();
 	pESP32_->robotInfo.Arm_Pitch2 = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_ARM_MTR_PITCH2))->IsMotorOnline();

@@ -64,10 +64,10 @@ enum class EDeviceID{
     DEV_CHAS_MTR_LB,        ///< 底盘电机后左（M3508）
     DEV_CHAS_MTR_RB,        ///< 底盘电机后右（M3508）
     DEV_GIMBAL_MTR,  ///< 云台电机（M2006）
-    DEV_SUBGANTRY_MTR_LIFT_L,   ///< 子龙门升降电机左（M2006）
-    DEV_SUBGANTRY_MTR_LIFT_R,   ///< 子龙门升降电机右（M2006）
-    DEV_SUBGANTRY_MTR_STRETCH_L,///< 子龙门伸缩电机左（M2006）
-    DEV_SUBGANTRY_MTR_STRETCH_R,///< 子龙门伸缩电机右（M2006）
+    // DEV_SUBGANTRY_MTR_LIFT_L,   ///< 子龙门升降电机左（M2006） - 已删除
+    // DEV_SUBGANTRY_MTR_LIFT_R,   ///< 子龙门升降电机右（M2006） - 已删除
+    // DEV_SUBGANTRY_MTR_STRETCH_L,///< 子龙门伸缩电机左（M2006） - 已删除
+    // DEV_SUBGANTRY_MTR_STRETCH_R,///< 子龙门伸缩电机右（M2006） - 已删除
     DEV_ARM_MTR_YAW,            ///< 机械臂YAW轴电机(DM-MIT mode)
     DEV_ARM_MTR_PITCH1,        ///< 机械臂Pitch1轴电机(KT)
     DEV_ARM_MTR_PITCH2,        ///< 机械臂Pitch2轴电机(KT)
@@ -87,7 +87,7 @@ enum class EModuleID{
     MOD_CLIMBER,           ///< 上台阶模块
     MOD_GIMBAL,             ///< 云台模块
     MOD_GANTRY,             ///< 龙门模块
-    MOD_SUBGANTRY,          ///< 子龙门模块
+    // MOD_SUBGANTRY,          ///< 子龙门模块 - 已删除
     MOD_ARM,                ///< 机械臂模块
 
 };

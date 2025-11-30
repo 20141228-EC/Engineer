@@ -42,7 +42,7 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
                 parm_->StartModule();
             }
         }
-
+/* 删除子龙门模块遥控器启动代码
         if (psubgantry_) {
             if (!psubgantry_->subGantryInfo.isModuleAvailable
                 && psubgantry_->moduleStatus == APP_OK
@@ -50,7 +50,7 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
                 psubgantry_->StartModule();         ///<在使用遥控器的时候左侧的拨杆切到高档启动子龙门和机械臂模块
             }
         }
-
+*/
         last_switch_L = remote.switch_L;        ///<记录上一次的拨杆状态
 
     }
@@ -65,7 +65,7 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
                 parm_->StartModule();
             }
         }
-
+/* 删除子龙门模块键盘启动代码
         if (psubgantry_) {
             if (!psubgantry_->subGantryInfo.isModuleAvailable
                 && psubgantry_->moduleStatus == APP_OK
@@ -73,6 +73,7 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
                 psubgantry_->StartModule();
             }
         }
+*/
     }
 
     if(I_dont_have_a_remote) {
@@ -82,13 +83,14 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
                 parm_->StartModule();
             }
         }
-
+/* 删除无遥控器时启动子龙门模块代码
         if (psubgantry_) {
             if (!psubgantry_->subGantryInfo.isModuleAvailable
                 && psubgantry_->moduleStatus == APP_OK) {
                 psubgantry_->StartModule();
             }
         }
+*/
     }
     
 }
@@ -160,7 +162,7 @@ void CSystemCore::ControlFromRemote_() {
                 (remote.joystick_RX / 100.f) * 90.f / freq;
         }
     }
-
+/* 删除 MID + LOW 子龙门控制代码
     // MID + LOW 子龙门控制
     if (remote.switch_L == MID && remote.switch_R == LOW) {
         SysRemote.SetRemoteDeadZone(10.f);
@@ -175,7 +177,7 @@ void CSystemCore::ControlFromRemote_() {
                 (remote.joystick_RX / 100.f) * 120.f / freq;
         }
     }
-
+*/
 }
 
 /**
@@ -272,8 +274,8 @@ void CSystemCore::ControlFromKeyboard_() {
             // end_roll(C键)
             if(keyboard.key_C)
                 parm_->armCmd.set_angle_end_roll += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 90.0f / freq;
-            // 气泵(B键)
-            if (psubgantry_) {
+            // 气泵(B键) 删除气泵控制代码
+/*            if (psubgantry_) {
                 if(keyboard.key_B) {
                     if (!lastMouseStatus_L && keyboard.mouse_L) {
                         psubgantry_->subGantryCmd.setPumpOn_Arm = !psubgantry_->subGantryCmd.setPumpOn_Arm;
@@ -292,6 +294,7 @@ void CSystemCore::ControlFromKeyboard_() {
                     }
                 }
             }
+*/
         }
     }
 
@@ -300,54 +303,55 @@ void CSystemCore::ControlFromKeyboard_() {
 
 
     /******************* 自动控制 *******************/
-    if (parm_) {
-        if (keyboard.key_Ctrl
-        && parm_->armInfo.isModuleAvailable)
-        {
-            if(keyboard.key_V)
-            {
-                //TODO: 这个任务最好可以用于终止proc_waituntil
-                StopAutoCtrlTask_();
-                StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);
-            }
-            if(keyboard.key_G)
-            {
-                StartAutoCtrlTask_(EAutoCtrlProcess::GOLD_ORE);
-            }
-            if(keyboard.key_X)
-            {
-                StartAutoCtrlTask_(EAutoCtrlProcess::SILVER_ORE);
-            }
-            if(keyboard.key_F)
-            {
-                StartAutoCtrlTask_(EAutoCtrlProcess::GROUND_ORE);
-            }
-            if(keyboard.key_R)
-            {
-                StartAutoCtrlTask_(EAutoCtrlProcess::PUSH_ORE);
-            }
-            if(keyboard.key_Q)
-            {
-                StartAutoCtrlTask_(EAutoCtrlProcess::POP_ORE);
-            }
-            // if(keyboard.key_B)
-            // {
-            //     StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE);
-            // }
-
-        }
-        if(keyboard.key_Shift &&
-            parm_->armInfo.isModuleAvailable){
-            if(keyboard.key_Z)
-            {
-                StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE);
-            }
-            if(keyboard.key_C)
-            {
-                StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE);
-            }
-        }
-    }
+    // 删除自动控制快捷键已注释
+    // if (parm_) {
+    //     if (keyboard.key_Ctrl
+    //     && parm_->armInfo.isModuleAvailable)
+    //     {
+    //         if(keyboard.key_V)
+    //         {
+    //             //TODO: 这个任务最好可以用于终止proc_waituntil
+    //             StopAutoCtrlTask_();
+    //             StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);
+    //         }
+    //         if(keyboard.key_G)
+    //         {
+    //             StartAutoCtrlTask_(EAutoCtrlProcess::GOLD_ORE);
+    //         }
+    //         if(keyboard.key_X)
+    //         {
+    //             StartAutoCtrlTask_(EAutoCtrlProcess::SILVER_ORE);
+    //         }
+    //         if(keyboard.key_F)
+    //         {
+    //             StartAutoCtrlTask_(EAutoCtrlProcess::GROUND_ORE);
+    //         }
+    //         if(keyboard.key_R)
+    //         {
+    //             StartAutoCtrlTask_(EAutoCtrlProcess::PUSH_ORE);
+    //         }
+    //         if(keyboard.key_Q)
+    //         {
+    //             StartAutoCtrlTask_(EAutoCtrlProcess::POP_ORE);
+    //         }
+    //         // if(keyboard.key_B)
+    //         // {
+    //         //     StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE);
+    //         // }
+    //
+    //     }
+    //     if(keyboard.key_Shift &&
+    //         parm_->armInfo.isModuleAvailable){
+    //         if(keyboard.key_Z)
+    //         {
+    //             StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE);
+    //         }
+    //         if(keyboard.key_C)
+    //         {
+    //             StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE);
+    //         }
+    //     }
+    // }
 
 }
 
@@ -455,6 +459,8 @@ void CSystemCore::ControlFromController_() {
     if (pgimbal_) {
         pgimbal_->gimbalCmd.set_posit_lift += static_cast<float_t>(keyboard.key_Z - keyboard.key_X) * 60.0f / freq;
     }
+
+/*删除自定义控制器对应的兑矿操作
     if (psubgantry_) {
         psubgantry_->subGantryCmd.setLiftPosit_L = 88.5f;           ///<兑矿时必须保证刺雷抬到最高点
         psubgantry_->subGantryCmd.setLiftPosit_R = 88.5f;
@@ -476,7 +482,7 @@ void CSystemCore::ControlFromController_() {
             psubgantry_->subGantryCmd.setPumpOn_Arm = !psubgantry_->subGantryCmd.setPumpOn_Arm;
         }
     }
-
+*/
     // }
     last_key_F = SysRemote.remoteInfo.keyboard.key_F;
     last_key_G = SysRemote.remoteInfo.keyboard.key_G;

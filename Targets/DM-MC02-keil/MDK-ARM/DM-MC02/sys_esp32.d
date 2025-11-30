@@ -126,5 +126,4 @@ dm-mc02/sys_esp32.o: ..\..\..\Applications\05_System\ESP32\sys_esp32.cpp \
   ..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp \
   ..\..\..\Applications\04_Module\Include\mod_chassis.hpp \
   ..\..\..\Applications\04_Module\Include\mod_gimbal.hpp \
-  ..\..\..\Applications\04_Module\Include\mod_arm.hpp \
-  ..\..\..\Applications\04_Module\Include\mod_subgantry.hpp
+  ..\..\..\Applications\04_Module\Include\mod_arm.hpp

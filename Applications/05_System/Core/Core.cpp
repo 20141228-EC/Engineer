@@ -69,10 +69,11 @@ EAppStatus CSystemCore::InitSystemCore() {
     // pgantry_ = reinterpret_cast<CModGantry *>(ModuleIDMap.at(EModuleID::MOD_GANTRY));
     // pclimber_ = reinterpret_cast<CModClimber *>(ModuleIDMap.at(EModuleID::MOD_CLIMBER));
 
-    auto it_subgantry = ModuleIDMap.find(EModuleID::MOD_SUBGANTRY);
-    if (it_subgantry != ModuleIDMap.end() && it_subgantry->second != nullptr) {
-        psubgantry_ = reinterpret_cast<CModSubGantry *>(it_subgantry->second);
-    }
+    // 已删除子龙门模块指针初始化
+    // auto it_subgantry = ModuleIDMap.find(EModuleID::MOD_SUBGANTRY);
+    // if (it_subgantry != ModuleIDMap.end() && it_subgantry->second != nullptr) {
+    //     psubgantry_ = reinterpret_cast<CModSubGantry *>(it_subgantry->second);
+    // }
 
     auto it_arm = ModuleIDMap.find(EModuleID::MOD_ARM);
     if (it_arm != ModuleIDMap.end() && it_arm->second != nullptr) {
@@ -128,7 +129,8 @@ void CSystemCore::UpdateHandler_() {
                   static_cast<int>(parm_->armCmd.set_angle_end_roll), static_cast<int>(parm_->armInfo.angle_end_roll),
                   static_cast<int>(parm_->armInfo.angle_end_roll - parm_->armCmd.set_angle_end_roll));
         }
-        if (psubgantry_) {
+        // 删除子龙门调试打印信息
+        /* if (psubgantry_) {
             Print("Subgantry_Stretch_L_Cmd: %d, Info: %d, Err: %d\n",
                   static_cast<int>(psubgantry_->subGantryCmd.setStretchPosit_L), static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_L),
                   static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_L - psubgantry_->subGantryCmd.setStretchPosit_L));
@@ -141,7 +143,8 @@ void CSystemCore::UpdateHandler_() {
             Print("Subgantry_Lift_R_Cmd: %d, Info: %d, Err: %d\n",
                   static_cast<int>(psubgantry_->subGantryCmd.setLiftPosit_R), static_cast<int>(psubgantry_->subGantryInfo.liftPosit_R),
                   static_cast<int>(psubgantry_->subGantryInfo.liftPosit_R - psubgantry_->subGantryCmd.setLiftPosit_R));
-        }
+        }*/
+
     }
 
     bool zx = SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X;
@@ -171,7 +174,8 @@ void CSystemCore::UpdateHandler_() {
             StopAutoCtrlTask_(); // 停止自动任务运行
         }
         if (use_Controller_ == false) {
-            StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE);
+            // StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE); // 已删除此自动流程
+            // TODO: 决定切换出自定义控制器模式后的行为
         }
     }
     
@@ -201,9 +205,9 @@ void CSystemCore::UpdateHandler_() {
         RESET_SYSTEM();
     }
 
-    // 拇指轮控制气泵
-    if (psubgantry_) {
-        if (SysRemote.remoteInfo.remote.thumbWheel > 50) {
+    // 删除拇指轮控制气泵代码
+    /* if (psubgantry_) {
+         if (SysRemote.remoteInfo.remote.thumbWheel > 50) {
             psubgantry_->subGantryCmd.setPumpOn_Left = true;
             psubgantry_->subGantryCmd.setPumpOn_Right = true;
             psubgantry_->subGantryCmd.setPumpOn_Arm = true;
@@ -213,7 +217,7 @@ void CSystemCore::UpdateHandler_() {
             psubgantry_->subGantryCmd.setPumpOn_Right = false;
             psubgantry_->subGantryCmd.setPumpOn_Arm = false;
         }
-    }
+     }*/
 
 }
 
@@ -236,7 +240,7 @@ void CSystemCore::HeartbeatHandler_() {
         // 停止所有模块（添加空指针检查）
         if (pchassis_) pchassis_->StopModule();
         if (pgimbal_) pgimbal_->StopModule();
-        if (psubgantry_) psubgantry_->StopModule();
+        // if (psubgantry_) psubgantry_->StopModule(); // 已删除
         if (parm_) parm_->StopModule();
         
     }
@@ -249,7 +253,7 @@ void CSystemCore::RESET_SYSTEM() {
 
     if (pchassis_) pchassis_->StopModule();
     if (pgimbal_) pgimbal_->StopModule();
-    if (psubgantry_) psubgantry_->StopModule();
+    // if (psubgantry_) psubgantry_->StopModule(); // 已删除
     if (parm_) parm_->StopModule();
 
     // 给段延迟让电机收到停止指令
@@ -269,7 +273,10 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
 
     StopAutoCtrlTask_();
 
-    parm_->should_limit_yaw = 0;
+    // 设置机械臂yaw轴限位（添加空指针检查）
+    if (parm_) {
+        parm_->should_limit_yaw = 0;
+    }
 
     switch (process)
     {
@@ -277,80 +284,80 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
             return APP_ERROR;
         }
 
+        // 删除涉及到子龙门的自动流程，对应的流程文件已备份至 process_subgantry_backup
 
-        case EAutoCtrlProcess::EXCHANGE: {
-            currentAutoCtrlProcess_ = EAutoCtrlProcess::EXCHANGE;
-            xTaskCreate(StartExchangeTask, "Exchange Task",
-                        512, this, proc_ModuleTaskPriority,
-                        &autoCtrlTaskHandle_);
-            return APP_OK;
-        }
+        // case EAutoCtrlProcess::EXCHANGE: {
+        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::EXCHANGE;
+        //     xTaskCreate(StartExchangeTask, "Exchange Task",
+        //                 512, this, proc_ModuleTaskPriority,
+        //                 &autoCtrlTaskHandle_);
+        //     return APP_OK;
+        // }
 
-        case EAutoCtrlProcess::RETURN_DRIVE: {
-            currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_DRIVE;
-            xTaskCreate(StartReturnDriveTask, "Return Drive Task",
-                        512, this, proc_ModuleTaskPriority,
-                        &autoCtrlTaskHandle_);
-            return APP_OK;
-        }
+        // case EAutoCtrlProcess::RETURN_DRIVE: {
+        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_DRIVE;
+        //     xTaskCreate(StartReturnDriveTask, "Return Drive Task",
+        //                 512, this, proc_ModuleTaskPriority,
+        //                 &autoCtrlTaskHandle_);
+        //     return APP_OK;
+        // }
 
-        case EAutoCtrlProcess::RETURN_ORIGIN: {
-            currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_ORIGIN;
-            xTaskCreate(StartReturnOriginTask, "Return Origin Task",
-                        512, this, proc_ModuleTaskPriority,
-                        &autoCtrlTaskHandle_);
-            return APP_OK;
-        }
+        // case EAutoCtrlProcess::RETURN_ORIGIN: {
+        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_ORIGIN;
+        //     xTaskCreate(StartReturnOriginTask, "Return Origin Task",
+        //                 512, this, proc_ModuleTaskPriority,
+        //                 &autoCtrlTaskHandle_);
+        //     return APP_OK;
+        // }
 
-        case EAutoCtrlProcess::DOGHOLE: {
-            currentAutoCtrlProcess_ = EAutoCtrlProcess::DOGHOLE;
-            xTaskCreate(StartDogHoleTask, "Dog Hole Task",
-                        512, this, proc_ModuleTaskPriority,
-                        &autoCtrlTaskHandle_);
-            return APP_OK;
-        }
+        // case EAutoCtrlProcess::DOGHOLE: {
+        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::DOGHOLE;
+        //     xTaskCreate(StartDogHoleTask, "Dog Hole Task",
+        //                 512, this, proc_ModuleTaskPriority,
+        //                 &autoCtrlTaskHandle_);
+        //     return APP_OK;
+        // }
 
-        case EAutoCtrlProcess::GROUND_ORE: {
-            currentAutoCtrlProcess_ = EAutoCtrlProcess::GROUND_ORE;
-            xTaskCreate(StartGroundOreTask, "Ground Ore Task",
-                        512, this, proc_ModuleTaskPriority,
-                        &autoCtrlTaskHandle_);
-            return APP_OK;
-        }
+        // case EAutoCtrlProcess::GROUND_ORE: {
+        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::GROUND_ORE;
+        //     xTaskCreate(StartGroundOreTask, "Ground Ore Task",
+        //                 512, this, proc_ModuleTaskPriority,
+        //                 &autoCtrlTaskHandle_);
+        //     return APP_OK;
+        // }
 
-        case EAutoCtrlProcess::GOLD_ORE: {
-            currentAutoCtrlProcess_ = EAutoCtrlProcess::GOLD_ORE;
-            xTaskCreate(StartGoldOreTask, "Gold Ore Task",
-                        512, this, proc_ModuleTaskPriority,
-                        &autoCtrlTaskHandle_);
-            return APP_OK;
-        }
+        // case EAutoCtrlProcess::GOLD_ORE: {
+        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::GOLD_ORE;
+        //     xTaskCreate(StartGoldOreTask, "Gold Ore Task",
+        //                 512, this, proc_ModuleTaskPriority,
+        //                 &autoCtrlTaskHandle_);
+        //     return APP_OK;
+        // }
 
-        case EAutoCtrlProcess::PUSH_ORE: {
-            currentAutoCtrlProcess_ = EAutoCtrlProcess::PUSH_ORE;
-            xTaskCreate(StartPushOreTask, "Push Ore Task",
-                        512, this, proc_ModuleTaskPriority,
-                        &autoCtrlTaskHandle_);
-            return APP_OK;
-        }
+        // case EAutoCtrlProcess::PUSH_ORE: {
+        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::PUSH_ORE;
+        //     xTaskCreate(StartPushOreTask, "Push Ore Task",
+        //                 512, this, proc_ModuleTaskPriority,
+        //                 &autoCtrlTaskHandle_);
+        //     return APP_OK;
+        // }
 
-        case EAutoCtrlProcess::POP_ORE: {
-            currentAutoCtrlProcess_ = EAutoCtrlProcess::POP_ORE;
-            xTaskCreate(StartPopOreTask, "Pop Ore Task",
-                        512, this, proc_ModuleTaskPriority,
-                        &autoCtrlTaskHandle_);
-            return APP_OK;
-        }
+        // case EAutoCtrlProcess::POP_ORE: {
+        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::POP_ORE;
+        //     xTaskCreate(StartPopOreTask, "Pop Ore Task",
+        //                 512, this, proc_ModuleTaskPriority,
+        //                 &autoCtrlTaskHandle_);
+        //     return APP_OK;
+        // }
 
+        // case EAutoCtrlProcess::SILVER_ORE: {
+        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::SILVER_ORE;
+        //     xTaskCreate(StartSilverOreTask, "Silver Ore Task",
+        //                 512, this, proc_ModuleTaskPriority,
+        //                 &autoCtrlTaskHandle_);
+        //     return APP_OK;
+        // }
 
-        case EAutoCtrlProcess::SILVER_ORE: {
-            currentAutoCtrlProcess_ = EAutoCtrlProcess::SILVER_ORE;
-            xTaskCreate(StartSilverOreTask, "Silver Ore Task",
-                        512, this, proc_ModuleTaskPriority,
-                        &autoCtrlTaskHandle_);
-            return APP_OK;
-        }
-        
         default: return APP_ERROR;
     }
 }
@@ -362,11 +369,11 @@ EAppStatus CSystemCore::StopAutoCtrlTask_() {
     autoCtrlTaskHandle_ = nullptr;
     currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
-    // 清除所有模块的自动控制标志
-    psubgantry_->subGantryCmd.isAutoCtrl = false;
-    pchassis_->chassisCmd.isAutoCtrl = false;
-    pgimbal_->gimbalCmd.isAutoCtrl = false;
-    parm_->armCmd.isAutoCtrl = false;
+    // 清除所有模块的自动控制标志（添加空指针检查）
+    // psubgantry_->subGantryCmd.isAutoCtrl = false; // 已删除
+    if (pchassis_) pchassis_->chassisCmd.isAutoCtrl = false;
+    if (pgimbal_) pgimbal_->gimbalCmd.isAutoCtrl = false;
+    if (parm_) parm_->armCmd.isAutoCtrl = false;
 
     return APP_OK;
 }
