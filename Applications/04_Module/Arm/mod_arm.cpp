@@ -229,6 +229,7 @@ EAppStatus CModArm::Grav_Compemsation_Pitch1()
 	float_t end_pitch = deg2rad(armInfo.angle_end_pitch); ///< 获取关节角
 	
 	this->comjoint_.Grav_Pitch1_Out = 26.0*cos(pitch1 + 0.34) - 7.8*cos(pitch1 + pitch2 + 0.08) - 0.21*cos(pitch1 + pitch2 + roll - 1.4) - 0.21*cos(pitch1 + pitch2 - roll - 1.5) + 0.19*cos(pitch1 + pitch2 + 0.12)*cos(end_pitch) + 0.19*cos(pitch1 + pitch2 + 0.12)*sin(roll)*sin(end_pitch);
+	return APP_OK;
 }
 
 /** 
@@ -244,6 +245,7 @@ EAppStatus CModArm::Grav_Compemsation_Pitch2()
 	float_t end_pitch = deg2rad(armInfo.angle_end_pitch); ///< 获取关节角
 
 	this->comjoint_.Grav_Pitch2_Out = 7.8*cos(pitch1 + pitch2 + 0.08) + 0.21*cos(pitch1 + pitch2 + roll - 1.4) + 0.21*cos(pitch1 + pitch2 - roll - 1.5) - 0.19*cos(pitch1 + pitch2 + 0.12)*cos(end_pitch) - 0.19*sin(pitch1 + pitch2 + 0.12)*cos(roll)*sin(end_pitch);
+	return APP_OK;
 }
 
 /** 
@@ -259,6 +261,7 @@ EAppStatus CModArm::Grav_Compemsation_Roll()
 	float_t end_pitch = deg2rad(armInfo.angle_end_pitch); ///< 获取关节角
 
 	this->comRoll_.Grav_Roll_Out = -0.42*sin(pitch1 + pitch2 + 1.7)*sin(roll) - 0.19*sin(roll)*sin(pitch1 + pitch2 + 1.7)*cos(end_pitch + 1.59);
+	return APP_OK;
 }
 
 } // namespace my_engineer
