@@ -78,4 +78,7 @@ dm-mc02/startup.o: ..\BSP\startup.cpp ..\Core\Inc\main.h \
   ..\..\..\Applications\01_Configuration\Include\conf_process.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
-  ..\..\..\Applications\01_Configuration\Include\conf_device.hpp
+  ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\05_System\Include\RTT_DEBUG.h \
+  ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT.h \
+  ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT_Conf.h

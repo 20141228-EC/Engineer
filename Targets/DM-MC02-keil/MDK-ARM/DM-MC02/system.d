@@ -81,6 +81,9 @@ dm-mc02/system.o: ..\..\..\Applications\05_System\System.cpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\05_System\Include\RTT_DEBUG.h \
+  ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT.h \
+  ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT_Conf.h \
   ..\..\..\Applications\05_System\Include\sys_remote.hpp \
   ..\..\..\Applications\03_Device\Include\Device.hpp \
   ..\..\..\Applications\03_Device\Include\dev_common.hpp \

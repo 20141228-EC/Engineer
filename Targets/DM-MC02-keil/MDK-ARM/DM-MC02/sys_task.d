@@ -129,6 +129,9 @@ dm-mc02/sys_task.o: ..\..\..\Applications\05_System\Tasks\sys_task.cpp \
   ..\..\..\Applications\04_Module\Include\mod_subgantry.hpp \
   ..\..\..\Applications\05_System\Include\System.hpp \
   ..\..\..\Applications\05_System\Include\sys_common.hpp \
+  ..\..\..\Applications\05_System\Include\RTT_DEBUG.h \
+  ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT.h \
+  ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT_Conf.h \
   ..\..\..\Applications\05_System\Include\sys_remote.hpp \
   ..\..\..\Applications\05_System\Include\sys_vision.hpp \
   ..\..\..\Applications\05_System\Include\sys_referee.hpp \
