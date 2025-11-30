@@ -25,6 +25,13 @@ DataBuffer<float_t> arm_Info[3][10]; ///<用于记录臂的力矩，三个关节
 uint16_t index = 0; ///< 数组索引
 bool is_record = false; ///< 是否要记录数据
 
+///< 全局变量
+bool Need_Grav_Compensation = false; ///< 是否启用重力补偿
+bool Is_Recording_ArmTorque = true; ///<是否正在记录数据
+DataBuffer<float_t> arm_Info[3][1000]; ///<用于记录臂的力矩，三个关节，1000个数据点
+uint16_t index = 0; ///< 数组索引
+bool is_record = false; ///< 是否要记录数据
+
 /**
  * @brief 初始化机械臂模块
  * 

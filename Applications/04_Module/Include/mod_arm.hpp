@@ -441,7 +441,7 @@ private:
 
 };
 
-// ///< 全局变量
+///< 全局变量
 extern bool Need_Grav_Compensation; ///< 是否启用重力补偿
 extern bool Is_Recording_ArmTorque; ///<是否正在记录数据
 extern DataBuffer<float_t> arm_Info[3][10]; ///<用于记录臂的力矩，三个关节，10个数据点
