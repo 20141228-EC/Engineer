@@ -91,6 +91,13 @@ void CModArm::UpdateHandler_() {
 	armInfo.isAngleArrived_End_Roll = comEnd_.endInfo.isPositArrived_Roll;
 	armInfo.isAngleArrived_Grip = comGrip_.gripInfo.isPositArrived_Grip;
 
+	if(Need_Grav_Compensation) ///< 启用重力补偿
+	{
+		Grav_Compemsation_Pitch1();
+		Grav_Compemsation_Pitch2();
+		Grav_Compemsation_Roll();
+	}
+
 	// 填充电机发送缓冲区
 	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P1],							///<用的是关节底层信息的发送
 								comjoint_.mtrCanTxNode[CComJoint::P1]->dataBuffer,
@@ -200,6 +207,51 @@ EAppStatus CModArm::RestrictArmCommand_() {
 	}
 
 	return APP_OK;
+}
+
+/** 
+ * @brief 根据关节角度计算大pitch的重补扭矩
+ * 
+ * @retval null
+*/
+EAppStatus CModArm::Grav_Compemsation_Pitch1()
+{
+	float_t pitch1 = deg2rad(armInfo.angle_Pitch1 - 18);
+	float_t pitch2 = deg2rad(armInfo.angle_Pitch2 - 11);
+	float_t roll = deg2rad(armInfo.angle_Roll);
+	float_t end_pitch = deg2rad(armInfo.angle_end_pitch); ///< 获取关节角
+	
+	this->comjoint_.Grav_Pitch1_Out = 26.0*cos(pitch1 + 0.34) - 7.8*cos(pitch1 + pitch2 + 0.08) - 0.21*cos(pitch1 + pitch2 + roll - 1.4) - 0.21*cos(pitch1 + pitch2 - roll - 1.5) + 0.19*cos(pitch1 + pitch2 + 0.12)*cos(end_pitch) + 0.19*cos(pitch1 + pitch2 + 0.12)*sin(roll)*sin(end_pitch);
+}
+
+/** 
+ * @brief 根据关节角度计算小pitch的重补扭矩
+ * 
+ * @retval null
+*/
+EAppStatus CModArm::Grav_Compemsation_Pitch2()
+{
+	float_t pitch1 = deg2rad(armInfo.angle_Pitch1);
+	float_t pitch2 = deg2rad(armInfo.angle_Pitch2);
+	float_t roll = deg2rad(armInfo.angle_Roll);
+	float_t end_pitch = deg2rad(armInfo.angle_end_pitch); ///< 获取关节角
+
+	this->comjoint_.Grav_Pitch2_Out = 7.8*cos(pitch1 + pitch2 + 0.08) + 0.21*cos(pitch1 + pitch2 + roll - 1.4) + 0.21*cos(pitch1 + pitch2 - roll - 1.5) - 0.19*cos(pitch1 + pitch2 + 0.12)*cos(end_pitch) - 0.19*sin(pitch1 + pitch2 + 0.12)*cos(roll)*sin(end_pitch);
+}
+
+/** 
+ * @brief 根据关节角度计算roll的重补扭矩
+ * 
+ * @retval null
+*/
+EAppStatus CModArm::Grav_Compemsation_Roll()
+{
+	float_t pitch1 = deg2rad(armInfo.angle_Pitch1);
+	float_t pitch2 = deg2rad(armInfo.angle_Pitch2);
+	float_t roll = deg2rad(armInfo.angle_Roll);
+	float_t end_pitch = deg2rad(armInfo.angle_end_pitch); ///< 获取关节角
+
+	this->comRoll_.Grav_Roll_Out = -0.42*sin(pitch1 + pitch2 + 1.7)*sin(roll) - 0.19*sin(roll)*sin(pitch1 + pitch2 + 1.7)*cos(end_pitch + 1.59);
 }
 
 } // namespace my_engineer

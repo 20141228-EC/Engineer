@@ -51,27 +51,36 @@ EAppStatus InitAllModule() {
    armInitParam.Pitch1PosPidParam.kd = 0.0f;
    armInitParam.Pitch1PosPidParam.maxIntegral = 3000.0f;
    armInitParam.Pitch1PosPidParam.maxOutput = 3000.0f;
+//    armInitParam.Pitch1PosPidParam.Need_Grav_compensation = true; ///< 使用重力补偿
+//    armInitParam.Pitch1PosPidParam.Grav_Load_Mode = CAlgoPid::EGravLoadMode::PITCH1_G; ///< 大pitch的重补模式
    // 初始化 Pitch1SpdPidParam 的成员
    armInitParam.Pitch1SpdPidParam.kp = 0.1f;
    armInitParam.Pitch1SpdPidParam.ki = 0.05f;
    armInitParam.Pitch1SpdPidParam.kd = 0.0f;
    armInitParam.Pitch1SpdPidParam.maxIntegral = 2000.0f;
    armInitParam.Pitch1SpdPidParam.maxOutput = 2000.0f;
+//    armInitParam.Pitch1SpdPidParam.Need_Grav_compensation = true; ///<使用重力补偿
+//    armInitParam.Pitch1PosPidParam.Grav_Load_Mode = CAlgoPid::EGravLoadMode::PITCH1_G;///< 大pitch的重补模式
    // 初始化 Pitch2PosPidParam 的成员
    armInitParam.Pitch2PosPidParam.kp = 2.3f;
    armInitParam.Pitch2PosPidParam.ki = 0.0f;
    armInitParam.Pitch2PosPidParam.kd = 0.0f;
    armInitParam.Pitch2PosPidParam.maxIntegral = 3000.0f;
    armInitParam.Pitch2PosPidParam.maxOutput = 3000.0f;
+//    armInitParam.Pitch2PosPidParam.Need_Grav_compensation = true; ///< 使用重力补偿
+//    armInitParam.Pitch1PosPidParam.Grav_Load_Mode = CAlgoPid::EGravLoadMode::PITCH2_G;///< 小pitch的重补模式
    // 初始化 Pitch2SpdPidParam 的成员
    armInitParam.Pitch2SpdPidParam.kp = 0.1f;
    armInitParam.Pitch2SpdPidParam.ki = 0.05f;
    armInitParam.Pitch2SpdPidParam.kd = 0.0f;
    armInitParam.Pitch2SpdPidParam.maxIntegral = 2000.0f;
    armInitParam.Pitch2SpdPidParam.maxOutput = 2000.0f;
+//    armInitParam.Pitch2SpdPidParam.Need_Grav_compensation = true; ///< 使用重力补偿
+//    armInitParam.Pitch1PosPidParam.Grav_Load_Mode = CAlgoPid::EGravLoadMode::PITCH2_G;   ///< 小pitch的重补模式
    // 初始化 mitCtrl_Roll 的成员
    armInitParam.MIT_Roll_kp = 20.0f;
    armInitParam.MIT_Roll_kd = 1.0f;
+//    armInitParam.Pitch1PosPidParam.Grav_Load_Mode = CAlgoPid::EGravLoadMode::END_ROLL_G; ///< 末端roll的重补模式
    // 初始化 endPosPidParam 的成员
    armInitParam.endPosPidParam.kp = 0.18f;
    armInitParam.endPosPidParam.ki = 0.0f;
@@ -94,6 +103,8 @@ EAppStatus InitAllModule() {
     armInitParam.GripSpdPidParam.kd = 0.0f;
     armInitParam.GripSpdPidParam.maxIntegral = 1500.0f;
     armInitParam.GripSpdPidParam.maxOutput = 2000.0f;
+
+//    armInitParam.Need_Grav_Compensation = false;
     // 使用初始化后的参数创建 armModule 实例
     static auto armModule = CModArm(armInitParam);
 

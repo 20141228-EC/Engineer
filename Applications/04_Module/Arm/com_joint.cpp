@@ -88,6 +88,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 			pidPosCtrl_pitch2.ResetPidController();
 			pidSpdCtrl_pitch2.ResetPidController();
 			isreset_flag = false;
+			Need_Grav_Compensation = false;
 			return APP_OK;
 		}
 
@@ -274,6 +275,30 @@ EAppStatus CModArm::CComJoint::_UpdateOutput(float_t posit_yaw, float_t posit_pi
 	auto output_pitch1 = pidSpdCtrl_pitch1.UpdatePidController(Spd_pitch1, SpdMeasure_pitch1);
 	auto output_pitch2 = pidSpdCtrl_pitch2.UpdatePidController(Spd_pitch2, SpdMeasure_pitch2);
 
+	if(is_record)
+	{
+		if(Is_Recording_ArmTorque) ///< 正在记录数据
+		{
+			if(index < RECORD_MAX - 1) 
+			{
+				arm_Info[PITCH1][index] = output_pitch1; ///< 大p的扭矩
+				arm_Info[PITCH2][index] = output_pitch2; ///< 小p的扭矩
+				index ++;
+				///< 这里还差用来传输数据的代码
+			}
+			else ///< 数据记录完毕
+			{
+				Is_Recording_ArmTorque = false; ///< 停止记录数据
+			}
+		}	
+	}
+
+	if(Need_Grav_Compensation) ///< 如果启用重力补偿
+	{
+		output_pitch1[0] += this->Grav_Pitch1_Out;
+		output_pitch2[0] += this->Grav_Pitch2_Out;
+	}
+	
 	mtrOutputBuffer = { 
 		static_cast<int16_t>(output_yaw[0]),
 		static_cast<int16_t>(output_pitch1[0]),

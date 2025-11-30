@@ -96,6 +96,11 @@
 #define END_PITCH  2
 #define RECORD_MAX 10
 
+#define PITCH1     0
+#define PITCH2 	   1
+#define END_PITCH  2
+#define RECORD_MAX 1000
+
 #include "mod_common.hpp"
 
 namespace my_engineer {
@@ -219,6 +224,10 @@ private:
 		// 电机数据输出缓冲区
 		std::array<int16_t, 3> mtrOutputBuffer = {0};
 
+		// 重补输出
+		float_t Grav_Pitch1_Out = 0;
+		float_t Grav_Pitch2_Out = 0;
+
 		// 电机实例指针
 		CDevMtr* motor[3] = {nullptr};
 
@@ -279,6 +288,9 @@ private:
 
 		// 电机实例指针
 		CDevMtr* motor = nullptr;
+
+		// 重补输出
+		float_t Grav_Roll_Out = 0;
 
 		static float_t MtrAngleToPhyAngle(float_t angle) {
 			// 将电机角度转换为物理角度
