@@ -239,8 +239,8 @@ EAppStatus CModArm::Grav_Compemsation_Pitch1()
 */
 EAppStatus CModArm::Grav_Compemsation_Pitch2()
 {
-	float_t pitch1 = deg2rad(armInfo.angle_Pitch1);
-	float_t pitch2 = deg2rad(armInfo.angle_Pitch2);
+	float_t pitch1 = deg2rad(armInfo.angle_Pitch1 - 18);
+	float_t pitch2 = deg2rad(armInfo.angle_Pitch2 - 11);
 	float_t roll = deg2rad(armInfo.angle_Roll);
 	float_t end_pitch = deg2rad(armInfo.angle_end_pitch); ///< 获取关节角
 
@@ -255,8 +255,8 @@ EAppStatus CModArm::Grav_Compemsation_Pitch2()
 */
 EAppStatus CModArm::Grav_Compemsation_Roll()
 {
-	float_t pitch1 = deg2rad(armInfo.angle_Pitch1);
-	float_t pitch2 = deg2rad(armInfo.angle_Pitch2);
+	float_t pitch1 = deg2rad(armInfo.angle_Pitch1 - 18);
+	float_t pitch2 = deg2rad(armInfo.angle_Pitch2 - 11);
 	float_t roll = deg2rad(armInfo.angle_Roll);
 	float_t end_pitch = deg2rad(armInfo.angle_end_pitch); ///< 获取关节角
 
