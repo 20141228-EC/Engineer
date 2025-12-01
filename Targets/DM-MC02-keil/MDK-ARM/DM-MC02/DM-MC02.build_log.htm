@@ -3,90 +3,58 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Tool Versions:</h2>
-IDE-Version: ¦ÌVision V5.41.0.0
-Copyright (C) 2024 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: hengkai liang, ShenZhen University, LIC=MPPLD-8HLJ7-PCPJ8-3IK9Q-DAAN7-89DRY
+IDE-Version: ¦ÌVision V5.43.1.0
+Copyright (C) 2025 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 1 1318116658@qq.com, 1, LIC=JL28G-VZPTJ-8T13P-MMGZH-0RQ7I-DCX5Y
  
 Tool Versions:
-Toolchain:       MDK-ARM Plus  Version: 5.41.0.0
-Toolchain Path:  D:\keil5\ARM\ARMCLANG\Bin
-C Compiler:      ArmClang.exe V6.22
-Assembler:       Armasm.exe V6.22
-Linker/Locator:  ArmLink.exe V6.22
-Library Manager: ArmAr.exe V6.22
-Hex Converter:   FromElf.exe V6.22
-CPU DLL:         SARMCM3.DLL V5.41.0.0
+Toolchain:       MDK-ARM Plus  Version: 5.43.0.0
+Toolchain Path:  F:\Keil_v5\ARM\ARMCLANG\Bin
+C Compiler:      ArmClang.exe V6.24
+Assembler:       Armasm.exe V6.24
+Linker/Locator:  ArmLink.exe V6.24
+Library Manager: ArmAr.exe V6.24
+Hex Converter:   FromElf.exe V6.24
+CPU DLL:         SARMCM3.DLL V5.43.0.0
 Dialog DLL:      DCM.DLL V1.17.5.0
-Target DLL:      CMSIS_AGDI.dll V1.33.21.0
-Dialog DLL:      TCM.DLL V1.56.4.0
+Target DLL:      Segger\JL2CM3.dll V2.99.45.0
+Dialog DLL:      TCM.DLL V1.56.6.0
  
 <h2>Project:</h2>
-E:\GitHub_Codehouse\RP_2025_ENGINEER\Robot\Targets\DM-MC02-keil\MDK-ARM\DM-MC02.uvprojx
-Project File Date:  07/26/2025
+E:\engineer_fork\Engineer_week4\Targets\DM-MC02-keil\MDK-ARM\DM-MC02.uvprojx
+Project File Date:  11/28/2025
 
 <h2>Output:</h2>
-*** Using Compiler 'V6.22', folder: 'D:\keil5\ARM\ARMCLANG\Bin'
+*** Using Compiler 'V6.24', folder: 'F:\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'DM-MC02'
-compiling control.cpp...
-compiling sys_remote.cpp...
-compiling conf_module.cpp...
-compiling Core.cpp...
-compiling sys_task.cpp...
-compiling System.cpp...
-compiling sys_vison.cpp...
-compiling proc_doghole.cpp...
-compiling sys_esp32.cpp...
-../../../Applications/05_System/Core/process/proc_exchange.cpp(14): warning: 'deg2rad' macro redefined [-Wmacro-redefined]
-   14 | #define deg2rad (3.1415926f / 180.0f)
-      |         ^
-../../../Applications/04_Module/Include\mod_arm.hpp(77): note: previous definition is here
-   77 | #define deg2rad(x) ((x) * 0.017453292519943295769236907684886)
-      |         ^
-1 warning generated.
-compiling proc_exchange.cpp...
-compiling referee_ui.cpp...
-compiling proc_ground_ore.cpp...
-compiling proc_gold_ore.cpp...
-compiling sys_referee.cpp...
-compiling proc_pop.cpp...
-compiling proc_push.cpp...
-compiling proc_return_origin.cpp...
-compiling proc_return_drive.cpp...
-compiling proc_silver_ore.cpp...
-compiling Module.cpp...
-compiling com_end.cpp...
-compiling proc_arm.cpp...
-compiling mod_arm.cpp...
-compiling com_roll.cpp...
-compiling com_joint.cpp...
+compiling com_grip.cpp...
 linking...
-Program Size: Code=270356 RO-data=5840 RW-data=588 ZI-data=396260  
+Program Size: Code=275556 RO-data=6384 RW-data=596 ZI-data=400692  
 FromELF: creating hex file...
-"DM-MC02\DM-MC02.axf" - 0 Error(s), 1 Warning(s).
+"DM-MC02\DM-MC02.axf" - 0 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
 
 Package Vendor: ARM
-                https://www.keil.com/pack/ARM.CMSIS.6.1.0.pack
-                ARM::CMSIS@6.1.0
+                https://www.keil.com/pack/ARM.CMSIS.6.2.0.pack
+                ARM::CMSIS@6.2.0
                 CMSIS (Common Microcontroller Software Interface Standard)
-   * Component: CORE Version: 6.1.0
+   * Component: CORE Version: 6.1.1
 
 Package Vendor: Keil
-                https://www.keil.com/pack/Keil.STM32H7xx_DFP.3.1.1.pack
-                Keil::STM32H7xx_DFP@3.1.1
-                STMicroelectronics STM32H7 Series Device Support and Examples
+                https://www.keil.com/pack/Keil.STM32H7xx_DFP.4.1.3.pack
+                Keil::STM32H7xx_DFP@4.1.3
+                STMicroelectronics STM32H7 Series Device Support
 
 <h2>Collection of Component include folders:</h2>
   ./RTE/_DM-MC02
-  D:/keil5/ARM/PACK/ARM/CMSIS/6.1.0/CMSIS/Core/Include
-  D:/keil5/ARM/PACK/Keil/STM32H7xx_DFP/3.1.1/Drivers/CMSIS/Device/ST/STM32H7xx/Include
+  F:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include
 
 <h2>Collection of Component Files used:</h2>
 
-   * Component: ARM::CMSIS:CORE@6.1.0
+   * Component: ARM::CMSIS:CORE@6.1.1
       Include file:  CMSIS/Core/Include/tz_context.h
-Build Time Elapsed:  00:00:26
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>
