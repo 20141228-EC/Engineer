@@ -241,6 +241,19 @@ EAppStatus InitAllDevice(){
     armMotor_Roll_initparam.useAngleToPosit = true;
     armMotor_Roll.InitDevice(&armMotor_Roll_initparam);
 
+    /******************************************
+    * 机械臂夹爪电机
+    ******************************************/
+    static CDevMtrM2006 armMotor_Grip;
+    CDevMtrM2006::SMtrInitParam_M2006 armMotor_Grip_initparam;
+    armMotor_Grip_initparam.deviceID = EDeviceID::DEV_ARM_MTR_GRIP;
+    armMotor_Grip_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    armMotor_Grip_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_8;//暂时使用can2的ID8
+    armMotor_Grip_initparam.useAngleToPosit = true;
+    armMotor_Grip_initparam.useStallMonit = true;
+    armMotor_Grip_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
+    armMotor_Grip_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE; //堵转的选项设置为电流
+    armMotor_Grip.InitDevice(&armMotor_Grip_initparam);
 
     return APP_OK;
 }

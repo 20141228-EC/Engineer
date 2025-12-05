@@ -33,27 +33,30 @@
 			"args": [
 				"-j",
 				"12"
-			],
+			]
 		},
 		{
-			"label":"mkdir",
+			"label": "mkdir",
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"command": "if (-Not (Test-Path build)) { mkdir build }",
+			"command": "if (-Not (Test-Path build)) { mkdir build }"
 		},
 		{
 			"label": "Build",
 			"dependsOrder": "sequence",
 			"dependsOn": [
-				//"mkdir",
 				"Cmake",
 				"Ninja build"
 			],
 			"problemMatcher": [
 				"$msCompile"
-			]
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
 		}
 	]
 }

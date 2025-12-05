@@ -111,7 +111,7 @@ void CSystemCore::ControlFromRemote_() {
     }
 
     //用于调试，免去遥控器上电
-    // StartRobot(true, true);
+     StartRobot(true, true);
 
     if (parm_) {
         parm_->should_limit_yaw = 0;
