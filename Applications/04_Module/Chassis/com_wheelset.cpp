@@ -13,7 +13,7 @@
 
 namespace my_engineer {
 
-CMemsBase *pmems_test = nullptr;
+CMemsBase *pmems_wheel_test = nullptr;
 
 
 /**
@@ -53,7 +53,7 @@ EAppStatus CModChassis::CComWheelset::InitComponent(SModInitParam_Base &param){
     pidYawCtrl.InitPID(&chassisParam.yawCorrectionPidParam);
 
     // test
-    pmems_test = mems;
+    pmems_wheel_test = mems;
 
     mems->StartDevice();
 
@@ -103,10 +103,11 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
         case FSM_CTRL: {
             DataBuffer<float_t> yawSpd = {wheelsetCmd.speed_W / 10.0f};
             DataBuffer<float_t> yawSpdMeasure = {mems->memsData[CMemsBase::DATA_GYRO_Z]};
-            
+
             // 底盘角速度是一个双环控制，外环输入为目标真实角速度，输出一个映射到电机速度的目标速度
-            auto output = pidYawCtrl.UpdatePidController(yawSpd, yawSpdMeasure);
-            return _UpdateOutput(wheelsetCmd.speed_X, wheelsetCmd.speed_Y, output[0]);
+            auto output_yaw = pidYawCtrl.UpdatePidController(yawSpd, yawSpdMeasure);
+
+            return _UpdateOutput(wheelsetCmd.speed_X, wheelsetCmd.speed_Y, output_yaw[0]);
             
         }
     
@@ -163,16 +164,16 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
         speed_Y - speed_X + speed_W,
       - speed_Y - speed_X + speed_W,
     };
-     
+
     // 计算输出
-    auto output = pidSpdCtrl.UpdatePidController(wheelSpd, wheelSpdMeasure);            
+    auto output = pidSpdCtrl.UpdatePidController(wheelSpd, wheelSpdMeasure);
 
     // 将输出值存入电机数据输出缓冲区
     mtrOutputBuffer = {
         static_cast<int16_t>(output[LF]),
         static_cast<int16_t>(output[RF]),
         static_cast<int16_t>(output[LB]),
-        static_cast<int16_t>(output[RB]),
+        static_cast<int16_t>(output[RB]), ///< 轮毂电机输出
     };
 
     return APP_OK;

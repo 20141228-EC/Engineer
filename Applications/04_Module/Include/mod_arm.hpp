@@ -77,6 +77,11 @@
 #define deg2rad(x) ((x) * 0.017453292519943295769236907684886)
 #define rad2deg(x) ((x) * 57.295779513082320876798154814105)
 
+#define PITCH1     0
+#define PITCH2 	   1
+#define END_PITCH  2
+#define RECORD_MAX 10
+
 #include "mod_common.hpp"
 
 namespace my_engineer {
@@ -342,7 +347,19 @@ private:
 	// 控制量限制函数
 	EAppStatus RestrictArmCommand_();
 
+	// 重补输出更新函数
+		EAppStatus Grav_Compemsation_Pitch1();
+		EAppStatus Grav_Compemsation_Pitch2();
+		EAppStatus Grav_Compemsation_Roll();
+
 };
+
+// ///< 全局变量
+extern bool Need_Grav_Compensation; ///< 是否启用重力补偿
+extern bool Is_Recording_ArmTorque; ///<是否正在记录数据
+extern DataBuffer<float_t> arm_Info[3][10]; ///<用于记录臂的力矩，三个关节，1000个数据点
+extern uint16_t index; ///< 数组索引
+extern bool is_record; ///< 是否要记录数据
 
 } // namespace my_engineer
 

@@ -74,6 +74,8 @@ enum class EDeviceID{
     DEV_ARM_MTR_ROLL,          ///< 机械臂Roll轴电机(KT)
     DEV_ARM_MTR_END_L,   ///< 机械臂末端左轴电机(M2006)
     DEV_ARM_MTR_END_R,   ///< 机械臂末端右轴电机(M2006)
+    DEV_CHAS_L_HIP,      ///< 底盘后腿电机左（DM-8009）
+    DEV_CHAS_R_HIP,      ///< 底盘后腿电机右 （DM-8009）
 };
 
 /**

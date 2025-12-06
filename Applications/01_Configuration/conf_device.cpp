@@ -152,6 +152,32 @@ EAppStatus InitAllDevice(){
     chassisMotor_RB_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_3;
     chassisMotor_RB.InitDevice(&chassisMotor_RB_initparam);
 
+    static CDevMtrDM_MIT chassisMotor_L_HIP;
+    CDevMtrDM_MIT::SMtrInitParam_DM_MIT chassisMotor_L_HIP_initparam;
+    chassisMotor_L_HIP_initparam.deviceID = EDeviceID::DEV_CHAS_L_HIP;
+    chassisMotor_L_HIP_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    chassisMotor_L_HIP_initparam.MasterID = 0x32; ///< 接收节点
+    chassisMotor_L_HIP_initparam.SlaveID = 0x33; ///< 发送节点
+    chassisMotor_L_HIP_initparam.Q_MAX = 0.0f;
+    chassisMotor_L_HIP_initparam.DQ_MAX = 0.0f;
+    chassisMotor_L_HIP_initparam.TAU_MAX = 0.0f; ///< 待调
+    chassisMotor_L_HIP_initparam.useAngleToPosit = true;
+    chassisMotor_L_HIP_initparam.encoderResolution = 65536; ///< 不牺牲精度
+    chassisMotor_L_HIP.InitDevice(&chassisMotor_L_HIP_initparam); ///< 左髋关节电机
+
+    static CDevMtrDM_MIT chassisMotor_R_HIP;
+    CDevMtrDM_MIT::SMtrInitParam_DM_MIT chassisMotor_R_HIP_initparam;
+    chassisMotor_R_HIP_initparam.deviceID = EDeviceID::DEV_CHAS_R_HIP;
+    chassisMotor_R_HIP_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    chassisMotor_R_HIP_initparam.MasterID = 0x34; ///< 接收节点
+    chassisMotor_R_HIP_initparam.SlaveID = 0x35; ///< 发送节点
+    chassisMotor_R_HIP_initparam.Q_MAX = 0.0f;
+    chassisMotor_R_HIP_initparam.DQ_MAX = 0.0f;
+    chassisMotor_R_HIP_initparam.TAU_MAX = 0.0f; ///< 待调
+    chassisMotor_R_HIP_initparam.useAngleToPosit = true;
+    chassisMotor_R_HIP_initparam.encoderResolution = 65536; ///< 不牺牲精度
+    chassisMotor_R_HIP.InitDevice(&chassisMotor_R_HIP_initparam); ///< 右髋关节电机
+
     /******************************************
      * 云台电机
      *****************************************/
