@@ -81,7 +81,7 @@ EAppStatus InitAllDevice(){
     static CDevBoardLink boardLink;
     CDevBoardLink::SDevInitParam_BoardLink boardLink_Initparam;
     boardLink_Initparam.deviceID = EDeviceID::DEV_BOARD_LINK;
-    boardLink_Initparam.interfaceID = EInterfaceID::INF_CAN2;
+    boardLink_Initparam.interfaceID = EInterfaceID::INF_CAN3;
     boardLink.InitDevice(&boardLink_Initparam);
 
     /******************************************
