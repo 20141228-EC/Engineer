@@ -35,6 +35,7 @@ EAppStatus CModArm::InitModule(SModInitParam_Base &param) {
 	comjoint_.InitComponent(param);
 	comRoll_.InitComponent(param);
 	comEnd_.InitComponent(param);
+	comGrip_.InitComponent(param);
 
 	// 创建任务并注册模块
 	CreateModuleTask_();
@@ -63,7 +64,8 @@ void CModArm::UpdateHandler_() {
 	// 更新组件
 	comjoint_.UpdateComponent();
 	comEnd_.UpdateComponent();
-	comRoll_.UpdateComponent();			
+	comRoll_.UpdateComponent();
+	comGrip_.UpdateComponent();			///<更新电机数据
 
 	// 更新模块信息
 	armInfo.angle_Yaw = comjoint_.MtrPositToPhyPosit_yaw(comjoint_.jointInfo.posit_yaw);
@@ -74,12 +76,14 @@ void CModArm::UpdateHandler_() {
 		comEnd_.MtrPositToPhyPosit_Pitch(comEnd_.endInfo.posit_Pitch);
 	armInfo.angle_end_roll =
 		comEnd_.MtrPositToPhyPosit_Roll(comEnd_.endInfo.posit_Roll);								///<将电机的机械角度转换为物理角度
+	armInfo.length_grip = comGrip_.MtrPositToPhyPosit(comGrip_.gripInfo.posit_grip);
 	armInfo.isAngleArrived_Yaw = comjoint_.jointInfo.isPositArrived_yaw;
 	armInfo.isAngleArrived_Pitch1 = comjoint_.jointInfo.isPositArrived_pitch1;
 	armInfo.isAngleArrived_Pitch2 = comjoint_.jointInfo.isPositArrived_pitch2;
 	armInfo.isAngleArrived_Roll = comRoll_.rollInfo.isAngleArrived;
 	armInfo.isAngleArrived_End_Pitch = comEnd_.endInfo.isPositArrived_Pitch;
 	armInfo.isAngleArrived_End_Roll = comEnd_.endInfo.isPositArrived_Roll;
+	armInfo.isAngleArrived_Grip = comGrip_.gripInfo.isPositArrived_Grip;
 
 	// 填充电机发送缓冲区
 	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P1],							///<用的是关节底层信息的发送
@@ -96,7 +100,10 @@ void CModArm::UpdateHandler_() {
 								comEnd_.mtrOutputBuffer[CComEnd::L]);
 	CDevMtrDJI::FillCanTxBuffer(comEnd_.motor[CComEnd::R],
 								comEnd_.mtrCanTxNode[CComEnd::R]->dataBuffer,
-								comEnd_.mtrOutputBuffer[CComEnd::R]);			
+								comEnd_.mtrOutputBuffer[CComEnd::R]);
+	CDevMtrDJI::FillCanTxBuffer(comGrip_.motor,
+								comGrip_.mtrCanTxNode->dataBuffer,
+								comGrip_.mtrOutputBuffer);
 
 }
 

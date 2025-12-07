@@ -12,6 +12,7 @@
 #ifndef MOD_ARM_HPP
 #define MOD_ARM_HPP
 
+/*-------------------------------------物理限位---------------------------------------------------*/
 #define ARM_YAW_PHYSICAL_RANGE_MIN -97.5f
 #define ARM_YAW_PHYSICAL_RANGE_MAX 97.5f
 #define ARM_PITCH1_PHYSICAL_RANGE_MIN 4.0f
@@ -22,16 +23,25 @@
 #define ARM_ROLL_PHYSICAL_RANGE_MAX 180.0f
 #define ARM_END_PITCH_PHYSICAL_RANGE_MIN -145.0f
 #define ARM_END_PITCH_PHYSICAL_RANGE_MAX 60.0f
+#define ARM_END_GRIP_PHYSICAL_RANGE 106.f		//初版末端机械行程是106mm
 
+/*-------------------------------------电机限位----------------------------------------------------*/
+//原始限位编码器器范围
 #define ARM_YAW_MOTOR_RANGE 65535
 #define ARM_PITCH1_MOTOR_RANGE 20755
 #define ARM_PITCH2_MOTOR_RANGE 65535
 #define ARM_END_PITCH_MOTOR_RANGE 325993
+#define ARM_END_GRIP_MOTOR_RANGE 201464     ///(8192*22+10240+11000)
+
+//与物理角度的映射关系
 #define ARM_PITCH1_MOTOR_RATIO (ARM_PITCH1_MOTOR_RANGE / (ARM_PITCH1_PHYSICAL_RANGE_MAX - ARM_PITCH1_PHYSICAL_RANGE_MIN))
 #define ARM_PITCH2_MOTOR_RATIO (ARM_PITCH2_MOTOR_RANGE / (ARM_PITCH2_PHYSICAL_RANGE_MAX - ARM_PITCH2_PHYSICAL_RANGE_MIN))
 #define ARM_YAW_MOTOR_RATIO (ARM_YAW_MOTOR_RANGE / (ARM_YAW_PHYSICAL_RANGE_MAX - ARM_YAW_PHYSICAL_RANGE_MIN))
 #define ARM_END_PITCH_MOTOR_RATIO (ARM_END_PITCH_MOTOR_RANGE / (ARM_END_PITCH_PHYSICAL_RANGE_MAX - ARM_END_PITCH_PHYSICAL_RANGE_MIN))
 #define ARM_END_ROLL_MOTOR_RATIO 3524.07f
+#define ARM_END_GRIP_MOTOR_RATIO (  ARM_END_GRIP_MOTOR_RANGE / ARM_END_GRIP_PHYSICAL_RANGE) //编码器与物理距离转换比（单位mm）
+
+/*-------------------------------------零点偏移--------------------------------------------------------*/
 // 这里的offset都是物理的零点相对电机的零点的偏移值，电机的零点在物理的最小值
 #define ARM_YAW_MOTOR_OFFSET -ARM_YAW_PHYSICAL_RANGE_MIN * ARM_YAW_MOTOR_RATIO
 #define ARM_PITCH1_MOTOR_OFFSET -ARM_PITCH1_PHYSICAL_RANGE_MIN * ARM_PITCH1_MOTOR_RATIO
@@ -39,6 +49,7 @@
 #define ARM_ROLL_MOTOR_OFFSET 209.49f // 但这个比较特殊，测量这个就是从电机0位置到物理0位置总共的角度
 #define ARM_END_PITCH_MOTOR_OFFSET -ARM_END_PITCH_PHYSICAL_RANGE_MIN * ARM_END_PITCH_MOTOR_RATIO
 
+/*-------------------------------------方向设定---------------------------------------------------------*/
 #define ARM_YAW_MOTOR_DIR 1
 #define ARM_PITCH1_MOTOR_DIR 1
 #define ARM_PITCH2_MOTOR_DIR -1
@@ -47,13 +58,16 @@
 #define ARM_END_PITCH_MOTOR_R_DIR 1
 #define ARM_END_ROLL_MOTOR_L_DIR -1
 #define ARM_END_ROLL_MOTOR_R_DIR -1
+#define ARM_GRIP_MOTOR_DIR 1
 
+/*-------------------------------------初始化数据--------------------------------------------------------*/
 #define ARM_YAW_INIT_ANGLE 0.0f
 #define ARM_PITCH1_INIT_ANGLE 11.0f
 #define ARM_PITCH2_INIT_ANGLE 18.0f
 #define ARM_ROLL_INIT_ANGLE 0.0f
 #define ARM_END_PITCH_INIT_ANGLE 0.0f
 #define ARM_END_ROLL_INIT_ANGLE 0.0f
+#define ARM_GRIP_INIT_LENGTH 0.0f
 
 /*-------------------------------------LHK_SET----------------------------------------------------------*/
 #define POSIT_JOINT1_YAW_MACH 42879
@@ -96,11 +110,13 @@ public:
 		EDeviceID MotorID_Roll = EDeviceID::DEV_NULL;
 		EDeviceID MotorID_End_L = EDeviceID::DEV_NULL;
 		EDeviceID MotorID_End_R = EDeviceID::DEV_NULL;
+		EDeviceID MotorID_Grip = EDeviceID::DEV_NULL;
 		CInfCAN::CCanTxNode *MotorTxNode_Yaw; ///< 机械臂关节Yaw电机发送节点
 		CInfCAN::CCanTxNode *MotorTxNode_Pitch1; ///< 机械臂关节Pitch电机1发送节点
 		CInfCAN::CCanTxNode *MotorTxNode_Pitch2; ///< 机械臂关节Pitch电机2发送节点
 		CInfCAN::CCanTxNode *MotorTxNode_End_L;
 		CInfCAN::CCanTxNode *MotorTxNode_End_R;
+		CInfCAN::CCanTxNode *MotorTxNode_Grip; ///< 机械臂夹爪电机发送节点
 		float_t MIT_Roll_kp = 0.0f; ///< MIT控制器比例系数
 		float_t MIT_Roll_kd = 0.0f; ///< MIT控制器微分系数
 		CAlgoPid::SAlgoInitParam_Pid YawPosPidParam;
@@ -111,6 +127,8 @@ public:
 		CAlgoPid::SAlgoInitParam_Pid Pitch2SpdPidParam;
 		CAlgoPid::SAlgoInitParam_Pid endPosPidParam;
 		CAlgoPid::SAlgoInitParam_Pid endSpdPidParam;
+		CAlgoPid::SAlgoInitParam_Pid GripPosPidParam;///< 夹爪位置PID参数
+		CAlgoPid::SAlgoInitParam_Pid GripSpdPidParam;
 	};
 
 	// 定义机械臂信息结构体并实例化
@@ -122,12 +140,14 @@ public:
 		float_t angle_Roll = 0.0f; ///< 机械臂关节Roll角度
 		float_t angle_end_pitch = 0.0f; ///< 机械臂末端Pitch角度
 		float_t angle_end_roll = 0.0f; ///< 机械臂末端Roll角度
+		float_t length_grip = 0.0f; ///< 机械臂夹爪张开距离
 		bool isAngleArrived_Yaw = false; ///< 机械臂关节Yaw角度是否到达
 		bool isAngleArrived_Pitch1 = false; ///< 机械臂关节Pitch1角度是否到达
 		bool isAngleArrived_Pitch2 = false; ///< 机械臂关节Pitch2角度是否到达
 		bool isAngleArrived_Roll = false; ///< 机械臂关节Roll角度是否到达
 		bool isAngleArrived_End_Pitch = false; ///< 机械臂末端Pitch角度是否到达
 		bool isAngleArrived_End_Roll = false; ///< 机械臂末端Roll角度是否到达
+		bool isAngleArrived_Grip = false; ///< 机械臂夹爪角度是否夹取
 	} armInfo;
 
 	// 定义机械臂控制命令结构体并实例化
@@ -140,6 +160,7 @@ public:
 		float_t set_angle_Roll = 0.0f; ///< 机械臂关节Roll角度设定
 		float_t set_angle_end_pitch = 0.0f; ///< 机械臂末端Pitch角度设定
 		float_t set_angle_end_roll = 0.0f; ///< 机械臂末端Roll角度设定
+		float_t set_length_grip = 0.0f; ///< 机械臂夹爪角度设定
 	} armCmd;
 
 	CModArm() = default;
@@ -331,6 +352,54 @@ private:
 
 	} comEnd_;
 
+	class CComGrip: public CComponentBase {
+	public:
+
+		const int32_t rangeLimit_Grip = ARM_END_GRIP_MOTOR_RANGE; ///< 夹爪电机位置范围限制
+		// 定义夹爪信息结构体
+		struct SGripInfo {
+			int32_t posit_grip = 0;           	///< 夹爪当前角度
+			float_t distance = 0;       		///< 夹爪距离
+			int32_t holdPosit_Grip = 0;			///<记忆夹持位置
+			bool isPositArrived_Grip = false;   ///< 夹爪角度是否到达目标
+			bool isGripped = false; 			///< 是否夹住
+        	bool cmdGrip = false;   			///< 抓取（自适应力控）
+        	bool cmdRelease = false;   			///< 释放
+
+		} gripInfo;
+
+		// 定义夹爪控制命令结构体
+		struct SGripCmd {
+			int32_t setPosit_grip = 0;        ///< 夹爪目标距离
+		} gripCmd;
+
+		// PID控制器
+		CAlgoPid pidPosCtrl;
+		CAlgoPid pidSpdCtrl;
+
+		// 电机实例指针
+		CDevMtr* motor = nullptr;
+
+		// 电机数据输出缓冲区
+		int16_t mtrOutputBuffer = 0;
+
+		static float_t MtrPositToPhyPosit(float_t mtrPosit);
+
+		static int32_t PhyPositToMtrPosit(float_t phyPosit);
+
+		// 初始化组件
+		EAppStatus InitComponent(SModInitParam_Base &param) final;
+
+		// 更新组件
+		EAppStatus UpdateComponent() final;
+
+		// 输出更新函数
+		EAppStatus _UpdateOutput(float_t angle);
+
+		// 电机can发送节点
+		CInfCAN::CCanTxNode* mtrCanTxNode;
+
+	} comGrip_;
 	// 重写基类函数
 	void UpdateHandler_() final;
 	void HeartbeatHandler_() final;

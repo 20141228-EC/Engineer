@@ -21,6 +21,7 @@
 "dm-mc02\mod_arm.o"
 "dm-mc02\proc_arm.o"
 "dm-mc02\com_joint.o"
+"dm-mc02\com_grip.o"
 "dm-mc02\com_wheelset.o"
 "dm-mc02\mod_chassis.o"
 "dm-mc02\proc_chassis.o"

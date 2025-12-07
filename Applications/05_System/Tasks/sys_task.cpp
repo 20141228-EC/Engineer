@@ -38,7 +38,7 @@ void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠
 uint32_t sys_test_n = 0;
 
 /**
- * @brief 其余层的更新任务以及系统核心更新任务
+ * @brief 其余层的更新任务以及系统核心更新任务（500Hz）
  * 
  */
 void StartUpdateTask(void *argument) {
@@ -71,13 +71,14 @@ void StartUpdateTask(void *argument) {
 		TxNode_Can1_200.Transmit();
         TxNode_Can2_200.Transmit();
 		TxNode_Can3_280.Transmit();
+		TxNode_Can2_300.Transmit();         ///< 板间通信反馈
+		
+        //if(HalfTickRate) {
+		TxNode_Can2_1FF.Transmit();         ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载
+        //}
 
-		if(HalfTickRate) {
-			TxNode_Can2_1FF.Transmit();         ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载
-        }
 
-
-        proc_waitMs(1); // 1000Hz
+        proc_waitMs(2); // 500Hz
 
     }
 }
