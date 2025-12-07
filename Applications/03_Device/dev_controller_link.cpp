@@ -31,14 +31,14 @@ EAppStatus CDevControllerLink::InitDevice(const SDevInitParam_Base *pStructInitP
 	deviceID = controllerLinkParam.deviceID;
 	uartInterface_ = reinterpret_cast<CInfUART *>(InterfaceIDMap.at(controllerLinkParam.interfaceID));
 
-	auto callback = [this](auto &buffer, auto len) {
+	auto callback = [this](auto &buffer, auto len) { ///< lambda表达式
 		if (len > 512) return;
 		std::copy(buffer.data(), buffer.data() + len , rxBuffer_.data());
-		rxTimestamp_ = HAL_GetTick();
+		rxTimestamp_ = HAL_GetTick(); ///< 将数据存入rxbuffer并更新时间戳
 	};
 
 	RegisterDevice_();
-	uartInterface_->RegisterRxSaveDataCallback(callback);
+	uartInterface_->RegisterRxSaveDataCallback(callback); ///< 串口中断调用这个callback
 
 	deviceStatus = APP_OK;
 	controllerLinkStatus = EControllerLinkStatus::OFFLINE;

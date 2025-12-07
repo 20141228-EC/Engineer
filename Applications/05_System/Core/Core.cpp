@@ -55,6 +55,11 @@ EAppStatus CSystemCore::InitSystemCore() {
     esp32InitParam.esp32DevID = EDeviceID::DEV_ESP32;
     SysESP32.InitSystem(&esp32InitParam);
 
+    CSystemBoardLink::SSystemInitParam_BoardLink boardLinkInitParam;
+    boardLinkInitParam.systemID = ESystemID::SYS_BOARD_LINK;
+    boardLinkInitParam.boardLinkDevID = EDeviceID::DEV_BOARD_LINK;
+    SysBoardLink.InitSystem(&boardLinkInitParam);
+
     // 获取模块的指针（安全查找，避免异常）
     auto it_chassis = ModuleIDMap.find(EModuleID::MOD_CHASSIS);
     if (it_chassis != ModuleIDMap.end() && it_chassis->second != nullptr) {

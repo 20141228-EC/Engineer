@@ -77,6 +77,13 @@ EAppStatus InitAllDevice(){
     esp32_initparam.interfaceID = EInterfaceID::INF_UART7;
     esp32.InitDevice(&esp32_initparam);
 
+    // 板间通信
+    static CDevBoardLink boardLink;
+    CDevBoardLink::SDevInitParam_BoardLink boardLink_Initparam;
+    boardLink_Initparam.deviceID = EDeviceID::DEV_BOARD_LINK;
+    boardLink_Initparam.interfaceID = EInterfaceID::INF_CAN2;
+    boardLink.InitDevice(&boardLink_Initparam);
+
     /******************************************
     * 子龙门电机 - 已删除 
     ******************************************/

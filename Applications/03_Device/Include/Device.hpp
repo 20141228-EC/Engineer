@@ -19,6 +19,7 @@
 #include "dev_servo.hpp"
 #include "dev_controller_link.hpp"
 #include "dev_esp32.hpp"
+#include "dev_board_link.hpp"
 
 #include "dev_vision.hpp"
 #include "dev_referee.hpp"

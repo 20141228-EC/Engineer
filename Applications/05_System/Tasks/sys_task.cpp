@@ -21,14 +21,15 @@ namespace my_engineer {
  * @brief 系统层更新任务
  * @note 与其它层独立开来是因为频率不需要那么高
  */
-void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠、裁判系统、视觉系统、esp32数据
+void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠、裁判系统、视觉系统、esp32数据、板间通信
 
     while (true) {
 
         for (const auto &item : SystemIDMap) {
-            if(item.second->systemID != ESystemID::SYS_BOARD_LINK) {
-                item.second->UpdateHandler_();
-            }
+            // if(item.second->systemID != ESystemID::SYS_BOARD_LINK) {
+            //     item.second->UpdateHandler_();
+            // }
+            item.second->UpdateHandler_();
         }
 
         proc_waitMs(4); // 250Hz
@@ -72,12 +73,13 @@ void StartUpdateTask(void *argument) {
         TxNode_Can2_200.Transmit();
 		TxNode_Can3_280.Transmit();
 
+
 		if(HalfTickRate) {
 			TxNode_Can2_1FF.Transmit();         ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载
         }
 
 
-        proc_waitMs(1); // 1000Hz
+        proc_waitMs(2); // 500Hz
 
     }
 }
