@@ -9,6 +9,7 @@
  */
 
 #include "conf_device.hpp"
+#include "conf_CanTxNode.hpp"
 #include "Device.hpp"
 
 // extern TIM_HandleTypeDef htim1;
@@ -76,6 +77,15 @@ EAppStatus InitAllDevice(){
     esp32_initparam.deviceID = EDeviceID::DEV_ESP32;
     esp32_initparam.interfaceID = EInterfaceID::INF_UART7;
     esp32.InitDevice(&esp32_initparam);
+
+    // 板间通信
+    static CDevBoardLink boardLink;
+    CDevBoardLink::SDevInitParam_BoardLink boardLink_initparam;
+    boardLink_initparam.deviceID = EDeviceID::DEV_BOARD_LINK;
+    boardLink_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    boardLink_initparam.offlineTimeout = 100;  // 100ms离线超时
+    boardLink_initparam.txNode = &TxNode_Can3_300;  // 板间通信发送节点
+    boardLink.InitDevice(&boardLink_initparam);
 
     /******************************************
     * 子龙门电机 - 已删除 
