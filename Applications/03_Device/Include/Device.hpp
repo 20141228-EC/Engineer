@@ -22,6 +22,7 @@
 
 #include "dev_vision.hpp"
 #include "dev_referee.hpp"
+#include "dev_board_link.hpp"
 
 namespace my_engineer {
     
