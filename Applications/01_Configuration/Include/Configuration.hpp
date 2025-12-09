@@ -33,9 +33,9 @@ enum class EInterfaceID{
     INF_UART7,      ///< 串口7(用于视觉)
     INF_UART10,     ///< 串口10(用于调试)
     INF_USB_CDC,    ///< USB CDC(用于视觉)
-    INF_CAN1,       ///< CAN1(用于底盘云台电机)
-    INF_CAN2,       ///< CAN2(用于刺雷电机)
-    INF_CAN3,       ///< CAN3(用于机械臂电机)
+    INF_CAN1,       ///< CAN1(用于底盘电机)
+    INF_CAN2,       ///< CAN2(用于臂末端三轴电机)
+    INF_CAN3,       ///< CAN3(用于机械臂前四轴电机)
     INF_SPI2,       ///< SPI2(用于BMI-088 MEMS传感器)
     INF_SPI6,       ///< SPI6(用于WS2312 LED)
 };
@@ -74,6 +74,8 @@ enum class EDeviceID{
     DEV_ARM_MTR_ROLL,          ///< 机械臂Roll轴电机(KT)
     DEV_ARM_MTR_END_L,   ///< 机械臂末端左轴电机(M2006)
     DEV_ARM_MTR_END_R,   ///< 机械臂末端右轴电机(M2006)
+    DEV_CHAS_L_HIP,      ///< 底盘后腿电机左（DM-8009）
+    DEV_CHAS_R_HIP,      ///< 底盘后腿电机右 （DM-8009）
     DEV_ARM_MTR_GRIP,        ///< 机械臂夹爪电机(M2006)
 };
 

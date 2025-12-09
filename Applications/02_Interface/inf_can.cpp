@@ -146,7 +146,7 @@ EAppStatus CInfCAN::Transmit(CCanNode &node){
 }
 
 /**
- * @brief 接收数据
+ * @brief 主动读接收FIFO 手动接收数据 在当前代码基本没有用到 若要用的话需要循环调用
  * @param node - 要接收的节点
  * 
  * @note 还不理解为什么这里边要写东西，明明在回调函数里边已经写完接收数据的操作了
@@ -246,7 +246,7 @@ void CInfCAN::CCanTxNode::InitTxNode(EInterfaceID canInfId,
     dataLength = nodeFrameDlc;
     dataBuffer.resize(FrameDlcToByteLength(nodeFrameDlc), 0);
 
-    pInterface_->RegisterNode_(*this);
+    pInterface_->RegisterNode_(*this); ///< 在此处注册结点
 }
 
 /**
@@ -263,7 +263,7 @@ void CInfCAN::CCanRxNode::InitRxNode(EInterfaceID canInfId,
     dataLength = nodeFrameDlc;
     dataBuffer.resize(FrameDlcToByteLength(nodeFrameDlc), 0);
 
-    pInterface_->RegisterNode_(*this);
+    pInterface_->RegisterNode_(*this); ///< 在此处注册结点
 }
 
 /**
@@ -370,11 +370,11 @@ void CInfCAN::_CAN_HalRxCallback(FDCAN_HandleTypeDef *hcan){
     HAL_FDCAN_GetRxMessage(halCanHandle_, FDCAN_RX_FIFO0, &RxHeader, data);
 
     // 将接收到的数据存入节点
-    for(auto &rxNode : rxNodeList_)
+    for(auto &rxNode : rxNodeList_) ///< 此处完成id的轮询，将data存入各id节点的rxbuffer中
     {
         if(rxNode->stdId == RxHeader.Identifier)
         {
-            rxNode->timestamp = HAL_GetTick();
+            rxNode->timestamp = HAL_GetTick(); ///< 更新时间戳
             std::copy(data, data + rxNode->dataBuffer.size(), rxNode->dataBuffer.begin());
         }
     }

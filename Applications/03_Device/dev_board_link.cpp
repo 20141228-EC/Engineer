@@ -1,162 +1,207 @@
 /******************************************************************************
- * @brief   板间通信设备类实现
- *
- * @file    dev_board_link.cpp
- * @author  Zoe
- * @version V1.0
- * @date    2025-12-06
- *
- * @copyright Copyright (c) 2025
- *
+ * @brief        
+ * 
+ * @file         dev_board_link.cpp
+ * @author       sllllr (2997708711@qq.com)
+ * @version      V1.0
+ * @date         2025-12-06
+ * 
+ * @copyright    Copyright (c) 2025
+ * 
  ******************************************************************************/
 
 #include "dev_board_link.hpp"
 
-namespace my_engineer {
+namespace my_engineer{
 
 /**
  * @brief 初始化板间通信设备
+ * 
+ * @retval EAppStatus
  */
-EAppStatus CDevBoardLink::InitDevice(const SDevInitParam_Base *pStructInitParam) {
+EAppStatus CDevBoardLink::InitDevice(const SDevInitParam_Base *pStructInitParam){
 
-    // 参数检查
-    if (pStructInitParam == nullptr) return APP_ERROR;
-    if (pStructInitParam->deviceID == EDeviceID::DEV_NULL) return APP_ERROR;
+    // 检查param是否正确
+	if (pStructInitParam == nullptr) return APP_ERROR;
+	if (pStructInitParam->deviceID == EDeviceID::DEV_NULL) return APP_ERROR;
 
-    // 类型转换
-    auto &param = *static_cast<const SDevInitParam_BoardLink *>(pStructInitParam);
+	// 类型转换
+	auto &boardLinkParam = *static_cast<const SDevInitParam_BoardLink *>(pStructInitParam);
+	deviceID = boardLinkParam.deviceID;
+	canInterface_ = reinterpret_cast<CInfCAN *>(InterfaceIDMap.at(boardLinkParam.interfaceID));
 
-    // 检查接口ID有效性
-    if (param.interfaceID == EInterfaceID::INF_NULL) return APP_ERROR;
+	// 初始化CAN接收节点
+    auto canRxID = 0x300;
+    canRxNode_.InitRxNode(boardLinkParam.interfaceID, canRxID, 
+                                CInfCAN::ECanFrameType::DATA, 
+                                CInfCAN::ECanFrameDlc::DLC_8);
 
-    // 保存配置
-    deviceID = param.deviceID;
-    timeoutParam_.offlineTimeout = param.offlineTimeout;
-    txNode_ = param.txNode;
+	// 初始化CAN发送节点
+	auto canTxID = 0x300;
+	canTxNode_.InitTxNode(boardLinkParam.interfaceID, canTxID, 
+                                CInfCAN::ECanFrameType::DATA, 
+                                CInfCAN::ECanFrameDlc::DLC_8);
 
-    // 初始化CAN接收节点
-    rxNode_.InitRxNode(
-        param.interfaceID,
-        0x300,
-        CInfCAN::ECanFrameType::DATA,
-        CInfCAN::ECanFrameDlc::DLC_8
-    );
+	RegisterDevice_(); ///< 注册设备
 
-    // 注册设备
-    RegisterDevice_();
+	deviceStatus = APP_OK;
+	boardLinkStatus = EBoardLinkStatus::OFFLINE;
 
-    // 更新状态
-    deviceStatus = APP_OK;
-    linkStatus = EBoardLinkStatus::OFFLINE;
-
-    return APP_OK;
+	return APP_OK;
 }
 
 /**
- * @brief 更新处理
+ * @brief 发送信息
+ * 
+ * @retval EAppStatus
  */
-void CDevBoardLink::UpdateHandler_() {
+EAppStatus CDevBoardLink::SendPackage(EPacketID pack_id){
 
-    if (deviceStatus == APP_RESET) return;
+	// 检查设备状态
+	if (deviceStatus == APP_RESET) return APP_ERROR;
 
-    // 检查是否有新数据（通过比较时间戳）
-    if (rxNode_.timestamp > timeoutParam_.lastParseTime) {
-        ParseRxPacket_();
-        timeoutParam_.lastParseTime = rxNode_.timestamp;
-        timeoutParam_.rxTimestamp = rxNode_.timestamp;
-    }
+	std::array<uint8_t, 8> data_buf{};
+
+	switch (pack_id) ///< 这些获取的逻辑还得具体实现
+	{
+	case PKT_ARM_BACKWARD:{
+
+		// 获取数据
+		data_buf[0] = PKT_ARM_BACKWARD; // 包id
+		data_buf[1] = 0;
+		data_buf[2] = 0;
+		data_buf[3] = 0;
+		data_buf[4] = 0;
+		data_buf[5] = 0;
+		data_buf[6] = 0;
+		data_buf[7] = 0;
+
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+		break;
+	}
+	case PKT_ARM_FORWARD:{
+
+		// 获取数据
+		data_buf[0] = PKT_ARM_FORWARD; // 包id
+		data_buf[1] = 0;
+		data_buf[2] = 0;
+		data_buf[3] = 0;
+		data_buf[4] = 0;
+		data_buf[5] = 0;
+		data_buf[6] = 0;
+		data_buf[7] = 0;
+
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+		break;
+	}
+	case PKT_GIMBAL:{
+
+		// 获取数据
+		data_buf[0] = PKT_GIMBAL; // 包id
+		data_buf[1] = 0;
+		data_buf[2] = 0;
+		data_buf[3] = 0;
+		data_buf[4] = 0;
+		data_buf[5] = 0;
+		data_buf[6] = 0;
+		data_buf[7] = 0;
+
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+		break;
+	}
+	case PKT_CTRL_FLAGS:{
+
+		// 获取数据
+		data_buf[0] = PKT_CTRL_FLAGS; // 包id
+		data_buf[1] = 0;
+		data_buf[2] = 0;
+		data_buf[3] = 0;
+		data_buf[4] = 0;
+		data_buf[5] = 0;
+		data_buf[6] = 0;
+		data_buf[7] = 0;
+
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+		break;
+	}
+	default:
+		return APP_ERROR;
+	}
+
+	canTxNode_.Transmit(); ///< 发送数据
+
+	return APP_OK;
 }
 
 /**
- * @brief 心跳处理
+ * @brief 更新设备
+ * 
+ * @retval EAppStatus
  */
-void CDevBoardLink::HeartbeatHandler_() {
+void CDevBoardLink::UpdateHandler_(){
 
-    if (deviceStatus == APP_RESET) return;
+	if (deviceStatus == APP_RESET) return;
 
-    // 检查离线
-    uint32_t currentTime = HAL_GetTick();
-
-    if (currentTime - timeoutParam_.rxTimestamp > timeoutParam_.offlineTimeout) {
-        // 超时，离线
-        deviceStatus = APP_ERROR;
-        linkStatus = EBoardLinkStatus::OFFLINE;
-        rxStatus_.Clear();  // 离线时清除接收状态
-    }
-    else {
-        // 在线
-        deviceStatus = APP_OK;
-        linkStatus = EBoardLinkStatus::ONLINE;
-    }
-
-    // 发送反馈给主板
-    SendFeedback();
+	if (rxTimestamp_ > lastHeartbeatTime_) {
+		ResolveRxPackage_();
+	}
 }
 
 /**
- * @brief 解析接收到的数据包
+ * @brief 设备心跳
+ * 
+ * @retval EAppStatus
  */
-EAppStatus CDevBoardLink::ParseRxPacket_() {
+void CDevBoardLink::HeartbeatHandler_(){
 
-    if (deviceStatus == APP_RESET) return APP_ERROR;
+	if (deviceStatus == APP_RESET) return;
 
-    // 获取pack_id（第一个字节）
-    uint8_t packId = rxNode_.dataBuffer[0];
-
-    // 根据pack_id分发到不同的数据包
-    switch (packId) {
-
-        case PKT_ARM_JOINT1: {
-            auto pkg = reinterpret_cast<SArmJoint1Target *>(rxNode_.dataBuffer.data());///<直接通过内存的访问方式进行转换，因为数据包是对齐的
-            armJoint1Target = *pkg;
-            rxStatus_.SetReceived(PKT_ARM_JOINT1);
-            break;
-        }
-
-        case PKT_ARM_JOINT2: {
-            auto pkg = reinterpret_cast<SArmJoint2Target *>(rxNode_.dataBuffer.data());
-            armJoint2Target = *pkg;
-            rxStatus_.SetReceived(PKT_ARM_JOINT2);
-            break;
-        }
-
-        case PKT_GIMBAL: {
-            auto pkg = reinterpret_cast<SGimbalTarget *>(rxNode_.dataBuffer.data());
-            gimbalTarget = *pkg;
-            rxStatus_.SetReceived(PKT_GIMBAL);
-            break;
-        }
-
-        case PKT_CTRL_FLAGS: {
-            auto pkg = reinterpret_cast<SControlFlags *>(rxNode_.dataBuffer.data());
-            ctrlFlags = *pkg;
-            rxStatus_.SetReceived(PKT_CTRL_FLAGS);
-            break;
-        }
-
-        default:
-            return APP_ERROR;
-    }
-
-    return APP_OK;
+	if (HAL_GetTick() - lastHeartbeatTime_ > 1000) {
+		deviceStatus = APP_ERROR;
+		boardLinkStatus = EBoardLinkStatus::OFFLINE;
+	}
+	else {
+		deviceStatus = APP_OK;
+		boardLinkStatus = EBoardLinkStatus::ONLINE;
+	}
 }
 
 /**
- * @brief 填充反馈数据到发送缓冲区
- * @note  只填充数据，不发送。发送由 sys_task.cpp 统一管理（500Hz）
+ * @brief 解析接收数据包
+ * 
+ * @retval EAppStatus
  */
-void CDevBoardLink::SendFeedback() {
+EAppStatus CDevBoardLink::ResolveRxPackage_(){
 
-    if (txNode_ == nullptr) return;
+	// 检查设备状态
+	if (deviceStatus == APP_RESET) return APP_ERROR;
 
-    // 直接把发送缓冲区当作结构体来填充
-    auto pkg = reinterpret_cast<SFeedbackPack *>(txNode_->dataBuffer.data());
-    pkg->pack_id = PKT_FEEDBACK;
-    pkg->rx_status = rxStatus_.GetBits();
-    pkg->link_status = static_cast<uint8_t>(linkStatus);
+	uint8_t pack_id = canRxNode_.dataBuffer[0];
 
-    // test板通是否良好
-    //txNode_->Transmit();
+	if (canRxNode_.timestamp >= lastHeartbeatTime_) {
+		switch (pack_id)
+		{
+		case PKT_FEEDBACK:{
+
+			// 将databuffer转化成结构体指针并解引用
+			SFeedbackPack feedbackInfo = *reinterpret_cast<SFeedbackPack*>(canRxNode_.dataBuffer.data());
+			// 后续如果发现不能正确读取或位运算有错的话，可以试试换成用feedbackInfo来接收
+			fdbInfo_pkt.pack0_status = canRxNode_.dataBuffer[1] & 0x01;
+			fdbInfo_pkt.pack1_status = (canRxNode_.dataBuffer[1] >> 1) & 0x01;
+			fdbInfo_pkt.pack2_status = (canRxNode_.dataBuffer[1] >> 2) & 0x01;
+			fdbInfo_pkt.pack3_status = (canRxNode_.dataBuffer[1] >> 3) & 0x01;
+			break;
+		}
+		default:
+			break;
+		}
+		rxTimestamp_ = canRxNode_.timestamp; ///< 更新时间戳
+	}
+	return APP_OK;
 }
 
-} // namespace my_engineer
+}

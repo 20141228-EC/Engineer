@@ -125,6 +125,7 @@ void CSystemCore::ControlFromRemote_() {
             pchassis_->chassisCmd.speed_X = remote.joystick_LX / 2;             ///<摇杆的x方向控制车的左右移动，为了保证操作手的手感减小左右方向的速度
             pchassis_->chassisCmd.speed_Y = remote.joystick_LY;
             pchassis_->chassisCmd.speed_W = remote.joystick_RX;
+            pchassis_->chassisCmd.L_length -= remote.thumbWheel; ///< 腿长采用增量式控制
         }
         // 云台抬升
         if (pgimbal_) {
@@ -178,6 +179,37 @@ void CSystemCore::ControlFromRemote_() {
         }
     }
 */
+    // HIG + HIG 正常运动 遥控器控腿长
+    if(remote.switch_L == HIG && remote.switch_R == HIG)
+    {
+        SysRemote.SetRemoteDeadZone(10.f);
+        // 底盘控制
+        if (pchassis_) {
+            pchassis_->chassisCmd.speed_X = remote.joystick_LX / 2;             ///<摇杆的x方向控制车的左右移动，为了保证操作手的手感减小左右方向的速度
+            pchassis_->chassisCmd.speed_Y = remote.joystick_LY;
+            pchassis_->chassisCmd.speed_W = remote.joystick_RX;
+            pchassis_->chassisCmd.L_length -= remote.thumbWheel; ///< 腿长采用增量式控制
+        }
+    }
+
+    // HIG + MID 自动上台阶 利用陀螺仪数据控腿长
+    if(remote.switch_L == HIG && remote.switch_R == MID)
+    {
+        SysRemote.SetRemoteDeadZone(10.f);
+        // 底盘控制
+        if (pchassis_) {
+            pchassis_->chassisCmd.speed_X = remote.joystick_LX / 2;             ///<摇杆的x方向控制车的左右移动，为了保证操作手的手感减小左右方向的速度
+            pchassis_->chassisCmd.speed_Y = remote.joystick_LY;
+            pchassis_->chassisCmd.speed_W = remote.joystick_RX;
+            pchassis_->MovMode = CModChassis::EmovMode::CLIMBING; ///< 上台阶模式
+            ///< to be updated...
+        }
+    }
+    else
+    {
+        pchassis_->MovMode = CModChassis::EmovMode::NORMAL; ///< 普通模式
+    } ///< 更新运动模式
+
 }
 
 /**

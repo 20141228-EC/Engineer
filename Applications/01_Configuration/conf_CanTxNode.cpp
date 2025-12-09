@@ -26,6 +26,7 @@ CInfCAN::CCanTxNode TxNode_Can3_7FF;
 CInfCAN::CCanTxNode TxNode_Can1_280;
 CInfCAN::CCanTxNode TxNode_Can2_280;
 CInfCAN::CCanTxNode TxNode_Can3_280;
+CInfCAN::CCanTxNode TxNode_Can2_300;
 
 // 板间通信发送节点
 CInfCAN::CCanTxNode TxNode_Can3_300;
@@ -71,6 +72,8 @@ EAppStatus InitAllCanTxNode()
     TxNode_Can3_280.InitTxNode(EInterfaceID::INF_CAN3, 0x280,
                                 CInfCAN::ECanFrameType::DATA, CInfCAN::ECanFrameDlc::DLC_8);
 
+    TxNode_Can2_300.InitTxNode(EInterfaceID::INF_CAN2, 0x300,
+                                CInfCAN::ECanFrameType::DATA, CInfCAN::ECanFrameDlc::DLC_8);
     // 板间通信发送节点初始化
     TxNode_Can3_300.InitTxNode(EInterfaceID::INF_CAN3, 0x300,
                                 CInfCAN::ECanFrameType::DATA, CInfCAN::ECanFrameDlc::DLC_8);

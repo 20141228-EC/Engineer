@@ -178,6 +178,8 @@ EAppStatus InitAllModule() {
     chassisInitParam.wheelsetMotorID_RF = EDeviceID::DEV_CHAS_MTR_RF;
     chassisInitParam.wheelsetMotorID_LB = EDeviceID::DEV_CHAS_MTR_LB;
     chassisInitParam.wheelsetMotorID_RB = EDeviceID::DEV_CHAS_MTR_RB;
+    chassisInitParam.hipMotorID_L_L = EDeviceID::DEV_CHAS_L_HIP;
+    chassisInitParam.hipMotorID_L_R = EDeviceID::DEV_CHAS_R_HIP;
     // 设置can发送节点
     chassisInitParam.wheelsetMotorTxNode_LF = &TxNode_Can1_200;
     chassisInitParam.wheelsetMotorTxNode_RF = &TxNode_Can1_200;
@@ -201,6 +203,15 @@ EAppStatus InitAllModule() {
     chassisInitParam.wheelsetSpdPidParam.Input_deadband = 1.0f;
     chassisInitParam.wheelsetSpdPidParam.maxIntegral = 4000.0f;
     chassisInitParam.wheelsetSpdPidParam.maxOutput = 15000.0f;
+    chassisInitParam.pitchCorrectionPidParam.kp = 0.0f;
+    chassisInitParam.pitchCorrectionPidParam.ki = 0.0f;
+    chassisInitParam.pitchCorrectionPidParam.kd = 0.0f;
+    chassisInitParam.pitchCorrectionPidParam.Input_deadband = 1.0f;
+    chassisInitParam.pitchCorrectionPidParam.maxIntegral = 50.0f;
+    chassisInitParam.pitchCorrectionPidParam.maxOutput = 5000.0f; ///< pitch轴pid待调
+    chassisInitParam.MIT_L_kd = 0.0f;
+    chassisInitParam.MIT_L_kp = 0.0f; // mit参数待调
+
     // 使用初始化后的参数创建 chassisModule 实例
     static auto chassisModule = CModChassis(chassisInitParam);
 

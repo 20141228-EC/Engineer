@@ -31,6 +31,7 @@ EAppStatus CModChassis::InitModule(SModInitParam_Base &param){
 
     // 初始化底盘轮组
     comWheelset_.InitComponent(param);
+    comHip_.InitComponent(param);
 
     // 创建任务并注册模块
     CreateModuleTask_();
@@ -55,8 +56,27 @@ void CModChassis::UpdateHandler_(){
     // 检查模块状态
     if (moduleStatus == APP_RESET) return;
 
+    comWheelset_.MovMode_ = MovMode; ///< 更新面向底层轮组的运动模式
+
+    DataBuffer<float_t> pitch_Target = {0.0f}; ///< 目标pitch角度，目前暂时写这个，后续出车之后根据实际可能有些误差待改
+
+    // 计算Pitch角
+    float_t acc_x = comHip_.mems->memsData[CMemsBase::DATA_ACC_X];
+    float_t acc_y = comHip_.mems->memsData[CMemsBase::DATA_ACC_Y];
+    float_t acc_z = comHip_.mems->memsData[CMemsBase::DATA_ACC_Z];
+    pitch_Measure = {atan2f(acc_x, sqrtf(acc_y * acc_y + acc_z * acc_z))};
+
+    // 底盘pitch轴是一个三环pid控制，最外环为控pitch轴角度，输出目标腿长，内环是控腿长
+    DataBuffer<float_t> pitch_target_climbing;
+    if(MovMode == EmovMode::CLIMBING)
+    {
+        pitch_target_climbing = comHip_.pidPitchCtrl.UpdatePidController(pitch_Target, pitch_Measure);
+        chassisCmd.L_length = pitch_target_climbing[0] * PITCH_DEG_ECD_RATIO; ///< 覆盖掉命令值
+    } 
+
     // 更新底盘轮组
     comWheelset_.UpdateComponent();
+    comHip_.UpdateComponent();
 
 
     // 填充电机发送缓冲区
@@ -71,7 +91,7 @@ void CModChassis::UpdateHandler_(){
                                 comWheelset_.mtrOutputBuffer[CComWheelset::LB]);
     CDevMtrDJI::FillCanTxBuffer(comWheelset_.motor[CComWheelset::RB],
                                 comWheelset_.mtrCanTxNode[CComWheelset::RB]->dataBuffer,
-                                comWheelset_.mtrOutputBuffer[CComWheelset::RB]);
+                                comWheelset_.mtrOutputBuffer[CComWheelset::RB]);                      
 
 }
 
@@ -119,6 +139,9 @@ EAppStatus CModChassis::RestrictChassisCommand_() {
     chassisCmd.speed_X = std::clamp(chassisCmd.speed_X, -100.0f, 100.0f);
     chassisCmd.speed_Y = std::clamp(chassisCmd.speed_Y, -100.0f, 100.0f);
     chassisCmd.speed_W = std::clamp(chassisCmd.speed_W, -100.0f, 100.0f);
+    chassisCmd.L_length = std::clamp(chassisCmd.L_length, -100.0f, 100.0f);
+
+    //看后续是否要加对髋关节的控制命令大小的限制
 
     // 自动控制启用，则不继续做限制
     if (chassisCmd.isAutoCtrl) return APP_OK;
