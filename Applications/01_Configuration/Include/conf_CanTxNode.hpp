@@ -31,6 +31,9 @@ extern CInfCAN::CCanTxNode TxNode_Can1_280;
 extern CInfCAN::CCanTxNode TxNode_Can2_280;
 extern CInfCAN::CCanTxNode TxNode_Can3_280;
 
+// 板间通信发送节点
+extern CInfCAN::CCanTxNode TxNode_Can3_300;
+
 EAppStatus InitAllCanTxNode();
 
 }

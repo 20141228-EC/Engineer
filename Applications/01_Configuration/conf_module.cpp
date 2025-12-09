@@ -25,12 +25,14 @@ EAppStatus InitAllModule() {
     armInitParam.MotorID_Roll = EDeviceID::DEV_ARM_MTR_ROLL;
     armInitParam.MotorID_End_L = EDeviceID::DEV_ARM_MTR_END_L;
     armInitParam.MotorID_End_R = EDeviceID::DEV_ARM_MTR_END_R;
+    armInitParam.MotorID_Grip = EDeviceID::DEV_ARM_MTR_GRIP;
     // 设置can发送节点
     armInitParam.MotorTxNode_Yaw = &TxNode_Can3_280;
     armInitParam.MotorTxNode_Pitch1 = &TxNode_Can3_280;
     armInitParam.MotorTxNode_Pitch2 = &TxNode_Can3_280;
     armInitParam.MotorTxNode_End_L = &TxNode_Can2_1FF;
     armInitParam.MotorTxNode_End_R = &TxNode_Can2_1FF;
+    armInitParam.MotorTxNode_Grip = &TxNode_Can2_1FF;
     // 初始化 YawPosPidParam 的成员
    armInitParam.YawPosPidParam.kp = 0.4;
    armInitParam.YawPosPidParam.ki = 0.0f;
@@ -81,6 +83,17 @@ EAppStatus InitAllModule() {
    armInitParam.endSpdPidParam.kd = 0.0f;
    armInitParam.endSpdPidParam.maxIntegral = 4000.0f;
    armInitParam.endSpdPidParam.maxOutput = 4500.0f;
+   // 初始化 GripPosPidParam 的成员
+   armInitParam.GripPosPidParam.kp = 0.2f;
+    armInitParam.GripPosPidParam.ki = 0.0f;
+    armInitParam.GripPosPidParam.kd = 0.0f;
+    armInitParam.GripPosPidParam.maxOutput = 3000.0f;
+    // 初始化 GripSpdPidParam 的成员
+    armInitParam.GripSpdPidParam.kp = 23.f;
+    armInitParam.GripSpdPidParam.ki = 0.0f;
+    armInitParam.GripSpdPidParam.kd = 0.0f;
+    armInitParam.GripSpdPidParam.maxIntegral = 1500.0f;
+    armInitParam.GripSpdPidParam.maxOutput = 2000.0f;
     // 使用初始化后的参数创建 armModule 实例
     static auto armModule = CModArm(armInitParam);
 

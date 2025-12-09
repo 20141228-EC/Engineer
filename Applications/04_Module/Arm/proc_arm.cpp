@@ -39,6 +39,7 @@ void CModArm::StartArmModuleTask(void *argument) {					///<该任务在mod_arm.c
 				arm.comjoint_.StopComponent();
 				arm.comRoll_.StopComponent();
 				arm.comEnd_.StopComponent();
+				arm.comGrip_.StopComponent();
 
 				proc_waitMs(20);
 				continue; // 跳过下面的代码，直接进入下一次循环
@@ -47,7 +48,11 @@ void CModArm::StartArmModuleTask(void *argument) {					///<该任务在mod_arm.c
 			case FSM_INIT: {
 
 				proc_waitMs(250); // 等待系统稳定
-				
+
+				//test
+				arm.comGrip_.StartComponent();
+				proc_waitUntil(arm.comGrip_.componentStatus == APP_OK);
+
 				arm.comjoint_.StartComponent();												///<刚开始的时候设置为busy状态，当初始化以后就设置为ok状态
 				proc_waitUntil(arm.comjoint_.componentStatus == APP_OK);					///<此处先挂起10ms之后，一直等待关节电机任务初始化结束否者就一直10ms的等
 				
@@ -64,6 +69,7 @@ void CModArm::StartArmModuleTask(void *argument) {					///<该任务在mod_arm.c
 				arm.armCmd.set_angle_Pitch2 = ARM_PITCH2_INIT_ANGLE;
 				arm.armCmd.set_angle_Roll = ARM_ROLL_INIT_ANGLE;
 				arm.armCmd.set_angle_end_pitch = ARM_END_PITCH_INIT_ANGLE;
+				arm.armCmd.set_length_grip = ARM_GRIP_INIT_LENGTH;
 				arm.armInfo.isModuleAvailable = true;
 				arm.Module_FSMFlag_ = FSM_CTRL;
 				arm.moduleStatus = APP_OK;
@@ -87,6 +93,8 @@ void CModArm::StartArmModuleTask(void *argument) {					///<该任务在mod_arm.c
 					CComEnd::PhyPositToMtrPosit_Pitch(arm.armCmd.set_angle_end_pitch);
 				arm.comEnd_.endCmd.setPosit_Roll =
 					CComEnd::PhyPositToMtrPosit_Roll(arm.armCmd.set_angle_end_roll);
+				arm.comGrip_.gripCmd.setPosit_grip = 									///<夹爪的外部接口是距离，内部接口时编码器的数值
+					CComGrip::PhyPositToMtrPosit(arm.armCmd.set_length_grip);
 
 				proc_waitMs(1); // 1000Hz
 				break;

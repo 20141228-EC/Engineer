@@ -4,7 +4,7 @@ F (..\..\..\Applications\01_Configuration\conf_CanTxNode.cpp)(0x69245606)(-xc++ 
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\Interface.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -97,7 +97,7 @@ I (..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h)(0x692456
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h)(0x69245607)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h)(0x69245607)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h)(0x69245607)
-F (..\..\..\Applications\01_Configuration\conf_device.cpp)(0x6925F12D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/conf_device.o -MMD)
+F (..\..\..\Applications\01_Configuration\conf_device.cpp)(0x693291CE)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/conf_device.o -MMD)
 I (..\..\..\Applications\01_Configuration\Include\conf_device.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
@@ -177,7 +177,7 @@ I (..\..\..\Middlewares\FreeRTOS-Kernel\include\list.h)(0x69245607)
 I (..\..\..\Middlewares\FreeRTOS-Kernel\include\queue.h)(0x69245607)
 I (..\..\..\Applications\03_Device\Include\Device.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_process.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_interface.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_module.hpp)(0x69245606)
@@ -299,7 +299,7 @@ I (..\..\..\Middlewares\FreeRTOS-Kernel\include\list.h)(0x69245607)
 I (..\..\..\Middlewares\FreeRTOS-Kernel\include\queue.h)(0x69245607)
 I (..\..\..\Applications\02_Interface\Include\Interface.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_process.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_module.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_device.hpp)(0x69245606)
@@ -316,7 +316,7 @@ I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h)(0x69245607)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h)(0x69245607)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h)(0x69245607)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
-F (..\..\..\Applications\01_Configuration\conf_module.cpp)(0x6925F12D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/conf_module.o -MMD)
+F (..\..\..\Applications\01_Configuration\conf_module.cpp)(0x693292E3)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/conf_module.o -MMD)
 I (..\..\..\Applications\01_Configuration\Include\conf_module.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
@@ -394,9 +394,9 @@ I (..\..\..\Middlewares\FreeRTOS-Kernel\include\timers.h)(0x69245607)
 I (..\..\..\Middlewares\FreeRTOS-Kernel\include\task.h)(0x69245607)
 I (..\..\..\Middlewares\FreeRTOS-Kernel\include\list.h)(0x69245607)
 I (..\..\..\Middlewares\FreeRTOS-Kernel\include\queue.h)(0x69245607)
-I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6925F12D)
+I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6929DF37)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_process.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_interface.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_device.hpp)(0x69245606)
@@ -444,7 +444,7 @@ I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 F (..\..\..\Applications\01_Configuration\conf_process.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/conf_process.o -MMD)
 I (..\..\..\Applications\01_Configuration\Include\conf_process.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
@@ -524,7 +524,7 @@ I (..\..\..\Middlewares\FreeRTOS-Kernel\include\task.h)(0x69245607)
 I (..\..\..\Middlewares\FreeRTOS-Kernel\include\list.h)(0x69245607)
 I (..\..\..\Middlewares\FreeRTOS-Kernel\include\queue.h)(0x69245607)
 F (..\..\..\Applications\01_Configuration\Configuration.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/configuration.o -MMD)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -648,7 +648,7 @@ I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
 F (..\..\..\Applications\05_System\System.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/system.o -MMD)
 I (..\..\..\Applications\05_System\Include\System.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -777,18 +777,18 @@ I (..\..\..\Applications\05_System\Include\sys_vision.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_referee.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_controller_link.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_esp32.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6925F12D)
+I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6929DF37)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\Interface.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 F (..\..\..\Applications\05_System\Vison\sys_vison.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/sys_vison.o -MMD)
-I (..\..\..\Applications\05_System\Include\Core.hpp)(0x6925F12D)
+I (..\..\..\Applications\05_System\Include\Core.hpp)(0x6929DF37)
 I (..\..\..\Applications\02_Interface\Include\Interface.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -908,12 +908,12 @@ I (..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_vision.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6925F12D)
+I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6929DF37)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 I (..\..\..\Applications\05_System\Include\System.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_common.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\RTT_DEBUG.h)(0x69245606)
@@ -926,10 +926,10 @@ I (..\..\..\Applications\05_System\Include\sys_controller_link.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\00_Algorithm\Include\algo_other.hpp)(0x69245606)
 F (..\..\..\Applications\05_System\Tasks\sys_task.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/sys_task.o -MMD)
-I (..\..\..\Applications\05_System\Include\Core.hpp)(0x6925F12D)
+I (..\..\..\Applications\05_System\Include\Core.hpp)(0x6929DF37)
 I (..\..\..\Applications\02_Interface\Include\Interface.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -1049,12 +1049,12 @@ I (..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_vision.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6925F12D)
+I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6929DF37)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 I (..\..\..\Applications\05_System\Include\System.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_common.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\RTT_DEBUG.h)(0x69245606)
@@ -1067,10 +1067,10 @@ I (..\..\..\Applications\05_System\Include\sys_controller_link.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\00_Algorithm\Include\algo_other.hpp)(0x69245606)
 F (..\..\..\Applications\05_System\Remote\sys_remote.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/sys_remote.o -MMD)
-I (..\..\..\Applications\05_System\Include\Core.hpp)(0x6925F12D)
+I (..\..\..\Applications\05_System\Include\Core.hpp)(0x6929DF37)
 I (..\..\..\Applications\02_Interface\Include\Interface.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -1190,12 +1190,12 @@ I (..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_vision.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6925F12D)
+I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6929DF37)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 I (..\..\..\Applications\05_System\Include\System.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_common.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\RTT_DEBUG.h)(0x69245606)
@@ -1207,11 +1207,11 @@ I (..\..\..\Applications\05_System\Include\sys_referee.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_controller_link.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\00_Algorithm\Include\algo_other.hpp)(0x69245606)
-F (..\..\..\Applications\05_System\Core\control.cpp)(0x6925F12D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/control.o -MMD)
-I (..\..\..\Applications\05_System\Include\Core.hpp)(0x6925F12D)
+F (..\..\..\Applications\05_System\Core\control.cpp)(0x693297C4)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/control.o -MMD)
+I (..\..\..\Applications\05_System\Include\Core.hpp)(0x6929DF37)
 I (..\..\..\Applications\02_Interface\Include\Interface.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -1331,12 +1331,12 @@ I (..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_vision.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6925F12D)
+I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6929DF37)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 I (..\..\..\Applications\05_System\Include\System.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_common.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\RTT_DEBUG.h)(0x69245606)
@@ -1348,11 +1348,11 @@ I (..\..\..\Applications\05_System\Include\sys_referee.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_controller_link.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\00_Algorithm\Include\algo_other.hpp)(0x69245606)
-F (..\..\..\Applications\05_System\Core\Core.cpp)(0x6925F4A6)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/core.o -MMD)
-I (..\..\..\Applications\05_System\Include\Core.hpp)(0x6925F12D)
+F (..\..\..\Applications\05_System\Core\Core.cpp)(0x6929DF37)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/core.o -MMD)
+I (..\..\..\Applications\05_System\Include\Core.hpp)(0x6929DF37)
 I (..\..\..\Applications\02_Interface\Include\Interface.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -1472,12 +1472,12 @@ I (..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_vision.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6925F12D)
+I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6929DF37)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 I (..\..\..\Applications\05_System\Include\System.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_common.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\RTT_DEBUG.h)(0x69245606)
@@ -1492,7 +1492,7 @@ I (..\..\..\Applications\00_Algorithm\Include\algo_other.hpp)(0x69245606)
 F (..\..\..\Applications\05_System\Controller_Link\sys_controller_link.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/sys_controller_link.o -MMD)
 I (..\..\..\Applications\05_System\Include\sys_controller_link.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -1613,10 +1613,10 @@ I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h)(0x69245607)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h)(0x69245607)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h)(0x69245607)
 I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
-F (..\..\..\Applications\05_System\ESP32\sys_esp32.cpp)(0x6925F12D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/sys_esp32.o -MMD)
+F (..\..\..\Applications\05_System\ESP32\sys_esp32.cpp)(0x6929DF37)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/sys_esp32.o -MMD)
 I (..\..\..\Applications\05_System\Include\sys_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -1737,18 +1737,18 @@ I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h)(0x69245607)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h)(0x69245607)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h)(0x69245607)
 I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6925F12D)
+I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6929DF37)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\Interface.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
-F (..\..\..\Applications\05_System\Referee\referee_ui.cpp)(0x6925FB0E)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/referee_ui.o -MMD)
-I (..\..\..\Applications\05_System\Include\Core.hpp)(0x6925F12D)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
+F (..\..\..\Applications\05_System\Referee\referee_ui.cpp)(0x6929DF37)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/referee_ui.o -MMD)
+I (..\..\..\Applications\05_System\Include\Core.hpp)(0x6929DF37)
 I (..\..\..\Applications\02_Interface\Include\Interface.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -1868,12 +1868,12 @@ I (..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_vision.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6925F12D)
+I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6929DF37)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 I (..\..\..\Applications\05_System\Include\System.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_common.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\RTT_DEBUG.h)(0x69245606)
@@ -1888,7 +1888,7 @@ I (..\..\..\Applications\00_Algorithm\Include\algo_other.hpp)(0x69245606)
 F (..\..\..\Applications\05_System\Referee\sys_referee.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/sys_referee.o -MMD)
 I (..\..\..\Applications\05_System\Include\System.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -2017,17 +2017,17 @@ I (..\..\..\Applications\05_System\Include\sys_vision.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_referee.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_controller_link.hpp)(0x69245606)
 I (..\..\..\Applications\05_System\Include\sys_esp32.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6925F12D)
+I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6929DF37)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\Interface.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 F (..\..\..\Applications\04_Module\Module.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/module.o -MMD)
-I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6925F12D)
+I (..\..\..\Applications\04_Module\Include\Module.hpp)(0x6929DF37)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -2152,11 +2152,11 @@ I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 F (..\..\..\Applications\04_Module\Arm\com_end.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_end.o -MMD)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -2280,9 +2280,9 @@ I (..\..\..\Applications\03_Device\Include\dev_vision.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 F (..\..\..\Applications\04_Module\Arm\com_roll.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_roll.o -MMD)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -2405,10 +2405,10 @@ I (..\..\..\Applications\03_Device\Include\dev_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_vision.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
-F (..\..\..\Applications\04_Module\Arm\mod_arm.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/mod_arm.o -MMD)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+F (..\..\..\Applications\04_Module\Arm\mod_arm.cpp)(0x6932957D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/mod_arm.o -MMD)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -2531,10 +2531,10 @@ I (..\..\..\Applications\03_Device\Include\dev_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_vision.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
-F (..\..\..\Applications\04_Module\Arm\proc_arm.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/proc_arm.o -MMD)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+F (..\..\..\Applications\04_Module\Arm\proc_arm.cpp)(0x69329C8A)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/proc_arm.o -MMD)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -2658,9 +2658,135 @@ I (..\..\..\Applications\03_Device\Include\dev_vision.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 F (..\..\..\Applications\04_Module\Arm\com_joint.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_joint.o -MMD)
-I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x69245606)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
+I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
+I (..\Core\Inc\main.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
+I (..\Core\Inc\stm32h7xx_hal_conf.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_rcc.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_def.h)(0x69245607)
+I (..\Drivers\CMSIS\Device\ST\STM32H7xx\Include\stm32h7xx.h)(0x69245607)
+I (..\Drivers\CMSIS\Device\ST\STM32H7xx\Include\stm32h723xx.h)(0x69245607)
+I (..\Drivers\CMSIS\Include\core_cm7.h)(0x69245607)
+I (..\Drivers\CMSIS\Device\ST\STM32H7xx\Include\system_stm32h7xx.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\Legacy\stm32_hal_legacy.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_rcc_ex.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_gpio.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_gpio_ex.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_dma.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_dma_ex.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_mdma.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_exti.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_cortex.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_adc.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_ll_adc.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_adc_ex.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_fdcan.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_crc.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_crc_ex.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_flash.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_flash_ex.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_hsem.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_i2c.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_i2c_ex.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_iwdg.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_ospi.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pwr.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pwr_ex.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_spi.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_spi_ex.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_tim.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_tim_ex.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pcd.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_ll_usb.h)(0x69245607)
+I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pcd_ex.h)(0x69245607)
+I (..\..\..\Drivers\CMSIS\DSP\Include\arm_math.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\arm_math_types.h)(0x69245606)
+I (..\Drivers\CMSIS\Include\cmsis_compiler.h)(0x69245607)
+I (..\..\..\Drivers\CMSIS\DSP\Include\arm_math_memory.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\none.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\utils.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\basic_math_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\interpolation_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\bayes_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\statistics_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\fast_math_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\matrix_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\complex_math_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\controller_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\support_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\distance_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\svm_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\svm_defines.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\transform_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\filtering_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\quaternion_math_functions.h)(0x69245606)
+I (..\..\..\Drivers\CMSIS\DSP\Include\dsp\window_functions.h)(0x69245606)
+I (..\..\..\Middlewares\FreeRTOS-Kernel\include\FreeRTOS.h)(0x69245607)
+I (..\BSP\FreeRTOSConfig.h)(0x69245607)
+I (..\..\..\Middlewares\FreeRTOS-Kernel\include\projdefs.h)(0x69245607)
+I (..\..\..\Middlewares\FreeRTOS-Kernel\include\portable.h)(0x69245607)
+I (..\..\..\Middlewares\FreeRTOS-Kernel\include\deprecated_definitions.h)(0x69245607)
+I (..\..\..\Middlewares\FreeRTOS-Kernel\portable\GCC\ARM_CM7\r0p1\portmacro.h)(0x69245607)
+I (..\..\..\Middlewares\FreeRTOS-Kernel\include\mpu_wrappers.h)(0x69245607)
+I (..\..\..\Middlewares\FreeRTOS-Kernel\include\timers.h)(0x69245607)
+I (..\..\..\Middlewares\FreeRTOS-Kernel\include\task.h)(0x69245607)
+I (..\..\..\Middlewares\FreeRTOS-Kernel\include\list.h)(0x69245607)
+I (..\..\..\Middlewares\FreeRTOS-Kernel\include\queue.h)(0x69245607)
+I (..\..\..\Applications\01_Configuration\Include\conf_process.hpp)(0x69245606)
+I (..\..\..\Applications\01_Configuration\Include\conf_interface.hpp)(0x69245606)
+I (..\..\..\Applications\01_Configuration\Include\conf_module.hpp)(0x69245606)
+I (..\..\..\Applications\01_Configuration\Include\conf_device.hpp)(0x69245606)
+I (..\..\..\Applications\00_Algorithm\Include\algo_pid.hpp)(0x69245606)
+I (..\..\..\Applications\02_Interface\Include\Interface.hpp)(0x69245606)
+I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
+I (..\..\..\Applications\02_Interface\Include\inf_uart.hpp)(0x69245606)
+I (..\..\..\Applications\02_Interface\Include\inf_can.hpp)(0x69245606)
+I (..\..\..\Applications\02_Interface\Include\inf_spi.hpp)(0x69245606)
+I (..\..\..\Applications\02_Interface\Include\inf_usb_cdc.hpp)(0x69245606)
+I (..\USB_DEVICE\App\usb_device.h)(0x69245607)
+I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_def.h)(0x69245607)
+I (..\USB_DEVICE\Target\usbd_conf.h)(0x69245607)
+I (..\USB_DEVICE\App\usbd_cdc_if.h)(0x69245607)
+I (..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h)(0x69245607)
+I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h)(0x69245607)
+I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h)(0x69245607)
+I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h)(0x69245607)
+I (..\..\..\Applications\03_Device\Include\Device.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\mtr\motor.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\mtr\mtr_common.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\mtr\mtr_dm.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\mtr\mtr_dm_mit.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\mtr\mtr_dji.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\mtr\mtr_m2006.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\mtr\mtr_m3508.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\mtr\mtr_kt.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\mems\mems.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\mems\mems_common.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\mems\mems_bmi088.hpp)(0x69245606)
+I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x69245606)
+I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x69245606)
+I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\rc\remote.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\rc\rc_common.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\rc\rc_def.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\rc\rc_dr16.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\dev_servo.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\dev_controller_link.hpp)(0x69245606)
+I (..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\dev_esp32.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\dev_vision.hpp)(0x69245606)
+I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
+I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
+F (..\..\..\Applications\04_Module\Arm\com_grip.cpp)(0x6932914C)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_grip.o -MMD)
+I (..\..\..\Applications\04_Module\Include\mod_arm.hpp)(0x693294F6)
+I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -2786,7 +2912,7 @@ I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606
 F (..\..\..\Applications\04_Module\Chassis\com_wheelset.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_wheelset.o -MMD)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -2912,7 +3038,7 @@ I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606
 F (..\..\..\Applications\04_Module\Chassis\mod_chassis.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/mod_chassis.o -MMD)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -3038,7 +3164,7 @@ I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606
 F (..\..\..\Applications\04_Module\Chassis\proc_chassis.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/proc_chassis.o -MMD)
 I (..\..\..\Applications\04_Module\Include\mod_chassis.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -3164,7 +3290,7 @@ I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606
 F (..\..\..\Applications\04_Module\Gimbal\com_lift_gimbal.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_lift_gimbal.o -MMD)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -3290,7 +3416,7 @@ I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606
 F (..\..\..\Applications\04_Module\Gimbal\mod_gimbal.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/mod_gimbal.o -MMD)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -3416,7 +3542,7 @@ I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606
 F (..\..\..\Applications\04_Module\Gimbal\proc_gimbal.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/proc_gimbal.o -MMD)
 I (..\..\..\Applications\04_Module\Include\mod_gimbal.hpp)(0x69245606)
 I (..\..\..\Applications\04_Module\Include\mod_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -3541,7 +3667,7 @@ I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp)(0x69245606)
 F (..\..\..\Applications\00_Algorithm\algo_crc.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/algo_crc.o -MMD)
 I (..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -3624,7 +3750,7 @@ I (..\..\..\Applications\01_Configuration\Include\conf_module.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_device.hpp)(0x69245606)
 F (..\..\..\Applications\00_Algorithm\algo_other.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/algo_other.o -MMD)
 I (..\..\..\Applications\00_Algorithm\Include\algo_other.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -3707,7 +3833,7 @@ I (..\..\..\Applications\01_Configuration\Include\conf_module.hpp)(0x69245606)
 I (..\..\..\Applications\01_Configuration\Include\conf_device.hpp)(0x69245606)
 F (..\..\..\Applications\00_Algorithm\algo_pid.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/algo_pid.o -MMD)
 I (..\..\..\Applications\00_Algorithm\Include\algo_pid.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -3791,7 +3917,7 @@ I (..\..\..\Applications\01_Configuration\Include\conf_device.hpp)(0x69245606)
 F (..\..\..\Applications\03_Device\dev_controller_link.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/dev_controller_link.o -MMD)
 I (..\..\..\Applications\03_Device\Include\dev_controller_link.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -3878,7 +4004,7 @@ I (..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp)(0x69245606)
 F (..\..\..\Applications\03_Device\dev_referee.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/dev_referee.o -MMD)
 I (..\..\..\Applications\03_Device\Include\dev_referee.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -3965,7 +4091,7 @@ I (..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp)(0x69245606)
 F (..\..\..\Applications\03_Device\dev_servo.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/dev_servo.o -MMD)
 I (..\..\..\Applications\03_Device\Include\dev_servo.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -4049,7 +4175,7 @@ I (..\..\..\Applications\01_Configuration\Include\conf_device.hpp)(0x69245606)
 F (..\..\..\Applications\03_Device\dev_vision.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/dev_vision.o -MMD)
 I (..\..\..\Applications\03_Device\Include\dev_vision.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -4144,7 +4270,7 @@ I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h)(0x69245607
 F (..\..\..\Applications\03_Device\Device.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/device.o -MMD)
 I (..\..\..\Applications\03_Device\Include\Device.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -4267,7 +4393,7 @@ F (..\..\..\Applications\03_Device\RC\rc_dr16.cpp)(0x69245606)(-xc++ -std=gnu++1
 I (..\..\..\Applications\03_Device\Include\rc\rc_dr16.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\rc\rc_common.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -4355,7 +4481,7 @@ F (..\..\..\Applications\03_Device\RC\remote.cpp)(0x69245606)(-xc++ -std=gnu++17
 I (..\..\..\Applications\03_Device\Include\rc\remote.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\rc\rc_common.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -4444,7 +4570,7 @@ F (..\..\..\Applications\03_Device\MTR\motor.cpp)(0x69245606)(-xc++ -std=gnu++17
 I (..\..\..\Applications\03_Device\Include\mtr\motor.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\mtr\mtr_common.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -4537,7 +4663,7 @@ F (..\..\..\Applications\03_Device\MTR\mtr_dji.cpp)(0x69245606)(-xc++ -std=gnu++
 I (..\..\..\Applications\03_Device\Include\mtr\mtr_dji.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\mtr\mtr_common.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -4624,7 +4750,7 @@ F (..\..\..\Applications\03_Device\MTR\mtr_dm.cpp)(0x69245606)(-xc++ -std=gnu++1
 I (..\..\..\Applications\03_Device\Include\mtr\mtr_dm.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\mtr\mtr_common.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -4711,7 +4837,7 @@ F (..\..\..\Applications\03_Device\MTR\mtr_kt.cpp)(0x69245606)(-xc++ -std=gnu++1
 I (..\..\..\Applications\03_Device\Include\mtr\mtr_kt.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\mtr\mtr_common.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -4798,7 +4924,7 @@ F (..\..\..\Applications\03_Device\MEMS\mems.cpp)(0x69245606)(-xc++ -std=gnu++17
 I (..\..\..\Applications\03_Device\Include\mems\mems.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\mems\mems_common.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -4890,7 +5016,7 @@ F (..\..\..\Applications\03_Device\MEMS\mems_bmi088.cpp)(0x69245606)(-xc++ -std=
 I (..\..\..\Applications\03_Device\Include\mems\mems_bmi088.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\mems\mems_common.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -4980,7 +5106,7 @@ I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x69245606)
 F (..\..\..\Applications\03_Device\BUZZER\dev_buzzer.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/dev_buzzer.o -MMD)
 I (..\..\..\Applications\03_Device\Include\buzzer\dev_buzzer.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -5065,7 +5191,7 @@ I (..\..\..\Applications\03_Device\Include\buzzer\music_lib.hpp)(0x69245606)
 F (..\..\..\Applications\03_Device\BUZZER\music_lib.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/music_lib.o -MMD)
 I (..\..\..\Applications\03_Device\Include\buzzer\music_lib.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -5150,7 +5276,7 @@ F (..\..\..\Applications\03_Device\MTR\mtr_dm_mit.cpp)(0x69245606)(-xc++ -std=gn
 I (..\..\..\Applications\03_Device\Include\mtr\mtr_dm_mit.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\mtr\mtr_common.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -5249,7 +5375,7 @@ I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h)(0x69245607
 F (..\..\..\Applications\03_Device\dev_esp32.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/dev_esp32.o -MMD)
 I (..\..\..\Applications\03_Device\Include\dev_esp32.hpp)(0x69245606)
 I (..\..\..\Applications\03_Device\Include\dev_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -5336,7 +5462,7 @@ I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
 F (..\..\..\Applications\02_Interface\inf_can.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/inf_can.o -MMD)
 I (..\..\..\Applications\02_Interface\Include\inf_can.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -5420,7 +5546,7 @@ I (..\..\..\Applications\01_Configuration\Include\conf_device.hpp)(0x69245606)
 F (..\..\..\Applications\02_Interface\inf_spi.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/inf_spi.o -MMD)
 I (..\..\..\Applications\02_Interface\Include\inf_spi.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -5504,7 +5630,7 @@ I (..\..\..\Applications\01_Configuration\Include\conf_device.hpp)(0x69245606)
 F (..\..\..\Applications\02_Interface\inf_uart.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/inf_uart.o -MMD)
 I (..\..\..\Applications\02_Interface\Include\inf_uart.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -5588,7 +5714,7 @@ I (..\..\..\Applications\01_Configuration\Include\conf_device.hpp)(0x69245606)
 F (..\..\..\Applications\02_Interface\inf_usb_cdc.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/inf_usb_cdc.o -MMD)
 I (..\..\..\Applications\02_Interface\Include\inf_usb_cdc.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -5680,7 +5806,7 @@ I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h)(0x69245607
 F (..\..\..\Applications\02_Interface\Interface.cpp)(0x69245606)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/00_Algorithm/Include -I ../../../Applications/01_Configuration/Include -I ../../../Applications/02_Interface/Include -I ../../../Applications/03_Device/Include -I ../../../Applications/04_Module/Include -I ../../../Applications/05_System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -I ../../../Middlewares/SEGGER_RTT-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/interface.o -MMD)
 I (..\..\..\Applications\02_Interface\Include\Interface.hpp)(0x69245606)
 I (..\..\..\Applications\02_Interface\Include\inf_common.hpp)(0x69245606)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\Core\Inc\main.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x69245607)
@@ -7642,7 +7768,7 @@ I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pcd.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_ll_usb.h)(0x69245607)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pcd_ex.h)(0x69245607)
-I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6925FB0E)
+I (..\..\..\Applications\01_Configuration\Include\Configuration.hpp)(0x6932917B)
 I (..\..\..\Applications\01_Configuration\Include\conf_common.hpp)(0x69245606)
 I (..\..\..\Drivers\CMSIS\DSP\Include\arm_math.h)(0x69245606)
 I (..\..\..\Drivers\CMSIS\DSP\Include\arm_math_types.h)(0x69245606)
