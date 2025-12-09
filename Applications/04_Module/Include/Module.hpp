@@ -14,7 +14,6 @@
 
 #include "mod_common.hpp"
 #include "mod_chassis.hpp"
-#include "mod_gimbal.hpp"
 #include "mod_arm.hpp"
 // #include "mod_gantry.hpp"
 // #include "mod_climber.hpp"

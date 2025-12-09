@@ -69,17 +69,15 @@ void StartUpdateTask(void *argument) {
 
 
         // 执行can发送
-		TxNode_Can1_200.Transmit();
-        TxNode_Can2_200.Transmit();
-		TxNode_Can3_280.Transmit();
 
-
-		if(HalfTickRate) {
-			TxNode_Can2_1FF.Transmit();         ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载
+		if(HalfTickRate) {              ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载                  
+		    TxNode_Can3_280.Transmit(); ///< 机械臂后三轴电机
         }
+            
+        TxNode_Can1_200.Transmit(); ///< 底盘轮毂电机
+        TxNode_Can2_200.Transmit(); ///< 末端pitch roll和夹爪收放  待改
 
-
-        proc_waitMs(2); // 500Hz
+        proc_waitMs(1); // 1000Hz
 
     }
 }

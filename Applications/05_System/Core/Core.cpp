@@ -66,11 +66,6 @@ EAppStatus CSystemCore::InitSystemCore() {
         pchassis_ = reinterpret_cast<CModChassis *>(it_chassis->second);
     }
 
-    auto it_gimbal = ModuleIDMap.find(EModuleID::MOD_GIMBAL);
-    if (it_gimbal != ModuleIDMap.end() && it_gimbal->second != nullptr) {
-        pgimbal_ = reinterpret_cast<CModGimbal *>(it_gimbal->second);
-    }
-
     // pgantry_ = reinterpret_cast<CModGantry *>(ModuleIDMap.at(EModuleID::MOD_GANTRY));
     // pclimber_ = reinterpret_cast<CModClimber *>(ModuleIDMap.at(EModuleID::MOD_CLIMBER));
 
@@ -189,6 +184,7 @@ void CSystemCore::UpdateHandler_() {
     if (use_Controller_ == true)
     {
         ControlFromController_();
+        ctrlmode_ = ECtrlMode::CONTROLLER_CTRL; ///< 自定义控制器控制
     }
     else
     {
@@ -197,10 +193,12 @@ void CSystemCore::UpdateHandler_() {
         && SysRemote.remoteInfo.remote.switch_R == 1)
         {
             ControlFromKeyboard_();
+            ctrlmode_ = ECtrlMode::KEY_CTRL; ///< 键鼠控制
         }
         else
         {
             ControlFromRemote_();
+            ctrlmode_ = ECtrlMode::RC_CTRL; ///< 遥控器控制
         }
     }
     last_use_Controller = use_Controller_;
@@ -244,7 +242,6 @@ void CSystemCore::HeartbeatHandler_() {
         
         // 停止所有模块（添加空指针检查）
         if (pchassis_) pchassis_->StopModule();
-        if (pgimbal_) pgimbal_->StopModule();
         // if (psubgantry_) psubgantry_->StopModule(); // 已删除
         if (parm_) parm_->StopModule();
         
@@ -257,7 +254,6 @@ void CSystemCore::HeartbeatHandler_() {
 void CSystemCore::RESET_SYSTEM() {
 
     if (pchassis_) pchassis_->StopModule();
-    if (pgimbal_) pgimbal_->StopModule();
     // if (psubgantry_) psubgantry_->StopModule(); // 已删除
     if (parm_) parm_->StopModule();
 
@@ -377,10 +373,30 @@ EAppStatus CSystemCore::StopAutoCtrlTask_() {
     // 清除所有模块的自动控制标志（添加空指针检查）
     // psubgantry_->subGantryCmd.isAutoCtrl = false; // 已删除
     if (pchassis_) pchassis_->chassisCmd.isAutoCtrl = false;
-    if (pgimbal_) pgimbal_->gimbalCmd.isAutoCtrl = false;
     if (parm_) parm_->armCmd.isAutoCtrl = false;
 
     return APP_OK;
+}
+
+void CSystemCore::BoardLink_Info_Update_(){
+    // 检查系统核心状态
+    if (coreStatus == APP_RESET) return;
+
+    // 包0数据更新
+    SysBoardLink.remoteInfo1.joystick_RX = SysRemote.remoteInfo.remote.joystick_RX * 100; ///< 右摇杆x
+    SysBoardLink.remoteInfo1.joystick_RY = SysRemote.remoteInfo.remote.joystick_RY * 100; ///< 右摇杆y
+    SysBoardLink.remoteInfo1.joystick_LX = SysRemote.remoteInfo.remote.joystick_LX * 100; ///< 左摇杆x
+
+    // 包1数据更新
+    SysBoardLink.remoteInfo2.joystick_LY = SysRemote.remoteInfo.remote.joystick_LY * 100; ///< 左摇杆y
+    SysBoardLink.remoteInfo2.thumbWheel = SysRemote.remoteInfo.remote.thumbWheel * 100;    ///< 拨轮
+    // 上面这些放大100倍是为了保留小数点精度
+
+    // 包2数据更新
+    SysBoardLink.ctrlFlags.rc_status = SysRemote.systemStatus;
+    SysBoardLink.ctrlFlags.ctrl_mode = static_cast<uint8_t>(ctrlmode_);
+    SysBoardLink.ctrlFlags.move_mode = static_cast<uint8_t>(movemode_);
+
 }
 
 

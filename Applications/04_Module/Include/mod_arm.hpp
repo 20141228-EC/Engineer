@@ -307,18 +307,18 @@ private:
 
 		const int32_t rangeLimit_Pitch = ARM_END_PITCH_MOTOR_RANGE; ///< 电机位置范围限制
 
-		// 定义机械臂末端信息结构体并实例化~
+		// 定义机械臂末端信息结构体并实例化
 		struct SEndInfo {
-			int32_t posit_Pitch = 0;    ///< End Posit Pitch
-			int32_t posit_Roll = 0;    ///< End Posit Roll
-			bool isPositArrived_Pitch = false; ///< End Posit Arrived Pitch
-			bool isPositArrived_Roll = false; ///< End Posit Arrived Roll
+			int32_t posit_Pitch = 0;    ///< 末端pitch
+			int32_t posit_Roll = 0;    ///< 末端roll
+			bool isPositArrived_Pitch = false; ///< 末端pitch是否到达
+			bool isPositArrived_Roll = false; ///< 末端roll是否到达
 		} endInfo;
 
 		// 定义机械臂末端控制命令结构体并实例化
 		struct SEndCmd {
-			int32_t setPosit_Pitch = 0;    ///< End Posit Set Pitch
-			int32_t setPosit_Roll = 0;    ///< End Posit Set Roll
+			int32_t setPosit_Pitch = 0;    ///< 末端pitch目标
+			int32_t setPosit_Roll = 0;    ///< 末端roll目标
 		} endCmd;
 
 		// 电机实例指针数组
@@ -348,6 +348,12 @@ private:
 
 		// 电机位置转换为物理位置: Roll
 		static float_t MtrPositToPhyPosit_Roll(int32_t mtrPosit);
+
+		// 电机位置转换为物理位置： grip
+		static float_t MtrPositToPhyPosit(float_t mtrPosit);
+
+		// 物理位置转换为电机位置： grip
+		static int32_t PhyPositToMtrPosit(float_t phyPosit);
 
 		// 输出更新函数
 		EAppStatus _UpdateOutput(float_t posit_Pitch, float_t posit_Roll);
@@ -417,16 +423,16 @@ private:
 	EAppStatus RestrictArmCommand_();
 
 	// 重补输出更新函数
-		EAppStatus Grav_Compemsation_Pitch1();
-		EAppStatus Grav_Compemsation_Pitch2();
-		EAppStatus Grav_Compemsation_Roll();
+	EAppStatus Grav_Compemsation_Pitch1();
+	EAppStatus Grav_Compemsation_Pitch2();
+	EAppStatus Grav_Compemsation_Roll();
 
 };
 
 // ///< 全局变量
 extern bool Need_Grav_Compensation; ///< 是否启用重力补偿
 extern bool Is_Recording_ArmTorque; ///<是否正在记录数据
-extern DataBuffer<float_t> arm_Info[3][10]; ///<用于记录臂的力矩，三个关节，1000个数据点
+extern DataBuffer<float_t> arm_Info[3][10]; ///<用于记录臂的力矩，三个关节，10个数据点
 extern uint16_t index; ///< 数组索引
 extern bool is_record; ///< 是否要记录数据
 

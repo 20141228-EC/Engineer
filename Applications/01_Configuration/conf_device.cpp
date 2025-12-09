@@ -86,49 +86,39 @@ EAppStatus InitAllDevice(){
     boardLink.InitDevice(&boardLink_Initparam);
 
     /******************************************
-    * 子龙门电机 - 已删除 
+    * 机械臂末端电机
     ******************************************/
-   /*
-    static CDevMtrM2006 subGantryMotor_Lift_L;
-    CDevMtrM2006::SMtrInitParam_M2006 subGantryMotor_Lift_L_initparam;
-    subGantryMotor_Lift_L_initparam.deviceID = EDeviceID::DEV_SUBGANTRY_MTR_LIFT_L;
-    subGantryMotor_Lift_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    subGantryMotor_Lift_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_1;
-    subGantryMotor_Lift_L_initparam.useAngleToPosit = true;
-    subGantryMotor_Lift_L_initparam.useStallMonit = true;
-    subGantryMotor_Lift_L_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    subGantryMotor_Lift_L.InitDevice(&subGantryMotor_Lift_L_initparam);
 
-    static CDevMtrM2006 subGantryMotor_Lift_R;
-    CDevMtrM2006::SMtrInitParam_M2006 subGantryMotor_Lift_R_initparam;
-    subGantryMotor_Lift_R_initparam.deviceID = EDeviceID::DEV_SUBGANTRY_MTR_LIFT_R;
-    subGantryMotor_Lift_R_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    subGantryMotor_Lift_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_2;
-    subGantryMotor_Lift_R_initparam.useAngleToPosit = true;
-    subGantryMotor_Lift_R_initparam.useStallMonit = true;
-    subGantryMotor_Lift_R_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    subGantryMotor_Lift_R.InitDevice(&subGantryMotor_Lift_R_initparam);
+    // static CDevMtrM2006 subGantryMotor_Lift_L;
+    // CDevMtrM2006::SMtrInitParam_M2006 subGantryMotor_Lift_L_initparam;
+    // subGantryMotor_Lift_L_initparam.deviceID = EDeviceID::DEV_SUBGANTRY_MTR_LIFT_L;
+    // subGantryMotor_Lift_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    // subGantryMotor_Lift_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_1;
+    // subGantryMotor_Lift_L_initparam.useAngleToPosit = true;
+    // subGantryMotor_Lift_L_initparam.useStallMonit = true;
+    // subGantryMotor_Lift_L_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
+    // subGantryMotor_Lift_L.InitDevice(&subGantryMotor_Lift_L_initparam);
 
-    static CDevMtrM2006 subGantryMotor_Stretch_L;
-    CDevMtrM2006::SMtrInitParam_M2006 subGantryMotor_Stretch_L_initparam;
-    subGantryMotor_Stretch_L_initparam.deviceID = EDeviceID::DEV_SUBGANTRY_MTR_STRETCH_L;
-    subGantryMotor_Stretch_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    subGantryMotor_Stretch_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_3;
-    subGantryMotor_Stretch_L_initparam.useAngleToPosit = true;
-    subGantryMotor_Stretch_L_initparam.useStallMonit = true;
-    subGantryMotor_Stretch_L_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    subGantryMotor_Stretch_L.InitDevice(&subGantryMotor_Stretch_L_initparam);
+    // static CDevMtrM2006 subGantryMotor_Lift_R;
+    // CDevMtrM2006::SMtrInitParam_M2006 subGantryMotor_Lift_R_initparam;
+    // subGantryMotor_Lift_R_initparam.deviceID = EDeviceID::DEV_SUBGANTRY_MTR_LIFT_R;
+    // subGantryMotor_Lift_R_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    // subGantryMotor_Lift_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_2;
+    // subGantryMotor_Lift_R_initparam.useAngleToPosit = true;
+    // subGantryMotor_Lift_R_initparam.useStallMonit = true;
+    // subGantryMotor_Lift_R_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
+    // subGantryMotor_Lift_R.InitDevice(&subGantryMotor_Lift_R_initparam);
 
-    static CDevMtrM2006 subGantryMotor_Stretch_R;
-    CDevMtrM2006::SMtrInitParam_M2006 subGantryMotor_Stretch_R_initparam;
-    subGantryMotor_Stretch_R_initparam.deviceID = EDeviceID::DEV_SUBGANTRY_MTR_STRETCH_R;
-    subGantryMotor_Stretch_R_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    subGantryMotor_Stretch_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_4;
-    subGantryMotor_Stretch_R_initparam.useAngleToPosit = true;
-    subGantryMotor_Stretch_R_initparam.useStallMonit = true;
-    subGantryMotor_Stretch_R_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    subGantryMotor_Stretch_R.InitDevice(&subGantryMotor_Stretch_R_initparam);
-*/
+    // static CDevMtrM2006 subGantryMotor_Stretch_L;
+    // CDevMtrM2006::SMtrInitParam_M2006 subGantryMotor_Stretch_L_initparam;
+    // subGantryMotor_Stretch_L_initparam.deviceID = EDeviceID::DEV_SUBGANTRY_MTR_STRETCH_L;
+    // subGantryMotor_Stretch_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    // subGantryMotor_Stretch_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_3;
+    // subGantryMotor_Stretch_L_initparam.useAngleToPosit = true;
+    // subGantryMotor_Stretch_L_initparam.useStallMonit = true;
+    // subGantryMotor_Stretch_L_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
+    // subGantryMotor_Stretch_L.InitDevice(&subGantryMotor_Stretch_L_initparam);
+
     /******************************************
     * 底盘电机
     ******************************************/
@@ -185,19 +175,6 @@ EAppStatus InitAllDevice(){
     chassisMotor_R_HIP_initparam.useAngleToPosit = true;
     chassisMotor_R_HIP_initparam.encoderResolution = 65536; ///< 不牺牲精度
     chassisMotor_R_HIP.InitDevice(&chassisMotor_R_HIP_initparam); ///< 右髋关节电机
-
-    /******************************************
-     * 云台电机
-     *****************************************/
-    static CDevMtrM2006 gimbalMotor_Lift;
-    CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Lift_initparam;
-    gimbalMotor_Lift_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR;
-    gimbalMotor_Lift_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    gimbalMotor_Lift_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
-    gimbalMotor_Lift_initparam.useAngleToPosit = true;
-    gimbalMotor_Lift_initparam.useStallMonit = true;
-    gimbalMotor_Lift_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    gimbalMotor_Lift.InitDevice(&gimbalMotor_Lift_initparam);
 
     /******************************************
      * 机械臂电机

@@ -20,7 +20,7 @@
 #define R_LIFT_MOTOR_DIR -1 ///< 右腿编码器与腿长增加方向是否一致 一致为1 否则为-1  暂定 这个待出车后改
 #define CHASSIS_HIP_INIT_LENGTH 0.0f ///< 初始化腿长 后续待改
 #define CHASSIS_HIP_INIT_ECD_L  0.0f
-#define CHASSIS_HIP_INIT_ECD_R  0.0f    ///< 这两个是左右电机在初始化腿长时候的编码器值
+#define CHASSIS_HIP_INIT_ECD_R  0.0f    ///< 这两个是左右电机在初始化腿长时候的编码器值  这个得和陀螺仪数据0对应
 #define CHASSIS_HIP_PHY_MAX     100.0f
 #define CHASSIS_HIP_PHY_MIN     0.0f ///< 这个是最大和最短腿长
 #define CHASSIS_HIP_ECD_MAX_L   0.0f

@@ -63,15 +63,14 @@ EAppStatus CModArm::InitModule(SModInitParam_Base &param) {
  */
 void CModArm::UpdateHandler_() {
 	// 检查模块状态
-	// static uint8_t HalfTickRate = 0;
-	// HalfTickRate = 1 - HalfTickRate;
+	static uint8_t HalfTickRate = 0;
+	HalfTickRate = 1 - HalfTickRate;
 	if (moduleStatus == APP_RESET) return;
 	
-	// if(HalfTickRate) {	}
+	if(HalfTickRate) { comRoll_.UpdateComponent(); } ///< 降为500Hz
 	// 更新组件
 	comjoint_.UpdateComponent();
 	comEnd_.UpdateComponent();
-	comRoll_.UpdateComponent();
 	comGrip_.UpdateComponent();			///<更新电机数据
 
 	// 更新模块信息

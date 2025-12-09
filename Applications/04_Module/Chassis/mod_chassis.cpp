@@ -56,6 +56,9 @@ void CModChassis::UpdateHandler_(){
     // 检查模块状态
     if (moduleStatus == APP_RESET) return;
 
+    static uint8_t HalfTickRate = 0;
+	HalfTickRate = 1 - HalfTickRate;
+
     comWheelset_.MovMode_ = MovMode; ///< 更新面向底层轮组的运动模式
 
     DataBuffer<float_t> pitch_Target = {0.0f}; ///< 目标pitch角度，目前暂时写这个，后续出车之后根据实际可能有些误差待改
@@ -71,12 +74,12 @@ void CModChassis::UpdateHandler_(){
     if(MovMode == EmovMode::CLIMBING)
     {
         pitch_target_climbing = comHip_.pidPitchCtrl.UpdatePidController(pitch_Target, pitch_Measure);
-        chassisCmd.L_length = pitch_target_climbing[0] * PITCH_DEG_ECD_RATIO; ///< 覆盖掉命令值
+        chassisCmd.L_length += pitch_target_climbing[0] * PITCH_DEG_ECD_RATIO; ///< 在当前腿长目标基础上进行累加
     } 
 
     // 更新底盘轮组
     comWheelset_.UpdateComponent();
-    comHip_.UpdateComponent();
+    if(HalfTickRate){comHip_.UpdateComponent();} ///< 降为500Hz
 
 
     // 填充电机发送缓冲区

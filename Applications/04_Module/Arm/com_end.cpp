@@ -1,9 +1,9 @@
 /**
  * @file com_end.cpp
- * @author Fish_Joe (2328339747@qq.com)
+ * @author sllllr (2997708711@qq.com)
  * @brief 机械臂末端组件
  * @version 1.0
- * @date 2025-01-14
+ * @date 2025-12-09
  * 
  * @copyright Copyright (c) 2025
  * 

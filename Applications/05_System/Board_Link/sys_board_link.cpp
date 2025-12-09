@@ -1,5 +1,5 @@
 /******************************************************************************
- * @brief        
+ * @brief        板间通信系统
  * 
  * @file         sys_board_link.cpp
  * @author       sllllr (2997708711@qq.com)
@@ -128,33 +128,29 @@ void CSystemBoardLink::UpdateBoardTxPkg_() {
 
 	// 更新发送包的信息 将系统层的数据传递给设备层
 
-    // 更新包0 - 机械臂后三轴
-    pboardLink_->armBackwardTarget_pkt.arm_yaw_target = armBackwardTarget.arm_yaw_target;
-    pboardLink_->armBackwardTarget_pkt.arm_pitch1_target = armBackwardTarget.arm_pitch1_target;
-    pboardLink_->armBackwardTarget_pkt.arm_pitch2_target = armBackwardTarget.arm_pitch2_target;
-    
-    // 更新包1 - 机械臂前四轴
-    pboardLink_->armForwardTarget_pkt.arm_roll_target = armForwardTarget.arm_roll_target;
-    pboardLink_->armForwardTarget_pkt.grip_roll_target = armForwardTarget.grip_roll_target;
-    pboardLink_->armForwardTarget_pkt.grip_pitch_target = armForwardTarget.grip_pitch_target;
-    pboardLink_->armForwardTarget_pkt.grip_target = armForwardTarget.grip_target;
+    // 更新包0 - 遥控器值（右摇杆xy、左摇杆x）
+    pboardLink_->remoteInfo1_pkt.joystick_RX = remoteInfo1.joystick_RX;
+    pboardLink_->remoteInfo1_pkt.joystick_RY = remoteInfo1.joystick_RY;
+    pboardLink_->remoteInfo1_pkt.joystick_LX = remoteInfo1.joystick_LX;
 
-    // 更新包2 - 云台
-    pboardLink_->gimbalTarget_pkt.gimbal_lift_target = gimbalTarget.gimbal_lift_target;
-    pboardLink_->gimbalTarget_pkt.gimbal_yaw_target = gimbalTarget.gimbal_yaw_target;
-    pboardLink_->gimbalTarget_pkt.gimbal_pitch_target = gimbalTarget.gimbal_pitch_target;
+    // 更新包1 - 遥控器值（左摇杆y、拨轮和拨杆）
+    pboardLink_->remoteInfo2_pkt.joystick_LY = remoteInfo2.joystick_LY;
+    pboardLink_->remoteInfo2_pkt.thumbWheel = remoteInfo2.thumbWheel;
 
-    // 更新包3 - 控制标志
-    pboardLink_->ctrlFlags_pkt.rc_switch_R = ctrlFlags.rc_switch_R;
-    pboardLink_->ctrlFlags_pkt.is_rc_ctrl = ctrlFlags.is_rc_ctrl;
-    pboardLink_->ctrlFlags_pkt.is_key_ctrl = ctrlFlags.is_key_ctrl;
-    pboardLink_->ctrlFlags_pkt.work_mode = ctrlFlags.work_mode;
-    pboardLink_->ctrlFlags_pkt.cmd_grip = ctrlFlags.cmd_grip;
-    pboardLink_->ctrlFlags_pkt.cmd_release = ctrlFlags.cmd_release;
-    pboardLink_->ctrlFlags_pkt.arm_reset = ctrlFlags.arm_reset;
+    // 更新包2 - 控制标志
+    pboardLink_->ctrlFlags_pkt.chassis_ctrl = ctrlFlags.chassis_ctrl;
+    pboardLink_->ctrlFlags_pkt.gimbal_ctrl = ctrlFlags.gimbal_ctrl;
+    pboardLink_->ctrlFlags_pkt.arm_front_ctrl = ctrlFlags.arm_front_ctrl;
+    pboardLink_->ctrlFlags_pkt.arm_rear_ctrl = ctrlFlags.arm_rear_ctrl;
+
     pboardLink_->ctrlFlags_pkt.arm_enable = ctrlFlags.arm_enable;
     pboardLink_->ctrlFlags_pkt.gimbal_enable = ctrlFlags.gimbal_enable;
+    pboardLink_->ctrlFlags_pkt.chassis_enable = ctrlFlags.chassis_enable;
+
     pboardLink_->ctrlFlags_pkt.rc_status = ctrlFlags.rc_status;
+    pboardLink_->ctrlFlags_pkt.ctrl_mode = ctrlFlags.ctrl_mode;
+    pboardLink_->ctrlFlags_pkt.move_mode = ctrlFlags.move_mode;
+    pboardLink_->ctrlFlags_pkt.emergency_stop = ctrlFlags.emergency_stop;
 }
 
 /**

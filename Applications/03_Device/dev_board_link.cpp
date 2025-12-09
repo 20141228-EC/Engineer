@@ -1,5 +1,5 @@
 /******************************************************************************
- * @brief        
+ * @brief        板间通信设备
  * 
  * @file         dev_board_link.cpp
  * @author       sllllr (2997708711@qq.com)
@@ -64,10 +64,10 @@ EAppStatus CDevBoardLink::SendPackage(EPacketID pack_id){
 
 	switch (pack_id) ///< 这些获取的逻辑还得具体实现
 	{
-	case PKT_ARM_BACKWARD:{
+	case PKT_REMOTE_1:{
 
 		// 获取数据
-		data_buf[0] = PKT_ARM_BACKWARD; // 包id
+		data_buf[0] = PKT_REMOTE_1; // 包id
 		data_buf[1] = 0;
 		data_buf[2] = 0;
 		data_buf[3] = 0;
@@ -80,26 +80,10 @@ EAppStatus CDevBoardLink::SendPackage(EPacketID pack_id){
 		Modify_CanTxData(data_buf.data());
 		break;
 	}
-	case PKT_ARM_FORWARD:{
+	case PKT_REMOTE_2:{
 
 		// 获取数据
-		data_buf[0] = PKT_ARM_FORWARD; // 包id
-		data_buf[1] = 0;
-		data_buf[2] = 0;
-		data_buf[3] = 0;
-		data_buf[4] = 0;
-		data_buf[5] = 0;
-		data_buf[6] = 0;
-		data_buf[7] = 0;
-
-		// 填充数据帧
-		Modify_CanTxData(data_buf.data());
-		break;
-	}
-	case PKT_GIMBAL:{
-
-		// 获取数据
-		data_buf[0] = PKT_GIMBAL; // 包id
+		data_buf[0] = PKT_REMOTE_2; // 包id
 		data_buf[1] = 0;
 		data_buf[2] = 0;
 		data_buf[3] = 0;
@@ -194,6 +178,11 @@ EAppStatus CDevBoardLink::ResolveRxPackage_(){
 			fdbInfo_pkt.pack1_status = (canRxNode_.dataBuffer[1] >> 1) & 0x01;
 			fdbInfo_pkt.pack2_status = (canRxNode_.dataBuffer[1] >> 2) & 0x01;
 			fdbInfo_pkt.pack3_status = (canRxNode_.dataBuffer[1] >> 3) & 0x01;
+
+			fdbInfo_pkt.pack0_status = feedbackInfo.pack0_status;
+			fdbInfo_pkt.pack1_status = feedbackInfo.pack1_status;
+			fdbInfo_pkt.pack2_status = feedbackInfo.pack2_status;
+			fdbInfo_pkt.pack3_status = feedbackInfo.pack3_status;
 			break;
 		}
 		default:

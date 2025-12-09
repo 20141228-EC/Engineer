@@ -150,25 +150,6 @@ EAppStatus InitAllModule() {
     // 使用初始化后的参数创建 subGantryModule 实例
     static auto subGantryModule = CModSubGantry(subGantryInitParam);
 */
-    /******初始化云台模块******/
-    CModGimbal::SModInitParam_Gimbal gimbalInitParam;
-    gimbalInitParam.moduleID = EModuleID::MOD_GIMBAL;
-    gimbalInitParam.liftMotorID = EDeviceID::DEV_GIMBAL_MTR;
-    // 设置can发送节点
-    gimbalInitParam.liftMotorTxNode = &TxNode_Can2_1FF;
-    // 初始化 liftPosPidParam 的成员
-   gimbalInitParam.liftPosPidParam.kp = 0.3f;
-   gimbalInitParam.liftPosPidParam.ki = 0.0f;
-   gimbalInitParam.liftPosPidParam.kd = 0.3f;
-   gimbalInitParam.liftPosPidParam.maxOutput = 4500.0f;
-   // 初始化 liftSpdPidParam 的成员
-   gimbalInitParam.liftSpdPidParam.kp = 2.0f;
-   gimbalInitParam.liftSpdPidParam.ki = 0.1f;
-   gimbalInitParam.liftSpdPidParam.kd = 0.0f;
-   gimbalInitParam.liftSpdPidParam.maxIntegral = 2000.0f;
-   gimbalInitParam.liftSpdPidParam.maxOutput = 7000.0f;
-   //  使用初始化后的参数创建 gimbalModule 实例
-    static auto gimbalModule = CModGimbal(gimbalInitParam);
 
     /******初始化底盘模块******/
     CModChassis::SModInitParam_Chassis chassisInitParam;

@@ -137,7 +137,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				}
 				/*全部到位后才进入初始化*/
 				else if(jointInfo.isPositArrived_pitch2 && jointInfo.isPositArrived_pitch1 && alreadySetYaw == false){
-					jointCmd.setPosit_yaw = POSIT_JOINT1_YAW_MACH ;								///<yaw轴在p1,p2抬升到安全位置之后才动。
+					jointCmd.setPosit_yaw = POSIT_JOINT1_YAW_MACH;								///<yaw轴在p1,p2抬升到安全位置之后才动
 					alreadySetYaw = true;
 					return _UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 						static_cast<float_t>(jointCmd.setPosit_pitch1),

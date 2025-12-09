@@ -1,5 +1,5 @@
 /******************************************************************************
- * @brief        
+ * @brief        板间通信系统类
  * 
  * @file         sys_board_link.hpp
  * @author       sllllr (2997708711@qq.com)
@@ -32,46 +32,44 @@ public:
 
     //发送信息结构体
 
-    struct SArmBackwardTargetPKT {
+    struct SRemoteJoystick1 {
         uint8_t  pack_id;           ///< 包ID = 0
-        int16_t  arm_yaw_target;    ///< 基座Yaw目标角度（×100）
-        int16_t  arm_pitch1_target; ///< 大臂Pitch1目标角度（×100）
-        int16_t  arm_pitch2_target; ///< 小臂Pitch2目标角度（×100）
+        int16_t  joystick_RX;       ///< 右摇杆X（原始值）
+        int16_t  joystick_RY;       ///< 右摇杆Y（原始值）
+        int16_t  joystick_LX;       ///< 左摇杆X（原始值）
         uint8_t  reserved;          ///< 预留
-    } __packed armBackwardTarget = {};
+    } __packed remoteInfo1 = {};
 
-    struct SArmForwardTargetPKT {
+    struct SRemoteJoystick2 {
         uint8_t  pack_id;           ///< 包ID = 1
-        int16_t  arm_roll_target;   ///< 末端Roll目标角度（×100）
-        int16_t  grip_roll_target;  ///< 夹爪Roll目标角度（×100）
-        int16_t  grip_pitch_target; ///< 夹爪Pitch目标角度（×100）
-        uint8_t  grip_target;          ///< 夹爪收放目标角度
-    } __packed armForwardTarget = {};
-
-    struct SGimbalTarget {
-        uint8_t  pack_id;            ///< 包ID = 2
-        int16_t  gimbal_lift_target; ///< 云台抬升目标角度（×100）
-        int16_t  gimbal_yaw_target;  ///< 云台Yaw目标角度（×100）
-        int16_t  gimbal_pitch_target;///< 云台Pitch目标角度（×100）
-        uint8_t  reserved;           ///< 预留
-    } __packed gimbalTarget = {};
+        int16_t  joystick_LY;       ///< 左摇杆Y（原始值）
+        int16_t  thumbWheel;        ///< 拨轮（原始值）
+        uint8_t  reserved[3];       ///< 预留
+    } __packed remoteInfo2 = {};
 
     struct SControlFlags {
-        uint8_t  pack_id;           ///< 包ID = 3
-        uint8_t  rc_switch_R : 2;   ///< 右拨杆状态（1=上 2=中 3=下）或可改成标志位
-        uint8_t  reserved_1 : 6;     ///< 预留
-        uint8_t  is_rc_ctrl : 1;    ///< 遥控器控制模式标志
-        uint8_t  is_key_ctrl : 1;   ///< 键盘控制模式标志
-        uint8_t  reserved_2 : 6;     ///< 预留
-        uint8_t  work_mode;         ///< 工作模式（0=停止 1=双臂协同 2=主臂工作，副臂休息）
-        uint8_t  cmd_grip : 1;      ///< 抓取命令
-        uint8_t  cmd_release : 1;   ///< 释放命令
-        uint8_t  arm_reset : 1;		///< 臂复位信号
-        uint8_t  arm_enable : 1;    ///< 机械臂使能
-        uint8_t  gimbal_enable : 1; ///< 云台使能
-		uint8_t  rc_status : 1; 	///< 遥控器是否关控，是0非1
-        uint8_t  reserved_3 : 2;     ///< 预留
-        uint8_t  reserved4[3] = {0};      ///< 预留给未来扩展
+        uint8_t  pack_id;           ///< 包ID = 2
+
+        // 控制模式 (1字节)
+        uint8_t  chassis_ctrl : 1;          ///< 底盘控制使能
+        uint8_t  gimbal_ctrl : 1;           ///< 云台控制使能
+        uint8_t  arm_front_ctrl : 1;        ///< 机械臂前三轴控制
+        uint8_t  arm_rear_ctrl : 1;         ///< 机械臂后三轴控制
+        uint8_t  reserved_mode : 4;         ///< 预留
+
+        // 使能标志 (1字节)
+        uint8_t  arm_enable : 1;            ///< 机械臂使能
+        uint8_t  gimbal_enable : 1;         ///< 云台使能
+        uint8_t  chassis_enable : 1;        ///< 底盘使能
+        uint8_t  reserved_en : 5;           ///< 预留
+
+        // 状态标志 (1字节)
+        uint8_t  rc_status : 1;             ///< 遥控器在线，是1非0
+        uint8_t  ctrl_mode : 3;             ///< 控制模式
+        uint8_t  move_mode : 3;             ///< 运动模式
+        uint8_t  emergency_stop : 1;        ///< 急停信号
+
+        uint8_t  reserved[4];               ///< 预留给未来扩展
     } __packed ctrlFlags = {};
 
 

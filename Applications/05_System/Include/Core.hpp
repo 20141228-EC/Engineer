@@ -47,6 +47,22 @@ public:
         POP_ORE,
     } currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
+    // 面向系统层的控制模式枚举
+    enum class ECtrlMode {
+        NONE,
+        RC_CTRL,            ///< 遥控器控制
+        KEY_CTRL,           ///< 键鼠控制
+        CONTROLLER_CTRL,    ///< 自定义控制器控制
+    } ctrlmode_ = ECtrlMode::NONE;
+
+    // 面向系统层的运动模式枚举
+    enum class EMoveMode {
+        NONE,
+        NORMAL,             ///< 普通
+        CLIMBING,           ///< 上台阶
+        // ...to be updated...
+    } movemode_ = EMoveMode::NONE;
+
     EVarStatus use_Controller_ = false; ///< 是否使用控制器
 
     // 初始化系统核心
@@ -61,7 +77,7 @@ private:
 
     // 模块指针
     CModChassis *pchassis_ = nullptr;
-    CModGimbal *pgimbal_ = nullptr;
+    // CModGimbal *pgimbal_ = nullptr;
     // CModGantry *pgantry_ = nullptr;
     // CModClimber *pclimber_ = nullptr;
     // CModSubGantry *psubgantry_ = nullptr; // 已删除子龙门模块
@@ -80,6 +96,9 @@ private:
     void ControlFromKeyboard_();
     void ControlFromController_();
     void ControlFromEsp32_();
+
+    // 更新板间通信包
+    void BoardLink_Info_Update_();
 
     // 自动操作(启动与停止)
     EAppStatus StartAutoCtrlTask_(EAutoCtrlProcess process);

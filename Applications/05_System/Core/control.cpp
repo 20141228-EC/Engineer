@@ -22,13 +22,6 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
         }
     }
 
-    if (pgimbal_) {
-        if (!pgimbal_->gimbalInfo.isModuleAvailable
-            && pgimbal_->moduleStatus == APP_OK) {
-            pgimbal_->StartModule();
-        }
-    }
-
     if(if_remote_control) {
         enum { HIG = 1, LOW = 2, MID = 3 };
         auto &remote = SysRemote.remoteInfo.remote;
@@ -110,8 +103,8 @@ void CSystemCore::ControlFromRemote_() {
         StartRobot(true);                   ///<因为键盘的默认参数是false
     }
 
-    //用于调试，免去遥控器上电
-     StartRobot(true, true);
+    // //用于调试，免去遥控器上电
+    //  StartRobot(true, true);
 
     if (parm_) {
         parm_->should_limit_yaw = 0;
@@ -128,10 +121,6 @@ void CSystemCore::ControlFromRemote_() {
             pchassis_->chassisCmd.L_length -= remote.thumbWheel; ///< 腿长采用增量式控制
         }
         // 云台抬升
-        if (pgimbal_) {
-            pgimbal_->gimbalCmd.set_posit_lift +=
-                (remote.joystick_RY / 100.f) * 100.f / freq;
-        }
     }
 
     // MID + HIG 机械臂前四轴
@@ -201,13 +190,16 @@ void CSystemCore::ControlFromRemote_() {
             pchassis_->chassisCmd.speed_X = remote.joystick_LX / 2;             ///<摇杆的x方向控制车的左右移动，为了保证操作手的手感减小左右方向的速度
             pchassis_->chassisCmd.speed_Y = remote.joystick_LY;
             pchassis_->chassisCmd.speed_W = remote.joystick_RX;
-            pchassis_->MovMode = CModChassis::EmovMode::CLIMBING; ///< 上台阶模式
+            pchassis_->MovMode = CModChassis::EmovMode::CLIMBING; 
+            movemode_ = EMoveMode::CLIMBING; ///< 上台阶模式
+
             ///< to be updated...
         }
     }
     else
     {
-        pchassis_->MovMode = CModChassis::EmovMode::NORMAL; ///< 普通模式
+        pchassis_->MovMode = CModChassis::EmovMode::NORMAL; 
+        movemode_ = EMoveMode::NORMAL; ///< 普通模式
     } ///< 更新运动模式
 
 }
@@ -273,15 +265,6 @@ void CSystemCore::ControlFromKeyboard_() {
     }
 
     /******************* 云台手动控制 *******************/
-    if (pgimbal_) {
-        if (!keyboard.key_Ctrl &&
-            !pgimbal_->gimbalCmd.isAutoCtrl) {
-            // (F键)
-            if (keyboard.key_F) {
-                pgimbal_->gimbalCmd.set_posit_lift += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 120.0f / freq;
-            }
-        }
-    }
 
     /******************* 机械臂手动控制 *******************/
     if (parm_) {
@@ -488,9 +471,6 @@ void CSystemCore::ControlFromController_() {
         // }
 
     // 云台抬升
-    if (pgimbal_) {
-        pgimbal_->gimbalCmd.set_posit_lift += static_cast<float_t>(keyboard.key_Z - keyboard.key_X) * 60.0f / freq;
-    }
 
 /*删除自定义控制器对应的兑矿操作
     if (psubgantry_) {
