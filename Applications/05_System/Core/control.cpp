@@ -1,11 +1,11 @@
 /**
  * @file control.cpp
- * @author Fish_Joe (2328339747@qq.com)
+ * @author sllllr (2997708711@qq.com)
  * @brief 在这里定义遥控器和键盘的操作函数
  * @version 1.0
- * @date 2024-11-10
+ * @date 2025-12-10
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2025
  * 
  */
 
@@ -31,20 +31,12 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
         if (parm_) {
             if (!parm_->armInfo.isModuleAvailable
                 && parm_->moduleStatus == APP_OK
-                && remote.switch_L == HIG && last_switch_L != HIG) {
+                && remote.switch_L == HIG && last_switch_L != HIG) { ///< 左拨杆拨到上时初始化臂
                 parm_->StartModule();
             }
         }
-/* 删除子龙门模块遥控器启动代码
-        if (psubgantry_) {
-            if (!psubgantry_->subGantryInfo.isModuleAvailable
-                && psubgantry_->moduleStatus == APP_OK
-                && remote.switch_L == HIG && last_switch_L != HIG) {
-                psubgantry_->StartModule();         ///<在使用遥控器的时候左侧的拨杆切到高档启动子龙门和机械臂模块
-            }
-        }
-*/
-        last_switch_L = remote.switch_L;        ///<记录上一次的拨杆状态
+
+        last_switch_L = remote.switch_L;        ///<记录上一次的左拨杆状态
 
     }
 
@@ -54,7 +46,7 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
         if (parm_) {
             if (!parm_->armInfo.isModuleAvailable
                 && parm_->moduleStatus == APP_OK
-                && keyboard.key_Ctrl && keyboard.key_R) {
+                && keyboard.key_Ctrl && keyboard.key_R) { ///< ctrl+r 初始化臂
                 parm_->StartModule();
             }
         }
@@ -104,13 +96,13 @@ void CSystemCore::ControlFromRemote_() {
     }
 
     // //用于调试，免去遥控器上电
-    //  StartRobot(true, true);
+    StartRobot(true, true);
 
     if (parm_) {
         parm_->should_limit_yaw = 0;
     }
 
-    // LOW + MID 底盘控制 和 云台抬升
+    // LOW + MID 底盘控制(轮毂+髋) + 云台抬升
     if (remote.switch_L == LOW && remote.switch_R == MID) {
         SysRemote.SetRemoteDeadZone(10.f);
         // 底盘控制
@@ -118,13 +110,15 @@ void CSystemCore::ControlFromRemote_() {
             pchassis_->chassisCmd.speed_X = remote.joystick_LX / 2;             ///<摇杆的x方向控制车的左右移动，为了保证操作手的手感减小左右方向的速度
             pchassis_->chassisCmd.speed_Y = remote.joystick_LY;
             pchassis_->chassisCmd.speed_W = remote.joystick_RX;
-            pchassis_->chassisCmd.L_length -= remote.thumbWheel; ///< 腿长采用增量式控制
+            pchassis_->chassisCmd.L_length += (remote.joystick_RY / 100.f) * 90.f / freq; ///< 腿长采用增量式控制
+            pchassis_->MovMode = CModChassis::EmovMode::NORMAL; 
+            movemode_ = EMoveMode::NORMAL; ///< 普通模式
         }
-        // 云台抬升
+        // 云台的抬升逻辑此处也没写，在副板，用拨轮控
     }
 
-    // MID + HIG 机械臂前四轴
-    if (remote.switch_L == MID && remote.switch_R == HIG) {
+    // MID + HIG 主臂关节四轴 + 夹爪
+    else if (remote.switch_L == MID && remote.switch_R == HIG) {
         SysRemote.SetRemoteDeadZone(10.f);
         if (parm_) {
             parm_->armCmd.set_angle_Yaw +=
@@ -135,54 +129,43 @@ void CSystemCore::ControlFromRemote_() {
                 (remote.joystick_RY / 100.f) * 90.f / freq;
             parm_->armCmd.set_angle_Roll +=
                 (remote.joystick_RX / 100.f) * 90.f / freq;
+            parm_->armCmd.set_length_grip +=
+                (remote.thumbWheel / 100.f) * 90.f / freq; ///< 拨轮控夹爪
+        }
+        if(pchassis_){
+            pchassis_->MovMode = CModChassis::EmovMode::NORMAL; 
+            movemode_ = EMoveMode::NORMAL; ///< 普通模式
         }
     }
 
-    // MID + MID 机械臂后四轴
+    // MID + MID 副臂关节四轴 + 夹爪
     if (remote.switch_L == MID && remote.switch_R == MID) {
         SysRemote.SetRemoteDeadZone(10.f);
+        ///< 此处不执行任何操作，由板间通信将整个遥控器数据传给副板，副板自己执行控制逻辑
+        if(pchassis_){
+            pchassis_->MovMode = CModChassis::EmovMode::NORMAL; 
+            movemode_ = EMoveMode::NORMAL; ///< 普通模式
+        }
+    }
+
+    // MID + LOW 左摇杆主臂末端，右摇杆副臂末端
+    else if (remote.switch_L == MID && remote.switch_R == LOW) {
+        SysRemote.SetRemoteDeadZone(10.f);
         if (parm_) {
-            parm_->armCmd.set_angle_Pitch2 +=
-                (remote.joystick_LY / 100.f) * 90.f / freq;
-            parm_->armCmd.set_angle_Roll +=
-                (remote.joystick_LX / 100.f) * 90.f / freq;
             parm_->armCmd.set_angle_end_pitch +=
-                (remote.joystick_RY / 100.f) * 90.f / freq;
-            parm_->armCmd.set_angle_end_roll +=
-                (remote.joystick_RX / 100.f) * 90.f / freq;
-        }
-    }
-/* 删除 MID + LOW 子龙门控制代码
-    // MID + LOW 子龙门控制
-    if (remote.switch_L == MID && remote.switch_R == LOW) {
-        SysRemote.SetRemoteDeadZone(10.f);
-        if (psubgantry_) {
-            psubgantry_->subGantryCmd.setStretchPosit_L +=
                 (remote.joystick_LY / 100.f) * 300.f / freq;
-            psubgantry_->subGantryCmd.setStretchPosit_R +=
-                (remote.joystick_RY / 100.f) * 300.f / freq;
-            psubgantry_->subGantryCmd.setLiftPosit_L +=
+            parm_->armCmd.set_angle_end_roll +=
                 (remote.joystick_LX / 100.f) * 120.f / freq;
-            psubgantry_->subGantryCmd.setLiftPosit_R +=
-                (remote.joystick_RX / 100.f) * 120.f / freq;
+                // 只写了主臂末端的控制，副臂的目标设置在副板代码中
         }
-    }
-*/
-    // HIG + HIG 正常运动 遥控器控腿长
-    if(remote.switch_L == HIG && remote.switch_R == HIG)
-    {
-        SysRemote.SetRemoteDeadZone(10.f);
-        // 底盘控制
-        if (pchassis_) {
-            pchassis_->chassisCmd.speed_X = remote.joystick_LX / 2;             ///<摇杆的x方向控制车的左右移动，为了保证操作手的手感减小左右方向的速度
-            pchassis_->chassisCmd.speed_Y = remote.joystick_LY;
-            pchassis_->chassisCmd.speed_W = remote.joystick_RX;
-            pchassis_->chassisCmd.L_length -= remote.thumbWheel; ///< 腿长采用增量式控制
+        if(pchassis_){
+            pchassis_->MovMode = CModChassis::EmovMode::NORMAL; 
+            movemode_ = EMoveMode::NORMAL; ///< 普通模式
         }
     }
 
     // HIG + MID 自动上台阶 利用陀螺仪数据控腿长
-    if(remote.switch_L == HIG && remote.switch_R == MID)
+    else if(remote.switch_L == HIG && remote.switch_R == MID)
     {
         SysRemote.SetRemoteDeadZone(10.f);
         // 底盘控制
@@ -190,17 +173,25 @@ void CSystemCore::ControlFromRemote_() {
             pchassis_->chassisCmd.speed_X = remote.joystick_LX / 2;             ///<摇杆的x方向控制车的左右移动，为了保证操作手的手感减小左右方向的速度
             pchassis_->chassisCmd.speed_Y = remote.joystick_LY;
             pchassis_->chassisCmd.speed_W = remote.joystick_RX;
-            pchassis_->MovMode = CModChassis::EmovMode::CLIMBING; 
+            pchassis_->MovMode = CModChassis::EmovMode::CLIMBING;               ///< 更新模块运动模式标志位
             movemode_ = EMoveMode::CLIMBING; ///< 上台阶模式
 
-            ///< to be updated...
+            if(remote.thumbWheel < -50){
+                pchassis_->reset_hip = 1;   ///< 要求复位腿
+            } ///< 拨轮向上推过一半
+
+            ///< 右摇杆y控云台pitch，拨轮控云台yaw，逻辑在副板
         }
     }
-    else
+    // HIG + LOW 云台全控制
+    else if(remote.switch_L == HIG && remote.switch_R == LOW)
     {
-        pchassis_->MovMode = CModChassis::EmovMode::NORMAL; 
-        movemode_ = EMoveMode::NORMAL; ///< 普通模式
-    } ///< 更新运动模式
+        if(pchassis_){
+            pchassis_->MovMode = CModChassis::EmovMode::NORMAL; 
+            movemode_ = EMoveMode::NORMAL; ///< 普通模式
+        }
+        ///< 云台控制逻辑均在副板
+    }
 
 }
 

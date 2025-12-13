@@ -41,8 +41,8 @@ EAppStatus CModChassis::CComHip::InitComponent(SModInitParam_Base &param){
     mitCtrl[LR].kp = chassisParam.MIT_L_kp;
 	mitCtrl[LR].kd = chassisParam.MIT_L_kd;         ///< 左右腿暂用同一套pid 若效果不好待改
 
-    chassisParam.pitchCorrectionPidParam.threadNum = 1;
-    pidPitchCtrl.InitPID(&chassisParam.pitchCorrectionPidParam);
+    chassisParam.rollCorrectionPidParam.threadNum = 1;
+    pidRollCtrl.InitPID(&chassisParam.rollCorrectionPidParam);
 
     // test
     pmems_hip_test = mems;
@@ -56,11 +56,11 @@ EAppStatus CModChassis::CComHip::InitComponent(SModInitParam_Base &param){
 }
 
 // /**
-//  * @brief 根据整车pitch角度计算出持平需要的腿长
+//  * @brief 根据整车roll角度计算出持平需要的腿长
 //  * 
-//  * @retval pitch环pid输出值
+//  * @retval roll环pid输出值
 //  */
-// float Pitch_Pid(float target, float measure){}
+// float Roll_Pid(float target, float measure){}
 
 /**
  * @brief 更新髋关节关节组件
@@ -103,8 +103,8 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 
 	switch (Component_FSMFlag_) {
 		case FSM_RESET: {
-			pMtr[LL]->Control_MIT(0.0f, 0.0f, deg2rad(0.0f) * L_LIFT_MOTOR_DIR, 0.0f, 0.0f);
-            pMtr[LR]->Control_MIT(0.0f, 0.0f, deg2rad(0.0f) * R_LIFT_MOTOR_DIR, 0.0f, 0.0f);
+			pMtr[LL]->Control_MIT(0.0f, 0.0f, ecd2rad(0.0f) * L_LIFT_MOTOR_DIR, 0.0f, 0.0f);
+            pMtr[LR]->Control_MIT(0.0f, 0.0f, ecd2rad(0.0f) * R_LIFT_MOTOR_DIR, 0.0f, 0.0f);
 			HipCmd = SHipCommand();																	///<调用默认构造函数初始化
 			return APP_OK;
 		}
@@ -112,25 +112,25 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 		case FSM_PREINIT: {
 			HipCmd.L_Set_Angle = CHASSIS_HIP_INIT_ECD_L;
             HipCmd.R_Set_Angle = CHASSIS_HIP_INIT_ECD_R; ///< 初始化髋关节
-            pidPitchCtrl.ResetPidController(); ///< 重置pid控制器
+            pidRollCtrl.ResetPidController(); ///< 重置pid控制器
 			Component_FSMFlag_ = FSM_INIT;
 			return APP_OK;
 		}
 
 		case FSM_INIT: {
-			if (fabs(HipInfo.pos_L_L - HipCmd.L_Set_Angle) < 10. && fabs(HipInfo.pos_L_R - HipCmd.R_Set_Angle) < 10.0) {
+			if (fabs(HipInfo.pos_L_L - HipCmd.L_Set_Angle) < 10.0 && fabs(HipInfo.pos_L_R - HipCmd.R_Set_Angle) < 10.0) {
 				Component_FSMFlag_ = FSM_CTRL;
 				componentStatus = APP_OK;
 			}
-			pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.0f, 0.0f);
-            pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.0f, 0.0f);
+			pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, ecd2rad(HipCmd.L_Set_Angle), 0.0f, 0.0f);
+            pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, ecd2rad(HipCmd.R_Set_Angle), 0.0f, 0.0f);
 			return APP_OK;
 		}
 
 		case FSM_CTRL: {
 
-			pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(next_angle[0]), 0.0f, 0.0f);
-            pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(next_angle[1]), 0.0f, 0.0f);
+			pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, ecd2rad(next_angle[0]), 0.0f, 0.0f);
+            pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, ecd2rad(next_angle[1]), 0.0f, 0.0f);
 			return APP_OK;
 		}
 

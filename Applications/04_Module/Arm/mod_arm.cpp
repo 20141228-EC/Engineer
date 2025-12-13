@@ -25,13 +25,6 @@ DataBuffer<float_t> arm_Info[3][10]; ///<用于记录臂的力矩，三个关节
 uint16_t index = 0; ///< 数组索引
 bool is_record = false; ///< 是否要记录数据
 
-///< 全局变量
-bool Need_Grav_Compensation = false; ///< 是否启用重力补偿
-bool Is_Recording_ArmTorque = true; ///<是否正在记录数据
-DataBuffer<float_t> arm_Info[3][1000]; ///<用于记录臂的力矩，三个关节，1000个数据点
-uint16_t index = 0; ///< 数组索引
-bool is_record = false; ///< 是否要记录数据
-
 /**
  * @brief 初始化机械臂模块
  * 
@@ -49,7 +42,6 @@ EAppStatus CModArm::InitModule(SModInitParam_Base &param) {
 	comjoint_.InitComponent(param);
 	comRoll_.InitComponent(param);
 	comEnd_.InitComponent(param);
-	comGrip_.InitComponent(param);
 
 	// 创建任务并注册模块
 	CreateModuleTask_();
@@ -77,8 +69,7 @@ void CModArm::UpdateHandler_() {
 	if(HalfTickRate) { comRoll_.UpdateComponent(); } ///< 降为500Hz
 	// 更新组件
 	comjoint_.UpdateComponent();
-	comEnd_.UpdateComponent();
-	comGrip_.UpdateComponent();			///<更新电机数据
+	comEnd_.UpdateComponent();	///<更新电机数据
 
 	// 更新模块信息
 	armInfo.angle_Yaw = comjoint_.MtrPositToPhyPosit_yaw(comjoint_.jointInfo.posit_yaw);
@@ -89,14 +80,14 @@ void CModArm::UpdateHandler_() {
 		comEnd_.MtrPositToPhyPosit_Pitch(comEnd_.endInfo.posit_Pitch);
 	armInfo.angle_end_roll =
 		comEnd_.MtrPositToPhyPosit_Roll(comEnd_.endInfo.posit_Roll);								///<将电机的机械角度转换为物理角度
-	armInfo.length_grip = comGrip_.MtrPositToPhyPosit(comGrip_.gripInfo.posit_grip);
+	armInfo.length_grip = comEnd_.MtrPositToPhyPosit_Grip(comEnd_.endInfo.posit_grip);
 	armInfo.isAngleArrived_Yaw = comjoint_.jointInfo.isPositArrived_yaw;
 	armInfo.isAngleArrived_Pitch1 = comjoint_.jointInfo.isPositArrived_pitch1;
 	armInfo.isAngleArrived_Pitch2 = comjoint_.jointInfo.isPositArrived_pitch2;
 	armInfo.isAngleArrived_Roll = comRoll_.rollInfo.isAngleArrived;
 	armInfo.isAngleArrived_End_Pitch = comEnd_.endInfo.isPositArrived_Pitch;
 	armInfo.isAngleArrived_End_Roll = comEnd_.endInfo.isPositArrived_Roll;
-	armInfo.isAngleArrived_Grip = comGrip_.gripInfo.isPositArrived_Grip;
+	armInfo.isAngleArrived_Grip = comEnd_.endInfo.isPositArrived_Grip;
 
 	if(Need_Grav_Compensation) ///< 启用重力补偿
 	{
@@ -121,9 +112,9 @@ void CModArm::UpdateHandler_() {
 	CDevMtrDJI::FillCanTxBuffer(comEnd_.motor[CComEnd::R],
 								comEnd_.mtrCanTxNode[CComEnd::R]->dataBuffer,
 								comEnd_.mtrOutputBuffer[CComEnd::R]);
-	CDevMtrDJI::FillCanTxBuffer(comGrip_.motor,
-								comGrip_.mtrCanTxNode->dataBuffer,
-								comGrip_.mtrOutputBuffer);
+	CDevMtrDJI::FillCanTxBuffer(comEnd_.motor[CComEnd::GRIP],
+								comEnd_.mtrCanTxNode[CComEnd::GRIP]->dataBuffer,
+								comEnd_.mtrOutputBuffer[CComEnd::GRIP]);
 
 }
 

@@ -15,9 +15,6 @@
 #include "mod_common.hpp"
 #include "mod_chassis.hpp"
 #include "mod_arm.hpp"
-// #include "mod_gantry.hpp"
-// #include "mod_climber.hpp"
-// #include "mod_subgantry.hpp" // 已删除子龙门模块
 
 namespace my_engineer {
 

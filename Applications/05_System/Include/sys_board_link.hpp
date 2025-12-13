@@ -34,16 +34,18 @@ public:
 
     struct SRemoteJoystick1 {
         uint8_t  pack_id;           ///< 包ID = 0
-        int16_t  joystick_RX;       ///< 右摇杆X（原始值）
-        int16_t  joystick_RY;       ///< 右摇杆Y（原始值）
-        int16_t  joystick_LX;       ///< 左摇杆X（原始值）
+        int16_t  joystick_RX;       ///< 右摇杆X(原始值归一到±100.f内再放大220倍)
+        int16_t  joystick_RY;       ///< 右摇杆Y(原始值归一到±100.f内再放大220倍)
+        int16_t  joystick_LX;       ///< 左摇杆X(原始值归一到±100.f内再放大220倍)
         uint8_t  reserved;          ///< 预留
     } __packed remoteInfo1 = {};
 
     struct SRemoteJoystick2 {
         uint8_t  pack_id;           ///< 包ID = 1
-        int16_t  joystick_LY;       ///< 左摇杆Y（原始值）
-        int16_t  thumbWheel;        ///< 拨轮（原始值）
+        int16_t  joystick_LY;       ///< 左摇杆Y(原始值归一到±100.f内再放大220倍)
+        int16_t  thumbWheel;        ///< 拨轮(原始值归一到±100.f内再放大220倍)
+        uint8_t  switch_l;          ///< 左拨杆
+        uint8_t  switch_r;          ///< 右拨杆
         uint8_t  reserved[3];       ///< 预留
     } __packed remoteInfo2 = {};
 
@@ -75,13 +77,14 @@ public:
 
 	// 接收信息结构体
     struct SFeedbackPack {
+        uint8_t  pack_id;
         uint8_t  pack0_status : 1;
         uint8_t  pack1_status : 1;         
         uint8_t  pack2_status : 1;
         uint8_t  pack3_status : 1;  ///< 各包接收状态（bit0~3对应包0~3，1=已接收）
         uint8_t  pack_status : 4;   /// 包通信状态 保留
         uint8_t  link_status;       ///< 通信状态（0=RESET 1=OFFLINE 2=ONLINE）
-        uint8_t  reserved[6];       ///< 预留
+        uint8_t  reserved[5];       ///< 预留
     } __packed fdbInfo = {};
 
 	// 初始化系统

@@ -32,7 +32,7 @@ void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠
             item.second->UpdateHandler_();
         }
 
-        proc_waitMs(4); // 250Hz
+        proc_waitMs(2); // 500Hz
     }
 }
 

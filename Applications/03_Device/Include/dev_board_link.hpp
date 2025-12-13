@@ -50,21 +50,23 @@ public:
      */
     struct SRemoteJoystick1 {
         uint8_t  pack_id;           ///< 包ID = 0
-        int16_t  joystick_RX;       ///< 右摇杆X（原始值）
-        int16_t  joystick_RY;       ///< 右摇杆Y（原始值）
-        int16_t  joystick_LX;       ///< 左摇杆X（原始值）
+        int16_t  joystick_RX;       ///< 右摇杆X(原始值归一到±100.f内再放大220倍)
+        int16_t  joystick_RY;       ///< 右摇杆Y(原始值归一到±100.f内再放大220倍)
+        int16_t  joystick_LX;       ///< 左摇杆X(原始值归一到±100.f内再放大220倍)
         uint8_t  reserved;          ///< 预留
     } __packed remoteInfo1_pkt = {};
 
     /**
-     * @brief 包1 - 遥控器摇杆包2
-     * @note  8字节，包含左摇杆Y和拨轮的原始值
+     * @brief 包1 - 遥控器包2
+     * @note  8字节，包含左摇杆Y和拨轮的原始值和拨杆值
      */
     struct SRemoteJoystick2 {
         uint8_t  pack_id;           ///< 包ID = 1
-        int16_t  joystick_LY;       ///< 左摇杆Y（原始值）
-        int16_t  thumbWheel;        ///< 拨轮（原始值）
-        uint8_t  reserved[3];       ///< 预留
+        int16_t  joystick_LY;       ///< 左摇杆Y(原始值归一到±100.f内再放大220倍)
+        int16_t  thumbWheel;        ///< 拨轮(原始值归一到±100.f内再放大220倍)
+        uint8_t  switch_l;          ///< 左拨杆
+        uint8_t  switch_r;          ///< 右拨杆
+        uint8_t  reserved[1];       ///< 预留
     } __packed remoteInfo2_pkt = {};
 
     /**
@@ -87,7 +89,7 @@ public:
         uint8_t  chassis_enable : 1;        ///< 底盘使能
         uint8_t  reserved_en : 5;           ///< 预留
 
-        // 状态标志 (1字节)
+        // 状态标志
         uint8_t  rc_status : 1;             ///< 遥控器在线，是1非0
         uint8_t  ctrl_mode : 3;             ///< 控制模式
         uint8_t  move_mode : 3;             ///< 运动模式

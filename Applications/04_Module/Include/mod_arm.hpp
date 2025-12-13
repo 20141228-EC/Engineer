@@ -58,7 +58,7 @@
 #define ARM_END_PITCH_MOTOR_R_DIR 1
 #define ARM_END_ROLL_MOTOR_L_DIR -1
 #define ARM_END_ROLL_MOTOR_R_DIR -1
-#define ARM_GRIP_MOTOR_DIR 1
+#define ARM_GRIP_MOTOR_DIR 1	// 张开方向与编码器值增大方向一致
 
 /*-------------------------------------初始化数据--------------------------------------------------------*/
 #define ARM_YAW_INIT_ANGLE 0.0f
@@ -95,11 +95,6 @@
 #define PITCH2 	   1
 #define END_PITCH  2
 #define RECORD_MAX 10
-
-#define PITCH1     0
-#define PITCH2 	   1
-#define END_PITCH  2
-#define RECORD_MAX 1000
 
 #include "mod_common.hpp"
 
@@ -309,39 +304,59 @@ private:
 		EAppStatus UpdateComponent() final;
 	} comRoll_;
 	
-
-
-	// 定义机械臂末端组件类并实例化
+	// 定义机械臂末端组件类（整合夹爪功能）
 	class CComEnd: public CComponentBase {
 	public:
+		// 扩展枚举：包含末端左右电机和夹爪电机
+		enum { 
+			L = 0,      ///< 末端左电机
+			R = 1,      ///< 末端右电机
+			GRIP = 2    ///< 夹爪电机
+		};
 
-		enum { L = 0, R = 1 };
-
+		// 末端限位 + 夹爪限位
 		const int32_t rangeLimit_Pitch = ARM_END_PITCH_MOTOR_RANGE; ///< 电机位置范围限制
+		const int32_t rangeLimit_Grip = ARM_END_GRIP_MOTOR_RANGE; ///< 夹爪电机位置范围限制
 
-		// 定义机械臂末端信息结构体并实例化
+		// 扩展末端信息结构体：包含末端Pitch/Roll + 夹爪信息
 		struct SEndInfo {
+			// 末端原有信息
 			int32_t posit_Pitch = 0;    ///< 末端pitch
 			int32_t posit_Roll = 0;    ///< 末端roll
 			bool isPositArrived_Pitch = false; ///< 末端pitch是否到达
 			bool isPositArrived_Roll = false; ///< 末端roll是否到达
+			
+			// 夹爪信息（原CComGrip的SGripInfo）
+			int32_t posit_grip = 0;           	///< 夹爪当前角度
+			float_t distance = 0;       		///< 夹爪距离
+			int32_t holdPosit_Grip = 0;			///<记忆夹持位置
+			bool isPositArrived_Grip = false;   ///< 夹爪角度是否到达目标
+			bool isGripped = false; 			///< 是否夹住
+        	bool cmdGrip = false;   			///< 抓取（自适应力控）
+        	bool cmdRelease = false;   			///< 释放
 		} endInfo;
 
-		// 定义机械臂末端控制命令结构体并实例化
+		// 扩展末端控制命令结构体：包含末端Pitch/Roll + 夹爪命令
 		struct SEndCmd {
+			// 末端原有命令
 			int32_t setPosit_Pitch = 0;    ///< 末端pitch目标
 			int32_t setPosit_Roll = 0;    ///< 末端roll目标
+			
+			// 夹爪命令（原CComGrip的SGripCmd）
+			int32_t setPosit_grip = 0;        ///< 夹爪目标距离
 		} endCmd;
 
-		// 电机实例指针数组
-		std::array<CDevMtr*, 2> motor = {nullptr};
+		// 扩展电机实例指针数组：包含末端左右电机 + 夹爪电机
+		std::array<CDevMtr*, 3> motor = {nullptr};
 
-		// 定义机械臂末端PID控制器
-		CAlgoPid pidPosCtrl;
-		CAlgoPid pidSpdCtrl;
+		// PID控制器：末端通用PID + 夹爪专用PID
+		CAlgoPid pidPosCtrl;       ///< 末端Pitch/Roll位置PID
+		CAlgoPid pidSpdCtrl;       ///< 末端Pitch/Roll速度PID
+		CAlgoPid pidGripPosCtrl;   ///< 夹爪位置PID
+		CAlgoPid pidGripSpdCtrl;   ///< 夹爪速度PID
 
-		// 电机数据输出缓冲区
-		std::array<int16_t, 2> mtrOutputBuffer = {0};
+		// 扩展电机数据输出缓冲区：包含末端左右电机 + 夹爪电机
+		std::array<int16_t, 3> mtrOutputBuffer = {0};
 
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
@@ -362,67 +377,25 @@ private:
 		static float_t MtrPositToPhyPosit_Roll(int32_t mtrPosit);
 
 		// 电机位置转换为物理位置： grip
-		static float_t MtrPositToPhyPosit(float_t mtrPosit);
+		static float_t MtrPositToPhyPosit_Grip(float_t mtrPosit);
 
 		// 物理位置转换为电机位置： grip
-		static int32_t PhyPositToMtrPosit(float_t phyPosit);
+		static int32_t PhyPositToMtrPosit_Grip(float_t phyPosit);
 
-		// 输出更新函数
+		// 末端输出更新函数
 		EAppStatus _UpdateOutput(float_t posit_Pitch, float_t posit_Roll);
 
+		// 夹爪输出更新函数
+		EAppStatus _UpdateOutput_Grip(float_t posit_grip);
+
+		// 统一输出更新函数（包含末端+夹爪）
+		EAppStatus _UpdateOutput_All(float_t posit_Pitch, float_t posit_Roll, float_t posit_grip);
+
 		// 电机can发送节点
-		std::array<CInfCAN::CCanTxNode*, 2> mtrCanTxNode;
+		std::array<CInfCAN::CCanTxNode*, 3> mtrCanTxNode;
 
 	} comEnd_;
 
-	class CComGrip: public CComponentBase {
-	public:
-
-		const int32_t rangeLimit_Grip = ARM_END_GRIP_MOTOR_RANGE; ///< 夹爪电机位置范围限制
-		// 定义夹爪信息结构体
-		struct SGripInfo {
-			int32_t posit_grip = 0;           	///< 夹爪当前角度
-			float_t distance = 0;       		///< 夹爪距离
-			int32_t holdPosit_Grip = 0;			///<记忆夹持位置
-			bool isPositArrived_Grip = false;   ///< 夹爪角度是否到达目标
-			bool isGripped = false; 			///< 是否夹住
-        	bool cmdGrip = false;   			///< 抓取（自适应力控）
-        	bool cmdRelease = false;   			///< 释放
-
-		} gripInfo;
-
-		// 定义夹爪控制命令结构体
-		struct SGripCmd {
-			int32_t setPosit_grip = 0;        ///< 夹爪目标距离
-		} gripCmd;
-
-		// PID控制器
-		CAlgoPid pidPosCtrl;
-		CAlgoPid pidSpdCtrl;
-
-		// 电机实例指针
-		CDevMtr* motor = nullptr;
-
-		// 电机数据输出缓冲区
-		int16_t mtrOutputBuffer = 0;
-
-		static float_t MtrPositToPhyPosit(float_t mtrPosit);
-
-		static int32_t PhyPositToMtrPosit(float_t phyPosit);
-
-		// 初始化组件
-		EAppStatus InitComponent(SModInitParam_Base &param) final;
-
-		// 更新组件
-		EAppStatus UpdateComponent() final;
-
-		// 输出更新函数
-		EAppStatus _UpdateOutput(float_t angle);
-
-		// 电机can发送节点
-		CInfCAN::CCanTxNode* mtrCanTxNode;
-
-	} comGrip_;
 	// 重写基类函数
 	void UpdateHandler_() final;
 	void HeartbeatHandler_() final;
@@ -451,4 +424,3 @@ extern bool is_record; ///< 是否要记录数据
 } // namespace my_engineer
 
 #endif // MOD_ARM_HPP
-

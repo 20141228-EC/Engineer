@@ -16,23 +16,25 @@
 
 #define LASER_ZERO_OFFSET_L 0
 #define LASER_ZERO_OFFSET_R 0
-#define L_LIFT_MOTOR_DIR 1 ///< 左腿编码器与腿长增加方向是否一致 一致为1 否则为-1
-#define R_LIFT_MOTOR_DIR -1 ///< 右腿编码器与腿长增加方向是否一致 一致为1 否则为-1  暂定 这个待出车后改
+#define L_LIFT_MOTOR_DIR -1  ///< 左腿编码器与腿长增加方向是否一致 一致为1 否则为-1
+#define R_LIFT_MOTOR_DIR 1 ///< 右腿编码器与腿长增加方向是否一致 一致为1 否则为-1
+#define ROLL_LIFT_DIR   1   ///< roll轴增大方向是否和抬头方向一致 一致为1 否则为-1
 #define CHASSIS_HIP_INIT_LENGTH 0.0f ///< 初始化腿长 后续待改
-#define CHASSIS_HIP_INIT_ECD_L  0.0f
-#define CHASSIS_HIP_INIT_ECD_R  0.0f    ///< 这两个是左右电机在初始化腿长时候的编码器值  这个得和陀螺仪数据0对应
+#define CHASSIS_HIP_INIT_ECD_L  500.f
+#define CHASSIS_HIP_INIT_ECD_R  500.f    ///< 这两个是左右电机在初始化腿长时候的编码器值  这个得和陀螺仪数据0对应
 #define CHASSIS_HIP_PHY_MAX     100.0f
 #define CHASSIS_HIP_PHY_MIN     0.0f ///< 这个是最大和最短腿长
-#define CHASSIS_HIP_ECD_MAX_L   0.0f
+#define CHASSIS_HIP_ECD_MAX_L   6000.0f
 #define CHASSIS_HIP_ECD_MIN_L   0.0f
 #define CHASSIS_HIP_ECD_MAX_R   0.0f
-#define CHASSIS_HIP_ECD_MIN_R   0.0f    ///< 这几个是极限腿长时候两个电机对应的编码值 即软件限位 待改
+#define CHASSIS_HIP_ECD_MIN_R   -6000.0f    ///< 这几个是极限腿长时候两个电机对应的编码值 即软件限位 待改
 #define ECD_LENGTH_RATIO        1.0f    ///< 这是腿长range和编码器range的线性对应关系，即传动比 这个保持为1就行
-#define PITCH_DEG_ECD_RATIO     100.f   ///< 这是pitch动一度的时候编码器的变化值，待改
+#define ROLL_DEG_ECD_RATIO     100.f   ///< 这是roll动一度的时候编码器的变化值，待改
 #define G 9.7803f    ///< 南山区的g值
 
 #define deg2rad(x) ((x) * 0.017453292519943295769236907684886)
 #define rad2deg(x) ((x) * 57.295779513082320876798154814105)
+#define ecd2rad(x) ((x) * 0.0054931640625) ///< 编码器总值到角度转化
 
 /* public定义用户层方便调试和获取信息，private定义了底层用于直接驱动电机，而不会因为外界的干扰影响了输出的值 */
 
@@ -64,7 +66,7 @@ public:
         CAlgoPid::SAlgoInitParam_Pid wheelsetSpdPidParam;
         CAlgoPid::SAlgoInitParam_Pid lineCorrectionPidParam;
         CAlgoPid::SAlgoInitParam_Pid yawCorrectionPidParam;
-        CAlgoPid::SAlgoInitParam_Pid pitchCorrectionPidParam; ///< pitch轴控制pid
+        CAlgoPid::SAlgoInitParam_Pid rollCorrectionPidParam; ///< roll轴控制pid
     };
 
     // 定义底盘信息结构体并实例化
@@ -89,8 +91,8 @@ public:
         float_t L_length = 0.0f; ///< 后腿腿长
     } chassisCmd;
 
-    // 整车pitch轴角度
-    DataBuffer<float_t> pitch_Measure;
+    // 整车roll轴角度
+    DataBuffer<float_t> roll_Measure;
 
     enum class EmovMode 
     {
@@ -109,8 +111,11 @@ public:
     // 初始化模块
     EAppStatus InitModule(SModInitParam_Base &param) final;
 
-    // 模式标志位
+    // 面向模块的运动模式标志位
     EmovMode MovMode = EmovMode::NORMAL;
+
+    // 复位腿的标志位
+    uint8_t reset_hip = 0;
 
 private:
 
@@ -160,8 +165,6 @@ private:
         // 电机can发送节点
         std::array<CInfCAN::CCanTxNode*, 4> mtrCanTxNode;
 
-        // 面向轮组的模式标志位
-        EmovMode MovMode_ = EmovMode::NORMAL;
     } comWheelset_;
 
     // 定义髋关节组件并实例化
@@ -198,7 +201,7 @@ private:
         CDevMtr *motor[2] = {nullptr};
 
         // 定义底盘PID控制器
-        CAlgoPid pidPitchCtrl;                  ///< 整车pitch轴控制
+        CAlgoPid pidRollCtrl;                  ///< 整车roll轴控制
 
         // 电机数据输出缓冲区
         std::array<int16_t, 2> mtrOutputBuffer = {0};
@@ -215,7 +218,7 @@ private:
         // 电机can发送节点
         std::array<CInfCAN::CCanTxNode*, 2> mtrCanTxNode;
 
-        // 面向轮组的运动模式标志位
+        // 面向髋关节组件的运动模式标志位
         EmovMode MovMode_ = EmovMode::NORMAL;
     }comHip_;
 

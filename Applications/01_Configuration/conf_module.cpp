@@ -103,64 +103,9 @@ EAppStatus InitAllModule() {
     armInitParam.GripSpdPidParam.kd = 0.0f;
     armInitParam.GripSpdPidParam.maxIntegral = 1500.0f;
     armInitParam.GripSpdPidParam.maxOutput = 2000.0f;
-
-//    armInitParam.Need_Grav_Compensation = false;
-    // 使用初始化后的参数创建 armModule 实例
+    // armInitParam.Need_Grav_Compensation = false;
+    // 使用初始化后的参数创建 armModule 实例 
     static auto armModule = CModArm(armInitParam);
-
-
-    /******初始化子龙门模块******/ //-删除
-/*
-    CModSubGantry::SModInitParam_SubGantry subGantryInitParam;
-    subGantryInitParam.moduleID = EModuleID::MOD_SUBGANTRY;
-    subGantryInitParam.liftMotorID_L = EDeviceID::DEV_SUBGANTRY_MTR_LIFT_L;
-    subGantryInitParam.liftMotorID_R = EDeviceID::DEV_SUBGANTRY_MTR_LIFT_R;
-    subGantryInitParam.stretchMotorID_L = EDeviceID::DEV_SUBGANTRY_MTR_STRETCH_L;
-    subGantryInitParam.stretchMotorID_R = EDeviceID::DEV_SUBGANTRY_MTR_STRETCH_R;
-    subGantryInitParam.liftMotorTxNode_L = &TxNode_Can2_200;
-    subGantryInitParam.liftMotorTxNode_R = &TxNode_Can2_200;
-    subGantryInitParam.stretchMotorTxNode_L = &TxNode_Can2_200;
-    subGantryInitParam.stretchMotorTxNode_R = &TxNode_Can2_200;
-    subGantryInitParam.LeftPumpPort = LeftPump_GPIO_Port;
-    subGantryInitParam.LeftPumpPin = LeftPump_Pin;
-    subGantryInitParam.RightPumpPort = RightPump_GPIO_Port;
-    subGantryInitParam.RightPumpPin = RightPump_Pin;
-    subGantryInitParam.ArmPumpPort = ArmPump_GPIO_Port;
-    subGantryInitParam.ArmPumpPin = ArmPump_Pin;
-    // 设置PID参数
-    subGantryInitParam.liftPosPidParam_L.kp = 0.3f;
-    subGantryInitParam.liftPosPidParam_L.ki = 0.0f;
-    subGantryInitParam.liftPosPidParam_L.kd = 0.1f;
-    subGantryInitParam.liftPosPidParam_L.maxIntegral = 0.0f;
-    subGantryInitParam.liftPosPidParam_L.maxOutput = 5000.0f;
-    subGantryInitParam.liftSpdPidParam_L.kp = 1.5f;
-    subGantryInitParam.liftSpdPidParam_L.ki = 0.5f;
-    subGantryInitParam.liftSpdPidParam_L.kd = 0.0f;
-    subGantryInitParam.liftSpdPidParam_L.maxIntegral = 4500.0f;
-    subGantryInitParam.liftSpdPidParam_L.maxOutput = 8000.f;//8000.0f;
-    subGantryInitParam.liftPosPidParam_R.kp = 0.3f;
-    subGantryInitParam.liftPosPidParam_R.ki = 0.0f;
-    subGantryInitParam.liftPosPidParam_R.kd = 0.1f;
-    subGantryInitParam.liftPosPidParam_R.maxIntegral = 0.0f;
-    subGantryInitParam.liftPosPidParam_R.maxOutput = 5000.0f;
-    subGantryInitParam.liftSpdPidParam_R.kp = 1.0f;
-    subGantryInitParam.liftSpdPidParam_R.ki = 0.5f;
-    subGantryInitParam.liftSpdPidParam_R.kd = 0.0f;
-    subGantryInitParam.liftSpdPidParam_R.maxIntegral = 4500.0f;
-    subGantryInitParam.liftSpdPidParam_R.maxOutput = 7000.f;//8000.0f;
-    subGantryInitParam.stretchPosPidParam.kp = 0.18f;
-    subGantryInitParam.stretchPosPidParam.ki = 0.0f;
-    subGantryInitParam.stretchPosPidParam.kd = 0.1f;
-    subGantryInitParam.stretchPosPidParam.maxIntegral = 0.0f;
-    subGantryInitParam.stretchPosPidParam.maxOutput = 5000.0f;
-    subGantryInitParam.stretchSpdPidParam.kp = 3.0f;
-    subGantryInitParam.stretchSpdPidParam.ki = 0.3f;
-    subGantryInitParam.stretchSpdPidParam.kd = 0.0f;
-    subGantryInitParam.stretchSpdPidParam.maxIntegral = 4500.0f;
-    subGantryInitParam.stretchSpdPidParam.maxOutput = 8000.0f;
-    // 使用初始化后的参数创建 subGantryModule 实例
-    static auto subGantryModule = CModSubGantry(subGantryInitParam);
-*/
 
     /******初始化底盘模块******/
     CModChassis::SModInitParam_Chassis chassisInitParam;
@@ -195,12 +140,12 @@ EAppStatus InitAllModule() {
     chassisInitParam.wheelsetSpdPidParam.Input_deadband = 1.0f;
     chassisInitParam.wheelsetSpdPidParam.maxIntegral = 4000.0f;
     chassisInitParam.wheelsetSpdPidParam.maxOutput = 15000.0f;
-    chassisInitParam.pitchCorrectionPidParam.kp = 0.0f;
-    chassisInitParam.pitchCorrectionPidParam.ki = 0.0f;
-    chassisInitParam.pitchCorrectionPidParam.kd = 0.0f;
-    chassisInitParam.pitchCorrectionPidParam.Input_deadband = 1.0f;
-    chassisInitParam.pitchCorrectionPidParam.maxIntegral = 50.0f;
-    chassisInitParam.pitchCorrectionPidParam.maxOutput = 5000.0f; ///< pitch轴pid待调
+    chassisInitParam.rollCorrectionPidParam.kp = 0.1f;
+    chassisInitParam.rollCorrectionPidParam.ki = 0.0f;
+    chassisInitParam.rollCorrectionPidParam.kd = 0.0f;
+    chassisInitParam.rollCorrectionPidParam.Input_deadband = 1.0f;
+    chassisInitParam.rollCorrectionPidParam.maxIntegral = 50.0f;
+    chassisInitParam.rollCorrectionPidParam.maxOutput = 5000.0f; ///< roll轴pid待调
     chassisInitParam.MIT_L_kd = 0.0f;
     chassisInitParam.MIT_L_kp = 0.0f; // mit参数待调
 

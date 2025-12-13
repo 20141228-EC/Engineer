@@ -156,9 +156,9 @@ EAppStatus InitAllDevice(){
     chassisMotor_L_HIP_initparam.interfaceID = EInterfaceID::INF_CAN1;
     chassisMotor_L_HIP_initparam.MasterID = 0x32; ///< 接收节点
     chassisMotor_L_HIP_initparam.SlaveID = 0x33; ///< 发送节点
-    chassisMotor_L_HIP_initparam.Q_MAX = 0.0f;
-    chassisMotor_L_HIP_initparam.DQ_MAX = 0.0f;
-    chassisMotor_L_HIP_initparam.TAU_MAX = 0.0f; ///< 待调
+    chassisMotor_L_HIP_initparam.Q_MAX = 3.1416;
+    chassisMotor_L_HIP_initparam.DQ_MAX = 30.0f;
+    chassisMotor_L_HIP_initparam.TAU_MAX = 10.0f;
     chassisMotor_L_HIP_initparam.useAngleToPosit = true;
     chassisMotor_L_HIP_initparam.encoderResolution = 65536; ///< 不牺牲精度
     chassisMotor_L_HIP.InitDevice(&chassisMotor_L_HIP_initparam); ///< 左髋关节电机
@@ -169,9 +169,9 @@ EAppStatus InitAllDevice(){
     chassisMotor_R_HIP_initparam.interfaceID = EInterfaceID::INF_CAN1;
     chassisMotor_R_HIP_initparam.MasterID = 0x34; ///< 接收节点
     chassisMotor_R_HIP_initparam.SlaveID = 0x35; ///< 发送节点
-    chassisMotor_R_HIP_initparam.Q_MAX = 0.0f;
-    chassisMotor_R_HIP_initparam.DQ_MAX = 0.0f;
-    chassisMotor_R_HIP_initparam.TAU_MAX = 0.0f; ///< 待调
+    chassisMotor_R_HIP_initparam.Q_MAX = 3.1416;
+    chassisMotor_R_HIP_initparam.DQ_MAX = 30.0f;
+    chassisMotor_R_HIP_initparam.TAU_MAX = 10.0f;
     chassisMotor_R_HIP_initparam.useAngleToPosit = true;
     chassisMotor_R_HIP_initparam.encoderResolution = 65536; ///< 不牺牲精度
     chassisMotor_R_HIP.InitDevice(&chassisMotor_R_HIP_initparam); ///< 右髋关节电机
@@ -200,6 +200,17 @@ EAppStatus InitAllDevice(){
     armMotor_End_R_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
     armMotor_End_R_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
     armMotor_End_R.InitDevice(&armMotor_End_R_initparam);
+
+    static CDevMtrM2006 armMotor_Grip;
+    CDevMtrM2006::SMtrInitParam_M2006 armMotor_Grip_initparam;
+    armMotor_Grip_initparam.deviceID = EDeviceID::DEV_ARM_MTR_GRIP;
+    armMotor_Grip_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    armMotor_Grip_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_8;//暂时使用can2的ID8
+    armMotor_Grip_initparam.useAngleToPosit = true;
+    armMotor_Grip_initparam.useStallMonit = true;
+    armMotor_Grip_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
+    armMotor_Grip_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE; //堵转的选项设置为电流
+    armMotor_Grip.InitDevice(&armMotor_Grip_initparam);
 
     static CDevMtrKT armMotor_Yaw;
     CDevMtrKT::SMtrInitParam_KT armMotor_Yaw_initparam;
@@ -251,20 +262,6 @@ EAppStatus InitAllDevice(){
     armMotor_Roll_initparam.TAU_MAX = 10.0f;
     armMotor_Roll_initparam.useAngleToPosit = true;
     armMotor_Roll.InitDevice(&armMotor_Roll_initparam);
-
-    /******************************************
-    * 机械臂夹爪电机
-    ******************************************/
-    static CDevMtrM2006 armMotor_Grip;
-    CDevMtrM2006::SMtrInitParam_M2006 armMotor_Grip_initparam;
-    armMotor_Grip_initparam.deviceID = EDeviceID::DEV_ARM_MTR_GRIP;
-    armMotor_Grip_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    armMotor_Grip_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_8;//暂时使用can2的ID8
-    armMotor_Grip_initparam.useAngleToPosit = true;
-    armMotor_Grip_initparam.useStallMonit = true;
-    armMotor_Grip_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
-    armMotor_Grip_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE; //堵转的选项设置为电流
-    armMotor_Grip.InitDevice(&armMotor_Grip_initparam);
 
     return APP_OK;
 }
