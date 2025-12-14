@@ -32,6 +32,18 @@ public:
         MACHINE,     ///< 机械模式(误差范围在-4096 - 4096(default))
     };
 
+    // /**
+    //  * @brief 不同关节的重补模式枚举变量
+    //  * 
+    //  */
+    // enum class EGravLoadMode
+    // {
+    //     NOGRAVLOAD,
+    //     PITCH1_G,     ///< 给大pitch用的
+    //     PITCH2_G,     ///< 给小pitch用的
+    //     END_ROLL_G,   ///< 给末端roll用的
+    // };
+
     /**
      * @brief 定义pid初始化结构体
      * 
@@ -51,6 +63,8 @@ public:
         uint32_t recover_time = 0; ///< 恢复时间
         uint16_t MachineModeErrorRange = 8192; ///< 机械模式误差范围
         EPidErrorMode errorMode = EPidErrorMode::NORMAL; ///< 误差计算模式
+        // bool Need_Grav_compensation = false; ///< 是否需要重力补偿，用于初始化
+        // EGravLoadMode Grav_Load_Mode = EGravLoadMode::NOGRAVLOAD; ///< 重补模式
     };
 
     // pid状态
@@ -83,6 +97,7 @@ private:
         float_t pOut = 0.0f; ///< 比例输出
         float_t iOut = 0.0f; ///< 积分输出
         float_t dOut = 0.0f; ///< 微分输出
+        // float_t grav_Out = 0.0f; ///< 重力补偿输出
         float_t output = 0.0f; ///< 总输出
         float_t integral = 0.0f; ///< 积分值
         float_t derivative = 0.0f; ///< 微分值
@@ -107,6 +122,8 @@ private:
     float_t sustainable_output_ = 0.0f; ///< 可持续输出
     uint32_t sustainable_time_ = 0.0f; ///< 可持续时间
     uint32_t recover_time_ = 0.0f; ///< 恢复时间
+    bool Need_Grav_Compensation_ = false; ///< 是否需要重力补偿，用于CalcOutput()中
+    // EGravLoadMode Grav_Load_Mode_ = EGravLoadMode::NOGRAVLOAD; ///< 重补模式
 
     // pid线程数与定时器频率
     uint8_t threadNum_ = 1;
@@ -129,6 +146,12 @@ private:
      * 
      */
     float CalcOutput_(const float error, SPidThreadInfo &info);
+
+    // /**
+    //  * @brief 计算重力补偿前馈力矩
+    //  * 
+    //  */
+    // float Grav_Load(const DataBuffer<float_t> &measure);
 
 };
 

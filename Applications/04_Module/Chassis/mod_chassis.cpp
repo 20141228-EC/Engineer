@@ -56,27 +56,33 @@ void CModChassis::UpdateHandler_(){
     // 检查模块状态
     if (moduleStatus == APP_RESET) return;
 
-    comWheelset_.MovMode_ = MovMode; ///< 更新面向底层轮组的运动模式
+    static uint8_t HalfTickRate = 0;
+	HalfTickRate = 1 - HalfTickRate;
 
-    DataBuffer<float_t> pitch_Target = {0.0f}; ///< 目标pitch角度，目前暂时写这个，后续出车之后根据实际可能有些误差待改
+    comHip_.MovMode_ = MovMode; ///< 更新面向底层髋关节组件的运动模式
 
-    // 计算Pitch角
+    DataBuffer<float_t> roll_Target = {0.0f}; ///< 目标roll角度，目前暂时写这个，后续出车之后根据实际可能有些误差待改
+
+    // 计算Roll角
     float_t acc_x = comHip_.mems->memsData[CMemsBase::DATA_ACC_X];
     float_t acc_y = comHip_.mems->memsData[CMemsBase::DATA_ACC_Y];
     float_t acc_z = comHip_.mems->memsData[CMemsBase::DATA_ACC_Z];
-    pitch_Measure = {atan2f(acc_x, sqrtf(acc_y * acc_y + acc_z * acc_z))};
+    roll_Measure = {atan2f(acc_y, sqrtf(acc_x * acc_x + acc_z * acc_z)) * 60.f};
 
-    // 底盘pitch轴是一个三环pid控制，最外环为控pitch轴角度，输出目标腿长，内环是控腿长
-    DataBuffer<float_t> pitch_target_climbing;
-    if(MovMode == EmovMode::CLIMBING)
+    // 底盘roll轴是一个三环pid控制，最外环为控roll轴角度，输出目标腿长，内环是控腿长
+    DataBuffer<float_t> roll_target_climbing;
+    if(comHip_.MovMode_ == EmovMode::CLIMBING)
     {
-        pitch_target_climbing = comHip_.pidPitchCtrl.UpdatePidController(pitch_Target, pitch_Measure);
-        chassisCmd.L_length = pitch_target_climbing[0] * PITCH_DEG_ECD_RATIO; ///< 覆盖掉命令值
+        roll_target_climbing = comHip_.pidRollCtrl.UpdatePidController(roll_Target, roll_Measure);
+        chassisCmd.L_length += roll_target_climbing[0] * ROLL_DEG_ECD_RATIO * ROLL_LIFT_DIR * 3.f / 1000.f; ///< 在当前腿长目标基础上进行累加
+        if(reset_hip){  // 要求复位腿
+            chassisCmd.L_length = 0; ///< 直接回到初始化腿长
+        }
     } 
 
     // 更新底盘轮组
     comWheelset_.UpdateComponent();
-    comHip_.UpdateComponent();
+    if(HalfTickRate){comHip_.UpdateComponent();} ///< 降为500Hz
 
 
     // 填充电机发送缓冲区

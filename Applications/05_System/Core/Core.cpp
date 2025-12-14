@@ -66,11 +66,6 @@ EAppStatus CSystemCore::InitSystemCore() {
         pchassis_ = reinterpret_cast<CModChassis *>(it_chassis->second);
     }
 
-    auto it_gimbal = ModuleIDMap.find(EModuleID::MOD_GIMBAL);
-    if (it_gimbal != ModuleIDMap.end() && it_gimbal->second != nullptr) {
-        pgimbal_ = reinterpret_cast<CModGimbal *>(it_gimbal->second);
-    }
-
     // pgantry_ = reinterpret_cast<CModGantry *>(ModuleIDMap.at(EModuleID::MOD_GANTRY));
     // pclimber_ = reinterpret_cast<CModClimber *>(ModuleIDMap.at(EModuleID::MOD_CLIMBER));
 
@@ -134,25 +129,10 @@ void CSystemCore::UpdateHandler_() {
                   static_cast<int>(parm_->armCmd.set_angle_end_roll), static_cast<int>(parm_->armInfo.angle_end_roll),
                   static_cast<int>(parm_->armInfo.angle_end_roll - parm_->armCmd.set_angle_end_roll));
         }
-        // 删除子龙门调试打印信息
-        /* if (psubgantry_) {
-            Print("Subgantry_Stretch_L_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(psubgantry_->subGantryCmd.setStretchPosit_L), static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_L),
-                  static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_L - psubgantry_->subGantryCmd.setStretchPosit_L));
-            Print("Subgantry_Stretch_R_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(psubgantry_->subGantryCmd.setStretchPosit_R), static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_R),
-                  static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_R - psubgantry_->subGantryCmd.setStretchPosit_R));
-            Print("Subgantry_Lift_L_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(psubgantry_->subGantryCmd.setLiftPosit_L), static_cast<int>(psubgantry_->subGantryInfo.liftPosit_L),
-                  static_cast<int>(psubgantry_->subGantryInfo.liftPosit_L - psubgantry_->subGantryCmd.setLiftPosit_L));
-            Print("Subgantry_Lift_R_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(psubgantry_->subGantryCmd.setLiftPosit_R), static_cast<int>(psubgantry_->subGantryInfo.liftPosit_R),
-                  static_cast<int>(psubgantry_->subGantryInfo.liftPosit_R - psubgantry_->subGantryCmd.setLiftPosit_R));
-        }*/
 
     }
 
-    bool zx = SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X;
+    bool zx = SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X; ///< 如果同时按下z和x
     if (SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X) {
         zx_count++;
     }
@@ -189,6 +169,7 @@ void CSystemCore::UpdateHandler_() {
     if (use_Controller_ == true)
     {
         ControlFromController_();
+        ctrlmode_ = ECtrlMode::CONTROLLER_CTRL; ///< 自定义控制器控制
     }
     else
     {
@@ -197,12 +178,17 @@ void CSystemCore::UpdateHandler_() {
         && SysRemote.remoteInfo.remote.switch_R == 1)
         {
             ControlFromKeyboard_();
+            ctrlmode_ = ECtrlMode::KEY_CTRL; ///< 键鼠控制
         }
-        else
+        else ///< 其他情况均为遥控器控制
         {
             ControlFromRemote_();
+            ctrlmode_ = ECtrlMode::RC_CTRL; ///< 遥控器控制
         }
     }
+
+    BoardLink_Info_Update_(); ///< 更新板间通信数据包
+    
     last_use_Controller = use_Controller_;
     
     if (SysRemote.ResetFlag)
@@ -244,7 +230,6 @@ void CSystemCore::HeartbeatHandler_() {
         
         // 停止所有模块（添加空指针检查）
         if (pchassis_) pchassis_->StopModule();
-        if (pgimbal_) pgimbal_->StopModule();
         // if (psubgantry_) psubgantry_->StopModule(); // 已删除
         if (parm_) parm_->StopModule();
         
@@ -257,7 +242,6 @@ void CSystemCore::HeartbeatHandler_() {
 void CSystemCore::RESET_SYSTEM() {
 
     if (pchassis_) pchassis_->StopModule();
-    if (pgimbal_) pgimbal_->StopModule();
     // if (psubgantry_) psubgantry_->StopModule(); // 已删除
     if (parm_) parm_->StopModule();
 
@@ -271,12 +255,17 @@ void CSystemCore::RESET_SYSTEM() {
     NVIC_SystemReset();
 }
 
+/**
+ * @brief 启动自动任务
+ * 
+ * @retval EAppStatus
+ */
 EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
 
     if (currentAutoCtrlProcess_ != EAutoCtrlProcess::NONE)
         return APP_BUSY;
 
-    StopAutoCtrlTask_();
+    StopAutoCtrlTask_();    ///< 停止当前任务
 
     // 设置机械臂yaw轴限位（添加空指针检查）
     if (parm_) {
@@ -367,6 +356,11 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
     }
 }
 
+/**
+ * @brief 停止自动任务
+ * 
+ * @retval EAppStatus
+ */
 EAppStatus CSystemCore::StopAutoCtrlTask_() {
     if (autoCtrlTaskHandle_ == nullptr) return APP_ERROR;
 
@@ -377,10 +371,40 @@ EAppStatus CSystemCore::StopAutoCtrlTask_() {
     // 清除所有模块的自动控制标志（添加空指针检查）
     // psubgantry_->subGantryCmd.isAutoCtrl = false; // 已删除
     if (pchassis_) pchassis_->chassisCmd.isAutoCtrl = false;
-    if (pgimbal_) pgimbal_->gimbalCmd.isAutoCtrl = false;
     if (parm_) parm_->armCmd.isAutoCtrl = false;
 
     return APP_OK;
+}
+
+/**
+ * @brief 更新板通系统层
+ * 
+ * @retval null
+ */
+void CSystemCore::BoardLink_Info_Update_(){
+    // 检查系统核心状态
+    if (coreStatus == APP_RESET) return;
+
+    // 包0数据更新
+    SysBoardLink.remoteInfo1.pack_id = 0;
+    SysBoardLink.remoteInfo1.joystick_RX = SysRemote.remoteInfo.remote.joystick_RX * 220; ///< 右摇杆x
+    SysBoardLink.remoteInfo1.joystick_RY = SysRemote.remoteInfo.remote.joystick_RY * 220; ///< 右摇杆y
+    SysBoardLink.remoteInfo1.joystick_LX = SysRemote.remoteInfo.remote.joystick_LX * 220; ///< 左摇杆x
+
+    // 包1数据更新
+    SysBoardLink.remoteInfo2.pack_id = 1;
+    SysBoardLink.remoteInfo2.joystick_LY = SysRemote.remoteInfo.remote.joystick_LY * 220; ///< 左摇杆y
+    SysBoardLink.remoteInfo2.thumbWheel = SysRemote.remoteInfo.remote.thumbWheel * 220;    ///< 拨轮
+    // 上面这些放大220倍是为了保留两位小数点精度，在保证不超int16_t范围的同时尽可能保证发过去的是原始遥控器数据，副板只需要*3.f再除100.f转浮点数即可获取原始遥控器数据
+    SysBoardLink.remoteInfo2.switch_l = SysRemote.remoteInfo.remote.switch_L;   ///< 左拨杆
+    SysBoardLink.remoteInfo2.switch_r = SysRemote.remoteInfo.remote.switch_R;   ///< 右拨杆
+
+    // 包2数据更新
+    SysBoardLink.ctrlFlags.pack_id = 2;
+    SysBoardLink.ctrlFlags.rc_status = SysRemote.systemStatus;
+    SysBoardLink.ctrlFlags.ctrl_mode = static_cast<uint8_t>(ctrlmode_);
+    SysBoardLink.ctrlFlags.move_mode = static_cast<uint8_t>(movemode_);
+
 }
 
 

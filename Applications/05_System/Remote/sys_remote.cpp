@@ -97,7 +97,7 @@ EAppStatus CSystemRemote::UpdateRemote_() {
     remoteInfo.remote.joystick_LY = pRemoteDev_->remoteData[CRcDR16::CH_3].chValue / 6.6f;
     remoteInfo.remote.thumbWheel  = pRemoteDev_->remoteData[CRcDR16::CH_TW].chValue / 6.6f;
     remoteInfo.remote.switch_L    = pRemoteDev_->remoteData[CRcDR16::CH_SW1].chValue;
-    remoteInfo.remote.switch_R    = pRemoteDev_->remoteData[CRcDR16::CH_SW2].chValue;
+    remoteInfo.remote.switch_R    = pRemoteDev_->remoteData[CRcDR16::CH_SW2].chValue; ///< 将摇杆值归一到-100~100
 
     UpdateRemote_with_deadzone_();
 

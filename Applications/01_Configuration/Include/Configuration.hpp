@@ -31,7 +31,7 @@ enum class EInterfaceID{
     INF_DBUS,       ///< DBUS接口(遥控器，使用USART5)
     INF_UART1,      ///< 串口1(用于裁判系统)
     INF_UART7,      ///< 串口7(用于视觉)
-    INF_UART10,     ///< 串口10(用于调试)
+    INF_UART10,     ///< 串口10(用于图传)
     INF_USB_CDC,    ///< USB CDC(用于视觉)
     INF_CAN1,       ///< CAN1(用于底盘电机)
     INF_CAN2,       ///< CAN2(用于臂末端三轴电机)
@@ -63,11 +63,6 @@ enum class EDeviceID{
     DEV_CHAS_MTR_RF,        ///< 底盘电机前右（M3508）
     DEV_CHAS_MTR_LB,        ///< 底盘电机后左（M3508）
     DEV_CHAS_MTR_RB,        ///< 底盘电机后右（M3508）
-    DEV_GIMBAL_MTR,  ///< 云台电机（M2006）
-    // DEV_SUBGANTRY_MTR_LIFT_L,   ///< 子龙门升降电机左（M2006） - 已删除
-    // DEV_SUBGANTRY_MTR_LIFT_R,   ///< 子龙门升降电机右（M2006） - 已删除
-    // DEV_SUBGANTRY_MTR_STRETCH_L,///< 子龙门伸缩电机左（M2006） - 已删除
-    // DEV_SUBGANTRY_MTR_STRETCH_R,///< 子龙门伸缩电机右（M2006） - 已删除
     DEV_ARM_MTR_YAW,            ///< 机械臂YAW轴电机(DM-MIT mode)
     DEV_ARM_MTR_PITCH1,        ///< 机械臂Pitch1轴电机(KT)
     DEV_ARM_MTR_PITCH2,        ///< 机械臂Pitch2轴电机(KT)
@@ -88,7 +83,7 @@ enum class EModuleID{
     MOD_TEST = 0,           ///< 测试模块
     MOD_CHASSIS,            ///< 底盘模块
     MOD_CLIMBER,           ///< 上台阶模块
-    MOD_GIMBAL,             ///< 云台模块
+    // MOD_GIMBAL,             ///< 云台模块
     MOD_GANTRY,             ///< 龙门模块
     // MOD_SUBGANTRY,          ///< 子龙门模块 - 已删除
     MOD_ARM,                ///< 机械臂模块

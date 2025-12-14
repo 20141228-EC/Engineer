@@ -131,6 +131,10 @@ void CDevMtrDM_MIT::EnableMotor()
 	canTxNode_.Transmit();
 }
 
+/**
+ * @brief 设置零点
+ * @details 由于物理零点与编码器零点一般都是对不上的，因此需要在想要的机械零点处设为编码器零点
+ */
 void CDevMtrDM_MIT::SetZero() {
 	// 检查设备状态
 	if (deviceStatus == APP_RESET)
@@ -214,6 +218,15 @@ void CDevMtrDM_MIT::HeartbeatHandler_() {
     // 检查设备状态
     if(deviceStatus == APP_RESET) return;
 
+	// 每隔100ms使能一次
+	if (HAL_GetTick() - lastEnableTime_ > 10) {
+		// 使能电机
+		EnableMotor();
+		lastEnableTime_ = HAL_GetTick();
+	}
+	if(motorData[DATA_ERR] != 0x03)
+		ClearError();
+
     // 检查心跳时间
     if (HAL_GetTick() - lastHeartbeatTime_ > (offlineDelay / tickRate)) {
         motorStatus = EMotorStatus::OFFLINE;
@@ -223,14 +236,14 @@ void CDevMtrDM_MIT::HeartbeatHandler_() {
     motorStatus = (abs(motorData[DATA_SPEED]) < stallSpdThreshold) ? 
         EMotorStatus::STOP : EMotorStatus::RUNNING;
     
-	// 每隔100ms使能一次
-	if (HAL_GetTick() - lastEnableTime_ > 10) {
-		// 使能电机
-		EnableMotor();
-		lastEnableTime_ = HAL_GetTick();
-	}
-	if(motorData[DATA_ERR] != 0x03)
-		ClearError();	
+	// // 每隔100ms使能一次
+	// if (HAL_GetTick() - lastEnableTime_ > 10) {
+	// 	// 使能电机
+	// 	EnableMotor();
+	// 	lastEnableTime_ = HAL_GetTick();
+	// }
+	// if(motorData[DATA_ERR] != 0x03)
+	// 	ClearError();	
 	// if(HAL_GetTick() - lastclearErrorTime_ > 100){
 	// 	ClearError();	
 	// 	lastclearErrorTime_ = HAL_GetTick();

@@ -1,5 +1,5 @@
 /******************************************************************************
- * @brief        
+ * @brief        板间通信设备
  * 
  * @file         dev_board_link.cpp
  * @author       sllllr (2997708711@qq.com)
@@ -53,6 +53,8 @@ EAppStatus CDevBoardLink::InitDevice(const SDevInitParam_Base *pStructInitParam)
 /**
  * @brief 发送信息
  * 
+ * @details 将从系统层获取，已经存到设备层结构体中的数据填入can发送缓冲区
+ * 
  * @retval EAppStatus
  */
 EAppStatus CDevBoardLink::SendPackage(EPacketID pack_id){
@@ -64,49 +66,21 @@ EAppStatus CDevBoardLink::SendPackage(EPacketID pack_id){
 
 	switch (pack_id) ///< 这些获取的逻辑还得具体实现
 	{
-	case PKT_ARM_BACKWARD:{
+	case PKT_REMOTE_1:{
 
 		// 获取数据
-		data_buf[0] = PKT_ARM_BACKWARD; // 包id
-		data_buf[1] = 0;
-		data_buf[2] = 0;
-		data_buf[3] = 0;
-		data_buf[4] = 0;
-		data_buf[5] = 0;
-		data_buf[6] = 0;
-		data_buf[7] = 0;
+		remoteInfo1_pkt.pack_id = PKT_REMOTE_1;
+    	memcpy(data_buf.data(), &remoteInfo1_pkt, sizeof(remoteInfo1_pkt));
 
 		// 填充数据帧
 		Modify_CanTxData(data_buf.data());
 		break;
 	}
-	case PKT_ARM_FORWARD:{
+	case PKT_REMOTE_2:{
 
 		// 获取数据
-		data_buf[0] = PKT_ARM_FORWARD; // 包id
-		data_buf[1] = 0;
-		data_buf[2] = 0;
-		data_buf[3] = 0;
-		data_buf[4] = 0;
-		data_buf[5] = 0;
-		data_buf[6] = 0;
-		data_buf[7] = 0;
-
-		// 填充数据帧
-		Modify_CanTxData(data_buf.data());
-		break;
-	}
-	case PKT_GIMBAL:{
-
-		// 获取数据
-		data_buf[0] = PKT_GIMBAL; // 包id
-		data_buf[1] = 0;
-		data_buf[2] = 0;
-		data_buf[3] = 0;
-		data_buf[4] = 0;
-		data_buf[5] = 0;
-		data_buf[6] = 0;
-		data_buf[7] = 0;
+		remoteInfo2_pkt.pack_id = PKT_REMOTE_2;
+		memcpy(data_buf.data(), &remoteInfo2_pkt, sizeof(remoteInfo2_pkt));
 
 		// 填充数据帧
 		Modify_CanTxData(data_buf.data());
@@ -115,14 +89,8 @@ EAppStatus CDevBoardLink::SendPackage(EPacketID pack_id){
 	case PKT_CTRL_FLAGS:{
 
 		// 获取数据
-		data_buf[0] = PKT_CTRL_FLAGS; // 包id
-		data_buf[1] = 0;
-		data_buf[2] = 0;
-		data_buf[3] = 0;
-		data_buf[4] = 0;
-		data_buf[5] = 0;
-		data_buf[6] = 0;
-		data_buf[7] = 0;
+		ctrlFlags_pkt.pack_id = PKT_CTRL_FLAGS;
+		memcpy(data_buf.data(), &ctrlFlags_pkt, sizeof(ctrlFlags_pkt));
 
 		// 填充数据帧
 		Modify_CanTxData(data_buf.data());
@@ -146,9 +114,9 @@ void CDevBoardLink::UpdateHandler_(){
 
 	if (deviceStatus == APP_RESET) return;
 
-	if (rxTimestamp_ > lastHeartbeatTime_) {
+	// if (rxTimestamp_ > lastHeartbeatTime_) {
 		ResolveRxPackage_();
-	}
+	// }
 }
 
 /**
@@ -190,10 +158,16 @@ EAppStatus CDevBoardLink::ResolveRxPackage_(){
 			// 将databuffer转化成结构体指针并解引用
 			SFeedbackPack feedbackInfo = *reinterpret_cast<SFeedbackPack*>(canRxNode_.dataBuffer.data());
 			// 后续如果发现不能正确读取或位运算有错的话，可以试试换成用feedbackInfo来接收
+			fdbInfo_pkt.pack_id = canRxNode_.dataBuffer[0];
 			fdbInfo_pkt.pack0_status = canRxNode_.dataBuffer[1] & 0x01;
 			fdbInfo_pkt.pack1_status = (canRxNode_.dataBuffer[1] >> 1) & 0x01;
 			fdbInfo_pkt.pack2_status = (canRxNode_.dataBuffer[1] >> 2) & 0x01;
 			fdbInfo_pkt.pack3_status = (canRxNode_.dataBuffer[1] >> 3) & 0x01;
+
+			// fdbInfo_pkt.pack0_status = feedbackInfo.pack0_status;
+			// fdbInfo_pkt.pack1_status = feedbackInfo.pack1_status;
+			// fdbInfo_pkt.pack2_status = feedbackInfo.pack2_status;
+			// fdbInfo_pkt.pack3_status = feedbackInfo.pack3_status;
 			break;
 		}
 		default:
@@ -201,6 +175,10 @@ EAppStatus CDevBoardLink::ResolveRxPackage_(){
 		}
 		rxTimestamp_ = canRxNode_.timestamp; ///< 更新时间戳
 	}
+
+    // 在所有case的外部，只要是这个设备的消息，就更新时间戳
+    lastHeartbeatTime_ = canRxNode_.timestamp;
+
 	return APP_OK;
 }
 

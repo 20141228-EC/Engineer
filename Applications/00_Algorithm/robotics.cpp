@@ -27,7 +27,7 @@ Matrixf<3, 1> robotics::r2rpy(Matrixf<3, 3> R) {
 
 Matrixf<3, 3> robotics::rpy2r(Matrixf<3, 1> rpy) {
   float c[3] = {cosf(rpy[0][0]), cosf(rpy[1][0]), cosf(rpy[2][0])};
-  float s[3] = {sinf(rpy[0][0]), sinf(rpy[1][0]), sinf(rpy[2][0])};
+  float s[3] = {sinf(rpy[0][0]), sinf(rpy[1][0]), sinf(rpy[2][0])}; ///< 这两句是为了将三个欧拉角的三角函数值先储存下来，避免重复运算，是一种优化手段
   float R[9] = {
       c[0] * c[1],                       // R11
       c[0] * s[1] * s[2] - s[0] * c[2],  // R12
