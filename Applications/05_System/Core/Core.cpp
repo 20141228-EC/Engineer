@@ -66,21 +66,10 @@ EAppStatus CSystemCore::InitSystemCore() {
         pchassis_ = reinterpret_cast<CModChassis *>(it_chassis->second);
     }
 
-    // pgantry_ = reinterpret_cast<CModGantry *>(ModuleIDMap.at(EModuleID::MOD_GANTRY));
-    // pclimber_ = reinterpret_cast<CModClimber *>(ModuleIDMap.at(EModuleID::MOD_CLIMBER));
-
-    // 已删除子龙门模块指针初始化
-    // auto it_subgantry = ModuleIDMap.find(EModuleID::MOD_SUBGANTRY);
-    // if (it_subgantry != ModuleIDMap.end() && it_subgantry->second != nullptr) {
-    //     psubgantry_ = reinterpret_cast<CModSubGantry *>(it_subgantry->second);
-    // }
-
     auto it_arm = ModuleIDMap.find(EModuleID::MOD_ARM);
     if (it_arm != ModuleIDMap.end() && it_arm->second != nullptr) {
         parm_ = reinterpret_cast<CModArm *>(it_arm->second);
     }
-
-    // pmantis_ = reinterpret_cast<CModMantis *>(ModuleIDMap.at(EModuleID::MOD_MANTIS));
 
     proc_waitMs(1200); // 等待系统初始化完成
 
@@ -148,7 +137,7 @@ void CSystemCore::UpdateHandler_() {
         use_Controller_ = !use_Controller_;
         if (use_Controller_ == true) {
             // 根据当前在哪个自动任务中调整臂的初始角度
-            if (currentAutoCtrlProcess_ == EAutoCtrlProcess::EXCHANGE) {
+            if (currentAutoCtrlProcess_ == EAutoCtrlProcess::EXCHANGE_ORE) {
 
             }
             else {
@@ -195,20 +184,6 @@ void CSystemCore::UpdateHandler_() {
     {
         RESET_SYSTEM();
     }
-
-    // 删除拇指轮控制气泵代码
-    /* if (psubgantry_) {
-         if (SysRemote.remoteInfo.remote.thumbWheel > 50) {
-            psubgantry_->subGantryCmd.setPumpOn_Left = true;
-            psubgantry_->subGantryCmd.setPumpOn_Right = true;
-            psubgantry_->subGantryCmd.setPumpOn_Arm = true;
-        }
-        else if (SysRemote.remoteInfo.remote.thumbWheel < -50) {
-            psubgantry_->subGantryCmd.setPumpOn_Left = false;
-            psubgantry_->subGantryCmd.setPumpOn_Right = false;
-            psubgantry_->subGantryCmd.setPumpOn_Arm = false;
-        }
-     }*/
 
 }
 
@@ -369,7 +344,6 @@ EAppStatus CSystemCore::StopAutoCtrlTask_() {
     currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
     // 清除所有模块的自动控制标志（添加空指针检查）
-    // psubgantry_->subGantryCmd.isAutoCtrl = false; // 已删除
     if (pchassis_) pchassis_->chassisCmd.isAutoCtrl = false;
     if (parm_) parm_->armCmd.isAutoCtrl = false;
 
@@ -404,6 +378,10 @@ void CSystemCore::BoardLink_Info_Update_(){
     SysBoardLink.ctrlFlags.rc_status = SysRemote.systemStatus;
     SysBoardLink.ctrlFlags.ctrl_mode = static_cast<uint8_t>(ctrlmode_);
     SysBoardLink.ctrlFlags.move_mode = static_cast<uint8_t>(movemode_);
+
+    SysBoardLink.ctrlFlags.chassis_auto_ctrl = pchassis_->chassisCmd.isAutoCtrl;
+    SysBoardLink.ctrlFlags.gimbal_auto_ctrl = gimbal_auto_ctrl;
+    SysBoardLink.ctrlFlags.arm_auto_ctrl = parm_->armCmd.isAutoCtrl;
 
 }
 

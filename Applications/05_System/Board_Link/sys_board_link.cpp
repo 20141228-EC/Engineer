@@ -157,6 +157,11 @@ void CSystemBoardLink::UpdateBoardTxPkg_() {
     pboardLink_->ctrlFlags_pkt.ctrl_mode = ctrlFlags.ctrl_mode;
     pboardLink_->ctrlFlags_pkt.move_mode = ctrlFlags.move_mode;
     pboardLink_->ctrlFlags_pkt.emergency_stop = ctrlFlags.emergency_stop;
+
+    pboardLink_->ctrlFlags_pkt.chassis_auto_ctrl = ctrlFlags.chassis_auto_ctrl;
+    pboardLink_->ctrlFlags_pkt.gimbal_auto_ctrl = ctrlFlags.gimbal_auto_ctrl;
+    pboardLink_->ctrlFlags_pkt.arm_auto_ctrl = ctrlFlags.arm_auto_ctrl;
+    pboardLink_->ctrlFlags_pkt.auto_ctrl_mode = ctrlFlags.auto_ctrl_mode;
 }
 
 /**

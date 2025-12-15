@@ -71,6 +71,12 @@ public:
         uint8_t  move_mode : 3;             ///< 运动模式
         uint8_t  emergency_stop : 1;        ///< 急停信号
 
+        // 自动控制标志
+        uint8_t  chassis_auto_ctrl : 1;     ///< 底盘自动控制标志位
+        uint8_t  gimbal_auto_ctrl : 1;      ///< 云台自动控制标志位
+        uint8_t  arm_auto_ctrl : 1;         ///< 臂自动控制标志位
+        uint8_t  auto_ctrl_mode : 5;        ///< 自动控制任务类型
+
         uint8_t  reserved[4];               ///< 预留给未来扩展
     } __packed ctrlFlags = {};
 

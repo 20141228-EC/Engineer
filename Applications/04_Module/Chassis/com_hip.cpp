@@ -118,7 +118,7 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 		}
 
 		case FSM_INIT: {
-			if (fabs(HipInfo.pos_L_L - HipCmd.L_Set_Angle) < 10.0 && fabs(HipInfo.pos_L_R - HipCmd.R_Set_Angle) < 10.0) {
+			if (ecd2rad(fabs(HipInfo.pos_L_L - HipCmd.L_Set_Angle)) < 5.0 && ecd2rad(fabs(HipInfo.pos_L_R - HipCmd.R_Set_Angle)) < 5.0) {
 				Component_FSMFlag_ = FSM_CTRL;
 				componentStatus = APP_OK;
 			}

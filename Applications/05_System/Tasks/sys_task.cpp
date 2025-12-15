@@ -126,7 +126,9 @@ void StartHeartbeatTask(void *argument) {
 void StartMonitorTask(void *argument) {
     while(true)
     {
-        // RTT_Test_All();
+        // RTT_LOG_INFO("Hip L: Set=%.2f, Real=%.2f", 
+        //              SystemCore.pchassis_->MIT_L.Set_Angle, 
+        //              SystemCore.pchassis_->MIT_L.Angle);
         proc_waitMs(10); // 100Hz
     }
     
