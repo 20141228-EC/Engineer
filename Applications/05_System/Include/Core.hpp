@@ -22,7 +22,7 @@
 
 /*-------------------------------------AUTO_PROCESS_SET----------------------------------------------------------*/
 
-// 上台阶
+/* ----------------------上台阶------------------- */
 #define CLIMBING_YAW_ANGLE        ARM_YAW_INIT_ANGLE
 #define CLIMBING_PITCH1_ANGLE     ARM_PITCH1_INIT_ANGLE
 #define CLIMBING_PITCH2_ANGLE     ARM_PITCH2_INIT_ANGLE
@@ -32,7 +32,7 @@
 #define CLIMBING_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
 #define CLIMBING_SPEED            80.f      ///< 全速的80%
 
-// 抓能量单元
+/* --------------------抓能量单元------------------- */
 #define GRAB_ENERGY_UNIT_YAW_ANGLE        1.0f
 #define GRAB_ENERGY_UNIT_PITCH1_ANGLE     1.0f
 #define GRAB_ENERGY_UNIT_PITCH2_ANGLE     1.0f
@@ -42,7 +42,8 @@
 #define GRAB_ENERGY_UNIT_GRIP_LENGTH      1.0f
 // 待改
 
-// 兑换矿石
+
+/* --------------------兑换矿石-------------------- */
 #define EXCHANGE_ORE_YAW_ANGLE        1.0f
 #define EXCHANGE_ORE_PITCH1_ANGLE     1.0f
 #define EXCHANGE_ORE_PITCH2_ANGLE     1.0f
@@ -52,7 +53,7 @@
 #define EXCHANGE_ORE_GRIP_LENGTH      1.0f
 // 待改
 
-// 存矿
+/* ----------------------存矿------------------------*/
 #define SAVE_ORE_YAW_ANGLE        1.0f
 #define SAVE_ORE_PITCH1_ANGLE     1.0f
 #define SAVE_ORE_PITCH2_ANGLE     1.0f
@@ -61,6 +62,30 @@
 #define SAVE_ORE_END_ROLL_ANGLE   1.0f
 #define SAVE_ORE_GRIP_LENGTH      1.0f
 // 待改
+
+
+/* -----------------------全部复位----------------------- */
+#define RETURN_ORIGIN_YAW_ANGLE        ARM_YAW_INIT_ANGLE
+#define RETURN_ORIGIN_PITCH1_ANGLE     ARM_PITCH1_INIT_ANGLE
+#define RETURN_ORIGIN_PITCH2_ANGLE     ARM_PITCH2_INIT_ANGLE
+#define RETURN_ORIGIN_ROLL_ANGLE       ARM_ROLL_INIT_ANGLE
+#define RETURN_ORIGIN_END_PITCH_ANGLE  ARM_END_PITCH_INIT_ANGLE
+#define RETURN_ORIGIN_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
+#define RETURN_ORIGIN_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
+
+
+/* ------------------------捡地矿------------------------- */
+#define GROUND_ORE_YAW_ANGLE        1.0f
+#define GROUND_ORE_PITCH1_ANGLE     1.0f
+#define GROUND_ORE_PITCH2_ANGLE     1.0f
+#define GROUND_ORE_ROLL_ANGLE       1.0f
+#define GROUND_ORE_END_PITCH_ANGLE  1.0f
+#define GROUND_ORE_END_ROLL_ANGLE   1.0f
+#define GROUND_ORE_GRIP_LENGTH      1.0f
+#define GROUND_ORE_HIP_LENGTH       1.0f
+// 待改
+
+
 
 namespace my_engineer {
 
@@ -78,16 +103,16 @@ public:
     // 定义自动操作的任务类型并实例化表示当前任务类型
     enum class EAutoCtrlProcess {
         NONE,
-        RETURN_ORIGIN,      ///< 复位
+        RETURN_ORIGIN,      ///< 所有模块复位
         CLIMBING,           ///< 上台阶
         ENERGY_UNIT,        ///< 抓取能量单元
         EXCHANGE_ORE,       ///< 兑矿
         SAVE_ORE,           ///< 存矿
+        GROUND_ORE,         ///< 地矿
 
         // 下面这些是待删的，由于和别的模块比如视觉耦合所以暂时不删
         RETURN_DRIVE,
         DOGHOLE,
-        GROUND_ORE,
         SILVER_ORE,
         GOLD_ORE,
         EXCHANGE,
@@ -161,6 +186,10 @@ private:
     // 声明自动操作的任务函数
     static void StartClimbingTask(void *arg);
     static void StartSaveOreTask(void *arg);
+    static void StartGroundOreTask(void *arg);
+    static void StartExchangeOreTask(void *arg);
+    static void StartReturnOriginTask(void *arg);
+    static void StartEnergyUnitTask(void *arg);
     
 };
 

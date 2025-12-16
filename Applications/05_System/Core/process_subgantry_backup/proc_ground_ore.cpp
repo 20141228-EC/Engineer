@@ -65,6 +65,7 @@ void CSystemCore::StartGroundOreTask(void *arg) {
 
 			/*step 2*/
 			core.parm_->armCmd.isAutoCtrl = true;
+			
 			core.psubgantry_->subGantryCmd.isAutoCtrl = true;
 			core.pgimbal_->gimbalCmd.isAutoCtrl = true;
 			

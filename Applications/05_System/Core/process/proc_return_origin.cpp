@@ -1,10 +1,10 @@
 /******************************************************************************
  * @brief        
  * 
- * @file         proc_climbing.cpp
+ * @file         proc_return_origin.cpp
  * @author       sllllr (2997708711@qq.com)
  * @version      V1.0
- * @date         2025-12-14
+ * @date         2025-12-15
  * 
  * @copyright    Copyright (c) 2025
  * 
@@ -15,9 +15,9 @@
 namespace my_engineer {
 
 /******************************************************************************
- * @brief    上台阶任务
+ * @brief    模块全部复位任务
  ******************************************************************************/
-void CSystemCore::StartClimbingTask(void *arg) {
+void CSystemCore::StartReturnOriginTask(void *arg) {
 
 	if (arg == nullptr) proc_return();
 
@@ -30,31 +30,21 @@ void CSystemCore::StartClimbingTask(void *arg) {
 	core.parm_->armCmd.isAutoCtrl = true;           ///< 臂自动控制
 	core.pchassis_->chassisCmd.isAutoCtrl = true;   ///< 底盘自动控制
 	core.gimbal_auto_ctrl = true;					///< 云台自动控制
-	core.movemode_ = EMoveMode::CLIMBING;
-	core.pchassis_->MovMode = CModChassis::EmovMode::CLIMBING;
 	
 	/*Set Arm*/
-	core.parm_->armCmd.set_angle_Yaw = CLIMBING_YAW_ANGLE;
-	core.parm_->armCmd.set_angle_Pitch1 = CLIMBING_PITCH1_ANGLE;
-	core.parm_->armCmd.set_angle_Pitch2 = CLIMBING_PITCH2_ANGLE;
-	core.parm_->armCmd.set_angle_Roll = CLIMBING_ROLL_ANGLE;
-	core.parm_->armCmd.set_angle_end_pitch = CLIMBING_END_PITCH_ANGLE;
-	core.parm_->armCmd.set_angle_end_roll = CLIMBING_END_ROLL_ANGLE;
-    core.parm_->armCmd.set_length_grip = CLIMBING_GRIP_LENGTH;
-	// 后续看情况得改 在初始化位置可能会干涉
+	core.parm_->armCmd.set_angle_Yaw = RETURN_ORIGIN_YAW_ANGLE;
+	core.parm_->armCmd.set_angle_Pitch1 = RETURN_ORIGIN_PITCH1_ANGLE;
+	core.parm_->armCmd.set_angle_Pitch2 = RETURN_ORIGIN_PITCH2_ANGLE;
+	core.parm_->armCmd.set_angle_Roll = RETURN_ORIGIN_ROLL_ANGLE;
+	core.parm_->armCmd.set_angle_end_pitch = RETURN_ORIGIN_END_PITCH_ANGLE;
+	core.parm_->armCmd.set_angle_end_roll = RETURN_ORIGIN_END_ROLL_ANGLE;
+    core.parm_->armCmd.set_length_grip = RETURN_ORIGIN_GRIP_LENGTH;
 
-	/*Set Chassis*/
-	core.pchassis_->chassisCmd.speed_X = CLIMBING_SPEED;
+    /* Set Chassis */
+    core.pchassis_->chassisCmd.L_length = CHASSIS_HIP_INIT_LENGTH;
+    // 全部回到初始化位置
 
-	// 上台阶任务比较特殊，由操作手来决定何时退出任务
-    while (true)
-    {
-        if (keyboard.key_V) // 按下v来退出任务
-        {
-            break; // 检测到v键按下，跳出循环
-        }
-        proc_waitMs(20);
-    }
+	proc_waitMs(250);
 
 // 退出
 proc_exit:
@@ -64,7 +54,6 @@ proc_exit:
 	core.autoCtrlTaskHandle_ = nullptr;
 	core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 	core.movemode_ = EMoveMode::NONE;
-	core.pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
 	proc_return();
 
 }

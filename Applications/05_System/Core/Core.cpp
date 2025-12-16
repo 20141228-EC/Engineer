@@ -201,7 +201,7 @@ void CSystemCore::HeartbeatHandler_() {
     // 遥控器掉线
     if (lastRemoteState == APP_OK && currentRemoteState != APP_OK) {
         // 停止所有自动操作
-        // StopAutoCtrlTask_();
+        StopAutoCtrlTask_();
         
         // 停止所有模块（添加空指针检查）
         if (pchassis_) pchassis_->StopModule();
@@ -217,7 +217,6 @@ void CSystemCore::HeartbeatHandler_() {
 void CSystemCore::RESET_SYSTEM() {
 
     if (pchassis_) pchassis_->StopModule();
-    // if (psubgantry_) psubgantry_->StopModule(); // 已删除
     if (parm_) parm_->StopModule();
 
     // 给段延迟让电机收到停止指令
@@ -253,79 +252,62 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
             return APP_ERROR;
         }
 
-        // 删除涉及到子龙门的自动流程，对应的流程文件已备份至 process_subgantry_backup
+//        case EAutoCtrlProcess::RETURN_ORIGIN: {
+//            currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_ORIGIN;
+//            xTaskCreate(StartReturnOriginTask, "Return Origin Task",
+//                        512, this, proc_ModuleTaskPriority,
+//                        &autoCtrlTaskHandle_);
+//            return APP_OK;
+//        }
 
-        // case EAutoCtrlProcess::EXCHANGE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::EXCHANGE;
-        //     xTaskCreate(StartExchangeTask, "Exchange Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
+//        case EAutoCtrlProcess::CLIMBING: {
+//            currentAutoCtrlProcess_ = EAutoCtrlProcess::CLIMBING;
+//            xTaskCreate(StartClimbingTask, "Climbing Task",
+//                        512, this, proc_ModuleTaskPriority,
+//                        &autoCtrlTaskHandle_);
+//            return APP_OK;
+//        }
 
-        // case EAutoCtrlProcess::RETURN_DRIVE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_DRIVE;
-        //     xTaskCreate(StartReturnDriveTask, "Return Drive Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
+//        case EAutoCtrlProcess::ENERGY_UNIT: {
+//            currentAutoCtrlProcess_ = EAutoCtrlProcess::ENERGY_UNIT;
+//            xTaskCreate(StartEnergyUnitTask, "Grab Energy Unit Task",
+//                        512, this, proc_ModuleTaskPriority,
+//                        &autoCtrlTaskHandle_);
+//            return APP_OK;
+//        }
 
-        // case EAutoCtrlProcess::RETURN_ORIGIN: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_ORIGIN;
-        //     xTaskCreate(StartReturnOriginTask, "Return Origin Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
+//        case EAutoCtrlProcess::EXCHANGE_ORE: {
+//            currentAutoCtrlProcess_ = EAutoCtrlProcess::EXCHANGE_ORE;
+//            xTaskCreate(StartExchangeOreTask, "Exchange Ore Task",
+//                        512, this, proc_ModuleTaskPriority,
+//                        &autoCtrlTaskHandle_);
+//            return APP_OK;
+//        }
 
-        // case EAutoCtrlProcess::DOGHOLE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::DOGHOLE;
-        //     xTaskCreate(StartDogHoleTask, "Dog Hole Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
+//        case EAutoCtrlProcess::SAVE_ORE: {
+//            currentAutoCtrlProcess_ = EAutoCtrlProcess::SAVE_ORE;
+//            xTaskCreate(StartSaveOreTask, "Save Ore Task",
+//                        512, this, proc_ModuleTaskPriority,
+//                        &autoCtrlTaskHandle_);
+//            return APP_OK;
+//        }
 
-        // case EAutoCtrlProcess::GROUND_ORE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::GROUND_ORE;
-        //     xTaskCreate(StartGroundOreTask, "Ground Ore Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
+//        case EAutoCtrlProcess::GROUND_ORE: {
+//            currentAutoCtrlProcess_ = EAutoCtrlProcess::GROUND_ORE;
+//            xTaskCreate(StartGroundOreTask, "Ground Ore Task",
+//                        512, this, proc_ModuleTaskPriority,
+//                        &autoCtrlTaskHandle_);
+//            return APP_OK;
+//        }
 
-        // case EAutoCtrlProcess::GOLD_ORE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::GOLD_ORE;
-        //     xTaskCreate(StartGoldOreTask, "Gold Ore Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
-
-        // case EAutoCtrlProcess::PUSH_ORE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::PUSH_ORE;
-        //     xTaskCreate(StartPushOreTask, "Push Ore Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
-
-        // case EAutoCtrlProcess::POP_ORE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::POP_ORE;
-        //     xTaskCreate(StartPopOreTask, "Pop Ore Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
-
-        // case EAutoCtrlProcess::SILVER_ORE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::SILVER_ORE;
-        //     xTaskCreate(StartSilverOreTask, "Silver Ore Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
+        // 下面这些是待删的，为了编译通过才加上
+        case EAutoCtrlProcess::RETURN_DRIVE:return APP_ERROR;
+        case EAutoCtrlProcess::DOGHOLE:return APP_ERROR;
+        case EAutoCtrlProcess::SILVER_ORE:return APP_ERROR;
+        case EAutoCtrlProcess::GOLD_ORE:return APP_ERROR;
+        case EAutoCtrlProcess::EXCHANGE:return APP_ERROR;
+        case EAutoCtrlProcess::PUSH_ORE:return APP_ERROR;
+        case EAutoCtrlProcess::POP_ORE:return APP_ERROR;
 
         default: return APP_ERROR;
     }

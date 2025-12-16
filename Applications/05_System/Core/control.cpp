@@ -112,7 +112,10 @@ void CSystemCore::ControlFromRemote_() {
             movemode_ = EMoveMode::NORMAL;
         }
         RTT_LOG_INFO("current autoctrl process %d", currentAutoCtrlProcess_);
-        RTT_LOG_INFO("test...");
+        RTT_LOG_INFO("test Info...");
+
+        RTT_LOG_DATA("current move mode %d", movemode_);
+        RTT_LOG_DATA("test Data...");
     }
     else
     {
