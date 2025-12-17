@@ -82,7 +82,7 @@ EAppStatus InitAllDevice(){
     static CDevBoardLink boardLink;
     CDevBoardLink::SDevInitParam_BoardLink boardLink_initparam;
     boardLink_initparam.deviceID = EDeviceID::DEV_BOARD_LINK;
-    boardLink_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    boardLink_initparam.interfaceID = EInterfaceID::INF_CAN3;
     boardLink_initparam.offlineTimeout = 100;  // 100ms离线超时
     boardLink_initparam.txNode = &TxNode_Can3_300;  // 板间通信发送节点
     boardLink.InitDevice(&boardLink_initparam);
@@ -132,8 +132,9 @@ EAppStatus InitAllDevice(){
     subGantryMotor_Stretch_R.InitDevice(&subGantryMotor_Stretch_R_initparam);
 */
     /******************************************
-    * 底盘电机
+    * 底盘电机 - 板2不包含底盘
     ******************************************/
+    /*
     static CDevMtrM3508 chassisMotor_LF;
     CDevMtrM3508::SMtrInitParam_M3508 chassisMotor_LF_initparam;
     chassisMotor_LF_initparam.deviceID = EDeviceID::DEV_CHAS_MTR_LF;
@@ -161,6 +162,7 @@ EAppStatus InitAllDevice(){
     chassisMotor_RB_initparam.interfaceID = EInterfaceID::INF_CAN1;
     chassisMotor_RB_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_3;
     chassisMotor_RB.InitDevice(&chassisMotor_RB_initparam);
+    */
 
     /******************************************
      * 云台电机
@@ -181,7 +183,7 @@ EAppStatus InitAllDevice(){
     static CDevMtrM2006 armMotor_End_L;
     CDevMtrM2006::SMtrInitParam_M2006 armMotor_End_L_initparam;
     armMotor_End_L_initparam.deviceID = EDeviceID::DEV_ARM_MTR_END_L;
-    armMotor_End_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    armMotor_End_L_initparam.interfaceID = EInterfaceID::INF_CAN1;  // 板2: CAN2->CAN1
     armMotor_End_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
     armMotor_End_L_initparam.useAngleToPosit = true;
     armMotor_End_L_initparam.useStallMonit = true;
@@ -192,7 +194,7 @@ EAppStatus InitAllDevice(){
     static CDevMtrM2006 armMotor_End_R;
     CDevMtrM2006::SMtrInitParam_M2006 armMotor_End_R_initparam;
     armMotor_End_R_initparam.deviceID = EDeviceID::DEV_ARM_MTR_END_R;
-    armMotor_End_R_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    armMotor_End_R_initparam.interfaceID = EInterfaceID::INF_CAN1;  // 板2: CAN2->CAN1
     armMotor_End_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_7;
     armMotor_End_R_initparam.useAngleToPosit = true;
     armMotor_End_R_initparam.useStallMonit = true;
@@ -242,7 +244,7 @@ EAppStatus InitAllDevice(){
     static CDevMtrDM_MIT armMotor_Roll;
     CDevMtrDM_MIT::SMtrInitParam_DM_MIT armMotor_Roll_initparam;
     armMotor_Roll_initparam.deviceID = EDeviceID::DEV_ARM_MTR_ROLL;
-    armMotor_Roll_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    armMotor_Roll_initparam.interfaceID = EInterfaceID::INF_CAN1;  // 板2: CAN3->CAN1
     armMotor_Roll_initparam.MasterID = 0x30;
     armMotor_Roll_initparam.SlaveID = 0x31;
     armMotor_Roll_initparam.Q_MAX = 3.1416f;
@@ -257,7 +259,7 @@ EAppStatus InitAllDevice(){
     static CDevMtrM2006 armMotor_Grip;
     CDevMtrM2006::SMtrInitParam_M2006 armMotor_Grip_initparam;
     armMotor_Grip_initparam.deviceID = EDeviceID::DEV_ARM_MTR_GRIP;
-    armMotor_Grip_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    armMotor_Grip_initparam.interfaceID = EInterfaceID::INF_CAN1;  // 板2: CAN2->CAN1
     armMotor_Grip_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_8;//暂时使用can2的ID8
     armMotor_Grip_initparam.useAngleToPosit = true;
     armMotor_Grip_initparam.useStallMonit = true;

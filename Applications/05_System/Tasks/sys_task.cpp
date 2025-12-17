@@ -58,6 +58,9 @@ void StartUpdateTask(void *argument) {
             item.second->UpdateHandler_();
         }
 
+        // 更新板间通信系统,取板间通信指针向上转换为基类型
+        static_cast<CSystemBase*>(&SysBoardLink)->UpdateHandler_();
+
         // 更新系统核心
         SystemCore.UpdateHandler_();            ///<系统核心的更新放在设备更新之后，模块更新之前,以便模块可以使用系统核心的数据   
                                                 ///<包括遥控器数据、键盘数据控制命令，自动任务的更新
@@ -69,13 +72,11 @@ void StartUpdateTask(void *argument) {
 
         // 执行can发送
 		TxNode_Can1_200.Transmit();
+        TxNode_Can1_1FF.Transmit();         ///< 板2: 末端电机(End_L/R) + 夹爪(Grip)
         TxNode_Can2_200.Transmit();
-		TxNode_Can3_280.Transmit();
-		TxNode_Can2_300.Transmit();         ///< 板间通信反馈
-		
-        //if(HalfTickRate) {
-		TxNode_Can2_1FF.Transmit();         ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载
-        //}
+		TxNode_Can2_1FF.Transmit();         ///< 云台电机
+		TxNode_Can3_280.Transmit();         ///< 瓴控电机(Yaw, Pitch1, Pitch2)
+		TxNode_Can3_300.Transmit();         ///< 板间通信反馈
 
 
         proc_waitMs(2); // 500Hz

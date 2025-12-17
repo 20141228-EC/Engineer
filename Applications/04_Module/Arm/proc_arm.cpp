@@ -49,19 +49,22 @@ void CModArm::StartArmModuleTask(void *argument) {					///<该任务在mod_arm.c
 
 				proc_waitMs(250); // 等待系统稳定
 
+				arm.comEnd_.StartComponent();       ///<一定得先末端后夹爪，要不然补偿会失效
+				proc_waitUntil(arm.comEnd_.componentStatus == APP_OK);
+				
 				//test
 				arm.comGrip_.StartComponent();
 				proc_waitUntil(arm.comGrip_.componentStatus == APP_OK);
 
-				arm.comjoint_.StartComponent();												///<刚开始的时候设置为busy状态，当初始化以后就设置为ok状态
-				proc_waitUntil(arm.comjoint_.componentStatus == APP_OK);					///<此处先挂起10ms之后，一直等待关节电机任务初始化结束否者就一直10ms的等
+				// arm.comjoint_.StartComponent();												///<刚开始的时候设置为busy状态，当初始化以后就设置为ok状态
+				// proc_waitUntil(arm.comjoint_.componentStatus == APP_OK);					///<此处先挂起10ms之后，一直等待关节电机任务初始化结束否者就一直10ms的等
 				
 				
 
-				arm.comEnd_.StartComponent();
-				arm.comRoll_.StartComponent();		///<当关节电机初始化完成之后，启动末端夹爪和夹爪roll电机任务
-				proc_waitUntil(arm.comEnd_.componentStatus == APP_OK &&
-							   arm.comRoll_.componentStatus == APP_OK);
+				
+				// arm.comRoll_.StartComponent();		///<当关节电机初始化完成之后，启动末端夹爪和夹爪roll电机任务
+				// proc_waitUntil(arm.comEnd_.componentStatus == APP_OK &&
+				// 			   arm.comRoll_.componentStatus == APP_OK);
 
 				arm.armCmd = SArmCmd();
 				arm.armCmd.set_angle_Yaw = ARM_YAW_INIT_ANGLE;

@@ -30,9 +30,9 @@ EAppStatus InitAllModule() {
     armInitParam.MotorTxNode_Yaw = &TxNode_Can3_280;
     armInitParam.MotorTxNode_Pitch1 = &TxNode_Can3_280;
     armInitParam.MotorTxNode_Pitch2 = &TxNode_Can3_280;
-    armInitParam.MotorTxNode_End_L = &TxNode_Can2_1FF;
-    armInitParam.MotorTxNode_End_R = &TxNode_Can2_1FF;
-    armInitParam.MotorTxNode_Grip = &TxNode_Can2_1FF;
+    armInitParam.MotorTxNode_End_L = &TxNode_Can1_1FF;  // 板2: CAN2->CAN1
+    armInitParam.MotorTxNode_End_R = &TxNode_Can1_1FF;  // 板2: CAN2->CAN1
+    armInitParam.MotorTxNode_Grip = &TxNode_Can1_1FF;   // 板2: CAN2->CAN1
     // 初始化 YawPosPidParam 的成员
    armInitParam.YawPosPidParam.kp = 0.4;
    armInitParam.YawPosPidParam.ki = 0.0f;
@@ -171,6 +171,7 @@ EAppStatus InitAllModule() {
     static auto gimbalModule = CModGimbal(gimbalInitParam);
 
     /******初始化底盘模块******/
+    /* 副板不包含底盘电机，注释底盘模块初始化
     CModChassis::SModInitParam_Chassis chassisInitParam;
     chassisInitParam.moduleID = EModuleID::MOD_CHASSIS;
     chassisInitParam.memsDevID = EDeviceID::DEV_MEMS_BMI088;
@@ -203,6 +204,7 @@ EAppStatus InitAllModule() {
     chassisInitParam.wheelsetSpdPidParam.maxOutput = 15000.0f;
     // 使用初始化后的参数创建 chassisModule 实例
     static auto chassisModule = CModChassis(chassisInitParam);
+    */
 
 
 

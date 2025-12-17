@@ -19,6 +19,7 @@
 #include "sys_referee.hpp"
 #include "sys_controller_link.hpp"
 #include "sys_esp32.hpp"
+#include "sys_board_link.hpp"
 
 
 namespace my_engineer {

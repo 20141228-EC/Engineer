@@ -68,10 +68,13 @@ void CSystemESP32::UpdateHandler_() {
 		pESP32_->SendPackage(CDevESP32::EPackageID::ID_Motor_Arm_Pkg);
 	}
 
+	// 副板无底盘电机，注释底盘电机在线状态检查
+	/*
 	pESP32_->robotInfo.Chassis_LF = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_CHAS_MTR_LF))->IsMotorOnline();
 	pESP32_->robotInfo.Chassis_RF = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_CHAS_MTR_RF))->IsMotorOnline();
 	pESP32_->robotInfo.Chassis_LB = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_CHAS_MTR_LB))->IsMotorOnline();
 	pESP32_->robotInfo.Chassis_RB = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_CHAS_MTR_RB))->IsMotorOnline();
+	*/
 	pESP32_->robotInfo.Gimbal = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_GIMBAL_MTR))->IsMotorOnline();
 	// 删除子龙门电机在线状态检查
 	/*
