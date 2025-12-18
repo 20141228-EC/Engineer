@@ -44,17 +44,25 @@ void CSystemCore::StartClimbingTask(void *arg) {
 	// 后续看情况得改 在初始化位置可能会干涉
 
 	/*Set Chassis*/
-	core.pchassis_->chassisCmd.speed_X = CLIMBING_SPEED;
+	core.pchassis_->chassisCmd.speed_Y = CLIMBING_SPEED;
+
+	/*Set Gimbal*/
+	// 在副板设置云台
 
 	// 上台阶任务比较特殊，由操作手来决定何时退出任务
-    while (true)
+    while (keyboard.key_Ctrl)				///< 按住ctrl
     {
-        if (keyboard.key_V) // 按下v来退出任务
+        if (keyboard.mouse_L) // 单击鼠标左键复位腿
         {
-            break; // 检测到v键按下，跳出循环
+			core.pchassis_->reset_hip = true;
         }
+		else if(keyboard.mouse_R)  // 单击鼠标右键继续用pitch控腿长
+		{
+			core.pchassis_->reset_hip = false;
+		}
         proc_waitMs(20);
     }
+	// 松开ctrl退出上台阶模式
 
 // 退出
 proc_exit:

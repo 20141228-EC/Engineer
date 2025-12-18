@@ -102,20 +102,17 @@ void CSystemCore::ControlFromRemote_() {
         parm_->should_limit_yaw = 0;
     }
 
-    // 仅在非自动任务时根据拨杆更新运动模式
+    // 仅在非自动任务时根据拨杆更新运动模式(或键位 键位待设)
     if (currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE)
     {
         if (remote.switch_L == HIG && remote.switch_R == MID) {
             movemode_ = EMoveMode::CLIMBING;
+            pchassis_->MovMode = CModChassis::EmovMode::CLIMBING;
         }
         else {
             movemode_ = EMoveMode::NORMAL;
+            pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
         }
-        RTT_LOG_INFO("current autoctrl process %d", currentAutoCtrlProcess_);
-        RTT_LOG_INFO("test Info...");
-
-        RTT_LOG_DATA("current move mode %d", movemode_);
-        RTT_LOG_DATA("test Data...");
     }
     else
     {

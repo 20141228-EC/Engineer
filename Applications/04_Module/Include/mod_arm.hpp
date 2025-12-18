@@ -96,6 +96,11 @@
 #define END_PITCH  2
 #define RECORD_MAX 10
 
+#define MG6012_i36V3_Torque_Constant	0.175 
+#define MG8010_i36V2_Torque_Constant	0.15	
+#define DMJ4310_Torque_Constant			0.975	///< 对应电机的扭矩常数
+
+
 #include "mod_common.hpp"
 
 namespace my_engineer {

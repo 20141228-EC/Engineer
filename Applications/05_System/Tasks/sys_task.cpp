@@ -39,7 +39,7 @@ void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠
 uint32_t sys_test_n = 0;
 
 /**
- * @brief 其余层的更新任务以及系统核心更新任务（500Hz）
+ * @brief 其余层的更新任务以及系统核心更新任务（1000Hz）
  * 
  */
 void StartUpdateTask(void *argument) {
