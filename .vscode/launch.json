@@ -22,6 +22,22 @@
           "enabled": true,
           "samplesPerSecond": 4
         },
+        "rttConfig": {
+          "enabled": true,
+          "address": "auto",
+          "decoders": [
+            {
+              "label": "RTT Debug",
+              "port": 0,
+              "type": "console"
+            },
+            {
+              "label": "RTT Data",
+              "port": 1,
+              "type": "console"
+            }
+          ]
+        },
         //"preLaunchCommands": ["Build"]
       }
     ]

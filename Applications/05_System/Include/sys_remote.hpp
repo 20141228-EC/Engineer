@@ -34,13 +34,13 @@ public:
 
     // Remote信息结构体
     struct SRemoteInfo {
-        float_t joystick_LX = 0;
-        float_t joystick_LY = 0;
-        float_t joystick_RX = 0;
-        float_t joystick_RY = 0;
-        float_t thumbWheel = 0;
-        uint8_t switch_L = 0;
-        uint8_t switch_R = 0;
+        float_t joystick_LX = 0;    ///< 左摇杆x轴
+        float_t joystick_LY = 0;    ///< 左摇杆y轴
+        float_t joystick_RX = 0;    ///< 右摇杆x轴
+        float_t joystick_RY = 0;    ///< 右摇杆y轴
+        float_t thumbWheel = 0;     ///< 拨轮（向上负，向下正）
+        uint8_t switch_L = 0;       ///< 左拨杆
+        uint8_t switch_R = 0;       ///< 右拨杆
     };
 
     // Keyboard信息结构体
@@ -48,24 +48,24 @@ public:
         int16_t mouse_X = 0;
         int16_t mouse_Y = 0;
         int16_t mouse_Thumb = 0;
-        bool mouse_L = false;
-        bool mouse_R = false;
-        bool key_W = false;
-        bool key_A = false;
-        bool key_S = false;
-        bool key_D = false;
-        bool key_Q = false;
-        bool key_E = false;
-        bool key_R = false;
-        bool key_F = false;
-        bool key_G = false;
-        bool key_Z = false;
-        bool key_X = false;
-        bool key_C = false;
-        bool key_V = false;
-        bool key_B = false;
-        bool key_Ctrl = false;
-        bool key_Shift = false;
+        bool mouse_L = false;   ///< 鼠标左键
+        bool mouse_R = false;   ///< 鼠标右键
+        bool key_W = false;     ///< W键
+        bool key_A = false;     ///< A键
+        bool key_S = false;     ///< S键
+        bool key_D = false;     ///< D键
+        bool key_Q = false;     ///< Q键
+        bool key_E = false;     ///< E键
+        bool key_R = false;     ///< R键
+        bool key_F = false;     ///< F键
+        bool key_G = false;     ///< G键
+        bool key_Z = false;     ///< Z键
+        bool key_X = false;     ///< X键
+        bool key_C = false;     ///< C键
+        bool key_V = false;     ///< V键
+        bool key_B = false;     ///< B键
+        bool key_Ctrl = false;  ///< ctrl键
+        bool key_Shift = false; ///< shift键
     };
 
     // 定义遥控器信息包结构体并实例化

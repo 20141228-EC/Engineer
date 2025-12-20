@@ -63,4 +63,5 @@
         "variant": "cpp"
     },
     "cmake.generator": "Ninja",
+    "makefile.configureOnOpen": true,
 }

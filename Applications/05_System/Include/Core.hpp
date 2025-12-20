@@ -1,11 +1,11 @@
 /**
  * @file Core.hpp
- * @author Fish_Joe (2328339747@qq.com)
+ * @author sllllr (2997708711@qq.com)
  * @brief 系统核心头文件
  * @version 1.0
- * @date 2024-11-10
+ * @date 2025-12-14
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2025
  * 
  */
 
@@ -19,6 +19,73 @@
 #include "algo_other.hpp"
 
 #define I_AM_CONTROLLER 0 // 当前板子是控制器
+
+/*-------------------------------------AUTO_PROCESS_SET----------------------------------------------------------*/
+
+/* ----------------------上台阶------------------- */
+#define CLIMBING_YAW_ANGLE        ARM_YAW_INIT_ANGLE
+#define CLIMBING_PITCH1_ANGLE     ARM_PITCH1_INIT_ANGLE
+#define CLIMBING_PITCH2_ANGLE     ARM_PITCH2_INIT_ANGLE
+#define CLIMBING_ROLL_ANGLE       ARM_ROLL_INIT_ANGLE
+#define CLIMBING_END_PITCH_ANGLE  ARM_END_PITCH_INIT_ANGLE
+#define CLIMBING_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
+#define CLIMBING_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
+#define CLIMBING_SPEED            80.f      ///< 全速的80%
+
+/* --------------------抓能量单元------------------- */
+#define GRAB_ENERGY_UNIT_YAW_ANGLE        1.0f
+#define GRAB_ENERGY_UNIT_PITCH1_ANGLE     1.0f
+#define GRAB_ENERGY_UNIT_PITCH2_ANGLE     1.0f
+#define GRAB_ENERGY_UNIT_ROLL_ANGLE       1.0f
+#define GRAB_ENERGY_UNIT_END_PITCH_ANGLE  1.0f
+#define GRAB_ENERGY_UNIT_END_ROLL_ANGLE   1.0f
+#define GRAB_ENERGY_UNIT_GRIP_LENGTH      1.0f
+// 待改
+
+
+/* --------------------兑换矿石-------------------- */
+#define EXCHANGE_ORE_YAW_ANGLE        1.0f
+#define EXCHANGE_ORE_PITCH1_ANGLE     1.0f
+#define EXCHANGE_ORE_PITCH2_ANGLE     1.0f
+#define EXCHANGE_ORE_ROLL_ANGLE       1.0f
+#define EXCHANGE_ORE_END_PITCH_ANGLE  1.0f
+#define EXCHANGE_ORE_END_ROLL_ANGLE   1.0f
+#define EXCHANGE_ORE_GRIP_LENGTH      1.0f
+// 待改
+
+/* ----------------------存矿------------------------*/
+#define SAVE_ORE_YAW_ANGLE        1.0f
+#define SAVE_ORE_PITCH1_ANGLE     1.0f
+#define SAVE_ORE_PITCH2_ANGLE     1.0f
+#define SAVE_ORE_ROLL_ANGLE       1.0f
+#define SAVE_ORE_END_PITCH_ANGLE  1.0f
+#define SAVE_ORE_END_ROLL_ANGLE   1.0f
+#define SAVE_ORE_GRIP_LENGTH      1.0f
+// 待改
+
+
+/* -----------------------全部复位----------------------- */
+#define RETURN_ORIGIN_YAW_ANGLE        ARM_YAW_INIT_ANGLE
+#define RETURN_ORIGIN_PITCH1_ANGLE     ARM_PITCH1_INIT_ANGLE
+#define RETURN_ORIGIN_PITCH2_ANGLE     ARM_PITCH2_INIT_ANGLE
+#define RETURN_ORIGIN_ROLL_ANGLE       ARM_ROLL_INIT_ANGLE
+#define RETURN_ORIGIN_END_PITCH_ANGLE  ARM_END_PITCH_INIT_ANGLE
+#define RETURN_ORIGIN_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
+#define RETURN_ORIGIN_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
+
+
+/* ------------------------捡地矿------------------------- */
+#define GROUND_ORE_YAW_ANGLE        1.0f
+#define GROUND_ORE_PITCH1_ANGLE     1.0f
+#define GROUND_ORE_PITCH2_ANGLE     1.0f
+#define GROUND_ORE_ROLL_ANGLE       1.0f
+#define GROUND_ORE_END_PITCH_ANGLE  1.0f
+#define GROUND_ORE_END_ROLL_ANGLE   1.0f
+#define GROUND_ORE_GRIP_LENGTH      1.0f
+#define GROUND_ORE_HIP_LENGTH       1.0f
+// 待改
+
+
 
 namespace my_engineer {
 
@@ -36,15 +103,22 @@ public:
     // 定义自动操作的任务类型并实例化表示当前任务类型
     enum class EAutoCtrlProcess {
         NONE,
-        RETURN_ORIGIN,
+        RETURN_ORIGIN,      ///< 所有模块复位
+        CLIMBING,           ///< 上台阶
+        ENERGY_UNIT,        ///< 抓取能量单元
+        EXCHANGE_ORE,       ///< 兑矿
+        SAVE_ORE,           ///< 存矿
+        GROUND_ORE,         ///< 地矿
+
+        // 下面这些是待删的，由于和别的模块比如视觉耦合所以暂时不删
         RETURN_DRIVE,
         DOGHOLE,
-        GROUND_ORE,
         SILVER_ORE,
         GOLD_ORE,
         EXCHANGE,
         PUSH_ORE,
         POP_ORE,
+
     } currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
     // 面向系统层的控制模式枚举
@@ -64,6 +138,8 @@ public:
     } movemode_ = EMoveMode::NONE;
 
     EVarStatus use_Controller_ = false; ///< 是否使用控制器
+
+    EVarStatus gimbal_auto_ctrl = false;   ///< 云台是否自动控制
 
     // 初始化系统核心
     EAppStatus InitSystemCore();
@@ -108,19 +184,13 @@ private:
     void RESET_SYSTEM();
 
     // 声明自动操作的任务函数
-    // 以下任务函数已注释（对应流程文件已删除）
-    // static void StartReturnOriginTask(void *arg);
-    // static void StartReturnDriveTask(void *arg);
-    // static void StartDogHoleTask(void *arg);
-    // static void StartGroundOreTask(void *arg);
-    // static void StartSilverOreTask(void *arg);
-    // static void StartGoldOreTask(void *arg);
-    // static void StartExchangeTask(void *arg);
-    // static void StartPopOreTask(void *arg);
-    // static void StartPushOreTask(void *arg);
-    // static void StartVisionExchangeTask(void *arg);
-    // static void StartTurnoverTask(void *arg);
-
+    static void StartClimbingTask(void *arg);
+    static void StartSaveOreTask(void *arg);
+    static void StartGroundOreTask(void *arg);
+    static void StartExchangeOreTask(void *arg);
+    static void StartReturnOriginTask(void *arg);
+    static void StartEnergyUnitTask(void *arg);
+    
 };
 
 void JointAngleToEulerAngle(const float_t *jointAngle, float_t *eulerAngle);

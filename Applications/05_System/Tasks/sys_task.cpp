@@ -39,7 +39,7 @@ void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠
 uint32_t sys_test_n = 0;
 
 /**
- * @brief 其余层的更新任务以及系统核心更新任务（500Hz）
+ * @brief 其余层的更新任务以及系统核心更新任务（1000Hz）
  * 
  */
 void StartUpdateTask(void *argument) {
@@ -126,7 +126,9 @@ void StartHeartbeatTask(void *argument) {
 void StartMonitorTask(void *argument) {
     while(true)
     {
-        // RTT_Test_All();
+        // RTT_LOG_INFO("Hip L: Set=%.2f, Real=%.2f", 
+        //              SystemCore.pchassis_->MIT_L.Set_Angle, 
+        //              SystemCore.pchassis_->MIT_L.Angle);
         proc_waitMs(10); // 100Hz
     }
     
