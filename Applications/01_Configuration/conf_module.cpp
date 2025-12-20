@@ -30,9 +30,9 @@ EAppStatus InitAllModule() {
     armInitParam.MotorTxNode_Yaw = &TxNode_Can3_280;
     armInitParam.MotorTxNode_Pitch1 = &TxNode_Can3_280;
     armInitParam.MotorTxNode_Pitch2 = &TxNode_Can3_280;
-    armInitParam.MotorTxNode_End_L = &TxNode_Can2_1FF;
-    armInitParam.MotorTxNode_End_R = &TxNode_Can2_1FF;
-    armInitParam.MotorTxNode_Grip = &TxNode_Can2_1FF;
+    armInitParam.MotorTxNode_End_L = &TxNode_Can1_1FF;  // 板2: CAN2->CAN1
+    armInitParam.MotorTxNode_End_R = &TxNode_Can1_1FF;  // 板2: CAN2->CAN1
+    armInitParam.MotorTxNode_Grip = &TxNode_Can1_1FF;   // 板2: CAN2->CAN1
     // 初始化 YawPosPidParam 的成员
    armInitParam.YawPosPidParam.kp = 0.4;
    armInitParam.YawPosPidParam.ki = 0.0f;
@@ -150,27 +150,45 @@ EAppStatus InitAllModule() {
     // 使用初始化后的参数创建 subGantryModule 实例
     static auto subGantryModule = CModSubGantry(subGantryInitParam);
 */
-    /******初始化云台模块******/
+    /******初始化云台模块 (双电机升降 、单电机俯仰) ******/
     CModGimbal::SModInitParam_Gimbal gimbalInitParam;
     gimbalInitParam.moduleID = EModuleID::MOD_GIMBAL;
-    gimbalInitParam.liftMotorID = EDeviceID::DEV_GIMBAL_MTR;
-    // 设置can发送节点
-    gimbalInitParam.liftMotorTxNode = &TxNode_Can2_1FF;
-    // 初始化 liftPosPidParam 的成员
-   gimbalInitParam.liftPosPidParam.kp = 0.3f;
-   gimbalInitParam.liftPosPidParam.ki = 0.0f;
-   gimbalInitParam.liftPosPidParam.kd = 0.3f;
-   gimbalInitParam.liftPosPidParam.maxOutput = 4500.0f;
-   // 初始化 liftSpdPidParam 的成员
-   gimbalInitParam.liftSpdPidParam.kp = 2.0f;
-   gimbalInitParam.liftSpdPidParam.ki = 0.1f;
-   gimbalInitParam.liftSpdPidParam.kd = 0.0f;
-   gimbalInitParam.liftSpdPidParam.maxIntegral = 2000.0f;
-   gimbalInitParam.liftSpdPidParam.maxOutput = 7000.0f;
-   //  使用初始化后的参数创建 gimbalModule 实例
+    // 升降电机ID 
+    gimbalInitParam.liftMotorID_L = EDeviceID::DEV_GIMBAL_MTR_LIFT_L;
+    gimbalInitParam.liftMotorID_R = EDeviceID::DEV_GIMBAL_MTR_LIFT_R;
+    // 俯仰电机ID 
+    gimbalInitParam.pitchMotorID = EDeviceID::DEV_GIMBAL_MTR_PITCH;
+    // 设置CAN发送节点
+    gimbalInitParam.liftMotorTxNode_L = &TxNode_Can2_1FF;
+    gimbalInitParam.liftMotorTxNode_R = &TxNode_Can2_1FF;
+    gimbalInitParam.pitchMotorTxNode = &TxNode_Can2_1FF;
+    // 初始化 liftPosPidParam ，双电机共享参数
+    gimbalInitParam.liftPosPidParam.kp = 0.3f;
+    gimbalInitParam.liftPosPidParam.ki = 0.0f;
+    gimbalInitParam.liftPosPidParam.kd = 0.3f;
+    gimbalInitParam.liftPosPidParam.maxOutput = 4500.0f;
+
+    gimbalInitParam.liftSpdPidParam.kp = 2.0f;
+    gimbalInitParam.liftSpdPidParam.ki = 0.1f;
+    gimbalInitParam.liftSpdPidParam.kd = 0.0f;
+    gimbalInitParam.liftSpdPidParam.maxIntegral = 2000.0f;
+    gimbalInitParam.liftSpdPidParam.maxOutput = 3000.0f;
+
+    gimbalInitParam.pitchPosPidParam.kp = 0.3f;
+    gimbalInitParam.pitchPosPidParam.ki = 0.0f;
+    gimbalInitParam.pitchPosPidParam.kd = 0.3f;
+    gimbalInitParam.pitchPosPidParam.maxOutput = 4500.0f;
+
+    gimbalInitParam.pitchSpdPidParam.kp = 2.0f;
+    gimbalInitParam.pitchSpdPidParam.ki = 0.1f;
+    gimbalInitParam.pitchSpdPidParam.kd = 0.0f;
+    gimbalInitParam.pitchSpdPidParam.maxIntegral = 2000.0f;
+    gimbalInitParam.pitchSpdPidParam.maxOutput = 3000.0f;
+    // 使用初始化后的参数创建 gimbalModule 实例
     static auto gimbalModule = CModGimbal(gimbalInitParam);
 
     /******初始化底盘模块******/
+    /* 副板不包含底盘电机，注释底盘模块初始化
     CModChassis::SModInitParam_Chassis chassisInitParam;
     chassisInitParam.moduleID = EModuleID::MOD_CHASSIS;
     chassisInitParam.memsDevID = EDeviceID::DEV_MEMS_BMI088;
@@ -203,6 +221,7 @@ EAppStatus InitAllModule() {
     chassisInitParam.wheelsetSpdPidParam.maxOutput = 15000.0f;
     // 使用初始化后的参数创建 chassisModule 实例
     static auto chassisModule = CModChassis(chassisInitParam);
+    */
 
 
 

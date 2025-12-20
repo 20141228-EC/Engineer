@@ -1,13 +1,13 @@
-/******************************************************************************
+﻿/******************************************************************************
  * @brief   板间通信设备类
  *
  * @file    dev_board_link.hpp
  * @author  Ciallo～(∠·ω< )⌒☆(1002046597@qq.com)
- * @version V1.0
- * @date    2025-12-06
+ * @version V2.0
+ * @date    2025-12-09
  *
- * @details 用于主副板之间的CAN通信
- *          使用单CAN ID (0x300) + pack_id方式区分数据包
+ * @details V1.0：用于主副板之间的CAN通信
+ *          V2.0: 重构协议，传递遥控器原始摇杆值和控制标志位
  *
  * @copyright Copyright (c) 2025
  *
@@ -41,70 +41,69 @@ public:
      * @note  pack_id位于每个数据包的第一个字节
      */
     enum EPacketID : uint8_t {
-        PKT_ARM_JOINT1 = 0,  ///< 机械臂关节1（Yaw, Pitch1, Pitch2）
-        PKT_ARM_JOINT2 = 1,  ///< 机械臂关节2（Roll, Grip_Roll, Grip_Pitch）
-        PKT_GIMBAL     = 2,  ///< 云台目标
-        PKT_CTRL_FLAGS = 3,  ///< 控制标志
+        PKT_REMOTE_1   = 0,  ///< 遥控器摇杆包1（RX, RY, LX）
+        PKT_REMOTE_2   = 1,  ///< 遥控器摇杆包2（LY, 拨轮）
+        PKT_CTRL_FLAGS = 2,  ///< 控制标志包
         PKT_COUNT,           ///< 包类型数量
         PKT_FEEDBACK   = 0xFE,  ///< 反馈包（副板发送给主板）
     };
 
     /**
-     * @brief 包0 - 机械臂关节1（yaw+大臂+小臂）
-     * @note  8字节，包含前3个关节的目标角度
+     * @brief 包0 - 遥控器摇杆包1
+     * @note  8字节，包含右摇杆XY和左摇杆X
+     *        数据格式: 主板发送值 × 3 ÷ 100 = 原始摇杆值 (-660~660)
+     *        系统层转换: 接收值 ÷ 220 = 百分比值 (-100~100)
      */
-    struct SArmJoint1Target {
+    struct SRemoteJoystick1 {
         uint8_t  pack_id;           ///< 包ID = 0
-        int16_t  arm_yaw_target;    ///< 基座Yaw目标角度（×100）
-        int16_t  arm_pitch1_target; ///< 大臂Pitch1目标角度（×100）
-        int16_t  arm_pitch2_target; ///< 小臂Pitch2目标角度（×100）
+        int16_t  joystick_RX;       ///< 右摇杆X（需 ÷220 转百分比）
+        int16_t  joystick_RY;       ///< 右摇杆Y（需 ÷220 转百分比）
+        int16_t  joystick_LX;       ///< 左摇杆X（需 ÷220 转百分比）
         uint8_t  reserved;          ///< 预留
-    } __packed armJoint1Target = {};
+    } __packed remoteJoystick1 = {};
 
     /**
-     * @brief 包1 - 机械臂关节2（末端+夹爪）
-     * @note  8字节，包含末端Roll和夹爪两轴目标角度
+     * @brief 包1 - 遥控器摇杆包2
+     * @note  8字节，包含左摇杆Y、拨轮和拨杆状态
+     *        摇杆/拨轮数据格式同包0
      */
-    struct SArmJoint2Target {
+    struct SRemoteJoystick2 {
         uint8_t  pack_id;           ///< 包ID = 1
-        int16_t  arm_roll_target;   ///< 末端Roll目标角度（×100）
-        int16_t  grip_roll_target;  ///< 夹爪Roll目标角度（×100）
-        int16_t  grip_pitch_target; ///< 夹爪Pitch目标角度（×100）
-        uint8_t  grip_target;       ///< 夹爪的目标开合度（0-255）
-    } __packed armJoint2Target = {};
+        int16_t  joystick_LY;       ///< 左摇杆Y（需 ÷220 转百分比）
+        int16_t  thumbWheel;        ///< 拨轮（需 ÷220 转百分比）
+        uint8_t  switch_L;          ///< 左拨杆状态（1/2/3）
+        uint8_t  switch_R;          ///< 右拨杆状态（1/2/3）
+        uint8_t  reserved;          ///< 预留
+    } __packed remoteJoystick2 = {};
 
     /**
-     * @brief 包2 - 云台
-     * @note  8字节，包含云台3轴目标角度
-     */
-    struct SGimbalTarget {
-        uint8_t  pack_id;            ///< 包ID = 2
-        int16_t  gimbal_lift_target; ///< 云台抬升目标角度（×100）
-        int16_t  gimbal_yaw_target;  ///< 云台Yaw目标角度（×100）
-        int16_t  gimbal_pitch_target;///< 云台Pitch目标角度（×100）
-        uint8_t  reserved;           ///< 预留
-    } __packed gimbalTarget = {};
-
-    /**
-     * @brief 包3 - 控制标志
-     * @note  8字节，包含遥控器状态、工作模式、命令标志等
+     * @brief 包2 - 控制标志包
+     * @note  8字节，包含控制模式、使能标志、状态标志（由主板根据拨杆状态计算）
      */
     struct SControlFlags {
-        uint8_t  pack_id;           ///< 包ID = 3
-        uint8_t  rc_switch_R : 2;   ///< 右拨杆状态（1=上 2=中 3=下）或可改成标志位
-        uint8_t  reserved_1 : 6;     ///< 预留
-        uint8_t  is_rc_ctrl : 1;    ///< 遥控器控制模式标志
-        uint8_t  is_key_ctrl : 1;   ///< 键盘控制模式标志
-        uint8_t  reserved_2 : 6;     ///< 预留
-        uint8_t  work_mode;         ///< 工作模式（0=停止 1=双臂协同 2=主臂工作，副臂休息）
-        uint8_t  cmd_grip : 1;      ///< 抓取命令
-        uint8_t  cmd_release : 1;   ///< 释放命令
-        uint8_t  emergency_stop : 1;///< 急停信号，专用上台阶
+        uint8_t  pack_id;           ///< 包ID = 2
+
+        // 控制模式 (1字节)
+        uint8_t  chassis_ctrl : 1;  ///< 底盘控制使能
+        uint8_t  gimbal_ctrl : 1;   ///< 云台控制使能
+        uint8_t  arm_front_ctrl : 1;///< 机械臂前四轴控制
+        uint8_t  arm_rear_ctrl : 1; ///< 机械臂后四轴控制
+        uint8_t  reserved_mode : 4; ///< 预留
+
+        // 使能标志 (1字节)
         uint8_t  arm_enable : 1;    ///< 机械臂使能
         uint8_t  gimbal_enable : 1; ///< 云台使能
-        uint8_t  rc_status : 1; 	///< 遥控器是否关控，是0非1
-        uint8_t  reserved_3 : 2;     ///< 预留
-        uint8_t  reserved4[3] = {0};      ///< 预留给未来扩展
+        uint8_t  chassis_enable : 1;///< 底盘使能
+        uint8_t  reserved_en : 5;   ///< 预留
+
+        // 状态标志 (1字节)
+        uint8_t  rc_online : 1;     ///< 遥控器在线
+        uint8_t  is_rc_ctrl : 1;    ///< 遥控器控制模式
+        uint8_t  is_key_ctrl : 1;   ///< 键盘控制模式
+        //uint8_t  climb_stair : 1;   ///< 上台阶标志
+        uint8_t  reserved_st : 5;   ///< 预留
+
+        uint8_t  reserved[4];       ///< 预留给未来扩展
     } __packed ctrlFlags = {};
 
     /**
@@ -113,7 +112,7 @@ public:
      */
     struct SFeedbackPack {
         uint8_t  pack_id;           ///< 包ID = 0xFE（反馈包标识）
-        uint8_t  rx_status;         ///< 各包接收状态（bit0~3对应包0~3，1=已接收）
+        uint8_t  rx_status;         ///< 各包接收状态（bit0~2对应包0~2，1=已接收）
         uint8_t  link_status;       ///< 通信状态（0=RESET 1=OFFLINE 2=ONLINE）
         uint8_t  reserved[5];       ///< 预留
     } __packed;
@@ -141,9 +140,9 @@ public:
 
     /**
      * @brief 填充反馈数据到发送缓冲区
-     * @note  只填充数据，不发送。发送由 sys_task.cpp 统一管理
+     * @note  只填充数据到发送缓冲区，不发送。发送由CAN接口层统一管理
      */
-    void SendFeedback();
+    void FillFeedbackBuffer();
 
 private:
 
@@ -159,11 +158,10 @@ private:
     union URxStatus {
         uint8_t all = 0;  ///< 整体状态字节
         struct {
-            uint8_t pkt_arm_joint1 : 1;  ///< bit0 - 包0机械臂关节1已接收
-            uint8_t pkt_arm_joint2 : 1;  ///< bit1 - 包1机械臂关节2已接收
-            uint8_t pkt_gimbal : 1;      ///< bit2 - 包2云台目标已接收
-            uint8_t pkt_ctrl_flags : 1;  ///< bit3 - 包3控制标志已接收
-            uint8_t reserved : 4;        ///< bit4~7 预留
+            uint8_t pkt_remote_1 : 1;    ///< bit0 - 包0遥控器摇杆1已接收
+            uint8_t pkt_remote_2 : 1;    ///< bit1 - 包1遥控器摇杆2已接收
+            uint8_t pkt_ctrl_flags : 1;  ///< bit2 - 包2控制标志已接收
+            uint8_t reserved : 5;        ///< bit3~7 预留
         } bit;
 
         // 边界检查标记某个包已接收
@@ -175,7 +173,7 @@ private:
         bool IsReceived(uint8_t packId) const { return (all & (1 << packId)) != 0; }
 
         // 检查是否所有包都已接收
-        bool IsAllReceived() const { return (all & 0x0F) == 0x0F; }
+        bool IsAllReceived() const { return (all & 0x07) == 0x07; }
 
         // 清除所有状态
         void Clear() { all = 0; }

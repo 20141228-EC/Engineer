@@ -67,6 +67,9 @@ private:
     // CModSubGantry *psubgantry_ = nullptr; // 已删除子龙门模块
     CModArm *parm_ = nullptr;
 
+    // 系统指针
+    CSystemBoardLink *pboardlink_ = nullptr;  ///< 板间通信系统指针
+
     TaskHandle_t autoCtrlTaskHandle_ = nullptr;
 
     // 定义系统核心的更新处理

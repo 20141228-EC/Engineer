@@ -37,6 +37,9 @@ EAppStatus CModArm::InitModule(SModInitParam_Base &param) {
 	comEnd_.InitComponent(param);
 	comGrip_.InitComponent(param);
 
+	// 设置模块跨越访问指针，用于Roll-Grip耦合补偿
+	comGrip_.parentModule = this;
+
 	// 创建任务并注册模块
 	CreateModuleTask_();
 	RegisterModule_();
@@ -83,7 +86,6 @@ void CModArm::UpdateHandler_() {
 	armInfo.isAngleArrived_Roll = comRoll_.rollInfo.isAngleArrived;
 	armInfo.isAngleArrived_End_Pitch = comEnd_.endInfo.isPositArrived_Pitch;
 	armInfo.isAngleArrived_End_Roll = comEnd_.endInfo.isPositArrived_Roll;
-	armInfo.isAngleArrived_Grip = comGrip_.gripInfo.isPositArrived_Grip;
 
 	// 填充电机发送缓冲区
 	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P1],							///<用的是关节底层信息的发送
@@ -164,6 +166,10 @@ EAppStatus CModArm::RestrictArmCommand_() {
 	armCmd.set_angle_end_pitch =
 		std::clamp(armCmd.set_angle_end_pitch,
 				   ARM_END_PITCH_PHYSICAL_RANGE_MIN, ARM_END_PITCH_PHYSICAL_RANGE_MAX);
+	// 末端Roll限幅：防止无限累积导致夹爪补偿失效，限制在±720°（两圈范围）
+	
+	// armCmd.set_angle_end_roll =
+	// 	std::clamp(armCmd.set_angle_end_roll, -720.0f, 720.0f);
 
 	if(armCmd.isCustomCtrl)
 	armCmd.set_angle_Pitch1 =

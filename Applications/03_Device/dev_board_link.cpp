@@ -2,9 +2,9 @@
  * @brief   板间通信设备类实现
  *
  * @file    dev_board_link.cpp
- * @author  Zoe
- * @version V1.0
- * @date    2025-12-06
+ * @author  Ciallo～(∠·ω< )⌒☆(1002046597@qq.com)
+ * @version V2.0
+ * @date    2025-12-09
  *
  * @copyright Copyright (c) 2025
  *
@@ -62,13 +62,14 @@ void CDevBoardLink::UpdateHandler_() {
     // 检查是否有新数据（通过比较时间戳）
     if (rxNode_.timestamp > timeoutParam_.lastParseTime) {
         ParseRxPacket_();
-        timeoutParam_.lastParseTime = rxNode_.timestamp;
+        timeoutParam_.lastParseTime = rxNode_.timestamp;//接收中断中的时间戳
         timeoutParam_.rxTimestamp = rxNode_.timestamp;
     }
 }
 
 /**
  * @brief 心跳处理
+ * @note  仅用于离线检测，不发送反馈（反馈在系统层Update中发送，500Hz）
  */
 void CDevBoardLink::HeartbeatHandler_() {
 
@@ -89,8 +90,6 @@ void CDevBoardLink::HeartbeatHandler_() {
         linkStatus = EBoardLinkStatus::ONLINE;
     }
 
-    // 发送反馈给主板
-    SendFeedback();
 }
 
 /**
@@ -106,24 +105,18 @@ EAppStatus CDevBoardLink::ParseRxPacket_() {
     // 根据pack_id分发到不同的数据包
     switch (packId) {
 
-        case PKT_ARM_JOINT1: {
-            auto pkg = reinterpret_cast<SArmJoint1Target *>(rxNode_.dataBuffer.data());///<直接通过内存的访问方式进行转换，因为数据包是对齐的
-            armJoint1Target = *pkg;
-            rxStatus_.SetReceived(PKT_ARM_JOINT1);
+        case PKT_REMOTE_1: {
+            ///<直接通过内存的访问方式进行转换，因为数据包是对齐的
+            auto pkg = reinterpret_cast<SRemoteJoystick1 *>(rxNode_.dataBuffer.data());
+            remoteJoystick1 = *pkg;
+            rxStatus_.SetReceived(PKT_REMOTE_1);
             break;
         }
 
-        case PKT_ARM_JOINT2: {
-            auto pkg = reinterpret_cast<SArmJoint2Target *>(rxNode_.dataBuffer.data());
-            armJoint2Target = *pkg;
-            rxStatus_.SetReceived(PKT_ARM_JOINT2);
-            break;
-        }
-
-        case PKT_GIMBAL: {
-            auto pkg = reinterpret_cast<SGimbalTarget *>(rxNode_.dataBuffer.data());
-            gimbalTarget = *pkg;
-            rxStatus_.SetReceived(PKT_GIMBAL);
+        case PKT_REMOTE_2: {
+            auto pkg = reinterpret_cast<SRemoteJoystick2 *>(rxNode_.dataBuffer.data());
+            remoteJoystick2 = *pkg;
+            rxStatus_.SetReceived(PKT_REMOTE_2);
             break;
         }
 
@@ -143,9 +136,9 @@ EAppStatus CDevBoardLink::ParseRxPacket_() {
 
 /**
  * @brief 填充反馈数据到发送缓冲区
- * @note  只填充数据，不发送。发送由 sys_task.cpp 统一管理（500Hz）
+ * @note  只填充数据到发送缓冲区，不发送。发送由CAN接口层统一管理,同时这里采用了临时类型转换的方式，避免了冗余的内存拷贝。
  */
-void CDevBoardLink::SendFeedback() {
+void CDevBoardLink::FillFeedbackBuffer() {
 
     if (txNode_ == nullptr) return;
 
@@ -155,8 +148,8 @@ void CDevBoardLink::SendFeedback() {
     pkg->rx_status = rxStatus_.GetBits();
     pkg->link_status = static_cast<uint8_t>(linkStatus);
 
-    // test板通是否良好
-    //txNode_->Transmit();
+    // 发送反馈后清零接收状态，下一周期重新统计
+    rxStatus_.Clear();
 }
 
 } // namespace my_engineer

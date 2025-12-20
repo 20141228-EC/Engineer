@@ -15,12 +15,14 @@ namespace my_engineer {
 
 void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) {
 
+    /* 副板无底盘，注释底盘启动代码
     if (pchassis_) {
         if (!pchassis_->chassisInfo.isModuleAvailable               ///<说明模块已经注册了
             && pchassis_->moduleStatus == APP_OK) {
             pchassis_->StartModule();                               ///<在创建任务的时候还会再调用一次初始化函数
         }
     }
+    */
 
     if (pgimbal_) {
         if (!pgimbal_->gimbalInfo.isModuleAvailable
@@ -111,21 +113,22 @@ void CSystemCore::ControlFromRemote_() {
     }
 
     //用于调试，免去遥控器上电
-     StartRobot(true, true);
+     //StartRobot(true, true);
 
     if (parm_) {
         parm_->should_limit_yaw = 0;
     }
 
-    // LOW + MID 底盘控制 和 云台抬升
+    // LOW + MID 云台抬升（副板无底盘控制）
     if (remote.switch_L == LOW && remote.switch_R == MID) {
         SysRemote.SetRemoteDeadZone(10.f);
-        // 底盘控制
+        /* 副板无底盘，注释底盘控制代码
         if (pchassis_) {
-            pchassis_->chassisCmd.speed_X = remote.joystick_LX / 2;             ///<摇杆的x方向控制车的左右移动，为了保证操作手的手感减小左右方向的速度
+            pchassis_->chassisCmd.speed_X = remote.joystick_LX / 2;
             pchassis_->chassisCmd.speed_Y = remote.joystick_LY;
             pchassis_->chassisCmd.speed_W = remote.joystick_RX;
         }
+        */
         // 云台抬升
         if (pgimbal_) {
             pgimbal_->gimbalCmd.set_posit_lift +=
@@ -178,6 +181,21 @@ void CSystemCore::ControlFromRemote_() {
         }
     }
 */
+
+    // MID + LOW 云台 + 夹爪控制
+    if (remote.switch_L == MID && remote.switch_R == LOW) {
+        SysRemote.SetRemoteDeadZone(10.f);
+        if (pgimbal_) {                                                             ///< 云台抬升 (左摇杆Y)
+            pgimbal_->gimbalCmd.set_posit_lift +=
+                (remote.joystick_LY / 100.f) * 100.f / freq;
+        }
+        if (parm_) {
+            parm_->armCmd.set_length_grip +=                                        ///< 夹爪控制：正值张开，负值闭合
+                (remote.thumbWheel / 100.f) * 150.f / freq;
+            parm_->armCmd.set_length_grip =
+                std::clamp(parm_->armCmd.set_length_grip, 0.0f, 65.0f);            ///< 限幅：0~65mm
+        }
+    }
 }
 
 /**
@@ -199,7 +217,7 @@ void CSystemCore::ControlFromKeyboard_() {
     // parm_->should_limit_yaw = 1;
 
     /******************* 底盘控制 *******************/
-
+    /* 副板无底盘，注释底盘控制代码
     // 平滑更新角速度
     if (pchassis_) {
         pchassis_->chassisCmd.speed_W = pchassis_->chassisCmd.speed_W +
@@ -229,7 +247,7 @@ void CSystemCore::ControlFromKeyboard_() {
             }
         }
     }
-    
+
 
     // 小陀螺  (G键)
     if (pchassis_) {
@@ -239,6 +257,7 @@ void CSystemCore::ControlFromKeyboard_() {
             pchassis_->chassisCmd.speed_W = static_cast<float_t>(keyboard.mouse_R - keyboard.mouse_L) * 100.f;
         }
     }
+    */
 
     /******************* 云台手动控制 *******************/
     if (pgimbal_) {
@@ -381,6 +400,7 @@ void CSystemCore::ControlFromController_() {
     }
 
     /******************* 底盘控制 *******************/
+    /* 副板无底盘，注释底盘控制代码
     if (pchassis_) {
         if (!pchassis_->chassisCmd.isAutoCtrl)
         {
@@ -414,6 +434,7 @@ void CSystemCore::ControlFromController_() {
             }
         }
     }
+    */
 
     /******************* 机械臂 *******************/
     //  if (controller.return_success) {

@@ -55,6 +55,12 @@ EAppStatus CSystemCore::InitSystemCore() {
     esp32InitParam.esp32DevID = EDeviceID::DEV_ESP32;
     SysESP32.InitSystem(&esp32InitParam);
 
+    // 板间通信系统
+    CSystemBoardLink::SSystemInitParam_BoardLink boardLinkInitParam;
+    boardLinkInitParam.systemID = ESystemID::SYS_BOARD_LINK;
+    boardLinkInitParam.boardLinkDevID = EDeviceID::DEV_BOARD_LINK;
+    SysBoardLink.InitSystem(&boardLinkInitParam);
+
     // 获取模块的指针（安全查找，避免异常）
     auto it_chassis = ModuleIDMap.find(EModuleID::MOD_CHASSIS);
     if (it_chassis != ModuleIDMap.end() && it_chassis->second != nullptr) {
@@ -78,6 +84,12 @@ EAppStatus CSystemCore::InitSystemCore() {
     auto it_arm = ModuleIDMap.find(EModuleID::MOD_ARM);
     if (it_arm != ModuleIDMap.end() && it_arm->second != nullptr) {
         parm_ = reinterpret_cast<CModArm *>(it_arm->second);
+    }
+
+    // 获取系统指针
+    auto it_boardlink = SystemIDMap.find(ESystemID::SYS_BOARD_LINK);
+    if (it_boardlink != SystemIDMap.end() && it_boardlink->second != nullptr) {
+        pboardlink_ = reinterpret_cast<CSystemBoardLink *>(it_boardlink->second);
     }
 
     // pmantis_ = reinterpret_cast<CModMantis *>(ModuleIDMap.at(EModuleID::MOD_MANTIS));
@@ -238,7 +250,7 @@ void CSystemCore::HeartbeatHandler_() {
         // StopAutoCtrlTask_();
         
         // 停止所有模块（添加空指针检查）
-        if (pchassis_) pchassis_->StopModule();
+        // if (pchassis_) pchassis_->StopModule();  // 副板无底盘
         if (pgimbal_) pgimbal_->StopModule();
         // if (psubgantry_) psubgantry_->StopModule(); // 已删除
         if (parm_) parm_->StopModule();
@@ -251,7 +263,7 @@ void CSystemCore::HeartbeatHandler_() {
 // 软件复位
 void CSystemCore::RESET_SYSTEM() {
 
-    if (pchassis_) pchassis_->StopModule();
+    // if (pchassis_) pchassis_->StopModule();  // 副板无底盘
     if (pgimbal_) pgimbal_->StopModule();
     // if (psubgantry_) psubgantry_->StopModule(); // 已删除
     if (parm_) parm_->StopModule();
@@ -371,7 +383,7 @@ EAppStatus CSystemCore::StopAutoCtrlTask_() {
 
     // 清除所有模块的自动控制标志（添加空指针检查）
     // psubgantry_->subGantryCmd.isAutoCtrl = false; // 已删除
-    if (pchassis_) pchassis_->chassisCmd.isAutoCtrl = false;
+    // if (pchassis_) pchassis_->chassisCmd.isAutoCtrl = false;  // 副板无底盘
     if (pgimbal_) pgimbal_->gimbalCmd.isAutoCtrl = false;
     if (parm_) parm_->armCmd.isAutoCtrl = false;
 

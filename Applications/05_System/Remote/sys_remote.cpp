@@ -61,30 +61,72 @@ void CSystemRemote::UpdateHandler_() {
 
 /**
  * @brief 心跳处理
- * 
+ * @note  状态判断由 USE_BOARD_LINK_REMOTE 宏控制:
+ *        - 启用(1): 根据板间通信状态判断
+ *        - 禁用(0): 根据本地遥控器设备状态判断
  */
 void CSystemRemote::HeartbeatHandler_() {
     // 检查系统状态
     if (systemStatus == APP_RESET) return;
-    if (!pRemoteDev_) return;
 
-    if(pRemoteDev_->rcStatus ==  ERcStatus::ONLINE)
+#if USE_BOARD_LINK_REMOTE
+    // 板间通信模式：根据板间通信状态判断
+    if (SysBoardLink.IsOnline())
         systemStatus = APP_OK;
     else
         systemStatus = APP_ERROR;
+#else
+    // 本地遥控器模式：根据本地设备状态判断
+    if (!pRemoteDev_) return;
+
+    if(pRemoteDev_->rcStatus == ERcStatus::ONLINE)
+        systemStatus = APP_OK;
+    else
+        systemStatus = APP_ERROR;
+#endif
 }
 
 /**
  * @brief 更新遥控器
- * 
- * @return EAppStatus 
+ * @note  数据源由 USE_BOARD_LINK_REMOTE 宏控制:
+ *        - 启用(1): 从板间通信获取数据，用于副板
+ *        - 禁用(0): 从本地DBUS获取数据，用于主板或单板调试
+ *
+ * @return EAppStatus
  */
 EAppStatus CSystemRemote::UpdateRemote_() {
 
+#if USE_BOARD_LINK_REMOTE
+    /*
+     * 板间通信模式 - 副板使用
+     * 遥控器数据从主板通过CAN总线传递
+     */
+
+    if (!SysBoardLink.IsOnline()) {
+        // 板间通信离线，保持上一次的数据，等待恢复
+        return APP_ERROR;
+    }
+
+    // 摇杆数据
+    remoteInfo.remote.joystick_RX = SysBoardLink.remoteInfo.joystick_RX;
+    remoteInfo.remote.joystick_RY = SysBoardLink.remoteInfo.joystick_RY;
+    remoteInfo.remote.joystick_LX = SysBoardLink.remoteInfo.joystick_LX;
+    remoteInfo.remote.joystick_LY = SysBoardLink.remoteInfo.joystick_LY;
+    remoteInfo.remote.thumbWheel  = SysBoardLink.remoteInfo.thumbWheel;
+
+    // 拨杆状态
+    remoteInfo.remote.switch_L = SysBoardLink.remoteInfo.switch_L;
+    remoteInfo.remote.switch_R = SysBoardLink.remoteInfo.switch_R;
+
+#else
+    /*
+     * 本地DBUS模式 - 主板或单板调试使用
+     * 遥控器直接连接到本板
+     */
+
     if (!pRemoteDev_) return APP_ERROR;
 
-    /* 软件复位 */
-    // 复位顺序：右边在中间，然后左边在下面，最后右边在下面
+    // 软件复位
     if (remoteInfo.remote.switch_R == 3
         && pRemoteDev_->remoteData[CRcDR16::CH_SW1].chValue == 2
         && pRemoteDev_->remoteData[CRcDR16::CH_SW2].chValue == 2) {
@@ -98,6 +140,8 @@ EAppStatus CSystemRemote::UpdateRemote_() {
     remoteInfo.remote.thumbWheel  = pRemoteDev_->remoteData[CRcDR16::CH_TW].chValue / 6.6f;
     remoteInfo.remote.switch_L    = pRemoteDev_->remoteData[CRcDR16::CH_SW1].chValue;
     remoteInfo.remote.switch_R    = pRemoteDev_->remoteData[CRcDR16::CH_SW2].chValue;
+
+#endif
 
     UpdateRemote_with_deadzone_();
 

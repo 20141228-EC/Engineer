@@ -1,12 +1,12 @@
 /**
  * @file mod_gimbal.hpp
- * @author Fish_Joe (2328339747@qq.com)
- * @brief 
- * @version 1.0
- * @date 2025-01-15
- * 
+ * @author Ciallo～(∠·ω< )⌒☆
+ * @brief 云台模块 - 升降 (双M2006同步) + 俯仰 (单M2006)
+ * @version 2.0
+ * @date 2025-12-17
+ *
  * @copyright Copyright (c) 2025
- * 
+ *
  */
 
 #ifndef MOD_GIMBAL_HPP
@@ -14,36 +14,56 @@
 
 #include "mod_common.hpp"
 
-#define GIMBAL_LIFT_PHYSICAL_RANGE 100.0f
-#define GIMBAL_LIFT_MOTOR_RANGE 184000
+// -------------------- 升降组件参数 ---------------------
+#define GIMBAL_LIFT_PHYSICAL_RANGE 100.0f       ///< 升降物理行程 (mm)
+#define GIMBAL_LIFT_MOTOR_RANGE 184000          ///< 升降电机编码器范围
 #define GIMBAL_LIFT_MOTOR_RATIO (GIMBAL_LIFT_MOTOR_RANGE / GIMBAL_LIFT_PHYSICAL_RANGE)
-#define GIMBAL_LIFT_MOTOR_DIR 1
+#define GIMBAL_LIFT_MOTOR_DIR_L 1               ///< 左电机方向
+#define GIMBAL_LIFT_MOTOR_DIR_R -1              ///< 右电机方向
+
+// -------------------- 俯仰组件参数 ---------------------
+#define GIMBAL_PITCH_PHYSICAL_RANGE 90.0f       ///< 俯仰物理行程 (degree)
+#define GIMBAL_PITCH_MOTOR_RANGE 73728          ///< 俯仰电机编码器范围
+#define GIMBAL_PITCH_MOTOR_RATIO (GIMBAL_PITCH_MOTOR_RANGE / GIMBAL_PITCH_PHYSICAL_RANGE)
+#define GIMBAL_PITCH_MOTOR_DIR 1                ///< 俯仰电机方向
 
 
 namespace my_engineer {
 
-class CModGimbal final: public CModBase{						///<final的重要含义：提升编译器的性能（不用查找虚函数表），优化节省 CPU 周期，减少调用开销，同时防止被继承
+class CModGimbal final: public CModBase{
 public:
 
-	// 定义云台模块初始化参数结构体
+	// 云台模块初始化参数
 	struct SModInitParam_Gimbal: public SModInitParam_Base{
-		EDeviceID liftMotorID = EDeviceID::DEV_NULL;
-		CInfCAN::CCanTxNode *liftMotorTxNode;
+		// 升降组件 (双电机同步)
+		EDeviceID liftMotorID_L = EDeviceID::DEV_NULL;
+		EDeviceID liftMotorID_R = EDeviceID::DEV_NULL;
+		CInfCAN::CCanTxNode *liftMotorTxNode_L = nullptr;
+		CInfCAN::CCanTxNode *liftMotorTxNode_R = nullptr;
 		CAlgoPid::SAlgoInitParam_Pid liftPosPidParam;
 		CAlgoPid::SAlgoInitParam_Pid liftSpdPidParam;
+
+		// 俯仰组件 (单电机)
+		EDeviceID pitchMotorID = EDeviceID::DEV_NULL;
+		CInfCAN::CCanTxNode *pitchMotorTxNode = nullptr;
+		CAlgoPid::SAlgoInitParam_Pid pitchPosPidParam;
+		CAlgoPid::SAlgoInitParam_Pid pitchSpdPidParam;
 	};
 
-	// 定义云台信息结构体并实例化
+	// 云台信息
 	struct SGimbalInfo{
 		EVarStatus isModuleAvailable = false;
 		float_t posit_lift = 0.0f;
 		bool isPositArrived_Lift = false;
+		float_t posit_pitch = 0.0f;
+		bool isPositArrived_Pitch = false;
 	} gimbalInfo;
 
-	// 定义云台控制命令结构体并实例化
+	// 云台控制命令
 	struct SGimbalCmd{
 		EVarStatus isAutoCtrl = false;
 		float_t set_posit_lift = 0.0f;
+		float_t set_posit_pitch = 0.0f;
 	} gimbalCmd;
 
 	CModGimbal() = default;
@@ -56,10 +76,12 @@ public:
 	// 初始化模块
 	EAppStatus InitModule(SModInitParam_Base &param) final;
 
-private:														///<不做类型暴露，所以此处也不使用final
-	// 定义云台升降组件类并实例化
+private:
+	// 升降组件 (双电机同步)
 	class CComLift: public CComponentBase{
 	public:
+
+		enum { L = 0, R = 1 };
 
 		const int32_t rangeLimit = GIMBAL_LIFT_MOTOR_RANGE;
 
@@ -72,12 +94,42 @@ private:														///<不做类型暴露，所以此处也不使用final
 			int32_t setPosit = 0;
 		} liftCmd;
 
+		std::array<CDevMtr*, 2> motor = {nullptr, nullptr};
+		CAlgoPid pidPosCtrl;
+		CAlgoPid pidSpdCtrl;
+		std::array<int16_t, 2> mtrOutputBuffer = {0, 0};
+		std::array<CInfCAN::CCanTxNode*, 2> mtrCanTxNode = {nullptr, nullptr};
+
+		EAppStatus InitComponent(SModInitParam_Base &param) final;
+		EAppStatus UpdateComponent() final;
+		static int32_t PhyPositToMtrPosit(float_t phyPosit);
+		static float_t MtrPositToPhyPosit(int32_t mtrPosit);
+		EAppStatus _UpdateOutput(float_t posit);
+
+	} comLift_;
+
+	// 俯仰组件 (单电机)
+	class CComPitch: public CComponentBase{
+	public:
+
+		const int32_t rangeLimit = GIMBAL_PITCH_MOTOR_RANGE;
+
+		struct SPitchInfo{
+			int32_t posit = 0;
+			bool isPositArrived = false;
+		} pitchInfo;
+
+		struct SPitchCmd{
+			int32_t setPosit = 0;
+		} pitchCmd;
+
 		CDevMtr *motor = nullptr;
 
 		CAlgoPid pidPosCtrl;
 		CAlgoPid pidSpdCtrl;
 
 		std::array<int16_t, 1> mtrOutputBuffer = {0};
+		CInfCAN::CCanTxNode* mtrCanTxNode = nullptr;
 
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
 
@@ -89,9 +141,7 @@ private:														///<不做类型暴露，所以此处也不使用final
 
 		EAppStatus _UpdateOutput(float_t posit);
 
-		CInfCAN::CCanTxNode* mtrCanTxNode;
-
-	} comLift_;
+	} comPitch_;
 
 	// 重写基类函数
     void UpdateHandler_() final;
