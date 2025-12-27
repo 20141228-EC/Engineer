@@ -1,7 +1,7 @@
 /**
  * @file sys_task.cpp
  * @author Fish_Joe (2328339747@qq.com)
- * @brief 在这里进行所有层任务的汇总
+ * @brief 在这里进行所有层任务的汇总，进行集中调度
  * @version 1.0
  * @date 2024-11-10
  * 

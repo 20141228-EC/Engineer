@@ -149,6 +149,34 @@ EAppStatus InitAllModule() {
     chassisInitParam.MIT_L_kd = 0.0f;
     chassisInitParam.MIT_L_kp = 0.0f; // mit参数待调
 
+    chassisInitParam.powerParamLF.kDefaultMaxPower = 30;
+    chassisInitParam.powerParamLF.kTorqueCoeff  = 2.09688994e-6f;
+    chassisInitParam.powerParamLF.k1 = 1.23e-07f;
+    chassisInitParam.powerParamLF.k2 = 1.453e-08f;
+    chassisInitParam.powerParamLF.kConstant = 5.581f;
+    chassisInitParam.powerParamLF.kMotorOutputMax = 16000;
+    
+    chassisInitParam.powerParamRF.kDefaultMaxPower = 30;
+    chassisInitParam.powerParamRF.kTorqueCoeff  = 2.09688994e-6f;
+    chassisInitParam.powerParamRF.k1 = 1.23e-07f;
+    chassisInitParam.powerParamRF.k2 = 1.453e-08f;
+    chassisInitParam.powerParamRF.kConstant = 5.581f;
+    chassisInitParam.powerParamRF.kMotorOutputMax = 16000;
+
+    chassisInitParam.powerParamLB.kDefaultMaxPower = 30;
+    chassisInitParam.powerParamLB.kTorqueCoeff  = 2.09688994e-6f;
+    chassisInitParam.powerParamLB.k1 = 1.23e-07f;
+    chassisInitParam.powerParamLB.k2 = 1.453e-08f;
+    chassisInitParam.powerParamLB.kConstant = 5.581f;
+    chassisInitParam.powerParamLB.kMotorOutputMax = 16000;
+
+    chassisInitParam.powerParamRB.kDefaultMaxPower = 30;
+    chassisInitParam.powerParamRB.kTorqueCoeff  = 2.09688994e-6f;
+    chassisInitParam.powerParamRB.k1 = 1.23e-07f;
+    chassisInitParam.powerParamRB.k2 = 1.453e-08f;
+    chassisInitParam.powerParamRB.kConstant = 5.581f;
+    chassisInitParam.powerParamRB.kMotorOutputMax = 16000;
+
     // 使用初始化后的参数创建 chassisModule 实例
     static auto chassisModule = CModChassis(chassisInitParam);
 
