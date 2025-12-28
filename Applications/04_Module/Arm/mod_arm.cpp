@@ -227,7 +227,7 @@ EAppStatus CModArm::Grav_Compemsation_Pitch1()
  * @brief 根据关节角度计算小pitch的重补扭矩
  * 
  * @retval null
-*/
+*/	
 EAppStatus CModArm::Grav_Compemsation_Pitch2()
 {
 	float_t pitch1 = deg2rad(armInfo.angle_Pitch1 - 18);
@@ -235,7 +235,7 @@ EAppStatus CModArm::Grav_Compemsation_Pitch2()
 	float_t roll = deg2rad(armInfo.angle_Roll);
 	float_t end_pitch = deg2rad(armInfo.angle_end_pitch); ///< 获取关节角
 
-	this->comjoint_.Grav_Pitch2_Out = (7.8*cos(pitch1 + pitch2 + 0.08) + 0.21*cos(pitch1 + pitch2 + roll - 1.4) + 0.21*cos(pitch1 + pitch2 - roll - 1.5) - 0.19*cos(pitch1 + pitch2 + 0.12)*cos(end_pitch) - 0.19*sin(pitch1 + pitch2 + 0.12)*cos(roll)*sin(end_pitch)) / MG6012_i36V3_Torque_Constant;
+	this->comjoint_.Grav_Pitch2_Out = -(7.8*cos(pitch1 + pitch2 + 0.08) + 0.21*cos(pitch1 + pitch2 + roll - 1.4) + 0.21*cos(pitch1 + pitch2 - roll - 1.5) - 0.19*cos(pitch1 + pitch2 + 0.12)*cos(end_pitch) - 0.19*sin(pitch1 + pitch2 + 0.12)*cos(roll)*sin(end_pitch)) / MG6012_i36V3_Torque_Constant / 0.4;
 	return APP_OK;
 }
 

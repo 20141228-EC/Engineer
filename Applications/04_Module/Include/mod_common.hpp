@@ -14,6 +14,7 @@
 
 #include "Configuration.hpp"
 #include "algo_pid.hpp"
+#include "algo_power_control.hpp"
 #include "Interface.hpp"
 #include "Device.hpp"
 #include "conf_CanTxNode.hpp"

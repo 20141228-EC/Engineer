@@ -1,11 +1,11 @@
 /**
  * @file mod_chassis.hpp
- * @author Fish_Joe (2328339747@qq.com)
+ * @author sllllr (2997708711@qq.com)
  * @brief 定义底盘模块
  * @version 1.0
- * @date 2024-11-05
+ * @date 2025-12-28
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2025
  * 
  */
 
@@ -67,6 +67,11 @@ public:
         CAlgoPid::SAlgoInitParam_Pid lineCorrectionPidParam;
         CAlgoPid::SAlgoInitParam_Pid yawCorrectionPidParam;
         CAlgoPid::SAlgoInitParam_Pid rollCorrectionPidParam; ///< roll轴控制pid
+        CAlgoPowerControl::SAlgoInitParamPower powerParamLF;  // 左前电机功率参数
+        CAlgoPowerControl::SAlgoInitParamPower powerParamRF;  // 右前电机功率参数
+        CAlgoPowerControl::SAlgoInitParamPower powerParamLB;  // 左后电机功率参数
+        CAlgoPowerControl::SAlgoInitParamPower powerParamRB;  // 右后电机功率参数
+        uint16_t chassisMaxPower = 110;                       // 底盘总功率限制
     };
 
     // 定义底盘信息结构体并实例化
@@ -119,6 +124,13 @@ public:
     EVarStatus reset_hip = false;
 
 private:
+
+    uint16_t chassisMaxPower_ = 110; // 底盘总功率限制
+    // 底盘电机功率控制实例
+    CAlgoPowerControl powerCtrlLF_;  // 左前电机功率控制实例
+    CAlgoPowerControl powerCtrlRF_;  // 右前电机功率控制实例
+    CAlgoPowerControl powerCtrlLB_;  // 左后电机功率控制实例
+    CAlgoPowerControl powerCtrlRB_;  // 右后电机功率控制实例
 
     // 定义底盘轮组组件类并实例化
     class CComWheelset: public CComponentBase{
@@ -234,6 +246,20 @@ private:
     // 声明控制量限制函数(负责对控制量进行限幅，在上面那个任务中进行调用)
     EAppStatus RestrictChassisCommand_();
 
+    /**
+     * @brief 计算当前控制周期内 4 个电机的需求总功率
+     *
+     * “需求功率”指根据当前轮组控制量（例如 PID 输出、电机目标速度等）
+     * 推算得到的期望功率，而非实际测量得到的功率值。该函数会综合四个轮子
+     * 的控制输出，估算每个电机在本周期内所需要的功率，并将其求和，用于
+     * 后续的功率分配与限幅算法（如 AllocDynamicPower ）
+     *
+     * @param wheelset 底盘轮组组件，包含 4 个电机的当前状态及控制输出信息
+     * @return float 4 个电机的需求总功率之和，单位：瓦特（W）
+     */
+    float CalcTotalDemandPower(const CComWheelset& wheelset);
+    /** 动态分配每个电机的功率上限（总功率≤120W） */
+    void AllocDynamicPower(const CComWheelset& wheelset, float targetPower[4]);
 
 };
 

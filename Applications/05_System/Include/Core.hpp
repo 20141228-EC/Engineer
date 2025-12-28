@@ -193,7 +193,7 @@ private:
     
 };
 
-void JointAngleToEulerAngle(const float_t *jointAngle, float_t *eulerAngle);
+void JointAngleToEulerAngle(const float_t *jointAngle, float_t *eulerAngle);    // 未实现
 
 extern CSystemCore SystemCore;
 
