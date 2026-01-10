@@ -11,6 +11,7 @@
 
 #include "utils.h"
 
+// 限制范围
 float math::limit(float val, const float& min, const float& max) {
   if (min > max)
     return val;
@@ -21,18 +22,21 @@ float math::limit(float val, const float& min, const float& max) {
   return val;
 }
 
+// 限制下限
 float math::limitMin(float val, const float& min) {
   if (val < min)
     val = min;
   return val;
 }
 
+// 限制上限
 float math::limitMax(float val, const float& max) {
   if (val > max)
     val = max;
   return val;
 }
 
+// 多圈限制，如loopLimit(400, 0, 360)返回 40
 float math::loopLimit(float val, const float& min, const float& max) {
   if (min >= max)
     return val;
@@ -46,6 +50,7 @@ float math::loopLimit(float val, const float& min, const float& max) {
   return val;
 }
 
+// 取符号函数
 float math::sign(const float& val) {
   if (val > 0)
     return 1;

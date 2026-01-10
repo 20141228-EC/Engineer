@@ -14,76 +14,124 @@
 
 #include "arm_math.h"
 
-// Matrix class
-template <int _rows, int _cols>
+/**
+/-------------------------------------如何使用此矩阵库----------------------------------------------/
+ * @brief 由于原库注释均为英文且风格与本工程较为不同，因此写使用说明，并添加了部分注释
+ * @author sllllr
+ * @date 2025-12-23
+ * @details robotics与utils同
+ * 
+ * 
+ * 1.创建类对象
+ *   此库不同于本工程，其实现的不是具体类，而是一个接收两个参数的类模板
+ *   Matrixf不能直接被用来创建对象，而应当先根据模板参数创建一个具体类，然后再创建对象
+ *   如: Matrixf<3,3> my_matrix
+ *   其中:Matrixf<3,3>通过模板类生成了一个具体的，用于表示3×3矩阵的类
+ *        而my_matrix则是通过这个具体类创建的对象
+ *   
+ * 2.函数使用
+ *   由于实现的是类模板，因此任何创建，返回或操作可变Matrixf对象的独立函数，都必须被定义为函数模板，并传入要操作的行与列数
+ *   如此库中实现的零矩阵生成函数
+ *   template <int _rows, int _cols>
+ *   Matrixf<_rows, _cols> zeros(void){ 函数实现... }
+ *   不过也有不是模板函数的
+ *   比如vector3f命名空间中的hat和cross，这两个函数就是写死了来处理3×1和3×3矩阵的函数，因此不需要成为模板
+ * 
+ * 3.关于utils.h
+ *   其中实现的上下限和范围限制都可用std::clamp平替，在本工程中许多限幅正式用clamp实现的，但loopLimit与sign相当实用
+ * 
+ */
+
+
+/* @brief 矩阵类模板
+ * 
+ * @param[input1]   矩阵行数
+ * @param[input2]   矩阵列数
+ * 
+ */
+template <int _rows, int _cols> ///< 类模板
 class Matrixf {
  public:
-  // Constructor without input data
+ 
+  // 默认构造函数
   Matrixf(void) : rows_(_rows), cols_(_cols) {
     arm_mat_init_f32(&arm_mat_, _rows, _cols, this->data_);
   }
-  // Constructor with input data
+
+  // 根据传入的数组构造
   Matrixf(float data[_rows * _cols]) : Matrixf() {
     memcpy(this->data_, data, _rows * _cols * sizeof(float));
   }
-  // Copy constructor
+
+  // 复制构造函数
   Matrixf(const Matrixf<_rows, _cols>& mat) : Matrixf() {
     memcpy(this->data_, mat.data_, _rows * _cols * sizeof(float));
   }
-  // Destructor
+  // 析构函数
   ~Matrixf(void) {}
 
-  // Row size
+  // 返回行数
   int rows(void) { return _rows; }
-  // Column size
+  // 返回列数
   int cols(void) { return _cols; }
 
-  // Element
+  // 以下是符号重载
+
+  // 取矩阵元素
   float* operator[](const int& row) { return &this->data_[row * _cols]; }
 
-  // Operators
+  // 运算符
   Matrixf<_rows, _cols>& operator=(const Matrixf<_rows, _cols> mat) {
     memcpy(this->data_, mat.data_, _rows * _cols * sizeof(float));
     return *this;
   }
+
   Matrixf<_rows, _cols>& operator+=(const Matrixf<_rows, _cols> mat) {
     arm_status s;
     s = arm_mat_add_f32(&this->arm_mat_, &mat.arm_mat_, &this->arm_mat_);
     return *this;
   }
+
   Matrixf<_rows, _cols>& operator-=(const Matrixf<_rows, _cols> mat) {
     arm_status s;
     s = arm_mat_sub_f32(&this->arm_mat_, &mat.arm_mat_, &this->arm_mat_);
     return *this;
   }
+
   Matrixf<_rows, _cols>& operator*=(const float& val) {
     arm_status s;
     s = arm_mat_scale_f32(&this->arm_mat_, val, &this->arm_mat_);
     return *this;
   }
+
   Matrixf<_rows, _cols>& operator/=(const float& val) {
     arm_status s;
     s = arm_mat_scale_f32(&this->arm_mat_, 1.f / val, &this->arm_mat_);
     return *this;
   }
+
   Matrixf<_rows, _cols> operator+(const Matrixf<_rows, _cols>& mat) {
     arm_status s;
     Matrixf<_rows, _cols> res;
     s = arm_mat_add_f32(&this->arm_mat_, &mat.arm_mat_, &res.arm_mat_);
     return res;
   }
+
   Matrixf<_rows, _cols> operator-(const Matrixf<_rows, _cols>& mat) {
     arm_status s;
     Matrixf<_rows, _cols> res;
     s = arm_mat_sub_f32(&this->arm_mat_, &mat.arm_mat_, &res.arm_mat_);
     return res;
   }
+
+  // 矩阵数乘
   Matrixf<_rows, _cols> operator*(const float& val) {
     arm_status s;
     Matrixf<_rows, _cols> res;
     s = arm_mat_scale_f32(&this->arm_mat_, val, &res.arm_mat_);
     return res;
   }
+
   friend Matrixf<_rows, _cols> operator*(const float& val,
                                          const Matrixf<_rows, _cols>& mat) {
     arm_status s;
@@ -91,13 +139,15 @@ class Matrixf {
     s = arm_mat_scale_f32(&mat.arm_mat_, val, &res.arm_mat_);
     return res;
   }
+
   Matrixf<_rows, _cols> operator/(const float& val) {
     arm_status s;
     Matrixf<_rows, _cols> res;
     s = arm_mat_scale_f32(&this->arm_mat_, 1.f / val, &res.arm_mat_);
     return res;
   }
-  // Matrix multiplication
+
+  // 矩阵乘法
   template <int cols>
   friend Matrixf<_rows, cols> operator*(const Matrixf<_rows, _cols>& mat1,
                                         const Matrixf<_cols, cols>& mat2) {
@@ -107,7 +157,13 @@ class Matrixf {
     return res;
   }
 
-  // Submatrix
+/* @brief 取子矩阵
+ * 
+ * @start_row   从原矩阵哪行开始截取
+ * @start_col   从原矩阵哪列开始截取
+ * 
+ * @details 需要注意，在调用这个函数时，Matrixf<>中两个参数用于指定需要什么维度的子矩阵
+ */
   template <int rows, int cols>
   Matrixf<rows, cols> block(const int& start_row, const int& start_col) {
     Matrixf<rows, cols> res;
@@ -118,18 +174,21 @@ class Matrixf {
     }
     return res;
   }
-  // Specific row
+
+  // 创建行向量
   Matrixf<1, _cols> row(const int& row) { return block<1, _cols>(row, 0); }
-  // Specific column
+
+  // 创建列向量
   Matrixf<_rows, 1> col(const int& col) { return block<_rows, 1>(0, col); }
 
-  // Transpose
+  // 矩阵转置
   Matrixf<_cols, _rows> trans(void) {
     Matrixf<_cols, _rows> res;
     arm_mat_trans_f32(&arm_mat_, &res.arm_mat_);
     return res;
   }
-  // Trace
+
+  // 求迹
   float trace(void) {
     float res = 0;
     for (int i = 0; i < fmin(_rows, _cols); i++) {
@@ -137,7 +196,8 @@ class Matrixf {
     }
     return res;
   }
-  // Norm
+
+  // 求矩阵范数
   float norm(void) { return sqrtf((this->trans() * *this)[0][0]); }
 
  public:
@@ -147,21 +207,22 @@ class Matrixf {
  protected:
   // size
   int rows_, cols_;
+
   // data
   float data_[_rows * _cols];
 };
 
-// Matrix funtions
+// 矩阵相关函数
 namespace matrixf {
 
-// Special Matrices
-// Zero matrix
+// 特殊矩阵
+// 零矩阵
 template <int _rows, int _cols>
 Matrixf<_rows, _cols> zeros(void) {
   float data[_rows * _cols] = {0};
   return Matrixf<_rows, _cols>(data);
 }
-// Ones matrix
+// 全1矩阵
 template <int _rows, int _cols>
 Matrixf<_rows, _cols> ones(void) {
   float data[_rows * _cols] = {0};
@@ -170,7 +231,7 @@ Matrixf<_rows, _cols> ones(void) {
   }
   return Matrixf<_rows, _cols>(data);
 }
-// Identity matrix
+// 单位矩阵
 template <int _rows, int _cols>
 Matrixf<_rows, _cols> eye(void) {
   float data[_rows * _cols] = {0};
@@ -179,7 +240,7 @@ Matrixf<_rows, _cols> eye(void) {
   }
   return Matrixf<_rows, _cols>(data);
 }
-// Diagonal matrix
+// 对角矩阵
 template <int _rows, int _cols>
 Matrixf<_rows, _cols> diag(Matrixf<_rows, 1> vec) {
   Matrixf<_rows, _cols> res = matrixf::zeros<_rows, _cols>();
@@ -189,15 +250,15 @@ Matrixf<_rows, _cols> diag(Matrixf<_rows, 1> vec) {
   return res;
 }
 
-// Inverse
+// 求矩阵逆(通过构造增广矩阵，在将左边的A变换成单位矩阵I时，右边的原I部分会变成A的逆)
 template <int _dim>
 Matrixf<_dim, _dim> inv(Matrixf<_dim, _dim> mat) {
   arm_status s;
-  // extended matrix [A|I]
+  // 增广矩阵 [A|I]
   Matrixf<_dim, 2 * _dim> ext_mat = matrixf::zeros<_dim, 2 * _dim>();
   for (int i = 0; i < _dim; i++) {
-    memcpy(ext_mat[i], mat[i], _dim * sizeof(float));
-    ext_mat[i][_dim + i] = 1;
+    memcpy(ext_mat[i], mat[i], _dim * sizeof(float)); // 将A的副本放到左半部分
+    ext_mat[i][_dim + i] = 1; // 在右半部分对角线放1，即单位阵
   }
   // elimination
   for (int i = 0; i < _dim; i++) {
@@ -210,11 +271,11 @@ Matrixf<_dim, _dim> inv(Matrixf<_dim, _dim> mat) {
         abs_max_row = row;
       }
     }
-    if (abs_max < 1e-12f) {  // singular
+    if (abs_max < 1e-12f) {  // 矩阵奇异(非满秩)，则无逆矩阵
       return matrixf::zeros<_dim, _dim>();
       s = ARM_MATH_SINGULAR;
     }
-    if (abs_max_row != i) {  // row exchange
+    if (abs_max_row != i) {  // 行交换
       float tmp;
       Matrixf<1, 2 * _dim> row_i = ext_mat.row(i);
       Matrixf<1, 2 * _dim> row_abs_max = ext_mat.row(abs_max_row);
