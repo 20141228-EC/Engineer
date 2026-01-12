@@ -1,11 +1,11 @@
 /**
  * @file sys_remote.cpp
- * @author Fish_Joe (2328339747@qq.com)
+ * @author sllllr (2997708711@qq.com)
  * @brief 遥控器系统源文件
  * @version 1.0
- * @date 2024-11-10
+ * @date 2026-01-11
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2026
  * 
  */
 
@@ -99,6 +99,8 @@ EAppStatus CSystemRemote::UpdateRemote_() {
     remoteInfo.remote.switch_L    = pRemoteDev_->remoteData[CRcDR16::CH_SW1].chValue;
     remoteInfo.remote.switch_R    = pRemoteDev_->remoteData[CRcDR16::CH_SW2].chValue; ///< 将摇杆值归一到-100~100
 
+    UpdateRemote_Edge_();
+
     UpdateRemote_with_deadzone_();
 
     return APP_OK;
@@ -162,6 +164,25 @@ EAppStatus CSystemRemote::UpdateRemote_with_deadzone_() {
             (fabs(remoteInfo.remote.joystick_LY) - remoteDeadZone_) / (100 - remoteDeadZone_) * 100 : 0);
 	
 	return APP_OK;
+}
+
+/**
+ * @brief 更新遥控器边沿状态
+ * 
+ */
+EAppStatus CSystemRemote::UpdateRemote_Edge_(){
+
+    // 类型转换
+    remoteInfo.remote_edge.joystick_RX = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_0].chEdge);
+    remoteInfo.remote_edge.joystick_RY = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_1].chEdge);
+    remoteInfo.remote_edge.joystick_LX = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_2].chEdge);
+    remoteInfo.remote_edge.joystick_LY = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_3].chEdge);
+    remoteInfo.remote_edge.thumbWheel  = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_TW].chEdge);
+    remoteInfo.remote_edge.switch_L    = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_SW1].chEdge);
+    remoteInfo.remote_edge.switch_R    = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_SW2].chEdge);
+    // 从设备层更新边沿
+
+    return APP_OK;
 }
 
 void CSystemRemote::SetRemoteDeadZone(float_t deadZone) {

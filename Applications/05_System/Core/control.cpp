@@ -89,13 +89,14 @@ void CSystemCore::ControlFromRemote_() {
 
     enum { HIG = 1, LOW = 2, MID = 3 };
     auto &remote = SysRemote.remoteInfo.remote;
+    auto &remote_edge = SysRemote.remoteInfo.remote_edge;
 
     //将模块启动
     if (SysRemote.systemStatus == APP_OK) {
         StartRobot(true);                   ///<因为键盘的默认参数是false
     }
 
-    // //用于调试，免去遥控器上电
+    //用于调试，免去遥控器上电
     // StartRobot(true, true);
 
     if (parm_) {
@@ -129,7 +130,14 @@ void CSystemCore::ControlFromRemote_() {
                 pchassis_->chassisCmd.speed_Y = remote.joystick_LY;
                 pchassis_->chassisCmd.speed_W = remote.joystick_RX;
                 pchassis_->chassisCmd.L_length += (remote.joystick_RY / 100.f) * 90.f / freq; ///< 腿长采用增量式控制
-                pchassis_->MovMode = CModChassis::EmovMode::NORMAL; 
+                pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
+                
+            static uint8_t thumbwheel_count = 0;
+
+            if(remote_edge.thumbWheel == CSystemRemote::ERemoteEdge::Falling){
+                pchassis_->reset_hip = !pchassis_->reset_hip;   ///< 要求复位腿
+            }
+
             }    
         }
         // 云台的抬升逻辑此处也没写，在副板，用拨轮控
@@ -202,16 +210,9 @@ void CSystemCore::ControlFromRemote_() {
 
             static uint8_t thumbwheel_count = 0;
 
-            if(remote.thumbWheel < -98){    ///< 拨轮向上推到顶
-                thumbwheel_count ++;
-                if(thumbwheel_count > 100){
-                    pchassis_->reset_hip = !pchassis_->reset_hip;   ///< 要求复位腿
-                    thumbwheel_count = 0;
-                }
-            } 
-            // else{
-            //     pchassis_->reset_hip = false;
-            // }
+            if(remote_edge.thumbWheel == CSystemRemote::ERemoteEdge::Falling){
+                pchassis_->reset_hip = !pchassis_->reset_hip;   ///< 要求复位腿
+            }
 
             ///< 右摇杆y控云台pitch，逻辑在副板
         }
@@ -275,6 +276,14 @@ void CSystemCore::ControlFromKeyboard_() {
                 pchassis_->chassisCmd.speed_Y =
                 std::clamp(pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
             }
+            if(keyboard.key_B){
+                pchassis_->chassisCmd.L_length += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 0.3f;
+            }
+            if(keyboard.key_Ctrl
+                && keyboard.key_B
+                && keyboard.key_Shift
+                && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
+                pchassis_->reset_hip = !pchassis_->reset_hip;
         }
     }
     
@@ -351,7 +360,7 @@ void CSystemCore::ControlFromKeyboard_() {
         }
         */
     }
-
+    }
 }
 
 /**

@@ -1,11 +1,11 @@
 /**
  * @file sys_task.cpp
- * @author Fish_Joe (2328339747@qq.com)
+ * @author sllllr (2997708711@qq.com)
  * @brief 在这里进行所有层任务的汇总，进行集中调度
  * @version 1.0
- * @date 2024-11-10
+ * @date 2026-01-11
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2026
  * @details
  * 当然，一些层中内置的任务不会在这里进行汇总，比如BMI088的初始化任务，模块的控制任务等
  */
@@ -19,7 +19,7 @@ namespace my_engineer {
 
 /**
  * @brief 系统层更新任务
- * @note 与其它层独立开来是因为频率不需要那么高
+ * @note 与其它层独立开来是因为频率不需要那么高(并非，目前为了能对应上设备层1KHz的更新频率，这里也由原来的500Hz改成了1KHz)
  */
 void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠、裁判系统、视觉系统、esp32数据、板间通信
 
@@ -32,7 +32,7 @@ void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠
             item.second->UpdateHandler_();
         }
 
-        proc_waitMs(2); // 500Hz
+        proc_waitMs(1); // 1000Hz
     }
 }
 
@@ -59,6 +59,9 @@ void StartUpdateTask(void *argument) {
             item.second->UpdateHandler_();
         }
 
+        UpdateImuFilter();  // 更新互补滤波   暂时放这里
+				UpdateImuEkf();
+
         // 更新系统核心
         SystemCore.UpdateHandler_();            ///<系统核心的更新放在设备更新之后，模块更新之前,以便模块可以使用系统核心的数据   
                                                 ///<包括遥控器数据、键盘数据控制命令，自动任务的更新
@@ -67,11 +70,9 @@ void StartUpdateTask(void *argument) {
             item.second->UpdateHandler_();
         }
 
-
         // 执行can发送
-
 		if(HalfTickRate) {              ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载                  
-		    TxNode_Can3_280.Transmit(); ///< 机械臂后三轴电机
+		    TxNode_Can3_280.Transmit(); ///< 机械臂后三轴电机 500Hz
         }
             
         TxNode_Can1_200.Transmit(); ///< 底盘轮毂电机
