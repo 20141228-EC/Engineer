@@ -18,7 +18,7 @@ Matrixf<3, 3> vector3f::hat(Matrixf<3, 1> vec) {
   return Matrixf<3, 3>(hat);
 } ///< 帽子矩阵即反对称矩阵
 
-// cross product
+// 叉乘
 Matrixf<3, 1> vector3f::cross(Matrixf<3, 1> vec1, Matrixf<3, 1> vec2) {
   return vector3f::hat(vec1) * vec2;
 }
