@@ -52,14 +52,9 @@ private:
     // 定义系统核心响应频率
     const float_t freq = 1000.f; //??为什么是float_t
 
-    // 模块指针
-    // CModChassis *pchassis_ = nullptr;
-    // // CModGimbal *pgimbal_ = nullptr;
-    // // CModGantry *pgantry_ = nullptr;
-    // // CModSubGantry *psubgantry_ = nullptr;
-    // CModMantis *pmantis_ = nullptr;
-    CModController *pcontroller_ = nullptr;
-    CDevFourButton *pfourButton_ = nullptr;
+    // 双臂控制器模块指针
+    CModController *pcontroller_left_ = nullptr;   ///< 左臂控制器模块
+    CModController *pcontroller_right_ = nullptr;  ///< 右臂控制器模块
 
     // 定义系统核心的更新处理
     void UpdateHandler_();

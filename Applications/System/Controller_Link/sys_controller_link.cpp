@@ -76,76 +76,124 @@ void CSystemControllerLink::UpdateHandler_() {
 
 /**
  * @brief 更新控制器信息
- * 
+ *
  */
-void CSystemControllerLink::UpdateControllerLinkInfo_() {
+void CSystemControllerLink::UpdateControllerLinkInfo_() {///<设备层-->系统层
 	if (systemStatus != APP_OK) return;
 
 	// 更新控制器信息
 	controllerInfo.controller_OK = pcontrollerLink_->controllerData_info_pkg.controller_OK;
 	controllerInfo.return_success = pcontrollerLink_->controllerData_info_pkg.return_success;
-	// controllerInfo.Rocker_X = pcontrollerLink_->controllerData_info_pkg.rocker_X;
-	// controllerInfo.Rocker_Y = pcontrollerLink_->controllerData_info_pkg.rocker_Y;
-	// controllerInfo.Rocker_Key = static_cast<KEY_STATUS>(pcontrollerLink_->controllerData_info_pkg.rocker_Key);
-	controllerInfo.angle_yaw = pcontrollerLink_->controllerData_info_pkg.angle_yaw;
-	controllerInfo.angle_pitch1 = pcontrollerLink_->controllerData_info_pkg.angle_pitch1;
-	controllerInfo.angle_pitch2 = pcontrollerLink_->controllerData_info_pkg.angle_pitch2;
-	controllerInfo.angle_roll = pcontrollerLink_->controllerData_info_pkg.angle_roll;
-	controllerInfo.angle_pitch_end = pcontrollerLink_->controllerData_info_pkg.angle_pitch_end;
+
+	// 解压左臂角度数据 (5轴)
+	auto &left_compressed = pcontrollerLink_->controllerData_info_pkg.left_arm;
+	controllerInfo.left_arm.yaw = DecompressAngle_(left_compressed.yaw);
+	controllerInfo.left_arm.pitch1 = DecompressAngle_(left_compressed.pitch1);
+	controllerInfo.left_arm.pitch2 = DecompressAngle_(left_compressed.pitch2);
+	controllerInfo.left_arm.roll = DecompressAngle_(left_compressed.roll);
+	controllerInfo.left_arm.pitch_end = DecompressAngle_(left_compressed.pitch_end);
+
+	// 解压右臂角度数据 (5轴)
+	auto &right_compressed = pcontrollerLink_->controllerData_info_pkg.right_arm;
+	controllerInfo.right_arm.yaw = DecompressAngle_(right_compressed.yaw);
+	controllerInfo.right_arm.pitch1 = DecompressAngle_(right_compressed.pitch1);
+	controllerInfo.right_arm.pitch2 = DecompressAngle_(right_compressed.pitch2);
+	controllerInfo.right_arm.roll = DecompressAngle_(right_compressed.roll);
+	controllerInfo.right_arm.pitch_end = DecompressAngle_(right_compressed.pitch_end);
+
+	// 更新摇杆/拨杆/按钮数据
+	controllerInfo.Rocker_X = pcontrollerLink_->controllerData_info_pkg.rocker_X;
+	controllerInfo.Rocker_Y = pcontrollerLink_->controllerData_info_pkg.rocker_Y;
+	controllerInfo.Rocker_Key = static_cast<KEY_STATUS>(pcontrollerLink_->controllerData_info_pkg.rocker_Key);
+	controllerInfo.toggle_switch = pcontrollerLink_->controllerData_info_pkg.toggle_switch;
+	controllerInfo.button = pcontrollerLink_->controllerData_info_pkg.button;
 }
 
 /**
  * @brief 更新机器人信息
- * 
+ *
  */
-void CSystemControllerLink::UpdateRobotInfo_() {
+void CSystemControllerLink::UpdateRobotInfo_() {///<设备层-->系统层
 	if (systemStatus != APP_OK) return;
 
 	// 更新机器人信息
 	robotInfo.ask_reset_flag = pcontrollerLink_->robotData_info_pkg.ask_reset_flag;
 	robotInfo.controlled_by_controller = pcontrollerLink_->robotData_info_pkg.controlled_by_controller;
 	robotInfo.ask_return_flag = pcontrollerLink_->robotData_info_pkg.ask_return_flag;
-	robotInfo.angle_yaw = pcontrollerLink_->robotData_info_pkg.angle_yaw;
-	robotInfo.angle_pitch1 = pcontrollerLink_->robotData_info_pkg.angle_pitch1;
-	robotInfo.angle_pitch2 = pcontrollerLink_->robotData_info_pkg.angle_pitch2;
-	robotInfo.angle_roll = pcontrollerLink_->robotData_info_pkg.angle_roll;
-	robotInfo.angle_pitch_end = pcontrollerLink_->robotData_info_pkg.angle_pitch_end;
+
+	// 解压左臂角度数据 (5轴)
+	auto &left_compressed = pcontrollerLink_->robotData_info_pkg.left_arm;
+	robotInfo.left_arm.yaw = DecompressAngle_(left_compressed.yaw);
+	robotInfo.left_arm.pitch1 = DecompressAngle_(left_compressed.pitch1);
+	robotInfo.left_arm.pitch2 = DecompressAngle_(left_compressed.pitch2);
+	robotInfo.left_arm.roll = DecompressAngle_(left_compressed.roll);
+	robotInfo.left_arm.pitch_end = DecompressAngle_(left_compressed.pitch_end);
+
+	// 解压右臂角度数据 (5轴)
+	auto &right_compressed = pcontrollerLink_->robotData_info_pkg.right_arm;
+	robotInfo.right_arm.yaw = DecompressAngle_(right_compressed.yaw);
+	robotInfo.right_arm.pitch1 = DecompressAngle_(right_compressed.pitch1);
+	robotInfo.right_arm.pitch2 = DecompressAngle_(right_compressed.pitch2);
+	robotInfo.right_arm.roll = DecompressAngle_(right_compressed.roll);
+	robotInfo.right_arm.pitch_end = DecompressAngle_(right_compressed.pitch_end);
 }
 
 /**
  * @brief 更新发送数据包 RobotData
  */
-void CSystemControllerLink::UpdateRobotDataPkg_() {
+void CSystemControllerLink::UpdateRobotDataPkg_() {///<系统层-->设备层
 	if (systemStatus != APP_OK) return;
 
 	// 更新发送包的信息
 	pcontrollerLink_->robotData_info_pkg.ask_reset_flag = robotInfo.ask_reset_flag;
 	pcontrollerLink_->robotData_info_pkg.controlled_by_controller = robotInfo.controlled_by_controller;
 	pcontrollerLink_->robotData_info_pkg.ask_return_flag = robotInfo.ask_return_flag;
-	pcontrollerLink_->robotData_info_pkg.angle_yaw= robotInfo.angle_yaw;
-	pcontrollerLink_->robotData_info_pkg.angle_pitch1 = robotInfo.angle_pitch1;
-	pcontrollerLink_->robotData_info_pkg.angle_pitch2 = robotInfo.angle_pitch2;
-	pcontrollerLink_->robotData_info_pkg.angle_roll = robotInfo.angle_roll;
-	pcontrollerLink_->robotData_info_pkg.angle_pitch_end = robotInfo.angle_pitch_end;
+
+	// 压缩左臂角度数据 (5轴)
+	pcontrollerLink_->robotData_info_pkg.left_arm.yaw = CompressAngle_(robotInfo.left_arm.yaw);
+	pcontrollerLink_->robotData_info_pkg.left_arm.pitch1 = CompressAngle_(robotInfo.left_arm.pitch1);
+	pcontrollerLink_->robotData_info_pkg.left_arm.pitch2 = CompressAngle_(robotInfo.left_arm.pitch2);
+	pcontrollerLink_->robotData_info_pkg.left_arm.roll = CompressAngle_(robotInfo.left_arm.roll);
+	pcontrollerLink_->robotData_info_pkg.left_arm.pitch_end = CompressAngle_(robotInfo.left_arm.pitch_end);
+
+	// 压缩右臂角度数据 (5轴)
+	pcontrollerLink_->robotData_info_pkg.right_arm.yaw = CompressAngle_(robotInfo.right_arm.yaw);
+	pcontrollerLink_->robotData_info_pkg.right_arm.pitch1 = CompressAngle_(robotInfo.right_arm.pitch1);
+	pcontrollerLink_->robotData_info_pkg.right_arm.pitch2 = CompressAngle_(robotInfo.right_arm.pitch2);
+	pcontrollerLink_->robotData_info_pkg.right_arm.roll = CompressAngle_(robotInfo.right_arm.roll);
+	pcontrollerLink_->robotData_info_pkg.right_arm.pitch_end = CompressAngle_(robotInfo.right_arm.pitch_end);
 }
 
 /**
  * @brief 更新发送数据包 ControllerData
  */
-void CSystemControllerLink::UpdateControllerDataPkg_() {
+void CSystemControllerLink::UpdateControllerDataPkg_() {///<系统层-->设备层
 	if (systemStatus != APP_OK) return;
 
 	// 更新发送包的信息
 	pcontrollerLink_->controllerData_info_pkg.controller_OK = controllerInfo.controller_OK;
 	pcontrollerLink_->controllerData_info_pkg.return_success = controllerInfo.return_success;
-	// pcontrollerLink_->controllerData_info_pkg.rocker_X = controllerInfo.Rocker_X;
-	// pcontrollerLink_->controllerData_info_pkg.rocker_Y = controllerInfo.Rocker_Y;
-	// pcontrollerLink_->controllerData_info_pkg.rocker_Key = static_cast<uint8_t>(controllerInfo.Rocker_Key);
-	pcontrollerLink_->controllerData_info_pkg.angle_yaw = controllerInfo.angle_yaw;
-	pcontrollerLink_->controllerData_info_pkg.angle_pitch1 = controllerInfo.angle_pitch1;
-	pcontrollerLink_->controllerData_info_pkg.angle_pitch2 = controllerInfo.angle_pitch2;
-	pcontrollerLink_->controllerData_info_pkg.angle_roll = controllerInfo.angle_roll;
-	pcontrollerLink_->controllerData_info_pkg.angle_pitch_end = controllerInfo.angle_pitch_end;
+
+	// 压缩左臂角度数据 (5轴)
+	pcontrollerLink_->controllerData_info_pkg.left_arm.yaw = CompressAngle_(controllerInfo.left_arm.yaw);
+	pcontrollerLink_->controllerData_info_pkg.left_arm.pitch1 = CompressAngle_(controllerInfo.left_arm.pitch1);
+	pcontrollerLink_->controllerData_info_pkg.left_arm.pitch2 = CompressAngle_(controllerInfo.left_arm.pitch2);
+	pcontrollerLink_->controllerData_info_pkg.left_arm.roll = CompressAngle_(controllerInfo.left_arm.roll);
+	pcontrollerLink_->controllerData_info_pkg.left_arm.pitch_end = CompressAngle_(controllerInfo.left_arm.pitch_end);
+
+	// 压缩右臂角度数据 (5轴)
+	pcontrollerLink_->controllerData_info_pkg.right_arm.yaw = CompressAngle_(controllerInfo.right_arm.yaw);
+	pcontrollerLink_->controllerData_info_pkg.right_arm.pitch1 = CompressAngle_(controllerInfo.right_arm.pitch1);
+	pcontrollerLink_->controllerData_info_pkg.right_arm.pitch2 = CompressAngle_(controllerInfo.right_arm.pitch2);
+	pcontrollerLink_->controllerData_info_pkg.right_arm.roll = CompressAngle_(controllerInfo.right_arm.roll);
+	pcontrollerLink_->controllerData_info_pkg.right_arm.pitch_end = CompressAngle_(controllerInfo.right_arm.pitch_end);
+
+	// 更新摇杆/拨杆/按钮数据
+	pcontrollerLink_->controllerData_info_pkg.rocker_X = controllerInfo.Rocker_X;
+	pcontrollerLink_->controllerData_info_pkg.rocker_Y = controllerInfo.Rocker_Y;
+	pcontrollerLink_->controllerData_info_pkg.rocker_Key = static_cast<uint8_t>(controllerInfo.Rocker_Key);
+	pcontrollerLink_->controllerData_info_pkg.toggle_switch = controllerInfo.toggle_switch;
+	pcontrollerLink_->controllerData_info_pkg.button = controllerInfo.button;
 }
 /**
  * @brief 心跳处理

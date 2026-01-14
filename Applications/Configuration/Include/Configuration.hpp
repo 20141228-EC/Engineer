@@ -80,7 +80,9 @@ enum class EModuleID{
     MOD_GIMBAL,             ///< 云台模块
     MOD_GANTRY,             ///< 龙门模块
     MOD_SUBGANTRY,          ///< 子龙门模块
-    MOD_CONTROLLER,         ///< 自定义控制器模块
+    MOD_CONTROLLER,         ///< 自定义控制器模块（单臂兼容）
+    MOD_CONTROLLER_LEFT,    ///< 左臂控制器模块
+    MOD_CONTROLLER_RIGHT,   ///< 右臂控制器模块
     MOD_BUTTON,             ///< 按键模块
 };
 

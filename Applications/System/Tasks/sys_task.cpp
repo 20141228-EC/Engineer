@@ -31,36 +31,31 @@ void StartMonitorTask(void *argument) {
     //     proc_waitMs(500);
     // }
     auto *usb = reinterpret_cast<CInfUSB_CDC *>(InterfaceIDMap.at(EInterfaceID::INF_USB_CDC));
-    auto *controller = reinterpret_cast<CModController *>(ModuleIDMap.at(EModuleID::MOD_CONTROLLER));
     while (true) {
         usb->FormatTransmit(
                 "---------------------------------------------\r\n"
-                // "REAL_X: %d , REAL_Y: %d\r\n"
-                // "Rocker_X: %d , Rocker_Y: %d\r\n"
-                // "Rocker_Key: %d\r\n"
-                "angle_pitch1: %.2f , angle_pitch2: %.2f\r\n"
-                "angle_yaw: %.2f , angle_roll: %.2f\r\n"
-                "angle_pitch_end: %.2f\r\n"
-                "controlled_by_controller: %d\r\n",
-                "reset_button: %d\r\n"
-                "level4_button: %d\r\n"
-                "level3_button: %d\r\n"
-                "self_button: %d\r\n",
-                // controller->get_rocker_x(),
-                // controller->get_rocker_y(),
-                // SysControllerLink.controllerInfo.Rocker_X,
-                // SysControllerLink.controllerInfo.Rocker_Y,
-                // static_cast<int8_t>(SysControllerLink.controllerInfo.Rocker_Key),
-                SysControllerLink.controllerInfo.angle_pitch1,
-                SysControllerLink.controllerInfo.angle_pitch2,
-                SysControllerLink.controllerInfo.angle_yaw,
-                SysControllerLink.controllerInfo.angle_roll,
-                SysControllerLink.controllerInfo.angle_pitch_end,
+                "[Left Arm] yaw:%.2f p1:%.2f p2:%.2f roll:%.2f p_end:%.2f\r\n"
+                "[Right Arm] yaw:%.2f p1:%.2f p2:%.2f roll:%.2f p_end:%.2f\r\n"
+                "controlled_by_controller: %d\r\n"
+                "reset:%d level4:%d level3:%d self:%d\r\n",
+                // 左臂数据
+                SysControllerLink.controllerInfo.left_arm.yaw,
+                SysControllerLink.controllerInfo.left_arm.pitch1,
+                SysControllerLink.controllerInfo.left_arm.pitch2,
+                SysControllerLink.controllerInfo.left_arm.roll,
+                SysControllerLink.controllerInfo.left_arm.pitch_end,
+                // 右臂数据
+                SysControllerLink.controllerInfo.right_arm.yaw,
+                SysControllerLink.controllerInfo.right_arm.pitch1,
+                SysControllerLink.controllerInfo.right_arm.pitch2,
+                SysControllerLink.controllerInfo.right_arm.roll,
+                SysControllerLink.controllerInfo.right_arm.pitch_end,
+                // 状态
+                static_cast<int8_t>(SysControllerLink.robotInfo.controlled_by_controller),
                 SysControllerLink.controllerInfo.isReset,
                 SysControllerLink.controllerInfo.isLevel4,
                 SysControllerLink.controllerInfo.isLevel3,
-                SysControllerLink.controllerInfo.isSelf,
-                static_cast<int8_t>(SysControllerLink.robotInfo.controlled_by_controller)
+                SysControllerLink.controllerInfo.isSelf
             );
         proc_waitMs(500);
     }

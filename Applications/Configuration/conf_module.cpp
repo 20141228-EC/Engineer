@@ -16,9 +16,9 @@ namespace my_engineer {
 
 EAppStatus InitAllModule() {
 
-    // /******初始化自定义控制器模块******/
+    // /******初始化左臂控制器模块******/
     CModController::SModInitParam_Controller controllerInitParam;
-    controllerInitParam.moduleID = EModuleID::MOD_CONTROLLER;
+    controllerInitParam.moduleID = EModuleID::MOD_CONTROLLER_LEFT;  // 使用左臂模块ID
     controllerInitParam.rocker_id = EDeviceID::DEV_ROCKER;
     controllerInitParam.buzzer_id = EDeviceID::DEV_BUZZER;
     controllerInitParam.yaw_id = EDeviceID::DEV_CONTROLLER_MTR_YAW;
@@ -67,8 +67,22 @@ EAppStatus InitAllModule() {
     controllerInitParam.pitchEndSpdPidParam.kd = 0.0f;
     controllerInitParam.pitchEndSpdPidParam.maxIntegral = 50;
     controllerInitParam.pitchEndSpdPidParam.maxOutput = 8000;
-    // 使用初始化后的参数创建 controllerModule 实例
-    static auto controllerModule = CModController(controllerInitParam);
+    // 创建左臂控制器模块实例
+    static auto controllerModuleLeft = CModController(controllerInitParam);
+
+    // /******初始化右臂控制器模块（TODO: 配置实际硬件后启用）******/
+    /*
+    CModController::SModInitParam_Controller rightControllerInitParam;
+    rightControllerInitParam.moduleID = EModuleID::MOD_CONTROLLER_RIGHT;
+    rightControllerInitParam.rocker_id = EDeviceID::DEV_ROCKER;  // 共享摇杆或使用独立摇杆
+    rightControllerInitParam.buzzer_id = EDeviceID::DEV_BUZZER;
+    // TODO: 配置右臂电机设备ID和CAN节点
+    // rightControllerInitParam.yaw_id = EDeviceID::DEV_CONTROLLER_MTR_YAW_RIGHT;
+    // rightControllerInitParam.pitch1_id = EDeviceID::DEV_CONTROLLER_MTR_PITCH1_RIGHT;
+    // ...
+    // 创建右臂控制器模块实例
+    static auto controllerModuleRight = CModController(rightControllerInitParam);
+    */
 
     return APP_OK;
 }

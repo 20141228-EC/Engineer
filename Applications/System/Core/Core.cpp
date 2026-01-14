@@ -36,8 +36,31 @@ EAppStatus CSystemCore::InitSystemCore() {
     SysControllerLink.InitSystem(&controllerLinkInitParam);
 
 
-    // 获取模块的指针
-    pcontroller_ = reinterpret_cast<CModController *>(ModuleIDMap.at(EModuleID::MOD_CONTROLLER));
+    // 获取双臂控制器模块指针（安全查找）
+    // 左臂控制器
+    auto it_left = ModuleIDMap.find(EModuleID::MOD_CONTROLLER_LEFT);
+    if (it_left != ModuleIDMap.end() && it_left->second != nullptr) {
+        pcontroller_left_ = reinterpret_cast<CModController *>(it_left->second);
+    }
+    // 右臂控制器
+    auto it_right = ModuleIDMap.find(EModuleID::MOD_CONTROLLER_RIGHT);
+    if (it_right != ModuleIDMap.end() && it_right->second != nullptr) {
+        pcontroller_right_ = reinterpret_cast<CModController *>(it_right->second);
+    }
+    // 单臂调试模式（DEBUG_TEST_ARM: 0=禁用, 1=左臂, 2=右臂）
+#define DEBUG_TEST_ARM 0
+
+#if DEBUG_TEST_ARM > 0
+    auto it_debug = ModuleIDMap.find(EModuleID::MOD_CONTROLLER);
+    if (it_debug != ModuleIDMap.end() && it_debug->second != nullptr) {
+    #if DEBUG_TEST_ARM == 1
+        pcontroller_left_ = reinterpret_cast<CModController *>(it_debug->second);
+    #elif DEBUG_TEST_ARM == 2
+        pcontroller_right_ = reinterpret_cast<CModController *>(it_debug->second);
+    #endif
+    }
+#endif
+
     proc_waitMs(1000); // 等待系统初始化完成
 
     coreStatus = APP_OK;
@@ -50,34 +73,66 @@ EAppStatus CSystemCore::InitSystemCore() {
  * 
  */
 void CSystemCore::UpdateHandler_() {
-    
-    if(!pcontroller_->ControllerInfo.isModuleAvailable 
-        && pcontroller_->moduleStatus == APP_OK) {
-        pcontroller_->StartModule();
+
+    // ===== 左臂控制器 =====
+    if (pcontroller_left_) {
+        // 启动模块
+        if (!pcontroller_left_->ControllerInfo.isModuleAvailable
+            && pcontroller_left_->moduleStatus == APP_OK) {
+            pcontroller_left_->StartModule();
+        }
+        // 上传左臂数据 (控制器 -> 机器人)
+        SysControllerLink.controllerInfo.left_arm.yaw = pcontroller_left_->ControllerInfo.posit_yaw;
+        SysControllerLink.controllerInfo.left_arm.pitch1 = pcontroller_left_->ControllerInfo.posit_pitch1;
+        SysControllerLink.controllerInfo.left_arm.pitch2 = pcontroller_left_->ControllerInfo.posit_pitch2;
+        SysControllerLink.controllerInfo.left_arm.roll = pcontroller_left_->ControllerInfo.posit_roll;
+        SysControllerLink.controllerInfo.left_arm.pitch_end = pcontroller_left_->ControllerInfo.posit_pitch_end;
+        // 接收左臂数据 (机器人 -> 控制器)
+        pcontroller_left_->ControllerCmd.StartControl = SysControllerLink.robotInfo.controlled_by_controller;
+        pcontroller_left_->ControllerCmd.cmd_yaw = SysControllerLink.robotInfo.left_arm.yaw;
+        pcontroller_left_->ControllerCmd.cmd_pitch1 = SysControllerLink.robotInfo.left_arm.pitch1;
+        pcontroller_left_->ControllerCmd.cmd_pitch2 = SysControllerLink.robotInfo.left_arm.pitch2;
+        pcontroller_left_->ControllerCmd.cmd_roll = SysControllerLink.robotInfo.left_arm.roll;
+        pcontroller_left_->ControllerCmd.cmd_pitch_end = SysControllerLink.robotInfo.left_arm.pitch_end;
     }
 
-    SysControllerLink.controllerInfo.controller_OK = pcontroller_->ControllerInfo.isModuleAvailable;
-    SysControllerLink.controllerInfo.return_success = pcontroller_->ControllerInfo.isReturnSuccess;
-    // SysControllerLink.controllerInfo.Rocker_X = pcontroller_->ControllerInfo.rocker_X;
-    // SysControllerLink.controllerInfo.Rocker_Y = pcontroller_->ControllerInfo.rocker_Y;
-    // SysControllerLink.controllerInfo.Rocker_Key = static_cast<CSystemControllerLink::KEY_STATUS>(pcontroller_->ControllerInfo.rocker_Key);
-    SysControllerLink.controllerInfo.angle_yaw = pcontroller_->ControllerInfo.posit_yaw;
-    SysControllerLink.controllerInfo.angle_pitch1 = pcontroller_->ControllerInfo.posit_pitch1;
-    SysControllerLink.controllerInfo.angle_pitch2 = pcontroller_->ControllerInfo.posit_pitch2;
-    SysControllerLink.controllerInfo.angle_roll = pcontroller_->ControllerInfo.posit_roll;
-    SysControllerLink.controllerInfo.angle_pitch_end = pcontroller_->ControllerInfo.posit_pitch_end;
+    // ===== 右臂控制器 =====
+    if (pcontroller_right_) {
+        // 启动模块
+        if (!pcontroller_right_->ControllerInfo.isModuleAvailable
+            && pcontroller_right_->moduleStatus == APP_OK) {
+            pcontroller_right_->StartModule();
+        }
+        // 上传右臂数据 (控制器 -> 机器人)
+        SysControllerLink.controllerInfo.right_arm.yaw = pcontroller_right_->ControllerInfo.posit_yaw;
+        SysControllerLink.controllerInfo.right_arm.pitch1 = pcontroller_right_->ControllerInfo.posit_pitch1;
+        SysControllerLink.controllerInfo.right_arm.pitch2 = pcontroller_right_->ControllerInfo.posit_pitch2;
+        SysControllerLink.controllerInfo.right_arm.roll = pcontroller_right_->ControllerInfo.posit_roll;
+        SysControllerLink.controllerInfo.right_arm.pitch_end = pcontroller_right_->ControllerInfo.posit_pitch_end;
+        // 接收右臂数据 (机器人 -> 控制器)
+        pcontroller_right_->ControllerCmd.StartControl = SysControllerLink.robotInfo.controlled_by_controller;
+        pcontroller_right_->ControllerCmd.cmd_yaw = SysControllerLink.robotInfo.right_arm.yaw;
+        pcontroller_right_->ControllerCmd.cmd_pitch1 = SysControllerLink.robotInfo.right_arm.pitch1;
+        pcontroller_right_->ControllerCmd.cmd_pitch2 = SysControllerLink.robotInfo.right_arm.pitch2;
+        pcontroller_right_->ControllerCmd.cmd_roll = SysControllerLink.robotInfo.right_arm.roll;
+        pcontroller_right_->ControllerCmd.cmd_pitch_end = SysControllerLink.robotInfo.right_arm.pitch_end;
+    }
 
+    // ===== 状态汇总 =====
+    // 只有两个控制器都可用时才认为整体OK
+    bool left_ok = pcontroller_left_ ? pcontroller_left_->ControllerInfo.isModuleAvailable : true;
+    bool right_ok = pcontroller_right_ ? pcontroller_right_->ControllerInfo.isModuleAvailable : true;
+    SysControllerLink.controllerInfo.controller_OK = left_ok && right_ok;
+
+    // 归位成功状态
+    bool left_return = pcontroller_left_ ? pcontroller_left_->ControllerInfo.isReturnSuccess : true;
+    bool right_return = pcontroller_right_ ? pcontroller_right_->ControllerInfo.isReturnSuccess : true;
+    SysControllerLink.controllerInfo.return_success = left_return && right_return;
+
+    // 复位检测
     if (SysControllerLink.robotInfo.ask_reset_flag) {
-        // 复位整个系统
         RESET_SYSTEM();
     }
-    pcontroller_->ControllerCmd.StartControl = SysControllerLink.robotInfo.controlled_by_controller;
-    pcontroller_->ControllerCmd.cmd_pitch1 = SysControllerLink.robotInfo.angle_pitch1;
-    pcontroller_->ControllerCmd.cmd_pitch2 = SysControllerLink.robotInfo.angle_pitch2;
-    pcontroller_->ControllerCmd.cmd_roll = SysControllerLink.robotInfo.angle_roll;
-    pcontroller_->ControllerCmd.cmd_yaw = SysControllerLink.robotInfo.angle_yaw;
-    pcontroller_->ControllerCmd.cmd_pitch_end = SysControllerLink.robotInfo.angle_pitch_end;
-
 }
 
 /**

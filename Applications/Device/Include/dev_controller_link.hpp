@@ -22,7 +22,7 @@ namespace my_engineer {
 
 /**
  * @brief 控制器通信设备类
- * 
+ *
  */
 class CDevControllerLink final: public CDevBase {
 public:
@@ -32,66 +32,88 @@ public:
 		EInterfaceID interfaceID = EInterfaceID::INF_NULL; ///< 串口ID
 	};
 
+	/**
+	 * @brief 通信数据包头
+	 * @note  与裁判系统协议兼容
+	 */
+	struct SPkgHeader {
+		uint8_t SOF = 0xA5;       ///< 帧头
+		uint16_t pkgLen = 0;      ///< 数据长度
+		uint8_t seq = 0;          ///< 包序号
+		uint8_t CRC8 = 0x00;      ///< CRC8校验
+		uint16_t cmd_Id = 0x0000; ///< 命令ID
+	} __packed;  // 7字节
+
+	/**
+	 * @brief 单臂角度数据
+	 * @note  使用int16_t存储，精度0.01°，每个角度2字节，共10字节
+	 */
+	struct SArmAnglesCompressed {
+		int16_t yaw;        ///< Yaw角度 (0.01° 精度)
+		int16_t pitch1;     ///< Pitch1角度 (0.01° 精度)
+		int16_t pitch2;     ///< Pitch2角度 (0.01° 精度)
+		int16_t roll;       ///< Roll角度 (0.01° 精度)
+		int16_t pitch_end;  ///< 末端Pitch角度 (0.01° 精度)
+	} __packed;  // 10字节
+
 	enum EPackageID: uint8_t {
 		ID_NULL = 0,
-		ID_CONTROLLER_DATA,
-		ID_ROBOT_DATA,
-		ID_CHOSELEVEL_DATA,
+        ID_CONTROLLER_DATA,      ///< 0x0302 控制器-->机器人数据 (30字节, 30Hz)
+    	ID_ROBOT_DATA,           ///< 0x0309 机器人-->控制器数据 (30字节, 10Hz)
+        ID_CHOSELEVEL_DATA,      ///< 0x0306 自定义控制器-->选手端 (8字节, 30Hz) [非链路数据]
+        ID_ROBOT_TO_CLIENT_DATA, ///< 0x0310 机器人-->自定义客户端数据 (150字节, 50Hz)
 	};
 
-	struct SPkgHeader {
-		uint8_t SOF = 0xA5; ///< 包头
-		uint16_t pkgLen = 0; ///< 包长度
-		uint8_t seq = 0; ///< 包序号
-		uint8_t CRC8 = 0x00; ///< CRC8校验
-		uint16_t cmd_Id = 0x0000; ///< 命令ID
-	} __packed; //禁止编译器的内存对齐优化
-
+	/**
+	 * @brief 控制器-->机器人数据
+	 * @note  数据段：2 + 10 + 10 + 5 = 27字节
+	 */
 	struct SControllerDataPkg {
 		SPkgHeader header;
-		bool controller_OK = 0; ///< 控制器状态
-		bool return_success = 0; ///< 归位成功标志
-		/*-----------maybe it will use-----------------*/
-		// int8_t rocker_X = 0; ///< 摇杆X轴值
-		// int8_t rocker_Y = 0; ///< 摇杆Y轴值
-		// uint8_t rocker_Key = 0; ///< 摇杆按键状态
-		float_t angle_yaw = 0; ///< yaw角度位置
-		float_t angle_pitch1 = 0; ///< Pitch1角度位置
-		float_t angle_pitch2 = 0; ///< Pitch2角度位置
-		float_t angle_roll = 0; ///< roll电机位置
-		float_t angle_pitch_end = 0; ///< 末端Pitch角度位置
-		float_t angle_roll_end = 0; ///< 末端Roll角度位置
-		int8_t reserved[4] = {0}; ///< 保留字段
-		uint16_t CRC16 = 0x0000; ///< CRC16校验
+		bool controller_OK = 0;        ///< 控制器状态
+		bool return_success = 0;       ///< 归位成功标志
+		SArmAnglesCompressed left_arm = {};   ///< 左臂角度 (10字节)
+		SArmAnglesCompressed right_arm = {};  ///< 右臂角度 (10字节)
+		int8_t rocker_X = 0;           ///< 摇杆X轴 (-100~100)
+		int8_t rocker_Y = 0;           ///< 摇杆Y轴 (-100~100)
+		uint8_t rocker_Key = 0;        ///< 摇杆按键状态
+		uint8_t toggle_switch = 0;     ///< 拨杆状态
+		uint8_t button = 0;            ///< 按钮状态
+		uint16_t CRC16 = 0x0000;       ///< CRC16校验
 	} __packed controllerData_info_pkg = { };
 
+	/**
+	 * @brief 机器人-->控制器数据
+	 * @note  数据段：3 + 10 + 10 = 23字节
+	 */
 	struct SRobotDataPkg {
 		SPkgHeader header;
-		bool ask_reset_flag = 0; ///< 要求复位标志
-		bool controlled_by_controller = 0; ///< 是否被控制器控制
-		bool ask_return_flag = 0; ///< 要求归位标志
-		float_t angle_yaw = 0; ///< yaw角度位置
-		float_t angle_pitch1 = 0; ///< Pitch1角度位置
-		float_t angle_pitch2 = 0; ///< Pitch2角度位置
-		float_t angle_roll = 0; ///< roll电机位置
-		float_t angle_pitch_end = 0; ///< 末端Pitch角度位置
-		float_t angle_roll_end = 0; ///< 末端Roll角度位置
-		int8_t reserved[3] = {0}; ///< 保留字段
-		uint16_t CRC16 = 0x0000; ///< CRC16校验
+		bool ask_reset_flag = 0;             ///< 要求复位标志
+		bool controlled_by_controller = 0;   ///< 是否被控制器控制
+		bool ask_return_flag = 0;            ///< 要求归位标志
+		SArmAnglesCompressed left_arm = {};  ///< 左臂角度 (10字节)
+		SArmAnglesCompressed right_arm = {}; ///< 右臂角度 (10字节)
+		uint16_t CRC16 = 0x0000;             ///< CRC16校验
 	} __packed robotData_info_pkg = { };
 
 	/*for chose level*/
-	struct SChoseLevelDataPkg {
+	struct SChoseLevelDataPkg {///<用来自定义控制器来模拟鼠标
 		SPkgHeader header;
 		uint8_t Key_value1;
 		uint8_t Key_value2;
 		uint16_t x_position:12;
-    uint16_t mouse_left:4;
-    uint16_t y_position:12;
-    uint16_t mouse_right:4;
+    	uint16_t mouse_left:4;
+    	uint16_t y_position:12;
+    	uint16_t mouse_right:4;
 		int8_t reserved[1] = {0}; 
 		uint16_t CRC16 = 0x0000;
 	}__packed choseLevelData_info_pkg = { };
+
+	struct SClientDataPkg {   ///<机器人发给自定义客户端的数据
+        SPkgHeader header;             ///< 包头 (cmd_Id=0x0310)
+        uint8_t data[150] = {0};       ///< 自定义数据 (最大150字节)
+        uint16_t CRC16 = 0x0000;       ///< CRC16校验
+    }__packed clientData_info_pkg = { };   
 	
 
 	enum class EControllerLinkStatus {

@@ -66,7 +66,7 @@ EAppStatus CDevControllerLink::SendPackage(EPackageID packageID, SPkgHeader &pac
 			pkg->header.seq++;
 			pkg->header.pkgLen = sizeof(SControllerDataPkg) - sizeof(SPkgHeader) - 2; // 2 bytes for CRC16
 			pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&(pkg->header)), 4);
-			pkg->header.cmd_Id = 0x0302;
+			pkg->header.cmd_Id = 0x0302;///<自定义控制器与机器人交互数据
 			pkg->CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(pkg), sizeof(SControllerDataPkg) - 2);
 
 			return uartInterface_->Transmit(reinterpret_cast<uint8_t *>(pkg), sizeof(SControllerDataPkg));
@@ -152,7 +152,7 @@ EAppStatus CDevControllerLink::ResolveRxPackage_(){
 
 		switch (header->cmd_Id) {
 
-			case 0x0302: {
+			case 0x0302: {///>自定义控制器-->机器人
 				if (i + sizeof(SControllerDataPkg) > rxBuffer_.size())
 					break;
 				auto pkg = reinterpret_cast<SControllerDataPkg *>(header);
@@ -163,7 +163,7 @@ EAppStatus CDevControllerLink::ResolveRxPackage_(){
 				break;
 			}
 
-			case 0x0309: {
+			case 0x0309: {///>己方机器人→对应操作手选手端
 				if (i + sizeof(SRobotDataPkg) > rxBuffer_.size())
 					break;
 				auto pkg = reinterpret_cast<SRobotDataPkg *>(header);
