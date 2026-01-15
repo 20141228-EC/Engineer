@@ -26,18 +26,11 @@
 #define CONTROLLER_PITCH1_MOTOR_RANGE 392000
 #define CONTROLLER_PITCH1_MOTOR_OFFSET 0
 /*------------------------------------------------------------------------------------------*/
-#define CONTROLLER_PITCH2_PHYSICAL_RANGE 0.0f
-#define CONTROLLER_PITCH2_MOTOR_RANGE 0
-#define CONTROLLER_PITCH2_MOTOR_OFFSET 0
+#define CONTROLLER_PITCH2_PHYSICAL_RANGE_MIN 0.0f     // TODO: 标定后修改
+#define CONTROLLER_PITCH2_PHYSICAL_RANGE_MAX 180.0f   // TODO: 标定后修改
 /*------------------------------------------------------------------------------------------*/
-#define CONTROLLER_ROLL_MOTOR_RANGE 0 
-#define CONTROLLER_ROLL_PHYSICAL_RANGE 0.0f 
-#define CONTROLLER_ROLL_MOTOR_OFFSET 0
-#define CONTROLLER_ROLL_MOTOR_RATIO (CONTROLLER_ROLL_MOTOR_RANGE / CONTROLLER_ROLL_PHYSICAL_RANGE)
-/*----------------------------------Roll--------------------------------------------------------*/
-#define CONTROLLER_ROLL_END_MOTOR_RANGE 0.0f
-#define CONTROLLER_ROLL_END_PHYSICAL_RANGE 0.0f
-#define CONTROLLER_ROLL_END_MOTOR_OFFSET -3778
+#define CONTROLLER_ROLL_PHYSICAL_RANGE_MIN -90.0f     // TODO: 标定后修改
+#define CONTROLLER_ROLL_PHYSICAL_RANGE_MAX 90.0f      // TODO: 标定后修改
 /*----------------------------------Pitch_End-----------------------------------------------*/
 #define CONTROLLER_PITCH_END_PHYSICAL_RANGE_MAX 145.0f
 #define CONTROLLER_PITCH_END_PHYSICAL_RANGE_MIN -60.0f
@@ -46,10 +39,8 @@
 #define CONTROLLER_PITCH_END_MOTOR_OFFSET 3345
 /*------------------------------------------------------------------------------------------*/
 #define CONTROLLER_PITCH1_MOTOR_RATIO (CONTROLLER_PITCH1_MOTOR_RANGE / CONTROLLER_PITCH1_PHYSICAL_RANGE)
-#define CONTROLLER_PITCH2_MOTOR_RATIO (CONTROLLER_PITCH2_MOTOR_RANGE / CONTROLLER_PITCH2_PHYSICAL_RANGE)
 #define CONTROLLER_YAW_MOTOR_RATIO (CONTROLLER_YAW_MOTOR_RANGE / (CONTROLLER_YAW_PHYSICAL_RANGE_MAX - CONTROLLER_YAW_PHYSICAL_RANGE_MIN))
 #define CONTROLLER_YAW_MOTOR_OFFSET -CONTROLLER_YAW_MOTOR_RATIO * CONTROLLER_YAW_PHYSICAL_RANGE_MIN
-#define CONTROLLER_ROLL_END_MOTOR_RATIO (CONTROLLER_ROLL_END_MOTOR_RANGE / CONTROLLER_ROLL_END_PHYSICAL_RANGE)
 
 
 // 当物理位置从0增大时，电机位置的变化方向
@@ -57,7 +48,6 @@
 #define CONTROLLER_PITCH1_MOTOR_DIR -1
 #define CONTROLLER_PITCH2_MOTOR_DIR 1
 #define CONTROLLER_ROLL_MOTOR_DIR -1
-#define CONTROLLER_ROLL_END_MOTOR_DIR 1
 #define CONTROLLER_PITCH_END_MOTOR_DIR -1
 
 // 与自定义控制器模块相关的宏定义
@@ -89,25 +79,17 @@ public:
 		EDeviceID yaw_id 				= EDeviceID::DEV_NULL; ///< yaw电机设备ID
 		EDeviceID pitch1_id 		= EDeviceID::DEV_NULL; ///< 大pitch电机设备ID
 		EDeviceID pitch2_id 		= EDeviceID::DEV_NULL; ///<小pitch电机设备ID
-		EDeviceID roll_id 			= EDeviceID::DEV_NULL; ///< 大Roll轴电机设备ID
-		EDeviceID roll_end_id 	= EDeviceID::DEV_NULL; ///< 末端Roll轴电机设备ID
-		EDeviceID pitch_end_id 	= EDeviceID::DEV_NULL; ///< 末端pitch电机设备ID
+		EDeviceID roll_id 			= EDeviceID::DEV_NULL; ///< Roll轴电机设备ID (MIT模式)
+		EDeviceID pitch_end_id 	= EDeviceID::DEV_NULL; ///< 末端pitch电机设备ID (MIT模式)
 		/*--------------------------Set Can----------------------------------------------*/
 		CInfCAN::CCanTxNode *yawTxNode;
 		CInfCAN::CCanTxNode *pitch1TxNode;
 		CInfCAN::CCanTxNode *pitch2TxNode;
 		CInfCAN::CCanTxNode *rollTxNode;
-		CInfCAN::CCanTxNode *rollEndTxNode;
 		CInfCAN::CCanTxNode *pitchEndTxNode;
 		/*--------------------------Set Pid----------------------------------------------*/
 		CAlgoPid::SAlgoInitParam_Pid yawPosPidParam;
 		CAlgoPid::SAlgoInitParam_Pid yawSpdPidParam;
-		CAlgoPid::SAlgoInitParam_Pid rollPosPidParam;
-		CAlgoPid::SAlgoInitParam_Pid rollSpdPidParam;
-		CAlgoPid::SAlgoInitParam_Pid rollEndPosPidParam;
-		CAlgoPid::SAlgoInitParam_Pid rollEndSpdPidParam;
-		CAlgoPid::SAlgoInitParam_Pid pitchEndPosPidParam;
-		CAlgoPid::SAlgoInitParam_Pid pitchEndSpdPidParam;
 	};
 
 	enum KEY_STATUS  {RELEASE = 0, PRESS = 1, LONG_PRESS = 2,};
@@ -128,16 +110,15 @@ public:
 		bool isRest = false; ///< 是否归位
 		bool isLevel4 = false; ///< 是否处于四级状态
 		bool isLevel3 = false; ///< 是否处于三级状态
-		bool isSelf = false; ///< 
+		bool isSelf = false; ///<
 		// int8_t rocker_X = 0; ///< 摇杆X轴值 -100 - 100
 		// int8_t rocker_Y = 0; ///< 摇杆Y轴值 -100 - 100
 		// KEY_STATUS rocker_Key = KEY_STATUS::RELEASE; ///< 摇杆按键状态
 		float_t posit_yaw = 0; ///< yaw电机位置
 		float_t posit_pitch1 = 0; ///< pitch1电机位置
 		float_t posit_pitch2 = 0; ///< pitch2电机位置
-		float_t posit_roll = 0; ///< 大Roll轴电机位置
-		float_t posit_roll_end = 0; ///< 末端Roll轴电机位置
-		float_t posit_pitch_end = 0; ///< 末端pitch电机位置
+		float_t posit_roll = 0; ///< Roll轴电机位置 (MIT模式)
+		float_t posit_pitch_end = 0; ///< 末端pitch电机位置 (MIT模式)
 	} ControllerInfo = { };
 
 	// 定义控制器命令结构体并实例化
@@ -147,9 +128,8 @@ public:
 		float_t cmd_yaw = 0; ///< 横移电机命令
 		float_t cmd_pitch1 = 0; ///< 大pitch电机命令
 		float_t cmd_pitch2 = 0; ///< 小pitch电机命令
-		float_t cmd_roll = 0; ///< 大Roll轴电机命令
-		float_t cmd_roll_end = 0; ///< 末端Roll轴电机命令
-		float_t cmd_pitch_end = 0; ///< 末端pitch电机命令
+		float_t cmd_roll = 0; ///< Roll轴电机命令 (MIT模式)
+		float_t cmd_pitch_end = 0; ///< 末端pitch电机命令 (MIT模式)
 	} ControllerCmd = { };
 
 	CModController() = default;
@@ -253,11 +233,9 @@ private:
 
 	} comPitch1_;
 
-		// 定义Pitch2轴组件类并实例化
+	// 定义Pitch2轴组件类并实例化
 	class CComPitch2: public CComponentBase{
 	public:
-
-		const int32_t rangeLimit = CONTROLLER_PITCH2_MOTOR_RANGE; ///< 电机位置范围限制
 
 		// 定义Pitch2轴信息结构体并实例化
 		struct SPitch2Info {
@@ -294,8 +272,6 @@ private:
 	class CComRoll: public CComponentBase{
 	public:
 
-		const int32_t rangeLimit = CONTROLLER_ROLL_MOTOR_RANGE; ///< 电机位置范围限制
-
 		// 定义Roll轴信息结构体并实例化
 		struct SRollInfo {
 			float_t posit = 0;    ///< Roll Position (MIT模式使用角度)
@@ -329,56 +305,9 @@ private:
 
 	} comRoll_;
 
-	// 定义末端Roll轴组件类并实例化
-	class CComRollEnd: public CComponentBase{
-	public:
-
-		const int32_t rangeLimit = CONTROLLER_ROLL_END_MOTOR_RANGE; ///< 电机位置范围限制
-
-		// 定义末端Roll轴信息结构体并实例化
-		struct SRollEndInfo {
-			int32_t posit = 0;    ///< Roll End Position
-			bool isPositArrived = false; ///< Roll End Position Arrived
-		} rollEndInfo;
-
-		// 定义末端Roll轴控制命令结构体并实例化
-		struct SRollEndCmd {
-			bool isFree = false;	 ///< Roll End Free
-			int32_t setPosit = 0;    ///< Roll End Position Set
-		} rollEndCmd;
-
-		// 电机实例指针
-		CDevMtr *motor[1] = {nullptr};
-
-		// 定义末端Roll轴PID控制器
-		CAlgoPid pidPosCtrl;
-		CAlgoPid pidSpdCtrl;
-
-		// 电机数据输出缓冲区
-		std::array<int16_t, 1> mtrOutputBuffer = {0};
-
-		// 初始化组件
-		EAppStatus InitComponent(SModInitParam_Base &param) final;
-
-		// 更新组件
-		EAppStatus UpdateComponent() final;
-
-		static int32_t PhyPositToMtrPosit(float_t phyPosit);
-
-		static float_t MtrPositToPhyPosit(int32_t mtrPosit);
-
-		EAppStatus _UpdateOutput(float_t posit);
-
-		// 电机can发送节点
-		std::array<CInfCAN::CCanTxNode*, 1> mtrCanTxNode_;
-
-	} comRollEnd_;
-
 	/*----------- 末端Pitch轴组件类（MIT模式，DM3510） -----------*/
 	class CComPitchEnd: public CComponentBase{
 	public:
-
-		const int32_t rangeLimit = CONTROLLER_ROLL_END_MOTOR_RANGE; ///< 电机位置范围限制
 
 		// 定义末端Pitch轴信息结构体并实例化
 		struct SPitchEndInfo {

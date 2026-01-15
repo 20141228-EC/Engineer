@@ -146,7 +146,7 @@ EAppStatus CDevControllerLink::ResolveRxPackage_(){
 		}
 
 		auto header = reinterpret_cast<SPkgHeader *>(&rxBuffer_[i]);
-		if (CCrcValidator::Crc8Verify(rxBuffer_.data(), header->CRC8, 4) != APP_OK) {
+		if (CCrcValidator::Crc8Verify(&rxBuffer_[i], header->CRC8, 4) != APP_OK) {
 			continue;
 		}
 

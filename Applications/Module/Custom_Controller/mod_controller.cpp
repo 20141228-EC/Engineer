@@ -124,14 +124,14 @@ EAppStatus CModController::RestrictControllerCommand_() {
 	}
 
 	// 限制控制器各模块的控制命令大小
-	ControllerCmd.cmd_yaw = 
-		std::clamp(ControllerCmd.cmd_yaw, -CONTROLLER_YAW_PHYSICAL_RANGE_MIN, CONTROLLER_YAW_PHYSICAL_RANGE_MAX);
-	ControllerCmd.cmd_pitch1 = 
+	ControllerCmd.cmd_yaw =
+		std::clamp(ControllerCmd.cmd_yaw, CONTROLLER_YAW_PHYSICAL_RANGE_MIN, CONTROLLER_YAW_PHYSICAL_RANGE_MAX);
+	ControllerCmd.cmd_pitch1 =
 		std::clamp(ControllerCmd.cmd_pitch1, 4.0f, CONTROLLER_PITCH1_PHYSICAL_RANGE);
 	ControllerCmd.cmd_pitch2 =
-		std::clamp(ControllerCmd.cmd_pitch2, 11.0f, CONTROLLER_PITCH2_PHYSICAL_RANGE);
+		std::clamp(ControllerCmd.cmd_pitch2, CONTROLLER_PITCH2_PHYSICAL_RANGE_MIN, CONTROLLER_PITCH2_PHYSICAL_RANGE_MAX);
 	ControllerCmd.cmd_roll =
-		std::clamp(ControllerCmd.cmd_roll, 0.0f, CONTROLLER_ROLL_PHYSICAL_RANGE);
+		std::clamp(ControllerCmd.cmd_roll, CONTROLLER_ROLL_PHYSICAL_RANGE_MIN, CONTROLLER_ROLL_PHYSICAL_RANGE_MAX);
 	ControllerCmd.cmd_pitch_end =
 		std::clamp(ControllerCmd.cmd_pitch_end, CONTROLLER_PITCH_END_PHYSICAL_RANGE_MIN, CONTROLLER_PITCH_END_PHYSICAL_RANGE_MAX);
 
