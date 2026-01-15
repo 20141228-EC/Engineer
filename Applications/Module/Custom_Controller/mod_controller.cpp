@@ -1,13 +1,15 @@
 /******************************************************************************
- * @brief        
- * 
+ * @brief
+ *
  * @file         mod_controller.cpp
- * @author       Fish_Joe (2328339747@qq.com)
- * @version      V1.0
+ * @author       Fish_Joe (2328339747@qq.com), Ciallo
+ * @version      V1.1
  * @date         2025-04-01
- * 
+ * @LastEditors  Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-15
+ *
  * @copyright    Copyright (c) 2025
- * 
+ *
  ******************************************************************************/
 
 #include "mod_controller.hpp"
@@ -76,18 +78,11 @@ void CModController::UpdateHandler_() {
 	ControllerInfo.posit_yaw = CModController::CComYaw::MtrPositToPhyPosit(comYaw_.yawInfo.posit);
 	ControllerInfo.posit_pitch1 = comPitch1_.pitch1Info.posit;
 	ControllerInfo.posit_pitch2 = comPitch2_.pitch2Info.posit;
-	ControllerInfo.posit_roll = CModController::CComRoll::MtrPositToPhyPosit(comRoll_.rollInfo.posit);
-	ControllerInfo.posit_pitch_end = CModController::CComPitchEnd::MtrPositToPhyPosit(comPitchEnd_.pitchEndInfo.posit);
+	ControllerInfo.posit_roll = comRoll_.rollInfo.posit;         // MIT模式直接使用float位置
+	ControllerInfo.posit_pitch_end = comPitchEnd_.pitchEndInfo.posit;  // MIT模式直接使用float位置
 
-	
-
-	// 填充电机发送缓冲区
-	CDevMtrDJI::FillCanTxBuffer(comRoll_.motor[0],
-							   comRoll_.mtrCanTxNode_[0]->dataBuffer,
-							   comRoll_.mtrOutputBuffer[0]);
-	CDevMtrDJI::FillCanTxBuffer(comPitchEnd_.motor[0],
-							   comPitchEnd_.mtrCanTxNode_[0]->dataBuffer,
-							   comPitchEnd_.mtrOutputBuffer[0]);
+	/*----------- Yaw电机（DJI M6020）CAN发送 -----------*/
+	// Roll/PitchEnd改为MIT模式后在各自组件内发送，Pitch1/Pitch2也在组件内发送
 	CDevMtrDJI::FillCanTxBuffer(comYaw_.motor[0],
 							   comYaw_.mtrCanTxNode_[0]->dataBuffer,
 							   comYaw_.mtrOutputBuffer[0]);

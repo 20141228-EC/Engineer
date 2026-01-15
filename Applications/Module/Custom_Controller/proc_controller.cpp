@@ -1,13 +1,14 @@
 /******************************************************************************
- * @brief        
- * 
  * @file         proc_controller.cpp
- * @author       Fish_Joe (2328339747@qq.com)
- * @version      V1.0
+ * @author       Fish_Joe (2328339747@qq.com), Ciallo
+ * @brief        控制器模块任务处理
+ * @version      V1.1
  * @date         2025-04-01
- * 
+ * @LastEditors  Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-15
+ *
  * @copyright    Copyright (c) 2025
- * 
+ *
  ******************************************************************************/
 
 #include "mod_controller.hpp"
@@ -112,8 +113,9 @@ void CModController::StartControllerModuleTask(void *argument) {
 					controller.comYaw_.yawCmd.setPosit = CModController::CComYaw::PhyPositToMtrPosit(controller.ControllerCmd.cmd_yaw);
 					controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch1;
 					controller.comPitch2_.pitch2Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch2;
-					controller.comRoll_.rollCmd.setPosit =   CModController::CComRoll::PhyPositToMtrPosit(controller.ControllerCmd.cmd_roll);
-					controller.comPitchEnd_.pitchEndCmd.setPosit = CModController::CComPitchEnd::PhyPositToMtrPosit(controller.ControllerCmd.cmd_pitch_end);
+					/*----------- Roll和PitchEnd改为MIT模式，直接传入角度值 -----------*/
+					controller.comRoll_.rollCmd.setParam[EMotorParam::POSIT] = controller.ControllerCmd.cmd_roll;
+					controller.comPitchEnd_.pitchEndCmd.setParam[EMotorParam::POSIT] = controller.ControllerCmd.cmd_pitch_end;
 				}
 
 				// 检查是否归位完成

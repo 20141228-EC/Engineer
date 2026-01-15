@@ -290,45 +290,39 @@ private:
 
 	} comPitch2_;
 
-	// 定义大Roll轴组件类并实例化
+	/*----------- Roll轴组件类（MIT模式，DM3510） -----------*/
 	class CComRoll: public CComponentBase{
 	public:
 
 		const int32_t rangeLimit = CONTROLLER_ROLL_MOTOR_RANGE; ///< 电机位置范围限制
-		// 定义大Roll轴信息结构体并实例化
+
+		// 定义Roll轴信息结构体并实例化
 		struct SRollInfo {
-			int16_t posit = 0;    ///< Roll Speed
+			float_t posit = 0;    ///< Roll Position (MIT模式使用角度)
 			bool isPositArrived = false;
 		} rollInfo;
 
-		// 定义大Roll轴控制命令结构体并实例化
+		// 定义Roll轴控制命令结构体并实例化（MIT模式参数）
 		struct SRollCmd {
-			bool isFree = false;	 ///< Roll Arrived End
-			int32_t setPosit = 0;
+			bool isFree = false;	 ///< Roll Free
+			float_t setParam[static_cast<int>(EMotorParam::COUNT_)] = {0};
 		} rollCmd;
 
-		// 电机实例指针
-		CDevMtr *motor[1] = {nullptr};
-
-		CAlgoPid pidPosCtrl;
-		CAlgoPid pidSpdCtrl;
-
-		std::array<int16_t, 1> mtrOutputBuffer = {0};
+		// 电机实例指针（MIT模式使用DM电机）
+		CDevMtrDM *motor[1] = {nullptr};
 
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
-
-		// 物理位置转换为电机位置
-		static int32_t PhyPositToMtrPosit(float_t phyPosit);
-
-		// 电机位置转换为物理位置
-		static float_t MtrPositToPhyPosit(int32_t mtrPosit);
 
 		// 更新组件
 		EAppStatus UpdateComponent() final;
 
 		// 输出更新函数
-		EAppStatus _UpdateOutput(float_t posit);
+		EAppStatus _UpdateOutput(float_t* setParam);
+
+		// 物理位置与电机位置转换（MIT模式角度转换）
+		static float_t OffsetPositToMotortruePosit(float_t offsetPosit);
+		static float_t MotortruePositToOffsetPosit(float_t motortruePosit);
 
 		// 电机can发送节点
 		std::array<CInfCAN::CCanTxNode*, 1> mtrCanTxNode_;
@@ -380,7 +374,7 @@ private:
 
 	} comRollEnd_;
 
-	// 定义末端Pitch轴组件类并实例化
+	/*----------- 末端Pitch轴组件类（MIT模式，DM3510） -----------*/
 	class CComPitchEnd: public CComponentBase{
 	public:
 
@@ -388,25 +382,18 @@ private:
 
 		// 定义末端Pitch轴信息结构体并实例化
 		struct SPitchEndInfo {
-			int32_t posit = 0;    ///< Pitch End Position
+			float_t posit = 0;    ///< Pitch End Position (MIT模式使用角度)
 			bool isPositArrived = false; ///< Pitch End Position Arrived
 		} pitchEndInfo;
 
-		// 定义末端Pitch轴控制命令结构体并实例化
+		// 定义末端Pitch轴控制命令结构体并实例化（MIT模式参数）
 		struct SPitchEndCmd {
 			bool isFree = false;	 ///< Pitch End Free
-			int32_t setPosit = 0;    ///< Pitch End Position Set
+			float_t setParam[static_cast<int>(EMotorParam::COUNT_)] = {0};
 		} pitchEndCmd;
 
-		// 电机实例指针
-		CDevMtr *motor[1] = {nullptr};
-
-		// 定义末端Pitch轴PID控制器
-		CAlgoPid pidPosCtrl;
-		CAlgoPid pidSpdCtrl;
-
-		// 电机数据输出缓冲区
-		std::array<int16_t, 1> mtrOutputBuffer = {0};
+		// 电机实例指针（MIT模式使用DM电机）
+		CDevMtrDM *motor[1] = {nullptr};
 
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
@@ -414,11 +401,12 @@ private:
 		// 更新组件
 		EAppStatus UpdateComponent() final;
 
-		static int32_t PhyPositToMtrPosit(float_t phyPosit);
+		// 输出更新函数
+		EAppStatus _UpdateOutput(float_t* setParam);
 
-		static float_t MtrPositToPhyPosit(int32_t mtrPosit);
-
-		EAppStatus _UpdateOutput(float_t posit);
+		// 物理位置与电机位置转换（MIT模式角度转换）
+		static float_t OffsetPositToMotortruePosit(float_t offsetPosit);
+		static float_t MotortruePositToOffsetPosit(float_t motortruePosit);
 
 		// 电机can发送节点
 		std::array<CInfCAN::CCanTxNode*, 1> mtrCanTxNode_;

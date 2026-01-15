@@ -1,10 +1,12 @@
 /**
- * @file conf_interface.cpp
- * @author Zoe
+ * @file conf_device.cpp
+ * @author Zoe, Ciallo
  * @brief 完成所有设备的配置
- * @email 2328339747@qq.com
+ * @version 1.1
  * @date 2024-11-01
- * 
+ * @LastEditors Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-15
+ *
  * @details
  */
 
@@ -92,74 +94,141 @@ EAppStatus InitAllDevice(){
     controllerLink_initparam.interfaceID = EInterfaceID::INF_UART7;
     controllerLink.InitDevice(&controllerLink_initparam);
 
-    // 自定义控制器电机
-    // yaw
-    static CDevMtrM6020 controllerMotor_Yaw;
-    CDevMtrM6020::SMtrInitParam_M6020 controllerMotor_Yaw_initparam;
-    controllerMotor_Yaw_initparam.deviceID = EDeviceID::DEV_CONTROLLER_MTR_YAW;
-    controllerMotor_Yaw_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    controllerMotor_Yaw_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
-    controllerMotor_Yaw_initparam.useAngleToPosit = true;
-    controllerMotor_Yaw_initparam.useStallMonit = true;
-    controllerMotor_Yaw_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
-    controllerMotor_Yaw.InitDevice(&controllerMotor_Yaw_initparam);
+    /*----------- 左臂电机 -----------*/
+    // 左臂Yaw (M6020, CAN1 ID5)
+    static CDevMtrM6020 mtr_Yaw_L;
+    CDevMtrM6020::SMtrInitParam_M6020 mtr_Yaw_L_initparam;
+    mtr_Yaw_L_initparam.deviceID = EDeviceID::DEV_MTR_YAW_L;
+    mtr_Yaw_L_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    mtr_Yaw_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
+    mtr_Yaw_L_initparam.useAngleToPosit = true;
+    mtr_Yaw_L_initparam.useStallMonit = true;
+    mtr_Yaw_L_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
+    mtr_Yaw_L.InitDevice(&mtr_Yaw_L_initparam);
 
-    // Pitch1
-    static CDevMtrDM controllerMotor_Pitch1;
-    CDevMtrDM::SMtrInitParam_DM controllerMotor_Pitch1_initparam;
-    controllerMotor_Pitch1_initparam.deviceID = EDeviceID::DEV_CONTROLLER_MTR_PITCH1;
-    controllerMotor_Pitch1_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    controllerMotor_Pitch1_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
-    controllerMotor_Pitch1_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
-    controllerMotor_Pitch1_initparam.useAngleToPosit = false;
-    /*--------pleasue confige thie param,only when you use MIT mode--------*/
-    controllerMotor_Pitch1_initparam.Kp = 10.0f;                                         ///<Proportional gain for MIT mode
-    controllerMotor_Pitch1_initparam.Kd = 2.0f;                                         ///<Derivative gain for
-    controllerMotor_Pitch1_initparam.MIT_RxCANID = 0x31;                              
-    controllerMotor_Pitch1_initparam.MIT_TxCANID = 0x30;
-    /*--------------------------------------------------------------------*/
-    controllerMotor_Pitch1.InitDevice(&controllerMotor_Pitch1_initparam);
+    // 左臂Pitch1 (DM4310, CAN2 0x30)
+    static CDevMtrDM mtr_Pitch1_L;
+    CDevMtrDM::SMtrInitParam_DM mtr_Pitch1_L_initparam;
+    mtr_Pitch1_L_initparam.deviceID = EDeviceID::DEV_MTR_PITCH1_L;
+    mtr_Pitch1_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    mtr_Pitch1_L_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
+    mtr_Pitch1_L_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
+    mtr_Pitch1_L_initparam.useAngleToPosit = false;
+    mtr_Pitch1_L_initparam.Kp = 10.0f;
+    mtr_Pitch1_L_initparam.Kd = 2.0f;
+    mtr_Pitch1_L_initparam.MIT_RxCANID = 0x31;
+    mtr_Pitch1_L_initparam.MIT_TxCANID = 0x30;
+    mtr_Pitch1_L.InitDevice(&mtr_Pitch1_L_initparam);
 
-    // Pitch2
-    static CDevMtrDM controllerMotor_Pitch2;
-    CDevMtrDM::SMtrInitParam_DM controllerMotor_Pitch2_initparam;
-    controllerMotor_Pitch2_initparam.deviceID = EDeviceID::DEV_CONTROLLER_MTR_PITCH2;
-    controllerMotor_Pitch2_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    controllerMotor_Pitch2_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
-    controllerMotor_Pitch2_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
-    controllerMotor_Pitch2_initparam.useAngleToPosit = false;
-    /*--------pleasue confige thie param,only when you use MIT mode--------*/
-    controllerMotor_Pitch2_initparam.Kp = 10.0f;                                         ///<Proportional gain for MIT mode
-    controllerMotor_Pitch2_initparam.Kd = 2.0f;                                         ///<Derivative gain for
-    controllerMotor_Pitch2_initparam.MIT_RxCANID = 0x33;                              
-    controllerMotor_Pitch2_initparam.MIT_TxCANID = 0x32;
-    /*--------------------------------------------------------------------*/    
-    controllerMotor_Pitch2.InitDevice(&controllerMotor_Pitch2_initparam);
+    // 左臂Pitch2 (DM4310, CAN2 0x32)
+    static CDevMtrDM mtr_Pitch2_L;
+    CDevMtrDM::SMtrInitParam_DM mtr_Pitch2_L_initparam;
+    mtr_Pitch2_L_initparam.deviceID = EDeviceID::DEV_MTR_PITCH2_L;
+    mtr_Pitch2_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    mtr_Pitch2_L_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
+    mtr_Pitch2_L_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
+    mtr_Pitch2_L_initparam.useAngleToPosit = false;
+    mtr_Pitch2_L_initparam.Kp = 10.0f;
+    mtr_Pitch2_L_initparam.Kd = 2.0f;
+    mtr_Pitch2_L_initparam.MIT_RxCANID = 0x33;
+    mtr_Pitch2_L_initparam.MIT_TxCANID = 0x32;
+    mtr_Pitch2_L.InitDevice(&mtr_Pitch2_L_initparam);
 
-    // Roll
-    static CDevMtrM3508 controllerMotor_Roll;
-    CDevMtrM3508::SMtrInitParam_M3508 controllerMotor_Roll_initparam;
-    controllerMotor_Roll_initparam.deviceID = EDeviceID::DEV_CONTROLLER_MTR_ROLL;
-    controllerMotor_Roll_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    controllerMotor_Roll_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_1;
-    controllerMotor_Roll_initparam.useAngleToPosit = true;
-    controllerMotor_Roll_initparam.useStallMonit = true;
-    controllerMotor_Roll_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
-    controllerMotor_Roll_initparam.stallThreshold = 2000;
-    controllerMotor_Roll.InitDevice(&controllerMotor_Roll_initparam);
+    // 左臂Roll (DM3510, CAN2 0x34)
+    static CDevMtrDM mtr_Roll_L;
+    CDevMtrDM::SMtrInitParam_DM mtr_Roll_L_initparam;
+    mtr_Roll_L_initparam.deviceID = EDeviceID::DEV_MTR_ROLL_L;
+    mtr_Roll_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    mtr_Roll_L_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
+    mtr_Roll_L_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
+    mtr_Roll_L_initparam.useAngleToPosit = false;
+    mtr_Roll_L_initparam.Kp = 10.0f;
+    mtr_Roll_L_initparam.Kd = 2.0f;
+    mtr_Roll_L_initparam.MIT_RxCANID = 0x35;
+    mtr_Roll_L_initparam.MIT_TxCANID = 0x34;
+    mtr_Roll_L.InitDevice(&mtr_Roll_L_initparam);
 
-    // pitch end
-    static CDevMtrM3508 controllerMotor_PitchEnd;
-    CDevMtrM3508::SMtrInitParam_M3508 controllerMotor_PitchEnd_initparam;
-    controllerMotor_PitchEnd_initparam.deviceID = EDeviceID::DEV_CONTROLLER_MTR_PITCH_END;
-    controllerMotor_PitchEnd_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    controllerMotor_PitchEnd_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_2;
-    controllerMotor_PitchEnd_initparam.useAngleToPosit = true;
-    controllerMotor_PitchEnd_initparam.useStallMonit = true;
-    controllerMotor_PitchEnd_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
-    controllerMotor_PitchEnd_initparam.stallThreshold = 2000;
-    controllerMotor_PitchEnd.InitDevice(&controllerMotor_PitchEnd_initparam);
+    // 左臂PitchEnd (DM3510, CAN2 0x36)
+    static CDevMtrDM mtr_PitchEnd_L;
+    CDevMtrDM::SMtrInitParam_DM mtr_PitchEnd_L_initparam;
+    mtr_PitchEnd_L_initparam.deviceID = EDeviceID::DEV_MTR_PITCH_END_L;
+    mtr_PitchEnd_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    mtr_PitchEnd_L_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
+    mtr_PitchEnd_L_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
+    mtr_PitchEnd_L_initparam.useAngleToPosit = false;
+    mtr_PitchEnd_L_initparam.Kp = 10.0f;
+    mtr_PitchEnd_L_initparam.Kd = 2.0f;
+    mtr_PitchEnd_L_initparam.MIT_RxCANID = 0x37;
+    mtr_PitchEnd_L_initparam.MIT_TxCANID = 0x36;
+    mtr_PitchEnd_L.InitDevice(&mtr_PitchEnd_L_initparam);
 
+    /*----------- 右臂电机 -----------*/
+    // 右臂Yaw (M6020, CAN1 ID6)
+    static CDevMtrM6020 mtr_Yaw_R;
+    CDevMtrM6020::SMtrInitParam_M6020 mtr_Yaw_R_initparam;
+    mtr_Yaw_R_initparam.deviceID = EDeviceID::DEV_MTR_YAW_R;
+    mtr_Yaw_R_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    mtr_Yaw_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
+    mtr_Yaw_R_initparam.useAngleToPosit = true;
+    mtr_Yaw_R_initparam.useStallMonit = true;
+    mtr_Yaw_R_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
+    mtr_Yaw_R.InitDevice(&mtr_Yaw_R_initparam);
+
+    // 右臂Pitch1 (DM4310, CAN3 0x30)
+    static CDevMtrDM mtr_Pitch1_R;
+    CDevMtrDM::SMtrInitParam_DM mtr_Pitch1_R_initparam;
+    mtr_Pitch1_R_initparam.deviceID = EDeviceID::DEV_MTR_PITCH1_R;
+    mtr_Pitch1_R_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    mtr_Pitch1_R_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
+    mtr_Pitch1_R_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
+    mtr_Pitch1_R_initparam.useAngleToPosit = false;
+    mtr_Pitch1_R_initparam.Kp = 10.0f;
+    mtr_Pitch1_R_initparam.Kd = 2.0f;
+    mtr_Pitch1_R_initparam.MIT_RxCANID = 0x31;
+    mtr_Pitch1_R_initparam.MIT_TxCANID = 0x30;
+    mtr_Pitch1_R.InitDevice(&mtr_Pitch1_R_initparam);
+
+    // 右臂Pitch2 (DM4310, CAN3 0x32)
+    static CDevMtrDM mtr_Pitch2_R;
+    CDevMtrDM::SMtrInitParam_DM mtr_Pitch2_R_initparam;
+    mtr_Pitch2_R_initparam.deviceID = EDeviceID::DEV_MTR_PITCH2_R;
+    mtr_Pitch2_R_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    mtr_Pitch2_R_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
+    mtr_Pitch2_R_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
+    mtr_Pitch2_R_initparam.useAngleToPosit = false;
+    mtr_Pitch2_R_initparam.Kp = 10.0f;
+    mtr_Pitch2_R_initparam.Kd = 2.0f;
+    mtr_Pitch2_R_initparam.MIT_RxCANID = 0x33;
+    mtr_Pitch2_R_initparam.MIT_TxCANID = 0x32;
+    mtr_Pitch2_R.InitDevice(&mtr_Pitch2_R_initparam);
+
+    // 右臂Roll (DM3510, CAN3 0x34)
+    static CDevMtrDM mtr_Roll_R;
+    CDevMtrDM::SMtrInitParam_DM mtr_Roll_R_initparam;
+    mtr_Roll_R_initparam.deviceID = EDeviceID::DEV_MTR_ROLL_R;
+    mtr_Roll_R_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    mtr_Roll_R_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
+    mtr_Roll_R_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
+    mtr_Roll_R_initparam.useAngleToPosit = false;
+    mtr_Roll_R_initparam.Kp = 10.0f;
+    mtr_Roll_R_initparam.Kd = 2.0f;
+    mtr_Roll_R_initparam.MIT_RxCANID = 0x35;
+    mtr_Roll_R_initparam.MIT_TxCANID = 0x34;
+    mtr_Roll_R.InitDevice(&mtr_Roll_R_initparam);
+
+    // 右臂PitchEnd (DM3510, CAN3 0x36)
+    static CDevMtrDM mtr_PitchEnd_R;
+    CDevMtrDM::SMtrInitParam_DM mtr_PitchEnd_R_initparam;
+    mtr_PitchEnd_R_initparam.deviceID = EDeviceID::DEV_MTR_PITCH_END_R;
+    mtr_PitchEnd_R_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    mtr_PitchEnd_R_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
+    mtr_PitchEnd_R_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
+    mtr_PitchEnd_R_initparam.useAngleToPosit = false;
+    mtr_PitchEnd_R_initparam.Kp = 10.0f;
+    mtr_PitchEnd_R_initparam.Kd = 2.0f;
+    mtr_PitchEnd_R_initparam.MIT_RxCANID = 0x37;
+    mtr_PitchEnd_R_initparam.MIT_TxCANID = 0x36;
+    mtr_PitchEnd_R.InitDevice(&mtr_PitchEnd_R_initparam);
 
     return APP_OK;
 }

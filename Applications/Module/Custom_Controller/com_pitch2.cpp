@@ -121,7 +121,7 @@ EAppStatus CModController::CComPitch2::_UpdateOutput(float_t* setParam){
                               setParam[static_cast<int>(EMotorParam::KD)]);   
                               
   /*!!!!!!!!!!!Here Can had been sent!!!!!!!!!!!!!!!!!!!*/
- MitTxNode_Can2_32.Transmit();
+  mtrCanTxNode_[0]->Transmit();
   return APP_OK;
 }
 
