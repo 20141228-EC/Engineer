@@ -123,13 +123,13 @@ public:
 	} controllerLinkStatus = EControllerLinkStatus::RESET;
 
 	/*Please increase or decrease difficulty based on the season  */
-	enum class EOreDifficultyLevel {
+	enum class EExchangeLevel {
 		NONE,
-		FIRST,
-		SECOND,
-		THIRD,
-		FOURTH,
-	} oreDifficultyLevel = EOreDifficultyLevel::NONE;
+		FIRST,   ///< 一级兑换
+		SECOND,  ///< 二级兑换
+		THIRD,   ///< 三级兑换
+		FOURTH,  ///< 四级兑换
+	} exchangeLevel = EExchangeLevel::NONE;
 
 	CDevControllerLink() { deviceType = EDevType::DEV_CONTROLLER_LINK; }
 
