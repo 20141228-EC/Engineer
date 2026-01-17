@@ -3,7 +3,7 @@
  *
  * @file         dev_controller_link.hpp
  * @author       Fish_Joe (2328339747@qq.com)
- * @version      V2.0 - 支持双臂5轴 + 摇杆 + 拨杆 + 按钮
+ * @version      V2.0
  * @date         2025-04-05
  * @LastEditors  Ciallo(1002046597@qq.com)
  * @LastEditTime 2026-01-17
