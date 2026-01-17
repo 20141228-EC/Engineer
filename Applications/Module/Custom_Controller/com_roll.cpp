@@ -1,11 +1,11 @@
 /******************************************************************************
  * @file         com_roll.cpp
  * @author       Fish_Joe (2328339747@qq.com), Ciallo
- * @brief        Roll轴电机组件（MIT模式，DM3510）
- * @version      V1.1
+ * @brief        Roll轴电机组件
+ * @version      V1.2
  * @date         2025-03-30
  * @LastEditors  Ciallo(1002046597@qq.com)
- * @LastEditTime 2026-01-15
+ * @LastEditTime 2026-01-17
  *
  * @copyright    Copyright (c) 2025
  *
@@ -19,19 +19,8 @@ namespace my_engineer {
  * @brief    初始化自定义控制器Roll电机模块（MIT模式）
  ******************************************************************************/
 EAppStatus CModController::CComRoll::InitComponent(SModInitParam_Base &param) {
-    // 默认实现，不带父模块指针
-    return InitComponent(param, nullptr);
-}
-
-/******************************************************************************
- * @brief    初始化自定义控制器Roll电机模块（MIT模式，带父模块指针）
- ******************************************************************************/
-EAppStatus CModController::CComRoll::InitComponent(SModInitParam_Base &param, CModController *parent) {
     // 检查param是否正确
     if (param.moduleID == EModuleID::MOD_NULL) return APP_ERROR;
-
-    // 保存父模块指针
-    parent_ = parent;
 
     // 类型转换
     auto controllerParam = static_cast<SModInitParam_Controller &>(param);
@@ -92,31 +81,9 @@ EAppStatus CModController::CComRoll::UpdateComponent() {
 
         case FSM_CTRL: {
             if (rollCmd.isFree) {
-                // 自由模式：使用摇杆速度控制Roll
-                if (parent_ != nullptr) {
-                    // 获取摇杆X轴值（已经过死区处理）
-                    // 摇杆范围: -32750 ~ +32750 (死区外)
-                    // 速度范围: -CONTROLLER_ROLL_SPEED_MAX ~ +CONTROLLER_ROLL_SPEED_MAX
-                    float_t rocker_x = static_cast<float_t>(parent_->get_rocker_x());
-                    float_t speed_cmd = rocker_x / (CONTROLLER_ROCKER_RANGE / 2.0f) * CONTROLLER_ROLL_SPEED_MAX;
-
-                    // MIT模式：设置速度，位置保持当前值
-                    rollCmd.setParam[EMotorParam::POSIT] = rollInfo.posit;  // 保持当前位置
-                    rollCmd.setParam[EMotorParam::SPEED] = speed_cmd;       // 摇杆控制速度
-                    rollCmd.setParam[EMotorParam::KP] = 0.0f;               // 纯速度控制时KP=0
-                    rollCmd.setParam[EMotorParam::KD] = motor[0]->Kd;       // 保持KD
-                    rollCmd.setParam[EMotorParam::TF] = 0.0f;               // 前馈力矩=0
-                } else {
-                    // 没有父模块指针，清零输出
-                    std::fill(std::begin(rollCmd.setParam), std::end(rollCmd.setParam), 0.0f);
-                }
+                std::fill(std::begin(rollCmd.setParam), std::end(rollCmd.setParam), 0.0f);
                 return _UpdateOutput(rollCmd.setParam);
             }
-            // 非自由模式：位置控制，恢复KP
-            rollCmd.setParam[EMotorParam::SPEED] = 0.0f;        // 位置控制时速度=0
-            rollCmd.setParam[EMotorParam::KP] = motor[0]->Kp;   // 恢复KP
-            rollCmd.setParam[EMotorParam::KD] = motor[0]->Kd;   // 保持KD
-            rollCmd.setParam[EMotorParam::TF] = 0.0f;           // 前馈力矩=0
             return _UpdateOutput(rollCmd.setParam);
         }
 

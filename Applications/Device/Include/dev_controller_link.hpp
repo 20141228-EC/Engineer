@@ -1,13 +1,15 @@
 /******************************************************************************
- * @brief        
- * 
+ * @brief
+ *
  * @file         dev_controller_link.hpp
  * @author       Fish_Joe (2328339747@qq.com)
- * @version      V1.0
+ * @version      V2.0 - 支持双臂5轴 + 摇杆 + 拨杆 + 按钮
  * @date         2025-04-05
- * 
+ * @LastEditors  Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-17
+ *
  * @copyright    Copyright (c) 2025
- * 
+ *
  ******************************************************************************/
 
 #ifndef DEV_CONTROLLER_LINK_HPP
@@ -19,6 +21,27 @@
 #include "algo_crc.hpp"
 
 namespace my_engineer {
+
+/*------------------------------ 状态标志位定义 ------------------------------*/
+#define STATUS_CONTROLLER_OK      (1 << 0)  // bit0: 控制器状态OK
+#define STATUS_RETURN_SUCCESS     (1 << 1)  // bit1: 归位成功标志
+#define STATUS_TOGGLE_MASK        (0x03 << 2)  // bit2-3: 拨杆档位 (0-3)
+#define STATUS_TOGGLE_SHIFT       2
+#define STATUS_GRIPPER_LEFT       (1 << 4)  // bit4: 左夹爪闭合
+#define STATUS_GRIPPER_RIGHT      (1 << 5)  // bit5: 右夹爪闭合
+
+/**
+ * @brief 压缩角度结构体（5轴）
+ * 使用int16存储，精度0.01°，范围±327.67°
+ * 总大小: 5 × 2 = 10 bytes
+ */
+struct SArmAnglesCompressed {
+	int16_t yaw = 0;        ///< Yaw角度 (×100)
+	int16_t pitch1 = 0;     ///< Pitch1角度 (×100)
+	int16_t pitch2 = 0;     ///< Pitch2角度 (×100)
+	int16_t roll = 0;       ///< Roll角度 (×100)
+	int16_t pitch_end = 0;  ///< PitchEnd角度 (×100)
+} __packed;
 
 /**
  * @brief 控制器通信设备类
@@ -44,56 +67,41 @@ public:
 		uint16_t cmd_Id = 0x0000; ///< 命令ID
 	} __packed;  // 7字节
 
-	/**
-	 * @brief 单臂角度数据
-	 * @note  使用int16_t存储，精度0.01°，每个角度2字节，共10字节
-	 */
-	struct SArmAnglesCompressed {
-		int16_t yaw;        ///< Yaw角度 (0.01° 精度)
-		int16_t pitch1;     ///< Pitch1角度 (0.01° 精度)
-		int16_t pitch2;     ///< Pitch2角度 (0.01° 精度)
-		int16_t roll;       ///< Roll角度 (0.01° 精度)
-		int16_t pitch_end;  ///< 末端Pitch角度 (0.01° 精度)
-	} __packed;  // 10字节
-
 	enum EPackageID: uint8_t {
 		ID_NULL = 0,
-        ID_CONTROLLER_DATA,      ///< 0x0302 控制器-->机器人数据 (30字节, 30Hz)
-    	ID_ROBOT_DATA,           ///< 0x0309 机器人-->控制器数据 (30字节, 10Hz)
-        ID_CHOSELEVEL_DATA,      ///< 0x0306 自定义控制器-->选手端 (8字节, 30Hz) [非链路数据]
-        ID_ROBOT_TO_CLIENT_DATA, ///< 0x0310 机器人-->自定义客户端数据 (150字节, 50Hz)
+		ID_CONTROLLER_DATA,      ///< 0x0302 控制器-->机器人数据
+		ID_ROBOT_DATA,           ///< 0x0309 机器人-->控制器数据
+		ID_CHOSELEVEL_DATA,      ///< 0x0306 自定义控制器-->选手端 (8字节, 30Hz) [非链路数据]
+		ID_ROBOT_TO_CLIENT_DATA, ///< 0x0310 机器人-->自定义客户端数据 (150字节, 50Hz)
 	};
 
 	/**
-	 * @brief 控制器-->机器人数据
-	 * @note  数据段：2 + 10 + 10 + 5 = 27字节
+	 * @brief 控制器数据包 (Controller -> Robot)
+	 * 数据段大小: 24 bytes (满足30字节限制)
+	 * 完整包大小: 7(header) + 24(data) + 2(CRC16) = 33 bytes
 	 */
 	struct SControllerDataPkg {
 		SPkgHeader header;
-		bool controller_OK = 0;        ///< 控制器状态
-		bool return_success = 0;       ///< 归位成功标志
-		SArmAnglesCompressed left_arm = {};   ///< 左臂角度 (10字节)
-		SArmAnglesCompressed right_arm = {};  ///< 右臂角度 (10字节)
-		int8_t rocker_X = 0;           ///< 摇杆X轴 (-100~100)
-		int8_t rocker_Y = 0;           ///< 摇杆Y轴 (-100~100)
-		uint8_t rocker_Key = 0;        ///< 摇杆按键状态
-		uint8_t toggle_switch = 0;     ///< 拨杆状态
-		uint8_t button = 0;            ///< 按钮状态
-		uint16_t CRC16 = 0x0000;       ///< CRC16校验
+		uint8_t status_flags = 0;           ///< 状态标志位 (bit-packed)
+		SArmAnglesCompressed left_arm;      ///< 左臂5轴角度 (10 bytes)
+		SArmAnglesCompressed right_arm;     ///< 右臂5轴角度 (10 bytes)
+		int8_t rocker_LX = 0;               ///< 左臂roll_end增量 (-100~100)，控制第6轴
+		int8_t rocker_RX = 0;               ///< 右臂roll_end增量 (-100~100)，控制第6轴
+		int8_t rocker_RY = 0;               ///< 底盘前进 (-100~100，仅底盘模式有效)
+		uint16_t CRC16 = 0x0000;            ///< CRC16校验
 	} __packed controllerData_info_pkg = { };
 
 	/**
-	 * @brief 机器人-->控制器数据
-	 * @note  数据段：3 + 10 + 10 = 23字节
+	 * @brief 机器人数据包 (Robot -> Controller)
+	 * 用于同步机器人当前位置到控制器
 	 */
 	struct SRobotDataPkg {
 		SPkgHeader header;
-		bool ask_reset_flag = 0;             ///< 要求复位标志
-		bool controlled_by_controller = 0;   ///< 是否被控制器控制
-		bool ask_return_flag = 0;            ///< 要求归位标志
-		SArmAnglesCompressed left_arm = {};  ///< 左臂角度 (10字节)
-		SArmAnglesCompressed right_arm = {}; ///< 右臂角度 (10字节)
-		uint16_t CRC16 = 0x0000;             ///< CRC16校验
+		uint8_t status_flags = 0;           ///< 状态标志位 (bit-packed)
+		SArmAnglesCompressed left_arm;      ///< 左臂5轴角度 (10 bytes)
+		SArmAnglesCompressed right_arm;     ///< 右臂5轴角度 (10 bytes)
+		int8_t reserved[3] = {0};           ///< 保留字段
+		uint16_t CRC16 = 0x0000;            ///< CRC16校验
 	} __packed robotData_info_pkg = { };
 
 	/*for chose level*/
@@ -136,6 +144,25 @@ public:
 	EAppStatus InitDevice(const SDevInitParam_Base *pStructInitParam) override;
 
 	EAppStatus SendPackage(EPackageID packageID, SPkgHeader &packageHeader);
+
+	/*------------------------------ 角度压缩/解压工具函数 ------------------------------*/
+	/**
+	 * @brief 压缩角度 (float -> int16)
+	 * @param angle 角度值 (单位: 度)
+	 * @return int16_t 压缩后的值 (×100)
+	 */
+	static inline int16_t CompressAngle(float_t angle) {
+		return static_cast<int16_t>(angle * 100.0f);
+	}
+
+	/**
+	 * @brief 解压角度 (int16 -> float)
+	 * @param compressed 压缩后的值 (×100)
+	 * @return float_t 角度值 (单位: 度)
+	 */
+	static inline float_t DecompressAngle(int16_t compressed) {
+		return static_cast<float_t>(compressed) / 100.0f;
+	}
 
 private:
 

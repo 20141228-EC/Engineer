@@ -37,7 +37,7 @@ void StartMonitorTask(void *argument) {
                 "[Left Arm] yaw:%.2f p1:%.2f p2:%.2f roll:%.2f p_end:%.2f\r\n"
                 "[Right Arm] yaw:%.2f p1:%.2f p2:%.2f roll:%.2f p_end:%.2f\r\n"
                 "controlled_by_controller: %d\r\n"
-                "toggle_switch:%d button:0x%02X\r\n",
+                "toggle_switch:%d gripper_L:%d gripper_R:%d\r\n",
                 // 左臂数据
                 SysControllerLink.controllerInfo.left_arm.yaw,
                 SysControllerLink.controllerInfo.left_arm.pitch1,
@@ -52,8 +52,9 @@ void StartMonitorTask(void *argument) {
                 SysControllerLink.controllerInfo.right_arm.pitch_end,
                 // 状态
                 static_cast<int8_t>(SysControllerLink.robotInfo.controlled_by_controller),
-                SysControllerLink.controllerInfo.toggle_switch,
-                SysControllerLink.controllerInfo.button
+                static_cast<int8_t>(SysControllerLink.controllerInfo.toggle_switch),
+                static_cast<int8_t>(SysControllerLink.controllerInfo.gripper_left_close),
+                static_cast<int8_t>(SysControllerLink.controllerInfo.gripper_right_close)
             );
         proc_waitMs(500);
     }

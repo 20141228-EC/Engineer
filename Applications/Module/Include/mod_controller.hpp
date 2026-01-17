@@ -269,10 +269,11 @@ private:
 	} comPitch2_;
 
 	/*----------- Roll轴组件类（MIT模式，DM3510） -----------*/
+	/**
+	 * @note Roll（第4轴）使用电机编码值映射，跟随控制器编码器位置
+	 */
 	class CComRoll: public CComponentBase{
 	public:
-
-		CModController *parent_ = nullptr;  ///< 父模块指针，用于获取摇杆数据
 
 		// 定义Roll轴信息结构体并实例化
 		struct SRollInfo {
@@ -282,7 +283,7 @@ private:
 
 		// 定义Roll轴控制命令结构体并实例化（MIT模式参数）
 		struct SRollCmd {
-			bool isFree = false;	 ///< Roll Free
+			bool isFree = false;	 ///< Roll Free (保留字段，当前未使用)
 			float_t setParam[static_cast<int>(EMotorParam::COUNT_)] = {0};
 		} rollCmd;
 
@@ -291,9 +292,6 @@ private:
 
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
-
-		// 重载初始化函数通过父模块指针获取摇杆数据
-		EAppStatus InitComponent(SModInitParam_Base &param, CModController *parent);
 
 		// 更新组件
 		EAppStatus UpdateComponent() final;

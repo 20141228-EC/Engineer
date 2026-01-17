@@ -35,7 +35,7 @@ EAppStatus CModController::InitModule(SModInitParam_Base &param) {
 	comYaw_.InitComponent(param);
 	comPitch1_.InitComponent(param);
 	comPitch2_.InitComponent(param);
-	comRoll_.InitComponent(param, this);  // 传递父模块指针
+	comRoll_.InitComponent(param);
 	comRocker_.InitComponent(param);
 	comBuzzer_.InitComponent(param);
 
