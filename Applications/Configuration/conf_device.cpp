@@ -45,38 +45,49 @@ EAppStatus InitAllDevice(){
     bmi088_initparam.tempPidParam.maxOutput = 100;
     bmi088.InitDevice(&bmi088_initparam);
 
-    /*four button config*/
+    /*four button config - 4按钮配置（连续索引，下拉输入高电平有效）*/
     static CDevFourButton fourButton;
     CDevFourButton::SDevInitParam_FourButton fourButton_initparam;
     fourButton_initparam.deviceID = EDeviceID::DEV_MULTI_BUTTON;
-    fourButton_initparam.buttons_[0].buttonID = CDevFourButton::EButtonID::RESET_BUTTON;
-    fourButton_initparam.buttons_[0].activeLevel = 1;
-    fourButton_initparam.buttons_[0].halGpioPort = RESET_BUTTON_GPIO_Port;
-    fourButton_initparam.buttons_[0].halGpioPin = RESET_BUTTON_Pin;
-    fourButton_initparam.buttons_[1].buttonID = CDevFourButton::EButtonID::LEVEL_4_BUTTON;
-    fourButton_initparam.buttons_[1].activeLevel = 1;
-    fourButton_initparam.buttons_[1].halGpioPort = LEVEL4_BUTTON_GPIO_Port;
-    fourButton_initparam.buttons_[1].halGpioPin = LEVEL4_BUTTON_Pin;
-    fourButton_initparam.buttons_[2].buttonID = CDevFourButton::EButtonID::LEVEL_3_BUTTON;
-    fourButton_initparam.buttons_[2].activeLevel = 1;
-    fourButton_initparam.buttons_[2].halGpioPort = LEVEL3_BUTTON_GPIO_Port;
-    fourButton_initparam.buttons_[2].halGpioPin = LEVEL3_BUTTON_Pin;
-    fourButton_initparam.buttons_[3].buttonID = CDevFourButton::EButtonID::SELF_BUTTON;
-    fourButton_initparam.buttons_[3].activeLevel = 1;
-    fourButton_initparam.buttons_[3].halGpioPort = SELF_BUTTON_GPIO_Port;
-    fourButton_initparam.buttons_[3].halGpioPin = SELF_BUTTON_Pin;
+    // 槽位0: 拨杆右档 - 底盘模式 (PE13)
+    fourButton_initparam.buttons_[0].buttonID = CDevFourButton::EButtonID::SWITCH_CHASSIS;
+    fourButton_initparam.buttons_[0].activeLevel = 1;  // 高电平有效（下拉输入）
+    fourButton_initparam.buttons_[0].halGpioPort = SWITCH_CHASSIS_GPIO_Port;
+    fourButton_initparam.buttons_[0].halGpioPin = SWITCH_CHASSIS_Pin;
+    // 槽位1: 拨杆左档 - 臂Roll末端模式 (PE9)
+    fourButton_initparam.buttons_[1].buttonID = CDevFourButton::EButtonID::SWITCH_ARM_ROLL_END;
+    fourButton_initparam.buttons_[1].activeLevel = 1;  // 高电平有效（下拉输入）
+    fourButton_initparam.buttons_[1].halGpioPort = SWITCH_ARM_ROLL_END_GPIO_Port;
+    fourButton_initparam.buttons_[1].halGpioPin = SWITCH_ARM_ROLL_END_Pin;
+    // 槽位2: 左手夹爪 (PB8)
+    fourButton_initparam.buttons_[2].buttonID = CDevFourButton::EButtonID::GRIPPER_LEFT;
+    fourButton_initparam.buttons_[2].activeLevel = 1;  // 高电平有效（下拉输入）
+    fourButton_initparam.buttons_[2].halGpioPort = GRIPPER_LEFT_GPIO_Port;
+    fourButton_initparam.buttons_[2].halGpioPin = GRIPPER_LEFT_Pin;
+    // 槽位3: 右手夹爪 (PB9)
+    fourButton_initparam.buttons_[3].buttonID = CDevFourButton::EButtonID::GRIPPER_RIGHT;
+    fourButton_initparam.buttons_[3].activeLevel = 1;  // 高电平有效（下拉输入）
+    fourButton_initparam.buttons_[3].halGpioPort = GRIPPER_RIGHT_GPIO_Port;
+    fourButton_initparam.buttons_[3].halGpioPin = GRIPPER_RIGHT_Pin;
     fourButton.InitDevice(&fourButton_initparam);
 
-    // 摇杆
-    static CDevRocker rocker;
-    CDevRocker::SDevInitParam_Rocker rocker_initparam;
-    rocker_initparam.deviceID = EDeviceID::DEV_ROCKER;
-    rocker_initparam.interfaceID = EInterfaceID::INF_ADC1;
-    rocker_initparam.X_channel = CInfADC::EAdcChannel::CHANNEL_14;
-    rocker_initparam.Y_channel = CInfADC::EAdcChannel::CHANNEL_16;
-    // rocker_initparam.halGpioPort = rocker_KEY_GPIO_Port;
-    // rocker_initparam.halGpioPin = rocker_KEY_Pin;
-    rocker.InitDevice(&rocker_initparam);
+    // 左臂摇杆（单轴模式）- PA0 = CHANNEL_16
+    static CDevRocker rocker_left;
+    CDevRocker::SDevInitParam_Rocker rocker_left_initparam;
+    rocker_left_initparam.deviceID = EDeviceID::DEV_ROCKER_LEFT;
+    rocker_left_initparam.interfaceID = EInterfaceID::INF_ADC1;
+    rocker_left_initparam.X_channel = CInfADC::EAdcChannel::CHANNEL_16;  // PA0
+    rocker_left_initparam.Y_channel = CInfADC::EAdcChannel::CHANNEL_NULL; // 不使用Y轴
+    rocker_left.InitDevice(&rocker_left_initparam);
+
+    // 右臂摇杆（双轴模式）- PA2 = CHANNEL_14, PA5 = CHANNEL_19
+    static CDevRocker rocker_right;
+    CDevRocker::SDevInitParam_Rocker rocker_right_initparam;
+    rocker_right_initparam.deviceID = EDeviceID::DEV_ROCKER_RIGHT;
+    rocker_right_initparam.interfaceID = EInterfaceID::INF_ADC1;
+    rocker_right_initparam.X_channel = CInfADC::EAdcChannel::CHANNEL_14;  // PA2
+    rocker_right_initparam.Y_channel = CInfADC::EAdcChannel::CHANNEL_19;  // PA5
+    rocker_right.InitDevice(&rocker_right_initparam);
 
     // 蜂鸣器
     static CDevBuzzer buzzer;

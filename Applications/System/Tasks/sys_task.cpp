@@ -37,7 +37,7 @@ void StartMonitorTask(void *argument) {
                 "[Left Arm] yaw:%.2f p1:%.2f p2:%.2f roll:%.2f p_end:%.2f\r\n"
                 "[Right Arm] yaw:%.2f p1:%.2f p2:%.2f roll:%.2f p_end:%.2f\r\n"
                 "controlled_by_controller: %d\r\n"
-                "reset:%d level4:%d level3:%d self:%d\r\n",
+                "toggle_switch:%d button:0x%02X\r\n",
                 // 左臂数据
                 SysControllerLink.controllerInfo.left_arm.yaw,
                 SysControllerLink.controllerInfo.left_arm.pitch1,
@@ -52,10 +52,8 @@ void StartMonitorTask(void *argument) {
                 SysControllerLink.controllerInfo.right_arm.pitch_end,
                 // 状态
                 static_cast<int8_t>(SysControllerLink.robotInfo.controlled_by_controller),
-                SysControllerLink.controllerInfo.isReset,
-                SysControllerLink.controllerInfo.isLevel4,
-                SysControllerLink.controllerInfo.isLevel3,
-                SysControllerLink.controllerInfo.isSelf
+                SysControllerLink.controllerInfo.toggle_switch,
+                SysControllerLink.controllerInfo.button
             );
         proc_waitMs(500);
     }

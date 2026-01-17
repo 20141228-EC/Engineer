@@ -162,6 +162,7 @@ void CInfADC::_ADC_HalConvCpltCallback(ADC_HandleTypeDef *hadc){
 	adc_data[0] = Read(EAdcChannel::CHANNEL_4);
 	adc_data[1] = Read(EAdcChannel::CHANNEL_14);
 	adc_data[2] = Read(EAdcChannel::CHANNEL_16);
+	adc_data[3] = Read(EAdcChannel::CHANNEL_19);
 
 	return;
 }

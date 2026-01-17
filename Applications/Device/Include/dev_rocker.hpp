@@ -46,6 +46,9 @@ public:
 
 	EAppStatus InitDevice(const SDevInitParam_Base *pStructInitParam) override;
 
+	/// @brief 检查Y轴是否启用（用于区分单轴/双轴模式）
+	bool IsYEnabled() const { return Y_channel_ != CInfADC::EAdcChannel::CHANNEL_NULL; }
+
 private:
 
 	CInfADC *adcInterface_ = nullptr; ///< ADC设备指针

@@ -111,9 +111,9 @@ public:
 		bool isLevel4 = false; ///< 是否处于四级状态
 		bool isLevel3 = false; ///< 是否处于三级状态
 		bool isSelf = false; ///<
-		// int8_t rocker_X = 0; ///< 摇杆X轴值 -100 - 100
-		// int8_t rocker_Y = 0; ///< 摇杆Y轴值 -100 - 100
-		// KEY_STATUS rocker_Key = KEY_STATUS::RELEASE; ///< 摇杆按键状态
+		int8_t rocker_X = 0; ///< 摇杆X轴值 -100 - 100
+		int8_t rocker_Y = 0; ///< 摇杆Y轴值 -100 - 100
+		KEY_STATUS rocker_Key = KEY_STATUS::RELEASE; ///< 摇杆按键状态
 		float_t posit_yaw = 0; ///< yaw电机位置
 		float_t posit_pitch1 = 0; ///< pitch1电机位置
 		float_t posit_pitch2 = 0; ///< pitch2电机位置
@@ -272,6 +272,8 @@ private:
 	class CComRoll: public CComponentBase{
 	public:
 
+		CModController *parent_ = nullptr;  ///< 父模块指针，用于获取摇杆数据
+
 		// 定义Roll轴信息结构体并实例化
 		struct SRollInfo {
 			float_t posit = 0;    ///< Roll Position (MIT模式使用角度)
@@ -289,6 +291,9 @@ private:
 
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
+
+		// 重载初始化函数通过父模块指针获取摇杆数据
+		EAppStatus InitComponent(SModInitParam_Base &param, CModController *parent);
 
 		// 更新组件
 		EAppStatus UpdateComponent() final;

@@ -49,7 +49,7 @@ void CModController::StartControllerModuleTask(void *argument) {
 
 				proc_waitMs(250); // 等待系统稳定
 
-				// controller.comRocker_.StartComponent();
+				controller.comRocker_.StartComponent();
 				controller.comBuzzer_.StartComponent();
 				controller.comPitch1_.StartComponent();
 				controller.comPitch2_.StartComponent();

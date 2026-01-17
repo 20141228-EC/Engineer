@@ -62,8 +62,8 @@ public:
   uint8_t  button_level : 1;    ///<按键当前电平
   uint8_t  button_id;           ///<按键ID
   uint8_t  (*hal_button_Level)(uint8_t button_id_);     ///<硬件读取函数的指针
-  BtnCallback  cb[number_of_event];
-  struct Button* next;
+  BtnCallback  cb[number_of_event];                     ///<事件回调函数指针数组
+  struct Button* next;                                  ///<单链表指针
   } Button;
 
   void UpdateHandler_() override {}

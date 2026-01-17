@@ -35,8 +35,8 @@ EAppStatus CModController::InitModule(SModInitParam_Base &param) {
 	comYaw_.InitComponent(param);
 	comPitch1_.InitComponent(param);
 	comPitch2_.InitComponent(param);
-	comRoll_.InitComponent(param);
-	// comRocker_.InitComponent(param);
+	comRoll_.InitComponent(param, this);  // 传递父模块指针
+	comRocker_.InitComponent(param);
 	comBuzzer_.InitComponent(param);
 
 
@@ -65,16 +65,16 @@ void CModController::UpdateHandler_() {
 	comPitch1_.UpdateComponent();
 	comPitch2_.UpdateComponent();
 	comYaw_.UpdateComponent();
+	comRocker_.UpdateComponent();  // 先更新摇杆，再更新Roll
 	comRoll_.UpdateComponent();
 	comPitchEnd_.UpdateComponent();
-	// comRocker_.UpdateComponent();
 	comBuzzer_.UpdateComponent();
 
 
 	// 更新模块信息
-	// ControllerInfo.rocker_X = -static_cast<int8_t>(comRocker_.rockerInfo.X / (CONTROLLER_ROCKER_RANGE / 2.0f) * 100.0f);
-	// ControllerInfo.rocker_Y = -static_cast<int8_t>(comRocker_.rockerInfo.Y / (CONTROLLER_ROCKER_RANGE / 2.0f) * 100.0f);
-	// ControllerInfo.rocker_Key = comRocker_.rockerInfo.Key_status;
+	ControllerInfo.rocker_X = -static_cast<int8_t>(comRocker_.rockerInfo.X / (CONTROLLER_ROCKER_RANGE / 2.0f) * 100.0f);
+	ControllerInfo.rocker_Y = -static_cast<int8_t>(comRocker_.rockerInfo.Y / (CONTROLLER_ROCKER_RANGE / 2.0f) * 100.0f);
+	ControllerInfo.rocker_Key = comRocker_.rockerInfo.Key_status;
 	ControllerInfo.posit_yaw = CModController::CComYaw::MtrPositToPhyPosit(comYaw_.yawInfo.posit);
 	ControllerInfo.posit_pitch1 = comPitch1_.pitch1Info.posit;
 	ControllerInfo.posit_pitch2 = comPitch2_.pitch2Info.posit;

@@ -67,12 +67,8 @@ public:
 		int8_t Rocker_X = 0;           ///< 摇杆X轴 (-100~100)
 		int8_t Rocker_Y = 0;           ///< 摇杆Y轴 (-100~100)
 		KEY_STATUS Rocker_Key = KEY_STATUS::RELEASE; ///< 摇杆按键状态
-		uint8_t toggle_switch = 0;     ///< 拨杆状态
-		uint8_t button = 0;            ///< 按钮状态
-		bool isReset = false; ///< 是否复位
-		bool isLevel4 = false; ///< 是否启用四级难度
-		bool isLevel3 = false; ///< 是否启用三级难度
-		bool isSelf = false; ///< 是否启用自定义按键
+		uint8_t toggle_switch = 0;     ///< 拨杆状态 (0=中档, 1=臂Roll末端模式, 2=底盘模式)
+		uint8_t button = 0;            ///< 按钮状态 (bit0=左手夹爪, bit1=右手夹爪)
 		SArmAngles left_arm;   ///< 左臂角度
 		SArmAngles right_arm;  ///< 右臂角度
 	} controllerInfo;

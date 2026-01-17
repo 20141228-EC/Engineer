@@ -23,7 +23,7 @@ EAppStatus InitAllModule() {
     // CAN分配：CAN1=双臂DJI(Yaw), CAN2=左臂MIT(Pitch1/2+Roll+PitchEnd)
     CModController::SModInitParam_Controller leftInitParam;
     leftInitParam.moduleID = EModuleID::MOD_CONTROLLER_LEFT;
-    leftInitParam.rocker_id = EDeviceID::DEV_ROCKER;
+    leftInitParam.rocker_id = EDeviceID::DEV_ROCKER_LEFT;  // 左臂摇杆（单轴）
     leftInitParam.buzzer_id = EDeviceID::DEV_BUZZER;
     // 左臂电机设备ID
     leftInitParam.yaw_id = EDeviceID::DEV_MTR_YAW_L;
@@ -55,8 +55,8 @@ EAppStatus InitAllModule() {
     // CAN分配：CAN1=双臂DJI(Yaw), CAN3=右臂MIT(Pitch1/2+Roll+PitchEnd)
     CModController::SModInitParam_Controller rightInitParam;
     rightInitParam.moduleID = EModuleID::MOD_CONTROLLER_RIGHT;
-    rightInitParam.rocker_id = EDeviceID::DEV_ROCKER;     // 共享摇杆
-    rightInitParam.buzzer_id = EDeviceID::DEV_BUZZER;     // 共享蜂鸣器
+    rightInitParam.rocker_id = EDeviceID::DEV_ROCKER_RIGHT;  // 右臂摇杆（双轴）
+    rightInitParam.buzzer_id = EDeviceID::DEV_BUZZER;
     // 右臂电机设备ID
     rightInitParam.yaw_id = EDeviceID::DEV_MTR_YAW_R;
     rightInitParam.pitch1_id = EDeviceID::DEV_MTR_PITCH1_R;

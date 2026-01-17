@@ -11,6 +11,7 @@
  ******************************************************************************/
 
 #include "sys_controller_link.hpp"
+#include "mod_controller.hpp"  // 用于获取模块层摇杆数据
 
 namespace my_engineer {
 
@@ -205,11 +206,36 @@ void CSystemControllerLink::HeartbeatHandler_() {
 
 void CSystemControllerLink::UpdateButtonInfo_() {
 	if (systemStatus != APP_OK) return;
-	controllerInfo.isReset = pbuttons_->isReset;
-	controllerInfo.isLevel4 = pbuttons_->isLevel4;
-	controllerInfo.isLevel3 = pbuttons_->isLevel3;
-	controllerInfo.isSelf = pbuttons_->isSelf;
 
+	// 从模块层获取摇杆数据（使用右臂模块，因为是双轴摇杆）
+	auto it = ModuleIDMap.find(EModuleID::MOD_CONTROLLER_RIGHT);
+	if (it != ModuleIDMap.end()) {
+		auto *pController = static_cast<CModController*>(it->second);
+		if (pController != nullptr) {
+			controllerInfo.Rocker_X = pController->ControllerInfo.rocker_X;
+			controllerInfo.Rocker_Y = pController->ControllerInfo.rocker_Y;
+			controllerInfo.Rocker_Key = static_cast<KEY_STATUS>(pController->ControllerInfo.rocker_Key);
+		}
+	}
+
+	// 3档拨杆状态 (0=中档, 1=臂Roll末端模式, 2=底盘模式)
+	if (CDevFourButton::isSwitchArmRollEnd) {
+		controllerInfo.toggle_switch = 1;  // 左档 - 臂Roll末端模式
+	} else if (CDevFourButton::isSwitchChassis) {
+		controllerInfo.toggle_switch = 2;  // 右档 - 底盘模式
+	} else {
+		controllerInfo.toggle_switch = 0;  // 中档
+	}
+
+	// 双夹爪按钮状态 (bit0=左手闭合, bit1=右手闭合)
+	// 使用持久闭合状态（长按闭合/双击张开），而非临时按下状态
+	controllerInfo.button = 0;
+	if (CDevFourButton::isGripperLeftClose) {
+		controllerInfo.button |= 0x01;  // bit0 = 左手夹爪闭合
+	}
+	if (CDevFourButton::isGripperRightClose) {
+		controllerInfo.button |= 0x02;  // bit1 = 右手夹爪闭合
+	}
 }
 
 

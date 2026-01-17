@@ -56,7 +56,8 @@ enum class EDeviceID{
     DEV_RP_VISION,          ///< RoboPilots视觉系统设备
     DEV_BOARD_LINK,         ///< 板间通信设备
     DEV_CONTROLLER_LINK,    ///< 控制器通信设备
-    DEV_ROCKER,             ///< 摇杆设备
+    DEV_ROCKER_LEFT,        ///< 左臂摇杆设备（单轴）
+    DEV_ROCKER_RIGHT,       ///< 右臂摇杆设备（双轴）
     DEV_BUZZER,             ///< 蜂鸣器设备
     DEV_LASER_L,            ///< 激光雷达左
     DEV_LASER_R,            ///< 激光雷达右
