@@ -3,7 +3,7 @@
 <title>Static Call Graph - [DM-MC02\DM-MC02.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image DM-MC02\DM-MC02.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Sun Jan 18 17:28:50 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6240002: Last Updated: Sun Jan 18 20:50:53 2026
 <BR><P>
 <H3>Maximum Stack Usage =       1700 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -6115,7 +6115,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> com_rocker.o(.rodata._ZTVN11my_engineer14CModController10CComRockerE)
 </UL>
-<P><STRONG><a name="[11c]"></a>my_engineer::CModController::CComRocker::UpdateComponent()</STRONG> (Thumb, 276 bytes, Stack size 48 bytes, com_rocker.o(.text._ZN11my_engineer14CModController10CComRocker15UpdateComponentEv))
+<P><STRONG><a name="[11c]"></a>my_engineer::CModController::CComRocker::UpdateComponent()</STRONG> (Thumb, 272 bytes, Stack size 48 bytes, com_rocker.o(.text._ZN11my_engineer14CModController10CComRocker15UpdateComponentEv))
 <BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = my_engineer::CModController::CComRocker::UpdateComponent() &rArr; my_engineer::CDevRocker::IsYEnabled() const
 </UL>
 <BR>[Calls]<UL><LI><a href="#[219]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
@@ -6286,7 +6286,7 @@ Global Symbols
 <LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_engineer::CModController::StartControllerModuleTask(void*)
 </UL>
 
-<P><STRONG><a name="[129]"></a>my_engineer::CModController::UpdateHandler_()</STRONG> (Thumb, 244 bytes, Stack size 32 bytes, mod_controller.o(.text._ZN11my_engineer14CModController14UpdateHandler_Ev))
+<P><STRONG><a name="[129]"></a>my_engineer::CModController::UpdateHandler_()</STRONG> (Thumb, 248 bytes, Stack size 32 bytes, mod_controller.o(.text._ZN11my_engineer14CModController14UpdateHandler_Ev))
 <BR><BR>[Stack]<UL><LI>Max Depth = 728 + Unknown Stack Size
 <LI>Call Chain = my_engineer::CModController::UpdateHandler_() &rArr; my_engineer::CModController::CComYaw::UpdateComponent() &rArr; my_engineer::CModController::CComYaw::_UpdateOutput(float) &rArr; my_engineer::CAlgoPid::UpdatePidController(std::__2::vector&lang;float, std::__2::allocator&lang;float&rang;&rang; const&, std::__2::vector&lang;float, std::__2::allocator&lang;float&rang;&rang; const&) &rArr; my_engineer::CAlgoPid::CalcError_(std::__2::vector&lang;float, std::__2::allocator&lang;float&rang;&rang; const&, std::__2::vector&lang;float, std::__2::allocator&lang;float&rang;&rang; const&) &rArr; std::__2::vector&lang;float, std::__2::allocator&lang;float&rang;&rang;::vector__sub_object[abi:nn200000](unsigned int, float const&) &rArr; std::__2::vector&lang;float, std::__2::allocator&lang;float&rang;&rang;::__vallocate[abi:nn200000](unsigned int) &rArr; std::__2::__allocation_result&lang;std::__2::allocator_traits&lang;std::__2::allocator&lang;float&rang;&rang;::pointer&rang; std::__2::__allocate_at_least[abi:nn200000]&lang;std::__2::allocator&lang;float&rang;&rang;(std::__2::allocator&lang;float&rang;&, unsigned int) &rArr; std::__2::allocator&lang;float&rang;::allocate[abi:nn200000](unsigned int) &rArr; std::__2::__libcpp_allocate[abi:nn200000](unsigned int, unsigned int) &rArr; void* std::__2::__libcpp_operator_new[abi:nn200000]&lang;unsigned int&rang;(unsigned int) &rArr; operator new(unsigned int) &rArr; std::__throw_bad_alloc() &rArr; std::__2::__libcpp_verbose_abort(char const*, ...) &rArr; vfprintf &rArr; _printf_char_file &rArr; _printf_char_common &rArr; __printf
 </UL>

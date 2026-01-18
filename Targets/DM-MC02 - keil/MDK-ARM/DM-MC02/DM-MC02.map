@@ -22641,24 +22641,24 @@ Image Symbol Table
     [Anonymous Symbol]                       0x0801e6a0   Section        0  conf_module.o(.text._ZN11my_engineer14CModController10CComRocker11SRockerInfoC2Ev)
     [Anonymous Symbol]                       0x0801e6b8   Section        0  com_rocker.o(.text._ZN11my_engineer14CModController10CComRocker13InitComponentERNS_8CModBase18SModInitParam_BaseE)
     [Anonymous Symbol]                       0x0801e710   Section        0  com_rocker.o(.text._ZN11my_engineer14CModController10CComRocker15UpdateComponentEv)
-    [Anonymous Symbol]                       0x0801e828   Section        0  proc_controller.o(.text._ZN11my_engineer14CModController10CComRockerC2ERKS1_)
-    [Anonymous Symbol]                       0x0801e870   Section        0  conf_module.o(.text._ZN11my_engineer14CModController10CComRockerC2Ev)
-    [Anonymous Symbol]                       0x0801e8a8   Section        0  com_rocker.o(.text._ZN11my_engineer14CModController10CComRockerD0Ev)
-    [Anonymous Symbol]                       0x0801e8c8   Section        0  conf_module.o(.text._ZN11my_engineer14CModController10CComRockerD2Ev)
-    [Anonymous Symbol]                       0x0801e8e0   Section        0  mod_controller.o(.text._ZN11my_engineer14CModController10InitModuleERNS_8CModBase18SModInitParam_BaseE)
-    [Anonymous Symbol]                       0x0801e990   Section        0  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEnd12SPitchEndCmdC2Ev)
-    [Anonymous Symbol]                       0x0801e9c8   Section        0  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd13InitComponentERNS_8CModBase18SModInitParam_BaseE)
-    [Anonymous Symbol]                       0x0801ea50   Section        0  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEnd13SPitchEndInfoC2Ev)
-    [Anonymous Symbol]                       0x0801ea60   Section        0  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd13_UpdateOutputEPf)
-    [Anonymous Symbol]                       0x0801eac8   Section        0  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd15UpdateComponentEv)
-    [Anonymous Symbol]                       0x0801ecc0   Section        0  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd27MotortruePositToOffsetPositEf)
-    [Anonymous Symbol]                       0x0801ecf8   Section        0  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd27OffsetPositToMotortruePositEf)
-    [Anonymous Symbol]                       0x0801ed30   Section        0  proc_controller.o(.text._ZN11my_engineer14CModController12CComPitchEndC2ERKS1_)
-    [Anonymous Symbol]                       0x0801ed98   Section        0  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEndC2Ev)
-    [Anonymous Symbol]                       0x0801edd0   Section        0  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEndD0Ev)
-    [Anonymous Symbol]                       0x0801edf0   Section        0  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEndD2Ev)
-    [Anonymous Symbol]                       0x0801ee08   Section        0  mod_controller.o(.text._ZN11my_engineer14CModController14SControllerCmdC2Ev)
-    [Anonymous Symbol]                       0x0801ee28   Section        0  mod_controller.o(.text._ZN11my_engineer14CModController14UpdateHandler_Ev)
+    [Anonymous Symbol]                       0x0801e820   Section        0  proc_controller.o(.text._ZN11my_engineer14CModController10CComRockerC2ERKS1_)
+    [Anonymous Symbol]                       0x0801e868   Section        0  conf_module.o(.text._ZN11my_engineer14CModController10CComRockerC2Ev)
+    [Anonymous Symbol]                       0x0801e8a0   Section        0  com_rocker.o(.text._ZN11my_engineer14CModController10CComRockerD0Ev)
+    [Anonymous Symbol]                       0x0801e8c0   Section        0  conf_module.o(.text._ZN11my_engineer14CModController10CComRockerD2Ev)
+    [Anonymous Symbol]                       0x0801e8d8   Section        0  mod_controller.o(.text._ZN11my_engineer14CModController10InitModuleERNS_8CModBase18SModInitParam_BaseE)
+    [Anonymous Symbol]                       0x0801e988   Section        0  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEnd12SPitchEndCmdC2Ev)
+    [Anonymous Symbol]                       0x0801e9c0   Section        0  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd13InitComponentERNS_8CModBase18SModInitParam_BaseE)
+    [Anonymous Symbol]                       0x0801ea48   Section        0  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEnd13SPitchEndInfoC2Ev)
+    [Anonymous Symbol]                       0x0801ea58   Section        0  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd13_UpdateOutputEPf)
+    [Anonymous Symbol]                       0x0801eac0   Section        0  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd15UpdateComponentEv)
+    [Anonymous Symbol]                       0x0801ecb8   Section        0  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd27MotortruePositToOffsetPositEf)
+    [Anonymous Symbol]                       0x0801ecf0   Section        0  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd27OffsetPositToMotortruePositEf)
+    [Anonymous Symbol]                       0x0801ed28   Section        0  proc_controller.o(.text._ZN11my_engineer14CModController12CComPitchEndC2ERKS1_)
+    [Anonymous Symbol]                       0x0801ed90   Section        0  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEndC2Ev)
+    [Anonymous Symbol]                       0x0801edc8   Section        0  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEndD0Ev)
+    [Anonymous Symbol]                       0x0801ede8   Section        0  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEndD2Ev)
+    [Anonymous Symbol]                       0x0801ee00   Section        0  mod_controller.o(.text._ZN11my_engineer14CModController14SControllerCmdC2Ev)
+    [Anonymous Symbol]                       0x0801ee20   Section        0  mod_controller.o(.text._ZN11my_engineer14CModController14UpdateHandler_Ev)
     [Anonymous Symbol]                       0x0801ef28   Section        0  mod_controller.o(.text._ZN11my_engineer14CModController17CreateModuleTask_Ev)
     [Anonymous Symbol]                       0x0801ef70   Section        0  mod_controller.o(.text._ZN11my_engineer14CModController17HeartbeatHandler_Ev)
     [Anonymous Symbol]                       0x0801ef78   Section        0  conf_module.o(.text._ZN11my_engineer14CModController24SModInitParam_ControllerC2Ev)
@@ -26525,25 +26525,25 @@ Image Symbol Table
     my_engineer::CModController::CComPitch2::~CComPitch2__sub_object() 0x0801e689   Thumb Code    20  conf_module.o(.text._ZN11my_engineer14CModController10CComPitch2D2Ev)
     my_engineer::CModController::CComRocker::SRockerInfo::SRockerInfo__sub_object() 0x0801e6a1   Thumb Code    18  conf_module.o(.text._ZN11my_engineer14CModController10CComRocker11SRockerInfoC2Ev)
     my_engineer::CModController::CComRocker::InitComponent(my_engineer::CModBase::SModInitParam_Base&) 0x0801e6b9   Thumb Code    86  com_rocker.o(.text._ZN11my_engineer14CModController10CComRocker13InitComponentERNS_8CModBase18SModInitParam_BaseE)
-    my_engineer::CModController::CComRocker::UpdateComponent() 0x0801e711   Thumb Code   276  com_rocker.o(.text._ZN11my_engineer14CModController10CComRocker15UpdateComponentEv)
-    my_engineer::CModController::CComRocker::CComRocker__sub_object(my_engineer::CModController::CComRocker const&) 0x0801e829   Thumb Code    70  proc_controller.o(.text._ZN11my_engineer14CModController10CComRockerC2ERKS1_)
-    my_engineer::CModController::CComRocker::CComRocker__sub_object() 0x0801e871   Thumb Code    52  conf_module.o(.text._ZN11my_engineer14CModController10CComRockerC2Ev)
-    my_engineer::CModController::CComRocker::~CComRocker__deallocating() 0x0801e8a9   Thumb Code    26  com_rocker.o(.text._ZN11my_engineer14CModController10CComRockerD0Ev)
-    my_engineer::CModController::CComRocker::~CComRocker__sub_object() 0x0801e8c9   Thumb Code    20  conf_module.o(.text._ZN11my_engineer14CModController10CComRockerD2Ev)
-    my_engineer::CModController::InitModule(my_engineer::CModBase::SModInitParam_Base&) 0x0801e8e1   Thumb Code   170  mod_controller.o(.text._ZN11my_engineer14CModController10InitModuleERNS_8CModBase18SModInitParam_BaseE)
-    my_engineer::CModController::CComPitchEnd::SPitchEndCmd::SPitchEndCmd__sub_object() 0x0801e991   Thumb Code    52  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEnd12SPitchEndCmdC2Ev)
-    my_engineer::CModController::CComPitchEnd::InitComponent(my_engineer::CModBase::SModInitParam_Base&) 0x0801e9c9   Thumb Code   130  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd13InitComponentERNS_8CModBase18SModInitParam_BaseE)
-    my_engineer::CModController::CComPitchEnd::SPitchEndInfo::SPitchEndInfo__sub_object() 0x0801ea51   Thumb Code    16  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEnd13SPitchEndInfoC2Ev)
-    my_engineer::CModController::CComPitchEnd::_UpdateOutput(float*) 0x0801ea61   Thumb Code   104  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd13_UpdateOutputEPf)
-    my_engineer::CModController::CComPitchEnd::UpdateComponent() 0x0801eac9   Thumb Code   492  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd15UpdateComponentEv)
-    my_engineer::CModController::CComPitchEnd::MotortruePositToOffsetPosit(float) 0x0801ecc1   Thumb Code    44  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd27MotortruePositToOffsetPositEf)
-    my_engineer::CModController::CComPitchEnd::OffsetPositToMotortruePosit(float) 0x0801ecf9   Thumb Code    48  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd27OffsetPositToMotortruePositEf)
-    my_engineer::CModController::CComPitchEnd::CComPitchEnd__sub_object(my_engineer::CModController::CComPitchEnd const&) 0x0801ed31   Thumb Code   104  proc_controller.o(.text._ZN11my_engineer14CModController12CComPitchEndC2ERKS1_)
-    my_engineer::CModController::CComPitchEnd::CComPitchEnd__sub_object() 0x0801ed99   Thumb Code    52  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEndC2Ev)
-    my_engineer::CModController::CComPitchEnd::~CComPitchEnd__deallocating() 0x0801edd1   Thumb Code    26  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEndD0Ev)
-    my_engineer::CModController::CComPitchEnd::~CComPitchEnd__sub_object() 0x0801edf1   Thumb Code    20  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEndD2Ev)
-    my_engineer::CModController::SControllerCmd::SControllerCmd__sub_object() 0x0801ee09   Thumb Code    26  mod_controller.o(.text._ZN11my_engineer14CModController14SControllerCmdC2Ev)
-    my_engineer::CModController::UpdateHandler_() 0x0801ee29   Thumb Code   244  mod_controller.o(.text._ZN11my_engineer14CModController14UpdateHandler_Ev)
+    my_engineer::CModController::CComRocker::UpdateComponent() 0x0801e711   Thumb Code   272  com_rocker.o(.text._ZN11my_engineer14CModController10CComRocker15UpdateComponentEv)
+    my_engineer::CModController::CComRocker::CComRocker__sub_object(my_engineer::CModController::CComRocker const&) 0x0801e821   Thumb Code    70  proc_controller.o(.text._ZN11my_engineer14CModController10CComRockerC2ERKS1_)
+    my_engineer::CModController::CComRocker::CComRocker__sub_object() 0x0801e869   Thumb Code    52  conf_module.o(.text._ZN11my_engineer14CModController10CComRockerC2Ev)
+    my_engineer::CModController::CComRocker::~CComRocker__deallocating() 0x0801e8a1   Thumb Code    26  com_rocker.o(.text._ZN11my_engineer14CModController10CComRockerD0Ev)
+    my_engineer::CModController::CComRocker::~CComRocker__sub_object() 0x0801e8c1   Thumb Code    20  conf_module.o(.text._ZN11my_engineer14CModController10CComRockerD2Ev)
+    my_engineer::CModController::InitModule(my_engineer::CModBase::SModInitParam_Base&) 0x0801e8d9   Thumb Code   170  mod_controller.o(.text._ZN11my_engineer14CModController10InitModuleERNS_8CModBase18SModInitParam_BaseE)
+    my_engineer::CModController::CComPitchEnd::SPitchEndCmd::SPitchEndCmd__sub_object() 0x0801e989   Thumb Code    52  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEnd12SPitchEndCmdC2Ev)
+    my_engineer::CModController::CComPitchEnd::InitComponent(my_engineer::CModBase::SModInitParam_Base&) 0x0801e9c1   Thumb Code   130  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd13InitComponentERNS_8CModBase18SModInitParam_BaseE)
+    my_engineer::CModController::CComPitchEnd::SPitchEndInfo::SPitchEndInfo__sub_object() 0x0801ea49   Thumb Code    16  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEnd13SPitchEndInfoC2Ev)
+    my_engineer::CModController::CComPitchEnd::_UpdateOutput(float*) 0x0801ea59   Thumb Code   104  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd13_UpdateOutputEPf)
+    my_engineer::CModController::CComPitchEnd::UpdateComponent() 0x0801eac1   Thumb Code   492  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd15UpdateComponentEv)
+    my_engineer::CModController::CComPitchEnd::MotortruePositToOffsetPosit(float) 0x0801ecb9   Thumb Code    44  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd27MotortruePositToOffsetPositEf)
+    my_engineer::CModController::CComPitchEnd::OffsetPositToMotortruePosit(float) 0x0801ecf1   Thumb Code    48  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEnd27OffsetPositToMotortruePositEf)
+    my_engineer::CModController::CComPitchEnd::CComPitchEnd__sub_object(my_engineer::CModController::CComPitchEnd const&) 0x0801ed29   Thumb Code   104  proc_controller.o(.text._ZN11my_engineer14CModController12CComPitchEndC2ERKS1_)
+    my_engineer::CModController::CComPitchEnd::CComPitchEnd__sub_object() 0x0801ed91   Thumb Code    52  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEndC2Ev)
+    my_engineer::CModController::CComPitchEnd::~CComPitchEnd__deallocating() 0x0801edc9   Thumb Code    26  com_pitch_end.o(.text._ZN11my_engineer14CModController12CComPitchEndD0Ev)
+    my_engineer::CModController::CComPitchEnd::~CComPitchEnd__sub_object() 0x0801ede9   Thumb Code    20  conf_module.o(.text._ZN11my_engineer14CModController12CComPitchEndD2Ev)
+    my_engineer::CModController::SControllerCmd::SControllerCmd__sub_object() 0x0801ee01   Thumb Code    26  mod_controller.o(.text._ZN11my_engineer14CModController14SControllerCmdC2Ev)
+    my_engineer::CModController::UpdateHandler_() 0x0801ee21   Thumb Code   248  mod_controller.o(.text._ZN11my_engineer14CModController14UpdateHandler_Ev)
     my_engineer::CModController::CreateModuleTask_() 0x0801ef29   Thumb Code    70  mod_controller.o(.text._ZN11my_engineer14CModController17CreateModuleTask_Ev)
     my_engineer::CModController::HeartbeatHandler_() 0x0801ef71   Thumb Code     8  mod_controller.o(.text._ZN11my_engineer14CModController17HeartbeatHandler_Ev)
     my_engineer::CModController::SModInitParam_Controller::SModInitParam_Controller__sub_object() 0x0801ef79   Thumb Code    56  conf_module.o(.text._ZN11my_engineer14CModController24SModInitParam_ControllerC2Ev)
@@ -30341,39 +30341,38 @@ Memory Map of the image
     0x0801e6b2   0x0801e6b2   0x00000006   PAD
     0x0801e6b8   0x0801e6b8   0x00000056   Code   RO         1685    .text._ZN11my_engineer14CModController10CComRocker13InitComponentERNS_8CModBase18SModInitParam_BaseE  com_rocker.o
     0x0801e70e   0x0801e70e   0x00000002   PAD
-    0x0801e710   0x0801e710   0x00000114   Code   RO         1687    .text._ZN11my_engineer14CModController10CComRocker15UpdateComponentEv  com_rocker.o
-    0x0801e824   0x0801e824   0x00000004   PAD
-    0x0801e828   0x0801e828   0x00000046   Code   RO         2030    .text._ZN11my_engineer14CModController10CComRockerC2ERKS1_  proc_controller.o
-    0x0801e86e   0x0801e86e   0x00000002   PAD
-    0x0801e870   0x0801e870   0x00000034   Code   RO          754    .text._ZN11my_engineer14CModController10CComRockerC2Ev  conf_module.o
-    0x0801e8a4   0x0801e8a4   0x00000004   PAD
-    0x0801e8a8   0x0801e8a8   0x0000001a   Code   RO         1699    .text._ZN11my_engineer14CModController10CComRockerD0Ev  com_rocker.o
-    0x0801e8c2   0x0801e8c2   0x00000006   PAD
-    0x0801e8c8   0x0801e8c8   0x00000014   Code   RO          788    .text._ZN11my_engineer14CModController10CComRockerD2Ev  conf_module.o
-    0x0801e8dc   0x0801e8dc   0x00000004   PAD
-    0x0801e8e0   0x0801e8e0   0x000000aa   Code   RO         1974    .text._ZN11my_engineer14CModController10InitModuleERNS_8CModBase18SModInitParam_BaseE  mod_controller.o
-    0x0801e98a   0x0801e98a   0x00000006   PAD
-    0x0801e990   0x0801e990   0x00000034   Code   RO          778    .text._ZN11my_engineer14CModController12CComPitchEnd12SPitchEndCmdC2Ev  conf_module.o
-    0x0801e9c4   0x0801e9c4   0x00000004   PAD
-    0x0801e9c8   0x0801e9c8   0x00000082   Code   RO         2171    .text._ZN11my_engineer14CModController12CComPitchEnd13InitComponentERNS_8CModBase18SModInitParam_BaseE  com_pitch_end.o
-    0x0801ea4a   0x0801ea4a   0x00000006   PAD
-    0x0801ea50   0x0801ea50   0x00000010   Code   RO          776    .text._ZN11my_engineer14CModController12CComPitchEnd13SPitchEndInfoC2Ev  conf_module.o
-    0x0801ea60   0x0801ea60   0x00000068   Code   RO         2177    .text._ZN11my_engineer14CModController12CComPitchEnd13_UpdateOutputEPf  com_pitch_end.o
-    0x0801eac8   0x0801eac8   0x000001f4   Code   RO         2173    .text._ZN11my_engineer14CModController12CComPitchEnd15UpdateComponentEv  com_pitch_end.o
-    0x0801ecbc   0x0801ecbc   0x00000004   PAD
-    0x0801ecc0   0x0801ecc0   0x00000034   Code   RO         2175    .text._ZN11my_engineer14CModController12CComPitchEnd27MotortruePositToOffsetPositEf  com_pitch_end.o
-    0x0801ecf4   0x0801ecf4   0x00000004   PAD
-    0x0801ecf8   0x0801ecf8   0x00000038   Code   RO         2179    .text._ZN11my_engineer14CModController12CComPitchEnd27OffsetPositToMotortruePositEf  com_pitch_end.o
-    0x0801ed30   0x0801ed30   0x00000068   Code   RO         2028    .text._ZN11my_engineer14CModController12CComPitchEndC2ERKS1_  proc_controller.o
-    0x0801ed98   0x0801ed98   0x00000034   Code   RO          752    .text._ZN11my_engineer14CModController12CComPitchEndC2Ev  conf_module.o
-    0x0801edcc   0x0801edcc   0x00000004   PAD
-    0x0801edd0   0x0801edd0   0x0000001a   Code   RO         2189    .text._ZN11my_engineer14CModController12CComPitchEndD0Ev  com_pitch_end.o
-    0x0801edea   0x0801edea   0x00000006   PAD
-    0x0801edf0   0x0801edf0   0x00000014   Code   RO          790    .text._ZN11my_engineer14CModController12CComPitchEndD2Ev  conf_module.o
-    0x0801ee04   0x0801ee04   0x00000004   PAD
-    0x0801ee08   0x0801ee08   0x0000001a   Code   RO         1995    .text._ZN11my_engineer14CModController14SControllerCmdC2Ev  mod_controller.o
-    0x0801ee22   0x0801ee22   0x00000006   PAD
-    0x0801ee28   0x0801ee28   0x000000fc   Code   RO         1978    .text._ZN11my_engineer14CModController14UpdateHandler_Ev  mod_controller.o
+    0x0801e710   0x0801e710   0x00000110   Code   RO         1687    .text._ZN11my_engineer14CModController10CComRocker15UpdateComponentEv  com_rocker.o
+    0x0801e820   0x0801e820   0x00000046   Code   RO         2030    .text._ZN11my_engineer14CModController10CComRockerC2ERKS1_  proc_controller.o
+    0x0801e866   0x0801e866   0x00000002   PAD
+    0x0801e868   0x0801e868   0x00000034   Code   RO          754    .text._ZN11my_engineer14CModController10CComRockerC2Ev  conf_module.o
+    0x0801e89c   0x0801e89c   0x00000004   PAD
+    0x0801e8a0   0x0801e8a0   0x0000001a   Code   RO         1699    .text._ZN11my_engineer14CModController10CComRockerD0Ev  com_rocker.o
+    0x0801e8ba   0x0801e8ba   0x00000006   PAD
+    0x0801e8c0   0x0801e8c0   0x00000014   Code   RO          788    .text._ZN11my_engineer14CModController10CComRockerD2Ev  conf_module.o
+    0x0801e8d4   0x0801e8d4   0x00000004   PAD
+    0x0801e8d8   0x0801e8d8   0x000000aa   Code   RO         1974    .text._ZN11my_engineer14CModController10InitModuleERNS_8CModBase18SModInitParam_BaseE  mod_controller.o
+    0x0801e982   0x0801e982   0x00000006   PAD
+    0x0801e988   0x0801e988   0x00000034   Code   RO          778    .text._ZN11my_engineer14CModController12CComPitchEnd12SPitchEndCmdC2Ev  conf_module.o
+    0x0801e9bc   0x0801e9bc   0x00000004   PAD
+    0x0801e9c0   0x0801e9c0   0x00000082   Code   RO         2171    .text._ZN11my_engineer14CModController12CComPitchEnd13InitComponentERNS_8CModBase18SModInitParam_BaseE  com_pitch_end.o
+    0x0801ea42   0x0801ea42   0x00000006   PAD
+    0x0801ea48   0x0801ea48   0x00000010   Code   RO          776    .text._ZN11my_engineer14CModController12CComPitchEnd13SPitchEndInfoC2Ev  conf_module.o
+    0x0801ea58   0x0801ea58   0x00000068   Code   RO         2177    .text._ZN11my_engineer14CModController12CComPitchEnd13_UpdateOutputEPf  com_pitch_end.o
+    0x0801eac0   0x0801eac0   0x000001f4   Code   RO         2173    .text._ZN11my_engineer14CModController12CComPitchEnd15UpdateComponentEv  com_pitch_end.o
+    0x0801ecb4   0x0801ecb4   0x00000004   PAD
+    0x0801ecb8   0x0801ecb8   0x00000034   Code   RO         2175    .text._ZN11my_engineer14CModController12CComPitchEnd27MotortruePositToOffsetPositEf  com_pitch_end.o
+    0x0801ecec   0x0801ecec   0x00000004   PAD
+    0x0801ecf0   0x0801ecf0   0x00000038   Code   RO         2179    .text._ZN11my_engineer14CModController12CComPitchEnd27OffsetPositToMotortruePositEf  com_pitch_end.o
+    0x0801ed28   0x0801ed28   0x00000068   Code   RO         2028    .text._ZN11my_engineer14CModController12CComPitchEndC2ERKS1_  proc_controller.o
+    0x0801ed90   0x0801ed90   0x00000034   Code   RO          752    .text._ZN11my_engineer14CModController12CComPitchEndC2Ev  conf_module.o
+    0x0801edc4   0x0801edc4   0x00000004   PAD
+    0x0801edc8   0x0801edc8   0x0000001a   Code   RO         2189    .text._ZN11my_engineer14CModController12CComPitchEndD0Ev  com_pitch_end.o
+    0x0801ede2   0x0801ede2   0x00000006   PAD
+    0x0801ede8   0x0801ede8   0x00000014   Code   RO          790    .text._ZN11my_engineer14CModController12CComPitchEndD2Ev  conf_module.o
+    0x0801edfc   0x0801edfc   0x00000004   PAD
+    0x0801ee00   0x0801ee00   0x0000001a   Code   RO         1995    .text._ZN11my_engineer14CModController14SControllerCmdC2Ev  mod_controller.o
+    0x0801ee1a   0x0801ee1a   0x00000006   PAD
+    0x0801ee20   0x0801ee20   0x00000104   Code   RO         1978    .text._ZN11my_engineer14CModController14UpdateHandler_Ev  mod_controller.o
     0x0801ef24   0x0801ef24   0x00000004   PAD
     0x0801ef28   0x0801ef28   0x00000046   Code   RO         1976    .text._ZN11my_engineer14CModController17CreateModuleTask_Ev  mod_controller.o
     0x0801ef6e   0x0801ef6e   0x00000002   PAD
@@ -35199,9 +35198,9 @@ Image component sizes
       2228         12          0          0          0      85690   algo_pid.o
        216          0         36          0          0      51204   com_buzzer.o
        856         20         36          0          0      67523   com_pitch1.o
-       868         28         36          0          0      67517   com_pitch2.o
+       868         28         36          0          0      67518   com_pitch2.o
        868         28         36          0          0      67568   com_pitch_end.o
-       408          0         36          0          0      51811   com_rocker.o
+       404          0         36          0          0      51809   com_rocker.o
       2096         24         36          0          0      67486   com_roll.o
       3032         28         36          0          0     103083   com_yaw.o
          0          0       2052          0          0      10588   commontables.o
@@ -35236,7 +35235,7 @@ Image component sizes
       1772          0          0          0          0      47783   matrixfunctions.o
       2548          0          4          0         12     121975   mems.o
       5522         44         51          4         76     115115   mems_bmi088.o
-       966          8         63          0          4      52074   mod_controller.o
+       974         12         63          0          4      52074   mod_controller.o
       2736          0         80          0         12     123868   module.o
       2670          0          4          0         12     120496   motor.o
       1092          8         40          0          0      68256   mtr_dji.o
@@ -35289,9 +35288,9 @@ Image component sizes
        232          0          0          0          0       4217   usbd_ioreq.o
 
     ----------------------------------------------------------------------
-    232670       1118       5675        636     395520    4516684   Object Totals
+    232670       1122       5675        636     395520    4516683   Object Totals
          0          0         48          0          0          0   (incl. Generated)
-      9856         72          2         11         16          0   (incl. Padding)
+      9852         72          2         11         16          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -35467,9 +35466,9 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-    246372       2018       6540        656     395872    4519728   Grand Totals
-    246372       2018       6540        248     395872    4519728   ELF Image Totals (compressed)
-    246372       2018       6540        248          0          0   ROM Totals
+    246372       2022       6540        656     395872    4519727   Grand Totals
+    246372       2022       6540        248     395872    4519727   ELF Image Totals (compressed)
+    246372       2022       6540        248          0          0   ROM Totals
 
 ==============================================================================
 

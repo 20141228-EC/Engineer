@@ -72,8 +72,9 @@ void CModController::UpdateHandler_() {
 
 
 	// 在模块层将各各设备的编码器信息汇总
-	ControllerInfo.rocker_X = -static_cast<int8_t>(comRocker_.rockerInfo.X / (CONTROLLER_ROCKER_RANGE / 2.0f) * 100.0f);
-	ControllerInfo.rocker_Y = -static_cast<int8_t>(comRocker_.rockerInfo.Y / (CONTROLLER_ROCKER_RANGE / 2.0f) * 100.0f);
+	// 摇杆值缩放到 -100 ~ +100
+	ControllerInfo.rocker_X = -static_cast<int8_t>(comRocker_.rockerInfo.X / static_cast<float>(CONTROLLER_ROCKER_X_HALF_RANGE) * 100.0f);
+	ControllerInfo.rocker_Y = -static_cast<int8_t>(comRocker_.rockerInfo.Y / static_cast<float>(CONTROLLER_ROCKER_Y_HALF_RANGE) * 100.0f);
 	ControllerInfo.rocker_Key = comRocker_.rockerInfo.Key_status;
 	ControllerInfo.posit_yaw = CModController::CComYaw::MtrPositToPhyPosit(comYaw_.yawInfo.posit);
 	ControllerInfo.posit_pitch1 = comPitch1_.pitch1Info.posit;

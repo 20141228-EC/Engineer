@@ -43,16 +43,16 @@ EAppStatus CModController::CComRocker::UpdateComponent() {
 
 	componentStatus = APP_OK;
 
-	// 更新组件信息
-	int32_t transform_value_x = rocker->rockerValues.X - CONTROLLER_ROCKER_RANGE / 2; ///<将读取到的数值归中化
+	// 更新X轴信息 
+	int32_t transform_value_x = rocker->rockerValues.X - CONTROLLER_ROCKER_X_CENTER;
 	if (abs(transform_value_x) < CONTROLLER_ROCKER_DEAD_ZONE) rockerInfo.X = 0;
 	else rockerInfo.X = transform_value_x;
 
-	// Y通道未配置，直接设为0
+	// 更新Y轴信息 
 	if (!rocker->IsYEnabled()) {
 		rockerInfo.Y = 0;
 	} else {
-		int32_t transform_value_y = rocker->rockerValues.Y - CONTROLLER_ROCKER_RANGE / 2;
+		int32_t transform_value_y = rocker->rockerValues.Y - CONTROLLER_ROCKER_Y_CENTER;
 		if (abs(transform_value_y) < CONTROLLER_ROCKER_DEAD_ZONE) rockerInfo.Y = 0;
 		else rockerInfo.Y = transform_value_y;
 	}

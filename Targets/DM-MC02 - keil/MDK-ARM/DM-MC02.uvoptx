@@ -185,6 +185,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>_ZN11my_engineer16pDev_button_testE,0x0A</ItemText>
         </Ww>
+        <Ww>
+          <count>6</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>CDevRocker *pDevRocker_test;</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
