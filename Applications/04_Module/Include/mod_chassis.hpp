@@ -13,6 +13,7 @@
 #define MOD_CHASSIS_HPP
 
 #include "mod_common.hpp"
+#include "algo_ave_filter.hpp"
 
 #define LASER_ZERO_OFFSET_L 0
 #define LASER_ZERO_OFFSET_R 0
@@ -34,7 +35,7 @@
 
 #define deg2rad(x) ((x) * 0.017453292519943295769236907684886)
 #define rad2deg(x) ((x) * 57.295779513082320876798154814105)
-#define ecd2rad(x) ((x) * 0.0054931640625) ///< 编码器总值到角度转化
+#define ecd2rad(x) ((x) * 0.0000958251953125) ///< 编码器总值到角度转化 0.0054931640625
 
 /* public定义用户层方便调试和获取信息，private定义了底层用于直接驱动电机，而不会因为外界的干扰影响了输出的值 */
 
@@ -49,6 +50,7 @@ public:
     // 定义底盘模块初始化参数结构体
     struct SModInitParam_Chassis: public SModInitParam_Base{
         EDeviceID memsDevID = EDeviceID::DEV_NULL;
+        EAlgoID FilterID = EAlgoID::ALGO_NULL;
         EDeviceID wheelsetMotorID_LF = EDeviceID::DEV_NULL;
         EDeviceID wheelsetMotorID_RF = EDeviceID::DEV_NULL;
         EDeviceID wheelsetMotorID_LB = EDeviceID::DEV_NULL;
@@ -95,6 +97,9 @@ public:
         float_t speed_W = 0;    ///< 底盘角速度(范围-100％~100％)
         float_t L_length = 0.0f; ///< 后腿腿长
     } chassisCmd;
+
+    // 互补滤波算法实例指针
+    CAlgo_IMU_Ave *filter = nullptr;
 
     // 整车roll轴角度
     DataBuffer<float_t> roll_Measure;
