@@ -23,12 +23,18 @@
 namespace my_engineer {
 
 /*------------------------------ 状态标志位定义 ------------------------------*/
+// ControllerData (控制器 -> 机器人)
 #define STATUS_CONTROLLER_OK      (1 << 0)  // bit0: 控制器状态OK
 #define STATUS_RETURN_SUCCESS     (1 << 1)  // bit1: 归位成功标志
-#define STATUS_TOGGLE_MASK        (0x03 << 2)  // bit2-3: 拨杆档位 (0-3)
+#define STATUS_TOGGLE_MASK        (0x03 << 2)  // bit2-3: 拨杆档位
 #define STATUS_TOGGLE_SHIFT       2
 #define STATUS_GRIPPER_LEFT       (1 << 4)  // bit4: 左夹爪闭合
 #define STATUS_GRIPPER_RIGHT      (1 << 5)  // bit5: 右夹爪闭合
+
+// RobotData (机器人 -> 控制器)
+#define STATUS_ASK_RESET          (1 << 0)  // bit0: 要求复位
+#define STATUS_CONTROLLED         (1 << 1)  // bit1: 被控制器控制中
+#define STATUS_ROBOT_INIT_OK      (1 << 4)  // bit4: 机器人初始化完成
 
 /**
  * @brief 压缩角度结构体（5轴）
@@ -85,9 +91,9 @@ public:
 		uint8_t status_flags = 0;           ///< 状态标志位 (bit-packed)
 		SArmAnglesCompressed left_arm;      ///< 左臂5轴角度 (10 bytes)
 		SArmAnglesCompressed right_arm;     ///< 右臂5轴角度 (10 bytes)
-		int8_t rocker_LX = 0;               ///< 左臂roll_end增量 (-100~100)，控制第6轴
-		int8_t rocker_RX = 0;               ///< 右臂roll_end增量 (-100~100)，控制第6轴
-		int8_t rocker_RY = 0;               ///< 底盘前进 (-100~100，仅底盘模式有效)
+		int8_t rocker_LX = 0;               ///< 左臂roll_end增量 (-100~100)
+		int8_t rocker_RX = 0;               ///< 右臂roll_end增量 (-100~100)
+		int8_t rocker_RY = 0;               ///< 底盘前进 (-100~100)
 		uint16_t CRC16 = 0x0000;            ///< CRC16校验
 	} __packed controllerData_info_pkg = { };
 

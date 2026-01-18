@@ -18,7 +18,6 @@
 "dm-mc02\proc_controller.o"
 "dm-mc02\com_pitch1.o"
 "dm-mc02\com_pitch2.o"
-"dm-mc02\com_roll_end.o"
 "dm-mc02\com_pitch_end.o"
 "dm-mc02\algo_crc.o"
 "dm-mc02\algo_pid.o"

@@ -35,8 +35,6 @@ EAppStatus CSystemCore::InitSystemCore() {
     controllerLinkInitParam.controllerLinkDevID = EDeviceID::DEV_CONTROLLER_LINK;
     SysControllerLink.InitSystem(&controllerLinkInitParam);
 
-
-    // 获取双臂控制器模块指针（安全查找）
     // 左臂控制器
     auto it_left = ModuleIDMap.find(EModuleID::MOD_CONTROLLER_LEFT);
     if (it_left != ModuleIDMap.end() && it_left->second != nullptr) {
@@ -47,7 +45,7 @@ EAppStatus CSystemCore::InitSystemCore() {
     if (it_right != ModuleIDMap.end() && it_right->second != nullptr) {
         pcontroller_right_ = reinterpret_cast<CModController *>(it_right->second);
     }
-    // 单臂调试模式（DEBUG_TEST_ARM: 0=禁用, 1=左臂, 2=右臂）
+    // 单控制器调试模式（DEBUG_TEST_ARM: 0=禁用, 1=左臂, 2=右臂）
 #define DEBUG_TEST_ARM 0
 
 #if DEBUG_TEST_ARM > 0
@@ -74,7 +72,7 @@ EAppStatus CSystemCore::InitSystemCore() {
  */
 void CSystemCore::UpdateHandler_() {
 
-    // ===== 左臂控制器 =====
+    /*------------左臂控制器---------*/
     if (pcontroller_left_) {
         // 启动模块
         if (!pcontroller_left_->ControllerInfo.isModuleAvailable
@@ -96,7 +94,7 @@ void CSystemCore::UpdateHandler_() {
         pcontroller_left_->ControllerCmd.cmd_pitch_end = SysControllerLink.robotInfo.left_arm.pitch_end;
     }
 
-    // ===== 右臂控制器 =====
+    /*------------右臂控制器---------*/
     if (pcontroller_right_) {
         // 启动模块
         if (!pcontroller_right_->ControllerInfo.isModuleAvailable
@@ -118,7 +116,7 @@ void CSystemCore::UpdateHandler_() {
         pcontroller_right_->ControllerCmd.cmd_pitch_end = SysControllerLink.robotInfo.right_arm.pitch_end;
     }
 
-    // ===== 状态汇总 =====
+    /*------------状态汇总------------*/
     // 只有两个控制器都可用时才认为整体OK
     bool left_ok = pcontroller_left_ ? pcontroller_left_->ControllerInfo.isModuleAvailable : true;
     bool right_ok = pcontroller_right_ ? pcontroller_right_->ControllerInfo.isModuleAvailable : true;

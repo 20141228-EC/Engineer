@@ -3,335 +3,456 @@
 <pre>
 <h1>�Vision Build Log</h1>
 <h2>Tool Versions:</h2>
-IDE-Version: ��Vision V5.41.0.0
-Copyright (C) 2024 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: hengkai liang, ShenZhen University, LIC=MPPLD-8HLJ7-PCPJ8-3IK9Q-DAAN7-89DRY
+IDE-Version: ��Vision V5.43.1.0
+Copyright (C) 2025 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 1 1318116658@qq.com, 1, LIC=JL28G-VZPTJ-8T13P-MMGZH-0RQ7I-DCX5Y
  
 Tool Versions:
-Toolchain:       MDK-ARM Plus  Version: 5.41.0.0
-Toolchain Path:  D:\keil5\ARM\ARMCLANG\Bin
-C Compiler:      ArmClang.exe V6.22
-Assembler:       Armasm.exe V6.22
-Linker/Locator:  ArmLink.exe V6.22
-Library Manager: ArmAr.exe V6.22
-Hex Converter:   FromElf.exe V6.22
-CPU DLL:         SARMCM3.DLL V5.41.0.0
+Toolchain:       MDK-ARM Plus  Version: 5.43.0.0
+Toolchain Path:  F:\Keil_v5\ARM\ARMCLANG\Bin
+C Compiler:      ArmClang.exe V6.24
+Assembler:       Armasm.exe V6.24
+Linker/Locator:  ArmLink.exe V6.24
+Library Manager: ArmAr.exe V6.24
+Hex Converter:   FromElf.exe V6.24
+CPU DLL:         SARMCM3.DLL V5.43.0.0
 Dialog DLL:      DCM.DLL V1.17.5.0
-Target DLL:      CMSIS_AGDI.dll V1.33.21.0
-Dialog DLL:      TCM.DLL V1.56.4.0
+Target DLL:      CMSIS_AGDI.dll V1.33.24.0
+Dialog DLL:      TCM.DLL V1.56.6.0
  
 <h2>Project:</h2>
-E:\GitHub_Codehouse\RP_2025_ENGINEER\Custom_Controller\Targets\DM-MC02 - keil\MDK-ARM\DM-MC02.uvprojx
-Project File Date:  07/22/2025
+E:\engineer_fork\2025_CustomController\Targets\DM-MC02 - keil\MDK-ARM\DM-MC02.uvprojx
+Project File Date:  01/18/2026
 
 <h2>Output:</h2>
-*** Using Compiler 'V6.22', folder: 'D:\keil5\ARM\ARMCLANG\Bin'
+*** Using Compiler 'V6.24', folder: 'F:\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'DM-MC02'
-../../../Applications/Module/Custom_Controller/com_buzzer.cpp(13): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
-      |                  ^
-2 warnings generated.
-compiling com_buzzer.cpp...
-../../../Applications/System/Core/Core.cpp(10): warning: In file included from...
-../../../Applications/System/Include\Core.hpp(17): warning: In file included from...
+compiling conf_CanTxNode.cpp...
+../../../Applications/Configuration/conf_module.cpp(14): warning: In file included from...
 ../../../Applications/Module/Include\Module.hpp(16): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
       |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
 ../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
    20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
       |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
       |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
 ../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
    20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
       |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
-      |                  ^
-2 warnings generated.
-compiling Core.cpp...
-../../../Applications/Module/Custom_Controller/com_rocker.cpp(13): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
-      |                  ^
-2 warnings generated.
-compiling com_rocker.cpp...
-../../../Applications/Configuration/conf_module.cpp(11): warning: In file included from...
-../../../Applications/Module/Include\Module.hpp(16): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
       |                  ^
 2 warnings generated.
 compiling conf_module.cpp...
-../../../Applications/Module/Module.cpp(17): warning: In file included from...
-../../../Applications/Module/Include\Module.hpp(16): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
-      |                  ^
-2 warnings generated.
-compiling Module.cpp...
-../../../Applications/System/System.cpp(13): warning: In file included from...
-../../../Applications/Module/Include\Module.hpp(16): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
-      |                  ^
-2 warnings generated.
-compiling System.cpp...
-../../../Applications/System/Tasks/sys_task.cpp(13): warning: In file included from...
-../../../Applications/System/Include\Core.hpp(17): warning: In file included from...
-../../../Applications/Module/Include\Module.hpp(16): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
-      |                  ^
-2 warnings generated.
-compiling sys_task.cpp...
-../../../Applications/Module/Custom_Controller/com_roll.cpp(13): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
-      |                  ^
-2 warnings generated.
-compiling com_roll.cpp...
-../../../Applications/Module/Custom_Controller/com_yaw.cpp(13): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
-      |                  ^
-2 warnings generated.
-compiling com_yaw.cpp...
-../../../Applications/Module/Custom_Controller/mod_controller.cpp(13): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
-      |                  ^
-2 warnings generated.
-compiling mod_controller.cpp...
-../../../Applications/Module/Custom_Controller/proc_controller.cpp(13): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
-      |                  ^
-2 warnings generated.
-compiling proc_controller.cpp...
-../../../Applications/Module/Custom_Controller/com_pitch1.cpp(13): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
-      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
-   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
-      |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
-      |                  ^
-2 warnings generated.
-compiling com_pitch1.cpp...
+compiling conf_interface.cpp...
+compiling conf_device.cpp...
 ../../../Applications/Module/Custom_Controller/com_pitch2.cpp(1): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
       |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
 ../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
    20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
       |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
       |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
 ../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
    20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
       |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
       |                  ^
 2 warnings generated.
 compiling com_pitch2.cpp...
-../../../Applications/Module/Custom_Controller/com_roll_end.cpp(13): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+compiling conf_process.cpp...
+compiling dev_buzzer.cpp...
+compiling algo_other.cpp...
+compiling Configuration.cpp...
+compiling mtr_dm.cpp...
+compiling dev_rocker.cpp...
+compiling algo_crc.cpp...
+compiling mems.cpp...
+compiling Device.cpp...
+../../../Applications/Module/Custom_Controller/com_roll.cpp(14): warning: In file included from...
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
       |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
 ../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
    20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
       |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
       |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
 ../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
    20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
       |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
       |                  ^
 2 warnings generated.
-compiling com_roll_end.cpp...
-../../../Applications/Module/Custom_Controller/com_pitch_end.cpp(13): warning: In file included from...
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+compiling com_roll.cpp...
+../../../Applications/System/System.cpp(13): warning: In file included from...
+../../../Applications/Module/Include\Module.hpp(16): warning: In file included from...
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
       |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
 ../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
    20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
       |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(175): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
-  175 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
       |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
 ../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
    20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
       |                                    ^~~~~~~~
-../../../Applications/Module/Include\mod_controller.hpp(158): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
-  158 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+      |                  ^
+2 warnings generated.
+compiling System.cpp...
+compiling algo_pid.cpp...
+compiling motor.cpp...
+compiling mtr_kt.cpp...
+compiling mtr_dji.cpp...
+../../../Applications/Module/Custom_Controller/com_pitch_end.cpp(14): warning: In file included from...
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
       |                  ^
 2 warnings generated.
 compiling com_pitch_end.cpp...
+../../../Applications/Module/Custom_Controller/com_buzzer.cpp(13): warning: In file included from...
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+      |                  ^
+2 warnings generated.
+compiling com_buzzer.cpp...
+../../../Applications/Module/Custom_Controller/mod_controller.cpp(15): warning: In file included from...
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+      |                  ^
+2 warnings generated.
+compiling mod_controller.cpp...
+compiling mems_bmi088.cpp...
+../../../Applications/Module/Custom_Controller/proc_controller.cpp(14): warning: In file included from...
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+      |                  ^
+2 warnings generated.
+compiling proc_controller.cpp...
+../../../Applications/Module/Custom_Controller/com_rocker.cpp(13): warning: In file included from...
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+      |                  ^
+2 warnings generated.
+compiling com_rocker.cpp...
+../../../Applications/Module/Custom_Controller/com_yaw.cpp(13): warning: In file included from...
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+      |                  ^
+2 warnings generated.
+compiling com_yaw.cpp...
+../../../Applications/System/Tasks/sys_task.cpp(13): warning: In file included from...
+../../../Applications/System/Include\Core.hpp(17): warning: In file included from...
+../../../Applications/Module/Include\Module.hpp(16): warning: In file included from...
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+      |                  ^
+2 warnings generated.
+compiling sys_task.cpp...
+../../../Applications/Module/Custom_Controller/com_pitch1.cpp(13): warning: In file included from...
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+      |                  ^
+2 warnings generated.
+compiling com_pitch1.cpp...
+../../../Applications/System/Controller_Link/sys_controller_link.cpp(16): warning: In file included from...
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+      |                  ^
+2 warnings generated.
+compiling sys_controller_link.cpp...
+../../../Applications/System/Core/Core.cpp(10): warning: In file included from...
+../../../Applications/System/Include\Core.hpp(17): warning: In file included from...
+../../../Applications/Module/Include\Module.hpp(16): warning: In file included from...
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+      |                  ^
+2 warnings generated.
+compiling Core.cpp...
+../../../Applications/Module/Module.cpp(17): warning: In file included from...
+../../../Applications/Module/Include\Module.hpp(16): warning: In file included from...
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(155): warning: implicit conversion from 'float' to 'int32_t' (aka 'int') changes value from 4437.3301 to 4437 [-Wliteral-conversion]
+  155 |                 const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+      |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(20): note: expanded from macro 'CONTROLLER_YAW_MOTOR_RANGE'
+   20 | #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+      |                                    ^~~~~~~~
+../../../Applications/Module/Include\mod_controller.hpp(138): note: in implicit default constructor for 'my_engineer::CModController::CComYaw' first required here
+  138 |         explicit CModController(SModInitParam_Controller &param) { InitModule(param); }
+      |                  ^
+2 warnings generated.
+compiling Module.cpp...
+compiling main.c...
+compiling crc.c...
+compiling gpio.c...
+compiling adc.c...
+compiling dma.c...
+compiling fdcan.c...
+compiling iwdg.c...
+compiling tim.c...
+compiling spi.c...
+compiling usart.c...
+compiling stm32h7xx_it.c...
+compiling stm32h7xx_hal_msp.c...
+compiling music_lib.cpp...
+assembling startup_stm32h723xx.s...
+compiling event_groups.c...
+compiling croutine.c...
+compiling stm32h7xx_hal_timebase_tim.c...
+compiling system_stm32h7xx.c...
+compiling dev_FourButton.cpp...
+compiling dev_multi_button.cpp...
+compiling dev_controller_link.cpp...
+compiling list.c...
+compiling inf_spi.cpp...
+compiling queue.c...
+compiling stream_buffer.c...
+compiling tasks.c...
+compiling Interface.cpp...
+compiling inf_can.cpp...
+compiling timers.c...
+compiling port.c...
+compiling inf_uart.cpp...
+compiling BayesFunctionsF16.c...
+compiling BasicMathFunctionsF16.c...
+compiling BasicMathFunctions.c...
+compiling ComplexMathFunctions.c...
+compiling ComplexMathFunctionsF16.c...
+compiling BayesFunctions.c...
+compiling inf_usb_cdc.cpp...
+compiling inf_adc.cpp...
+compiling ControllerFunctions.c...
+compiling DistanceFunctions.c...
+compiling DistanceFunctionsF16.c...
+compiling CommonTablesF16.c...
+compiling FastMathFunctionsF16.c...
+compiling FastMathFunctions.c...
+compiling InterpolationFunctionsF16.c...
+compiling FilteringFunctionsF16.c...
+compiling InterpolationFunctions.c...
+compiling QuaternionMathFunctions.c...
+compiling MatrixFunctionsF16.c...
+compiling StatisticsFunctionsF16.c...
+compiling MatrixFunctions.c...
+compiling SupportFunctions.c...
+compiling StatisticsFunctions.c...
+compiling SupportFunctionsF16.c...
+compiling SVMFunctionsF16.c...
+compiling SVMFunctions.c...
+compiling Semihosting.c...
+compiling FilteringFunctions.c...
+compiling heap_4.c...
+compiling TransformFunctionsF16.c...
+compiling WindowFunctions.c...
+compiling FreeRTOSConfig.c...
+compiling CommonTables.c...
+compiling TransformFunctions.c...
+compiling stm32h7xx_hal_pcd.c...
+compiling stm32h7xx_hal_tim_ex.c...
+compiling stm32h7xx_hal_flash_ex.c...
+compiling stm32h7xx_hal_flash.c...
+compiling stm32h7xx_ll_usb.c...
+compiling stm32h7xx_hal_pcd_ex.c...
+compiling stm32h7xx_hal_rcc.c...
+compiling stm32h7xx_hal_gpio.c...
+compiling stm32h7xx_hal_mdma.c...
+compiling stm32h7xx_hal_hsem.c...
+compiling stm32h7xx_hal_rcc_ex.c...
+compiling stm32h7xx_hal_pwr_ex.c...
+compiling stm32h7xx_hal_dma.c...
+compiling stm32h7xx_hal_pwr.c...
+compiling stm32h7xx_hal_tim.c...
+compiling stm32h7xx_hal_cortex.c...
+compiling stm32h7xx_hal_dma_ex.c...
+compiling stm32h7xx_hal.c...
+compiling stm32h7xx_hal_i2c_ex.c...
+compiling stm32h7xx_hal_exti.c...
+compiling stm32h7xx_hal_crc_ex.c...
+compiling stm32h7xx_hal_adc_ex.c...
+compiling stm32h7xx_hal_iwdg.c...
+compiling stm32h7xx_hal_crc.c...
+compiling stm32h7xx_hal_adc.c...
+compiling stm32h7xx_hal_i2c.c...
+compiling stm32h7xx_hal_spi_ex.c...
+compiling usbd_ioreq.c...
+compiling usbd_desc.c...
+compiling usbd_core.c...
+compiling stm32h7xx_hal_uart_ex.c...
+compiling stm32h7xx_hal_uart.c...
+compiling usbd_conf.c...
+compiling stm32h7xx_hal_spi.c...
+compiling usbd_ctlreq.c...
+compiling usbd_cdc_if.c...
+compiling stm32h7xx_hal_fdcan.c...
+compiling usb_device.c...
+compiling usbd_cdc.c...
+compiling startup.cpp...
 linking...
-Program Size: Code=243772 RO-data=6628 RW-data=608 ZI-data=394632  
+Program Size: Code=246372 RO-data=6540 RW-data=656 ZI-data=395872  
 FromELF: creating hex file...
 "DM-MC02\DM-MC02.axf" - 0 Error(s), 30 Warning(s).
 
 <h2>Software Packages used:</h2>
 
 Package Vendor: ARM
-                https://www.keil.com/pack/ARM.CMSIS.6.1.0.pack
-                ARM::CMSIS@6.1.0
+                https://www.keil.com/pack/ARM.CMSIS.6.2.0.pack
+                ARM::CMSIS@6.2.0
                 CMSIS (Common Microcontroller Software Interface Standard)
-   * Component: CORE Version: 6.1.0
+   * Component: CORE Version: 6.1.1
 
 Package Vendor: Keil
-                https://www.keil.com/pack/Keil.STM32H7xx_DFP.3.1.1.pack
-                Keil::STM32H7xx_DFP@3.1.1
-                STMicroelectronics STM32H7 Series Device Support and Examples
+                https://www.keil.com/pack/Keil.STM32H7xx_DFP.4.1.3.pack
+                Keil::STM32H7xx_DFP@4.1.3
+                STMicroelectronics STM32H7 Series Device Support
 
 <h2>Collection of Component include folders:</h2>
   ./RTE/_DM-MC02
-  D:/keil5/ARM/PACK/ARM/CMSIS/6.1.0/CMSIS/Core/Include
-  D:/keil5/ARM/PACK/Keil/STM32H7xx_DFP/3.1.1/Drivers/CMSIS/Device/ST/STM32H7xx/Include
+  F:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include
 
 <h2>Collection of Component Files used:</h2>
 
-   * Component: ARM::CMSIS:CORE@6.1.0
+   * Component: ARM::CMSIS:CORE@6.1.1
       Include file:  CMSIS/Core/Include/tz_context.h
-Build Time Elapsed:  00:00:07
+Build Time Elapsed:  00:00:10
 </pre>
 </body>
 </html>

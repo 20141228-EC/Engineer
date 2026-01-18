@@ -71,7 +71,7 @@ void CModController::UpdateHandler_() {
 	comBuzzer_.UpdateComponent();
 
 
-	// 更新模块信息
+	// 在模块层将各各设备的编码器信息汇总
 	ControllerInfo.rocker_X = -static_cast<int8_t>(comRocker_.rockerInfo.X / (CONTROLLER_ROCKER_RANGE / 2.0f) * 100.0f);
 	ControllerInfo.rocker_Y = -static_cast<int8_t>(comRocker_.rockerInfo.Y / (CONTROLLER_ROCKER_RANGE / 2.0f) * 100.0f);
 	ControllerInfo.rocker_Key = comRocker_.rockerInfo.Key_status;

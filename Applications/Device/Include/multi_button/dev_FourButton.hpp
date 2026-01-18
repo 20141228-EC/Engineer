@@ -17,12 +17,12 @@ class CDevFourButton : public CDevMultiButton {
 
 public:
   enum EButtonID : uint8_t {
-    BUTTON_NULL = 255,          // 空按钮标记（改为255避免负数转换）
-    SWITCH_CHASSIS = 0,         // PE13 - 拨杆右档（底盘模式）
-    SWITCH_ARM_ROLL_END = 1,    // PE9 - 拨杆左档（臂Roll末端模式）
-    GRIPPER_LEFT = 2,           // PB8 - 左手夹爪按钮
-    GRIPPER_RIGHT = 3,          // PB9 - 右手夹爪按钮
-    BUTTON_MAX = 4              // 数组大小（连续索引0-3）
+    BUTTON_NULL = 255,          // 空按钮标记
+    SWITCH_CHASSIS = 0,         // PE13: 拨杆右档（底盘模式）
+    SWITCH_ARM_ROLL_END = 1,    // PE9: 拨杆左档（臂Roll末端模式）
+    GRIPPER_LEFT = 2,           // PB8: 左手夹爪按钮
+    GRIPPER_RIGHT = 3,          // PB9: 右手夹爪按钮
+    BUTTON_MAX = 4              // 数组大小
   };
 private:
   typedef struct singlebutton{
@@ -57,10 +57,10 @@ public:
   static bool isSwitchArmRollEnd;   // PE9 高电平 = 臂Roll末端模式
 
   // 夹爪按钮状态（按钮库事件驱动）
-  static bool isGripperLeft;        // 左手夹爪按下状态（临时）
-  static bool isGripperRight;       // 右手夹爪按下状态（临时）
-  static bool isGripperLeftClose;   // 左手夹爪闭合状态（持久，长按闭合/双击张开）
-  static bool isGripperRightClose;  // 右手夹爪闭合状态（持久，长按闭合/双击张开）
+  static bool isGripperLeft;        // 左手夹爪按下状态
+  static bool isGripperRight;       // 右手夹爪按下状态
+  static bool isGripperLeftClose;   // 左手夹爪闭合状态（长按闭合/双击张开）
+  static bool isGripperRightClose;  // 右手夹爪闭合状态（长按闭合/双击张开）
 };
 
 }

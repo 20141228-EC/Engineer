@@ -57,7 +57,7 @@ EAppStatus CModController::CComYaw::UpdateComponent() {
 	yawInfo.posit = motor[0]->motorData[CDevMtr::DATA_POSIT];
 	yawInfo.isPositArrived = (abs(yawCmd.setPosit - yawInfo.posit) < 8192 * 0.02);
 
-	switch (Component_FSMFlag_) {
+	switch (Component_FSMFlag_) {    ///<这个轴不需要重补
 		case FSM_RESET: {
 			StopComponent();
 			mtrOutputBuffer.fill(0);

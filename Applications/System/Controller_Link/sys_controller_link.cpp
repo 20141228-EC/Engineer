@@ -17,9 +17,10 @@
 
 namespace my_engineer {
 
-#define I_AM_CONTROLLER 1 // 当前板子是控制器
+#define I_AM_CONTROLLER 1       // 1=控制器端, 0=机器人端
+#define DEBUG_SKIP_INIT_CHECK 0 // 1=调试模式(跳过初始化检查), 0=正常模式
 
-// 实例化一个控制器通信系统
+// 实例化控制器通信系统
 CSystemControllerLink SysControllerLink;
 
 /**
@@ -59,31 +60,37 @@ EAppStatus CSystemControllerLink::InitSystem(SSystemInitParam_Base *pStruct) {
 
 /**
  * @brief 更新处理
- *
  */
 void CSystemControllerLink::UpdateHandler_() {
-	// 检查系统状态
 	if (systemStatus != APP_OK) return;
-
 	if (!pcontrollerLink_) return;
 
-	#if I_AM_CONTROLLER == 0
-		// 更新控制器信息（从数据包解压到系统层）
-		UpdateControllerLinkInfo_();
-		// 更新发送数据包（从系统层压缩到数据包）
-		UpdateRobotDataPkg_();
-		// 发送机器人信息
-		pcontrollerLink_->SendPackage(CDevControllerLink::ID_ROBOT_DATA, pcontrollerLink_->robotData_info_pkg.header);
-	#else
-		// 更新按键信息（拨杆、夹爪按钮）
-		UpdateButtonInfo_();
-		// 更新机器人信息
-		UpdateRobotInfo_();
-		// 更新发送数据包
+#if I_AM_CONTROLLER == 0
+	// 机器人端：解析控制器数据，发送机器人数据
+	UpdateControllerLinkInfo_();
+	UpdateRobotDataPkg_();
+	pcontrollerLink_->SendPackage(CDevControllerLink::ID_ROBOT_DATA,
+	                               pcontrollerLink_->robotData_info_pkg.header);
+#else
+	// 控制器端：始终更新输入和接收数据
+	UpdateButtonInfo_();
+	UpdateRobotInfo_();
+
+	// 只有机器人初始化完成后才发送控制数据
+#if DEBUG_SKIP_INIT_CHECK == 0
+	// 调试模式：跳过初始化检查，始终发送
+	UpdateControllerDataPkg_();
+	pcontrollerLink_->SendPackage(CDevControllerLink::ID_CONTROLLER_DATA,
+	                               pcontrollerLink_->controllerData_info_pkg.header);
+#else
+	// 正常模式：等待机器人初始化完成
+	if (robotInfo.robot_init_ok) {
 		UpdateControllerDataPkg_();
-		// 发送控制器信息
-		pcontrollerLink_->SendPackage(CDevControllerLink::ID_CONTROLLER_DATA, pcontrollerLink_->controllerData_info_pkg.header);
-	#endif
+		pcontrollerLink_->SendPackage(CDevControllerLink::ID_CONTROLLER_DATA,
+		                               pcontrollerLink_->controllerData_info_pkg.header);
+	}
+#endif
+#endif
 }
 
 /**
@@ -125,7 +132,6 @@ void CSystemControllerLink::UpdateControllerLinkInfo_() {
 
 /**
  * @brief 更新机器人信息 (设备层 -> 系统层)
- *
  */
 void CSystemControllerLink::UpdateRobotInfo_() {
 	if (systemStatus != APP_OK) return;
@@ -133,10 +139,10 @@ void CSystemControllerLink::UpdateRobotInfo_() {
 
 	auto &pkg = pcontrollerLink_->robotData_info_pkg;
 
-	// 解析状态标志位
-	robotInfo.ask_reset_flag = (pkg.status_flags & STATUS_CONTROLLER_OK) != 0;
-	robotInfo.controlled_by_controller = (pkg.status_flags & STATUS_RETURN_SUCCESS) != 0;
-	robotInfo.ask_return_flag = (pkg.status_flags & STATUS_GRIPPER_LEFT) != 0;
+	// 解析状态标志位 (使用RobotData专用定义)
+	robotInfo.ask_reset_flag = (pkg.status_flags & STATUS_ASK_RESET) != 0;
+	robotInfo.controlled_by_controller = (pkg.status_flags & STATUS_CONTROLLED) != 0;
+	robotInfo.robot_init_ok = (pkg.status_flags & STATUS_ROBOT_INIT_OK) != 0;
 
 	// 解压左臂角度数据
 	robotInfo.left_arm.yaw = CDevControllerLink::DecompressAngle(pkg.left_arm.yaw);
@@ -155,7 +161,6 @@ void CSystemControllerLink::UpdateRobotInfo_() {
 
 /**
  * @brief 更新发送数据包 RobotData (系统层 -> 设备层)
- *
  */
 void CSystemControllerLink::UpdateRobotDataPkg_() {
 	if (systemStatus != APP_OK) return;
@@ -163,20 +168,20 @@ void CSystemControllerLink::UpdateRobotDataPkg_() {
 
 	auto &pkg = pcontrollerLink_->robotData_info_pkg;
 
-	// 打包状态标志位
+	// 打包状态标志位 (使用RobotData专用定义)
 	pkg.status_flags = 0;
-	if (robotInfo.ask_reset_flag) pkg.status_flags |= STATUS_CONTROLLER_OK;
-	if (robotInfo.controlled_by_controller) pkg.status_flags |= STATUS_RETURN_SUCCESS;
-	if (robotInfo.ask_return_flag) pkg.status_flags |= STATUS_GRIPPER_LEFT;
+	if (robotInfo.ask_reset_flag) pkg.status_flags |= STATUS_ASK_RESET;
+	if (robotInfo.controlled_by_controller) pkg.status_flags |= STATUS_CONTROLLED;
+	if (robotInfo.robot_init_ok) pkg.status_flags |= STATUS_ROBOT_INIT_OK;
 
-	// 压缩左臂角度数据 (float -> int16)
+	// 压缩左臂角度数据
 	pkg.left_arm.yaw = CDevControllerLink::CompressAngle(robotInfo.left_arm.yaw);
 	pkg.left_arm.pitch1 = CDevControllerLink::CompressAngle(robotInfo.left_arm.pitch1);
 	pkg.left_arm.pitch2 = CDevControllerLink::CompressAngle(robotInfo.left_arm.pitch2);
 	pkg.left_arm.roll = CDevControllerLink::CompressAngle(robotInfo.left_arm.roll);
 	pkg.left_arm.pitch_end = CDevControllerLink::CompressAngle(robotInfo.left_arm.pitch_end);
 
-	// 压缩右臂角度数据 (float -> int16)
+	// 压缩右臂角度数据
 	pkg.right_arm.yaw = CDevControllerLink::CompressAngle(robotInfo.right_arm.yaw);
 	pkg.right_arm.pitch1 = CDevControllerLink::CompressAngle(robotInfo.right_arm.pitch1);
 	pkg.right_arm.pitch2 = CDevControllerLink::CompressAngle(robotInfo.right_arm.pitch2);
@@ -185,8 +190,7 @@ void CSystemControllerLink::UpdateRobotDataPkg_() {
 }
 
 /**
- * @brief 更新发送数据包 ControllerData
- *
+ * @brief 更新发送数据包 ControllerData (系统层 -> 设备层)
  */
 void CSystemControllerLink::UpdateControllerDataPkg_() {
 	if (systemStatus != APP_OK) return;
@@ -231,9 +235,7 @@ void CSystemControllerLink::HeartbeatHandler_() {
 }
 
 /**
- * @brief 更新按键信息
- * @note  从模块层和按键设备获取数据，更新到controllerInfo
- * @note  roll 轴由电机编码值映射，在 SArmAngles.roll 中传输
+ * @brief 更新按键信息 (拨杆、夹爪、摇杆)
  */
 void CSystemControllerLink::UpdateButtonInfo_() {
 	if (systemStatus != APP_OK) return;
@@ -246,7 +248,7 @@ void CSystemControllerLink::UpdateButtonInfo_() {
 		controllerInfo.rocker_LX = pController->ControllerInfo.rocker_X;
 	}
 
-	// 右臂 roll_end 摇杆 + 底盘前进
+	// 右臂 roll_end 摇杆
 	auto it_right = ModuleIDMap.find(EModuleID::MOD_CONTROLLER_RIGHT);
 	if (it_right != ModuleIDMap.end() && it_right->second != nullptr) {
 		auto *pController = static_cast<CModController*>(it_right->second);

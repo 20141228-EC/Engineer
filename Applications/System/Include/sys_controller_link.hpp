@@ -71,18 +71,18 @@ public:
 		bool gripper_right_close = false;    ///< 右夹爪闭合
 		SArmAngles left_arm;                 ///< 左臂5轴角度
 		SArmAngles right_arm;                ///< 右臂5轴角度
-		int8_t rocker_LX = 0;                ///< 左臂roll_end增量 (-100~100)，控制第6轴
-		int8_t rocker_RX = 0;                ///< 右臂roll_end增量 (-100~100)，控制第6轴
+		int8_t rocker_LX = 0;                ///< 左臂roll_end(-100~100)
+		int8_t rocker_RX = 0;                ///< 右臂roll_end(-100~100) / 底盘左右移动
 		int8_t rocker_RY = 0;                ///< 底盘前进 (-100~100)，仅底盘模式有效
 	} controllerInfo;
 
 	// 机器人信息结构体(Robot -> Controller)
 	struct SRobotInfo {
-		bool ask_reset_flag = false;         ///< 是否要求复位
-		bool controlled_by_controller = false; ///< 是否被控制器控制
-		bool ask_return_flag = false;        ///< 是否要求归位
-		SArmAngles left_arm;                 ///< 左臂5轴角度
-		SArmAngles right_arm;                ///< 右臂5轴角度
+		bool ask_reset_flag = false;           ///< 要求复位
+		bool controlled_by_controller = false; ///< 被控制器控制中
+		bool robot_init_ok = false;            ///< 机器人初始化完成
+		SArmAngles left_arm;                   ///< 左臂5轴角度
+		SArmAngles right_arm;                  ///< 右臂5轴角度
 	} robotInfo;
 
 	// 初始化系统

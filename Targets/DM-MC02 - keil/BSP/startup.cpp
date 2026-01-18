@@ -31,7 +31,7 @@ extern "C" {
   void MX_TIM6_Init();
   void MX_TIM12_Init();
   void MX_SPI2_Init();
-  void MX_SPI6_Init();
+  // void MX_SPI6_Init();
   void MX_OCTOSPI2_Init();
   void MX_UART5_Init();
   void MX_UART7_Init();
@@ -81,7 +81,7 @@ int main() {
   MX_TIM6_Init();
   MX_TIM12_Init();
   MX_SPI2_Init();
-  MX_SPI6_Init();
+  // MX_SPI6_Init();
   // MX_OCTOSPI2_Init();
   MX_UART5_Init();
   MX_UART7_Init();

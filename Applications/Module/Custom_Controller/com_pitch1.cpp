@@ -49,7 +49,7 @@ EAppStatus CModController::CComPitch1::UpdateComponent() {
 	if (componentStatus == APP_RESET) return APP_ERROR;
 
 	// 更新电机信息
-	pitch1Info.posit = MotortruePositToOffsetPosit_test(
+	pitch1Info.posit = MotortruePositToOffsetPosit_test(     ///<注意是在这里更新的示教器控制信息传给机器人，下面的状态机是用来控制自定义控制器的重力补偿的
 			CDevMtrDM::uint_to_float(motor[0]->motorData[CDevMtr::DATA_ANGLE], Pos_MIN, Pos_MAX, 16));
 	pitch1Info.isPositArrived = (fabs(pitch1Cmd.setParam[EMotorParam::POSIT] - pitch1Info.posit) < 5.0f);
 

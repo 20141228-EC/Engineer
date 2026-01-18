@@ -24,7 +24,7 @@ void CModController::StartControllerModuleTask(void *argument) {
 	if (argument == nullptr) proc_return();
 
 	// 类型转换
-	auto &controller = *static_cast<CModController *>(argument);
+	auto controller = *static_cast<CModController *>(argument);
 
 	// 任务循环
 	while (true) {
@@ -109,7 +109,7 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comPitchEnd_.pitchEndCmd.isFree = controller.ControllerCmd.isFree;
 
 				
-				if(!controller.ControllerCmd.isFree) {
+				if(!controller.ControllerCmd.isFree) {  
 					controller.comYaw_.yawCmd.setPosit = CModController::CComYaw::PhyPositToMtrPosit(controller.ControllerCmd.cmd_yaw);
 					controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch1;
 					controller.comPitch2_.pitch2Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch2;
