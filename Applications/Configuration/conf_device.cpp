@@ -61,12 +61,12 @@ EAppStatus InitAllDevice(){
     fourButton_initparam.buttons_[1].halGpioPin = SWITCH_ARM_ROLL_END_Pin;
     // 槽位2: 左手夹爪 (PB8)
     fourButton_initparam.buttons_[2].buttonID = CDevFourButton::EButtonID::GRIPPER_LEFT;
-    fourButton_initparam.buttons_[2].activeLevel = 1;  // 高电平有效（下拉输入）
+    fourButton_initparam.buttons_[2].activeLevel = 0;  // 低电平有效（上拉输入，按下接GND）
     fourButton_initparam.buttons_[2].halGpioPort = GRIPPER_LEFT_GPIO_Port;
     fourButton_initparam.buttons_[2].halGpioPin = GRIPPER_LEFT_Pin;
     // 槽位3: 右手夹爪 (PB9)
     fourButton_initparam.buttons_[3].buttonID = CDevFourButton::EButtonID::GRIPPER_RIGHT;
-    fourButton_initparam.buttons_[3].activeLevel = 1;  // 高电平有效（下拉输入）
+    fourButton_initparam.buttons_[3].activeLevel = 0;  // 低电平有效（上拉输入，按下接GND）
     fourButton_initparam.buttons_[3].halGpioPort = GRIPPER_RIGHT_GPIO_Port;
     fourButton_initparam.buttons_[3].halGpioPin = GRIPPER_RIGHT_Pin;
     fourButton.InitDevice(&fourButton_initparam);

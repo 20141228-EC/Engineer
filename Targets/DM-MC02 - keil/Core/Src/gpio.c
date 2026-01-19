@@ -93,7 +93,7 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pins : GRIPPER_LEFT_Pin GRIPPER_RIGHT_Pin */
   GPIO_InitStruct.Pin = GRIPPER_LEFT_Pin|GRIPPER_RIGHT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;  // 上拉输入，按下接GND变低电平
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*AnalogSwitch Config */
