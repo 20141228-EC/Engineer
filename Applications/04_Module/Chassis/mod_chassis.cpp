@@ -29,6 +29,12 @@ EAppStatus CModChassis::InitModule(SModInitParam_Base &param){
     auto chassisParam = static_cast<SModInitParam_Chassis &>(param);
     moduleID = chassisParam.moduleID;
 
+    //获取算法指针
+    filter = static_cast<CAlgo_IMU_Ave*>(AlgoIDMap.at(chassisParam.FilterID));
+    if(!filter){
+        return APP_ERROR;
+    }
+
     // 初始化底盘轮组
     comWheelset_.InitComponent(param);
     comHip_.InitComponent(param);
@@ -164,22 +170,21 @@ void CModChassis::UpdateHandler_(){
     DataBuffer<float_t> roll_Target = {0.0f}; ///< 目标roll角度，目前暂时写这个，后续出车之后根据实际可能有些误差待改
 
     // 计算Roll角
-    float_t acc_x = comHip_.mems->memsData[CMemsBase::DATA_ACC_X];
-    float_t acc_y = comHip_.mems->memsData[CMemsBase::DATA_ACC_Y];
-    float_t acc_z = comHip_.mems->memsData[CMemsBase::DATA_ACC_Z];
-    roll_Measure = {atan2f(acc_y, sqrtf(acc_x * acc_x + acc_z * acc_z)) * 60.f};
+    roll_Measure = {filter->Imu_Ave_Info.imu_ave_pitch * ROLL_LIFT_DIR};
 
     // 底盘roll轴是一个三环pid控制，最外环为控roll轴角度，输出目标腿长，内环是控腿长
     DataBuffer<float_t> roll_target_climbing;
     if(comHip_.MovMode_ == EmovMode::CLIMBING)
     {
         roll_target_climbing = comHip_.pidRollCtrl.UpdatePidController(roll_Target, roll_Measure);
-        chassisCmd.L_length += roll_target_climbing[0] * ROLL_DEG_ECD_RATIO * ROLL_LIFT_DIR * 3.f / 1000.f; ///< 在当前腿长目标基础上进行累加
-        if(reset_hip){  // 要求复位腿
+        chassisCmd.L_length += roll_target_climbing[0] * ROLL_DEG_ECD_RATIO * ROLL_LIFT_DIR * 3.f / 1000.f / 10.f; ///< 在当前腿长目标基础上进行累加
+    } 
+
+    if(reset_hip){  // 要求复位腿
             chassisCmd.L_length = 0; ///< 直接回到初始化腿长
             comHip_.pidRollCtrl.ResetPidController(); ///< 同时重置PID控制器
-        }
-    } 
+            reset_hip = 0;      ///< 清空标志位
+    }
 
     // 更新底盘轮组
     comWheelset_.UpdateComponent();

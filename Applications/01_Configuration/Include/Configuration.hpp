@@ -18,6 +18,7 @@
 #include "conf_interface.hpp"
 #include "conf_module.hpp"
 #include "conf_device.hpp"
+#include "conf_algo.hpp"
 
 namespace my_engineer {
 
@@ -88,6 +89,16 @@ enum class EModuleID{
     // MOD_SUBGANTRY,          ///< 子龙门模块 - 已删除
     MOD_ARM,                ///< 机械臂模块
 
+};
+
+/**
+ * @brief 算法ID枚举类型
+ * 
+ */
+enum class EAlgoID{
+    ALGO_NULL = -1,         ///< 空算法
+    ALGO_IMU_AVE = 0,       ///< IMU互补滤波
+    ALGO_IMU_EKF,           ///< IMU扩展卡尔曼滤波
 };
 
 /**

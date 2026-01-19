@@ -59,8 +59,11 @@ void StartUpdateTask(void *argument) {
             item.second->UpdateHandler_();
         }
 
-        UpdateImuFilter();  // 更新互补滤波   暂时放这里
-				UpdateImuEkf();
+        // 更新所有算法
+        for(const auto &item : AlgoIDMap){
+            item.second->UpdateHandler_();      ///< 和设备、模块以相同频率更新
+        }
+		UpdateImuEkf();
 
         // 更新系统核心
         SystemCore.UpdateHandler_();            ///<系统核心的更新放在设备更新之后，模块更新之前,以便模块可以使用系统核心的数据   
