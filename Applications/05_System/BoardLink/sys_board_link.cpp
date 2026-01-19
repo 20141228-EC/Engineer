@@ -1,6 +1,6 @@
 /**
  * @file sys_board_link.cpp
- * @author Ciallo～(∠·ω< )⌒☆(1002046597@qq.com)
+ * @author Ciallo(1002046597@qq.com)
  * @brief 板间通信系统层源文件
  * @version 1.0
  * @date 2025-12-11

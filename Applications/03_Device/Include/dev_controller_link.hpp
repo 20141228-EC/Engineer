@@ -1,13 +1,15 @@
 /******************************************************************************
- * @brief        
- * 
+ * @brief
+ *
  * @file         dev_controller_link.hpp
  * @author       Fish_Joe (2328339747@qq.com)
- * @version      V1.0
+ * @version      V2.0
  * @date         2025-04-05
- * 
+ * @LastEditors  Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-17
+ *
  * @copyright    Copyright (c) 2025
- * 
+ *
  ******************************************************************************/
 
 #ifndef DEV_CONTROLLER_LINK_HPP
@@ -20,9 +22,30 @@
 
 namespace my_engineer {
 
+/*------------------------------ 状态标志位定义 ------------------------------*/
+#define STATUS_CONTROLLER_OK      (1 << 0)  // bit0: 控制器状态OK
+#define STATUS_RETURN_SUCCESS     (1 << 1)  // bit1: 归位成功标志
+#define STATUS_TOGGLE_MASK        (0x03 << 2)  // bit2-3: 拨杆档位 (0-3)
+#define STATUS_TOGGLE_SHIFT       2
+#define STATUS_GRIPPER_LEFT       (1 << 4)  // bit4: 左夹爪闭合
+#define STATUS_GRIPPER_RIGHT      (1 << 5)  // bit5: 右夹爪闭合
+
+/**
+ * @brief 压缩角度结构体（5轴）
+ * 使用int16存储，精度0.01°，范围±327.67°
+ * 总大小: 5 × 2 = 10 bytes
+ */
+struct SArmAnglesCompressed {
+	int16_t yaw = 0;        ///< Yaw角度 (×100)
+	int16_t pitch1 = 0;     ///< Pitch1角度 (×100)
+	int16_t pitch2 = 0;     ///< Pitch2角度 (×100)
+	int16_t roll = 0;       ///< Roll角度 (×100)
+	int16_t pitch_end = 0;  ///< PitchEnd角度 (×100)
+} __packed;
+
 /**
  * @brief 控制器通信设备类
- * 
+ *
  */
 class CDevControllerLink final: public CDevBase{
 public:
@@ -46,36 +69,33 @@ public:
 		uint16_t cmd_Id = 0x0000; ///< 命令ID
 	} __packed; //禁止编译器的内存对齐优化
 
+	/**
+	 * @brief 控制器数据包 (Controller -> Robot)
+	 * 数据段大小: 24 bytes
+	 * 完整包大小: 7(header) + 24(data) + 2(CRC16) = 33 bytes
+	 */
 	struct SControllerDataPkg {
 		SPkgHeader header;
-		bool controller_OK = 0; ///< 控制器状态
-		bool return_success = 0; ///< 归位成功标志
-		// int8_t rocker_X = 0; ///< 摇杆X轴值
-		// int8_t rocker_Y = 0; ///< 摇杆Y轴值
-		// uint8_t rocker_Key = 0; ///< 摇杆按键状态
-		float_t angle_yaw = 0; ///< yaw角度位置
-		float_t angle_pitch1 = 0; ///< Pitch1角度位置
-		float_t angle_pitch2 = 0; ///< Pitch2角度位置
-		float_t angle_roll = 0; ///< roll电机位置
-		float_t angle_pitch_end = 0; ///< 末端Pitch角度位置
-		float_t angle_roll_end = 0; ///< 末端Roll角度位置
-		int8_t reserved[4] = {0}; ///< 保留字段
-		uint16_t CRC16 = 0x0000; ///< CRC16校验
+		uint8_t status_flags = 0;           ///< 状态标志位 (bit-packed)
+		SArmAnglesCompressed left_arm;      ///< 左臂5轴角度 (10 bytes)
+		SArmAnglesCompressed right_arm;     ///< 右臂5轴角度 (10 bytes)
+		int8_t rocker_LX = 0;               ///< 左臂roll_end增量 (-100~100)，控制第6轴
+		int8_t rocker_RX = 0;               ///< 右臂roll_end增量 (-100~100)，控制第6轴
+		int8_t rocker_RY = 0;               ///< 底盘前进 (-100~100，仅底盘模式有效)
+		uint16_t CRC16 = 0x0000;            ///< CRC16校验
 	} __packed controllerData_info_pkg = { };
 
+	/**
+	 * @brief 机器人数据包 (Robot -> Controller)
+	 * 用于同步机器人当前位置到控制器
+	 */
 	struct SRobotDataPkg {
 		SPkgHeader header;
-		bool ask_reset_flag = 0; ///< 要求复位标志
-		bool controlled_by_controller = 0; ///< 是否被控制器控制
-		bool ask_return_flag = 0; ///< 要求归位标志
-		float_t angle_yaw = 0; ///< yaw角度位置
-		float_t angle_pitch1 = 0; ///< Pitch1角度位置
-		float_t angle_pitch2 = 0; ///< Pitch2角度位置
-		float_t angle_roll = 0; ///< roll电机位置
-		float_t angle_pitch_end = 0; ///< 末端Pitch角度位置
-		float_t angle_roll_end = 0; ///< 末端Roll角度位置
-		int8_t reserved[3] = {0}; ///< 保留字段
-		uint16_t CRC16 = 0x0000; ///< CRC16校验
+		uint8_t status_flags = 0;           ///< 状态标志位 (bit-packed)
+		SArmAnglesCompressed left_arm;      ///< 左臂5轴角度 (10 bytes)
+		SArmAnglesCompressed right_arm;     ///< 右臂5轴角度 (10 bytes)
+		int8_t reserved[3] = {0};           ///< 保留字段
+		uint16_t CRC16 = 0x0000;            ///< CRC16校验
 	} __packed robotData_info_pkg = { };
 
 	enum class EControllerLinkStatus {
@@ -89,6 +109,25 @@ public:
 	EAppStatus InitDevice(const SDevInitParam_Base *pStructInitParam) override;
 
 	EAppStatus SendPackage(EPackageID packageID, SPkgHeader &packageHeader);
+
+	/*------------------------------ 角度压缩/解压工具函数 ------------------------------*/
+	/**
+	 * @brief 压缩角度 (float -> int16)
+	 * @param angle 角度值 (单位: 度)
+	 * @return int16_t 压缩后的值 (×100)
+	 */
+	static inline int16_t CompressAngle(float_t angle) {
+		return static_cast<int16_t>(angle * 100.0f);
+	}
+
+	/**
+	 * @brief 解压角度 (int16 -> float)
+	 * @param compressed 压缩后的值 (×100)
+	 * @return float_t 角度值 (单位: 度)
+	 */
+	static inline float_t DecompressAngle(int16_t compressed) {
+		return static_cast<float_t>(compressed) / 100.0f;
+	}
 
 private:
 

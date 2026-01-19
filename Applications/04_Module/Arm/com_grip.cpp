@@ -92,10 +92,11 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                     gripInfo.lastSetPosit = gripCmd.setPosit_grip;
 
                     // 初始化增量式 Roll 补偿
-                    if (parentModule != nullptr) {
-                        rollPositAtGripInit_ = parentModule->comEnd_.endInfo.posit_Roll;
-                        gripInfo.lastEndRollPosit = rollPositAtGripInit_;  ///< 初始化上一次位置
+                    if (parentModule == nullptr ||  parentModule->comEnd_.componentStatus != APP_OK) {
+                        return APP_ERROR;
                     }
+                    rollPositAtGripInit_ = parentModule->comEnd_.endInfo.posit_Roll;
+                    gripInfo.lastEndRollPosit = rollPositAtGripInit_;  ///< 初始化上一次位置
                     gripInfo.rollCompAccum = 0.0f;  ///< 清零累积补偿量
 
                     pidPosCtrl.ResetPidController();
@@ -129,7 +130,7 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                     // 正常模式：堵转且闭合方向移动时进入夹持状态
                     // 闭合方向判断：当前设定位置 < 上次设定位置，即在往闭合方向设定
                     if(motor->motorStatus == CDevMtr::EMotorStatus::STALL &&
-                       (gripCmd.setPosit_grip - gripInfo.lastSetPosit <= 0)){
+                       (gripCmd.setPosit_grip - gripInfo.lastSetPosit < -100)){
                         gripInfo.isGripped = true;
                         gripInfo.holdPosit_Grip = gripCmd.setPosit_grip; ///<记忆夹持位置
                     }

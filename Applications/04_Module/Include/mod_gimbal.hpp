@@ -1,6 +1,6 @@
 /**
  * @file mod_gimbal.hpp
- * @author Ciallo～(∠·ω< )⌒☆
+ * @author Ciallo
  * @brief 云台模块 - 升降 (双M2006同步) + 俯仰 (单M2006)
  * @version 2.0
  * @date 2025-12-17

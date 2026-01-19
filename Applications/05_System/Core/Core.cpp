@@ -159,6 +159,8 @@ void CSystemCore::UpdateHandler_() {
 
     }
 
+    /*----------- 自定义控制器模式切换---------*/
+    // 方式1: 键盘 Z+X 同时按住
     bool zx = SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X;
     if (SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X) {
         zx_count++;
@@ -169,25 +171,54 @@ void CSystemCore::UpdateHandler_() {
         zx_flag = false;
     }
 
+#if 1  // 测试: 遥控器拨杆 HIG+HIG 切换自定义控制器模式
+    enum { HIG = 1, LOW = 2, MID = 3 };
+    auto &remote = SysRemote.remoteInfo.remote;
+    static uint16_t hig_hig_count = 0;
+    static bool hig_hig_flag = false;
+
+    if (remote.switch_L == HIG && remote.switch_R == HIG) {
+        hig_hig_count++;
+    } else {
+        hig_hig_count = 0;
+        hig_hig_flag = false;
+    }
+
+    // HIG+HIG 保持超过 500ms 触发切换
+    if (hig_hig_count > 500 && hig_hig_flag == false) {
+        hig_hig_flag = true;
+        hig_hig_count = 0;
+        use_Controller_ = !use_Controller_;
+    }
+#endif
+
     if (zx_count > 20 && zx_flag == false) {
         zx_flag = true;
         zx_count = 0;
         use_Controller_ = !use_Controller_;
+    }
+
+    if (use_Controller_ != last_use_Controller) {
         if (use_Controller_ == true) {
-            // 根据当前在哪个自动任务中调整臂的初始角度
-            if (currentAutoCtrlProcess_ == EAutoCtrlProcess::EXCHANGE) {
-
-            }
-            else {
-
-            }
             SysControllerLink.robotInfo.controlled_by_controller = true;
             SysControllerLink.robotInfo.ask_return_flag = true;
             StopAutoCtrlTask_(); // 停止自动任务运行
         }
         if (use_Controller_ == false) {
-            // StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE); // 已删除此自动流程
-            // TODO: 决定切换出自定义控制器模式后的行为
+            SysControllerLink.robotInfo.controlled_by_controller = false;
+            SysControllerLink.robotInfo.ask_return_flag = false;
+            if (parm_) {
+                auto &armCmd = parm_->armCmd;
+                const auto &armInfo = parm_->armInfo;
+                armCmd.isCustomCtrl = false;
+                armCmd.set_angle_Yaw = armInfo.angle_Yaw;
+                armCmd.set_angle_Pitch1 = armInfo.angle_Pitch1;
+                armCmd.set_angle_Pitch2 = armInfo.angle_Pitch2;
+                armCmd.set_angle_Roll = armInfo.angle_Roll;
+                armCmd.set_angle_end_pitch = armInfo.angle_end_pitch;
+                armCmd.set_angle_end_roll = armInfo.angle_end_roll;
+                armCmd.set_length_grip = armInfo.length_grip;
+            }
         }
     }
     

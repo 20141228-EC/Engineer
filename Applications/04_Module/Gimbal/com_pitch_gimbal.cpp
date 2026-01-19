@@ -1,6 +1,6 @@
 /**
  * @file com_pitch_gimbal.cpp
- * @author Ciallo～(∠·ω< )⌒☆
+ * @author Ciallo
  * @brief 云台俯仰组件 (单M2006控制)
  * @version 1.0
  * @date 2025-12-17
