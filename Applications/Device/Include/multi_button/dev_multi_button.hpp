@@ -17,7 +17,7 @@
 //According to your need to modify the constants.
 #define TICKS_INTERVAL    2	//ms
 #define DEBOUNCE_TICKS    3	//MAX 7 (0 ~ 7)
-#define SHORT_TICKS       (300 /TICKS_INTERVAL)
+#define SHORT_TICKS       (600 /TICKS_INTERVAL)  // 双击窗口 ~300ms
 #define LONG_TICKS        (1000 /TICKS_INTERVAL)
 
 namespace my_engineer {
