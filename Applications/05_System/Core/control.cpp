@@ -377,121 +377,121 @@ void CSystemCore::ControlFromController_() {
     SysControllerLink.robotInfo.controlled_by_controller = true;
     SysControllerLink.robotInfo.ask_return_flag = true;
 
-    static CSystemControllerLink::KEY_STATUS last_rocker_key_status;
+//     static CSystemControllerLink::KEY_STATUS last_rocker_key_status;
 
-    // 将模块启动
-    if (SysRemote.systemStatus == APP_OK) {
-        StartRobot(false);
-    }
+//     // 将模块启动
+//     if (SysRemote.systemStatus == APP_OK) {
+//         StartRobot(false);
+//     }
 
-    if (parm_) {
-        parm_->should_limit_yaw = 0;
-    }
+//     if (parm_) {
+//         parm_->should_limit_yaw = 0;
+//     }
 
-    /******************* 底盘控制 *******************/
-    if (pchassis_) {
-        if (!pchassis_->chassisCmd.isAutoCtrl)
-        {
-            pchassis_->chassisCmd.speed_X *= 0.97f;
-            pchassis_->chassisCmd.speed_Y *= 0.98f;
-            pchassis_->chassisCmd.speed_W *= 0.98f;
-            if (abs(pchassis_->chassisCmd.speed_X) < 0.5f) pchassis_->chassisCmd.speed_X = 0.0f;
-            if (abs(pchassis_->chassisCmd.speed_Y) < 0.5f) pchassis_->chassisCmd.speed_Y = 0.0f;
-            if (abs(pchassis_->chassisCmd.speed_W) < 0.3f) pchassis_->chassisCmd.speed_W = 0.0f;
+//     /******************* 底盘控制 *******************/
+//     if (pchassis_) {
+//         if (!pchassis_->chassisCmd.isAutoCtrl)
+//         {
+//             pchassis_->chassisCmd.speed_X *= 0.97f;
+//             pchassis_->chassisCmd.speed_Y *= 0.98f;
+//             pchassis_->chassisCmd.speed_W *= 0.98f;
+//             if (abs(pchassis_->chassisCmd.speed_X) < 0.5f) pchassis_->chassisCmd.speed_X = 0.0f;
+//             if (abs(pchassis_->chassisCmd.speed_Y) < 0.5f) pchassis_->chassisCmd.speed_Y = 0.0f;
+//             if (abs(pchassis_->chassisCmd.speed_W) < 0.3f) pchassis_->chassisCmd.speed_W = 0.0f;
 
-            if (keyboard.key_Shift) {
-                pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 5.0f;
-                pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 5.0f;
-                pchassis_->chassisCmd.speed_W += static_cast<float_t>(keyboard.key_E - keyboard.key_Q) * 5.0f;
-                pchassis_->chassisCmd.speed_X =
-                std::clamp(pchassis_->chassisCmd.speed_X, -50.0f, 50.0f);
-                pchassis_->chassisCmd.speed_Y =
-                std::clamp(pchassis_->chassisCmd.speed_Y, -100.0f, 100.0f);
-                pchassis_->chassisCmd.speed_W =
-                std::clamp(pchassis_->chassisCmd.speed_W, -50.0f, 50.0f);
-            } else {
-                pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 0.8f;
-                pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 0.8f;
-                pchassis_->chassisCmd.speed_W += static_cast<float_t>(keyboard.key_E - keyboard.key_Q) * 0.4f;
-                pchassis_->chassisCmd.speed_X =
-                std::clamp(pchassis_->chassisCmd.speed_X, -20.0f, 20.0f);
-                pchassis_->chassisCmd.speed_Y =
-                std::clamp(pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
-                pchassis_->chassisCmd.speed_W =
-                std::clamp(pchassis_->chassisCmd.speed_W, -20.0f, 20.0f);
-            }
-        }
-    }
+//             if (keyboard.key_Shift) {
+//                 pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 5.0f;
+//                 pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 5.0f;
+//                 pchassis_->chassisCmd.speed_W += static_cast<float_t>(keyboard.key_E - keyboard.key_Q) * 5.0f;
+//                 pchassis_->chassisCmd.speed_X =
+//                 std::clamp(pchassis_->chassisCmd.speed_X, -50.0f, 50.0f);
+//                 pchassis_->chassisCmd.speed_Y =
+//                 std::clamp(pchassis_->chassisCmd.speed_Y, -100.0f, 100.0f);
+//                 pchassis_->chassisCmd.speed_W =
+//                 std::clamp(pchassis_->chassisCmd.speed_W, -50.0f, 50.0f);
+//             } else {
+//                 pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 0.8f;
+//                 pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 0.8f;
+//                 pchassis_->chassisCmd.speed_W += static_cast<float_t>(keyboard.key_E - keyboard.key_Q) * 0.4f;
+//                 pchassis_->chassisCmd.speed_X =
+//                 std::clamp(pchassis_->chassisCmd.speed_X, -20.0f, 20.0f);
+//                 pchassis_->chassisCmd.speed_Y =
+//                 std::clamp(pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
+//                 pchassis_->chassisCmd.speed_W =
+//                 std::clamp(pchassis_->chassisCmd.speed_W, -20.0f, 20.0f);
+//             }
+//         }
+//     }
 
-    /******************* 机械臂 *******************/
-    //  if (controller.return_success) {
-    if (parm_) {
-        parm_->armCmd.set_angle_Yaw =
-            LowPassFilter(parm_->armCmd.set_angle_Yaw,
-                Round(controller.angle_yaw), 0.5f);
-        parm_->armCmd.set_angle_Pitch1 =
-            LowPassFilter(parm_->armCmd.set_angle_Pitch1,
-                Round(controller.angle_pitch1 + 20.0f), 0.5f);
-        parm_->armCmd.set_angle_Pitch2 =
-            LowPassFilter(parm_->armCmd.set_angle_Pitch2,
-                Round(controller.angle_pitch2 + 20.0f), 0.5f);
-        parm_->armCmd.set_angle_Roll =
-            LowPassFilter(parm_->armCmd.set_angle_Roll,
-                Round(-controller.angle_roll), 0.5f);
-        if (controller.angle_pitch1 < 38.0f) {
-            parm_->armCmd.set_angle_end_pitch =
-                std::clamp(parm_->armCmd.set_angle_end_pitch, 0.0f, 40.0f);
-        }
-        else {
-            parm_->armCmd.set_angle_end_pitch =
-            LowPassFilter(parm_->armCmd.set_angle_end_pitch,
-                Round(controller.angle_pitch_end), 0.5f);
-        }
-        // 只有末端的roll轴是增量式控制
-        parm_->armCmd.set_angle_end_roll += 110.0f*(keyboard.key_F - keyboard.key_G)/freq;
-        if( SysRemote.remoteInfo.keyboard.key_Z){
-            if(last_key_F != SysRemote.remoteInfo.keyboard.key_F)
-                parm_->armCmd.set_angle_end_roll += 30.0f;
-            if(last_key_G != SysRemote.remoteInfo.keyboard.key_G)
-                parm_->armCmd.set_angle_end_roll -= 30.0f;
-        }
-    }
-        // LowPassFilter(parm_->armCmd.set_angle_end_roll,
-        //     Round(controller.angle_roll_end), 0.5f);
-        // if (controller.Rocker_Key == CSystemControllerLink::KEY_STATUS::PRESS &&
-        //     last_rocker_key_status == CSystemControllerLink::KEY_STATUS::RELEASE) {
-        //     psubgantry_->subGantryCmd.setPumpOn_Gantry = !psubgantry_->subGantryCmd.setPumpOn_Gantry;
-        // }
+//     /******************* 机械臂 *******************/
+//     //  if (controller.return_success) {
+//     if (parm_) {
+//         parm_->armCmd.set_angle_Yaw =
+//             LowPassFilter(parm_->armCmd.set_angle_Yaw,
+//                 Round(controller.), 0.5f);
+//         parm_->armCmd.set_angle_Pitch1 =
+//             LowPassFilter(parm_->armCmd.set_angle_Pitch1,
+//                 Round(controller.angle_pitch1 + 20.0f), 0.5f);
+//         parm_->armCmd.set_angle_Pitch2 =
+//             LowPassFilter(parm_->armCmd.set_angle_Pitch2,
+//                 Round(controller.angle_pitch2 + 20.0f), 0.5f);
+//         parm_->armCmd.set_angle_Roll =
+//             LowPassFilter(parm_->armCmd.set_angle_Roll,
+//                 Round(-controller.angle_roll), 0.5f);
+//         if (controller.angle_pitch1 < 38.0f) {
+//             parm_->armCmd.set_angle_end_pitch =
+//                 std::clamp(parm_->armCmd.set_angle_end_pitch, 0.0f, 40.0f);
+//         }
+//         else {
+//             parm_->armCmd.set_angle_end_pitch =
+//             LowPassFilter(parm_->armCmd.set_angle_end_pitch,
+//                 Round(controller.angle_pitch_end), 0.5f);
+//         }
+//         // 只有末端的roll轴是增量式控制
+//         parm_->armCmd.set_angle_end_roll += 110.0f*(keyboard.key_F - keyboard.key_G)/freq;
+//         if( SysRemote.remoteInfo.keyboard.key_Z){
+//             if(last_key_F != SysRemote.remoteInfo.keyboard.key_F)
+//                 parm_->armCmd.set_angle_end_roll += 30.0f;
+//             if(last_key_G != SysRemote.remoteInfo.keyboard.key_G)
+//                 parm_->armCmd.set_angle_end_roll -= 30.0f;
+//         }
+//     }
+//         // LowPassFilter(parm_->armCmd.set_angle_end_roll,
+//         //     Round(controller.angle_roll_end), 0.5f);
+//         // if (controller.Rocker_Key == CSystemControllerLink::KEY_STATUS::PRESS &&
+//         //     last_rocker_key_status == CSystemControllerLink::KEY_STATUS::RELEASE) {
+//         //     psubgantry_->subGantryCmd.setPumpOn_Gantry = !psubgantry_->subGantryCmd.setPumpOn_Gantry;
+//         // }
 
-    // 云台抬升
+//     // 云台抬升
 
-/*删除自定义控制器对应的兑矿操作
-    if (psubgantry_) {
-        psubgantry_->subGantryCmd.setLiftPosit_L = 88.5f;           ///<兑矿时必须保证刺雷抬到最高点
-        psubgantry_->subGantryCmd.setLiftPosit_R = 88.5f;
+// /*删除自定义控制器对应的兑矿操作
+//     if (psubgantry_) {
+//         psubgantry_->subGantryCmd.setLiftPosit_L = 88.5f;           ///<兑矿时必须保证刺雷抬到最高点
+//         psubgantry_->subGantryCmd.setLiftPosit_R = 88.5f;
 
-        // 气泵控制
-        static uint8_t vb_count = 0;
-        static bool vb_flag = false;
-        if (SysRemote.remoteInfo.keyboard.key_V && SysRemote.remoteInfo.keyboard.key_B) {
-            vb_count++;
-        }
-        // 全部松开之后才清零计数器
-        else if (SysRemote.remoteInfo.keyboard.key_V || SysRemote.remoteInfo.keyboard.key_B == false) {
-            vb_count = 0;
-            vb_flag = false;
-        }
-        if (vb_count > 20 && vb_flag == false) {
-            vb_flag = true;
-            vb_count = 0;
-            psubgantry_->subGantryCmd.setPumpOn_Arm = !psubgantry_->subGantryCmd.setPumpOn_Arm;
-        }
-    }
-*/
-    // }
-    last_key_F = SysRemote.remoteInfo.keyboard.key_F;
-    last_key_G = SysRemote.remoteInfo.keyboard.key_G;
-    // last_rocker_key_status = controller.Rocker_Key
+//         // 气泵控制
+//         static uint8_t vb_count = 0;
+//         static bool vb_flag = false;
+//         if (SysRemote.remoteInfo.keyboard.key_V && SysRemote.remoteInfo.keyboard.key_B) {
+//             vb_count++;
+//         }
+//         // 全部松开之后才清零计数器
+//         else if (SysRemote.remoteInfo.keyboard.key_V || SysRemote.remoteInfo.keyboard.key_B == false) {
+//             vb_count = 0;
+//             vb_flag = false;
+//         }
+//         if (vb_count > 20 && vb_flag == false) {
+//             vb_flag = true;
+//             vb_count = 0;
+//             psubgantry_->subGantryCmd.setPumpOn_Arm = !psubgantry_->subGantryCmd.setPumpOn_Arm;
+//         }
+//     }
+// */
+//     // }
+//     last_key_F = SysRemote.remoteInfo.keyboard.key_F;
+//     last_key_G = SysRemote.remoteInfo.keyboard.key_G;
+//     // last_rocker_key_status = controller.Rocker_Key
 
     
 }

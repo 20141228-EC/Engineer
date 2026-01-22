@@ -218,6 +218,9 @@ EAppStatus CModArm::Grav_Compemsation_Pitch1()
 	float_t pitch2 = deg2rad(armInfo.angle_Pitch2 - 11);
 	float_t roll = deg2rad(armInfo.angle_Roll);
 	float_t end_pitch = deg2rad(armInfo.angle_end_pitch); ///< 获取关节角
+
+	this->comjoint_.g_pitch1 = pitch1;
+	this->comjoint_.g_pitch2 = pitch2;
 	
 	this->comjoint_.Grav_Pitch1_Out = (26.0*cos(pitch1 + 0.34) - 7.8*cos(pitch1 + pitch2 + 0.08) - 0.21*cos(pitch1 + pitch2 + roll - 1.4) - 0.21*cos(pitch1 + pitch2 - roll - 1.5) + 0.19*cos(pitch1 + pitch2 + 0.12)*cos(end_pitch) + 0.19*cos(pitch1 + pitch2 + 0.12)*sin(roll)*sin(end_pitch)) / MG8010_i36V2_Torque_Constant;
 	return APP_OK;

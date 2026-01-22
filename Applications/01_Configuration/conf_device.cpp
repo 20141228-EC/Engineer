@@ -254,7 +254,7 @@ EAppStatus InitAllDevice(){
     static CDevMtrDM_MIT armMotor_Roll;
     CDevMtrDM_MIT::SMtrInitParam_DM_MIT armMotor_Roll_initparam;
     armMotor_Roll_initparam.deviceID = EDeviceID::DEV_ARM_MTR_ROLL;
-    armMotor_Roll_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    armMotor_Roll_initparam.interfaceID = EInterfaceID::INF_CAN2;
     armMotor_Roll_initparam.MasterID = 0x30;
     armMotor_Roll_initparam.SlaveID = 0x31;
     armMotor_Roll_initparam.Q_MAX = 3.1416f;

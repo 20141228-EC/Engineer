@@ -20,6 +20,12 @@ using ARM_MAT_INS = arm_matrix_instance_f32;
 
 namespace my_engineer{
 
+template<typename T>
+class Matrixt; // 前向声明矩阵类
+
+template<typename T>
+Matrixt<T> zeros(int rows, int cols);
+
 /**
  * @brief 矩阵类模板
  * @param 元素类型T
@@ -42,6 +48,43 @@ public:
         }
     }
 
+    // 移动构造
+    Matrixt(Matrixt&& mat) noexcept 
+        : rows_(mat.rows_), cols_(mat.cols_), data_(std::move(mat.data_)) {     // 转移unique_ptr所有权
+        if constexpr (std::is_same_v<T, float>) {
+            arm_mat_init_f32(&arm_mat_, rows_, cols_, (float32_t*)data_.get());
+        }
+        mat.rows_ = 0;
+        mat.cols_ = 0;
+    }
+
+    // 移动赋值
+    Matrixt<T>& operator=(Matrixt<T>&& mat) noexcept {
+        if (this != &mat) {
+            rows_ = mat.rows_;
+            cols_ = mat.cols_;
+            data_ = std::move(mat.data_);       // 转移unique_ptr所有权
+            if constexpr (std::is_same_v<T, float>) {
+                arm_mat_init_f32(&arm_mat_, rows_, cols_, (float32_t*)data_.get());
+            }
+            mat.rows_ = 0;
+            mat.cols_ = 0;
+        }
+        return *this;
+    }
+
+    // 拷贝构造函数
+    Matrixt(const Matrixt<T>& mat) 
+        : rows_(mat.rows_), cols_(mat.cols_),
+          data_(std::make_unique<T[]>(mat.rows_ * mat.cols_)) {
+        // 深拷贝数据
+        std::copy(mat.data_.get(), mat.data_.get() + mat.size(), data_.get());
+        
+        if constexpr (std::is_same_v<T, float>) {
+            arm_mat_init_f32(&arm_mat_, rows_, cols_, (float32_t*)data_.get());
+        }
+    }
+
     // 析构函数为默认 当data_超出作用域时会自动调用delete
     ~Matrixt() = default;
 
@@ -54,7 +97,7 @@ public:
     const T* operator[](const int& row) const { return &this->data_[row * cols_]; }
 
     /**
-     * @brief 赋值运算符重载
+     * @brief 赋值运算符重载(拷贝赋值)
      * @param 同维度矩阵mat的引用
      * 
      */
@@ -65,7 +108,7 @@ public:
         if(this->rows_ != mat.rows_ || this->cols_ != mat.cols_){    ///< 如果维度不匹配就重新分配内存
             this->rows_ = mat.rows_;
             this->cols_ = mat.cols_;
-            this->data_ = std::make_unique<T[]>(rows_ * cols_);     ///< 这里是移动赋值 而不是拷贝赋值
+            this->data_ = std::make_unique<T[]>(rows_ * cols_);
         }
         // 复制数据
         std::copy(mat.data_.get(),mat.data_.get() + (mat.rows_ * mat.cols_), this->data_.get());
@@ -107,7 +150,7 @@ public:
         }
         if constexpr (std::is_same_v<T, float>){    // 浮点矩阵用dsp库加速
             arm_status s = arm_mat_sub_f32(&this->arm_mat_, mat.get_arm_mat(), &this->arm_mat_);
-            (void)s;
+            
         }
         else{
             for(int i = 0;i < rows_ * cols_; i++){
@@ -126,7 +169,7 @@ public:
     Matrixt<T>& operator*=(const U& val) {
         if constexpr (std::is_same_v<T, float> && std::is_same_v<U, float>) {
             arm_status s = arm_mat_scale_f32(&this->arm_mat_, val, &this->arm_mat_);
-            (void)s;
+            
         } else {
             for (int i = 0; i < rows_ * cols_; i++) {
                 data_[i] *= val;
@@ -144,11 +187,11 @@ public:
     Matrixt<T>& operator/=(const U& val) {
         const U eps = std::is_floating_point_v<U> ? U(1e-6) : U(0);
         if (std::abs(val) < eps) {
-            return *this;   // 维度不匹配则返回自身
+            return *this;   // 除零则返回自身
         }     ///< 确保分母大于零
         if constexpr (std::is_same_v<T, float> && std::is_same_v<U, float>) {
             arm_status s = arm_mat_scale_f32(&this->arm_mat_, 1.0f / val, &this->arm_mat_);
-            (void)s;
+            
         } else {
             for (int i = 0; i < rows_ * cols_; i++) {
                 data_[i] /= val;
@@ -234,7 +277,7 @@ public:
 
         if constexpr (std::is_same_v<T, float>) {           ///< 如果是浮点矩阵就调用dsp库的加速算法
             arm_status s = arm_mat_add_f32(&this->arm_mat_, mat.get_arm_mat(), res.get_arm_mat());
-            (void)s;
+            
         }
         else{
             for(int i = 0; i < rows_ * cols_; i++){
@@ -258,7 +301,7 @@ public:
 
         if constexpr (std::is_same_v<T, float>){            ///< 如果是浮点矩阵就调用dsp库的加速算法
             arm_status s = arm_mat_sub_f32(&this->arm_mat_, mat.get_arm_mat(), res.get_arm_mat());
-            (void)s;
+            
         }
         else{
             for(int i = 0; i < rows_ * cols_; i++){
@@ -409,7 +452,7 @@ float norm(const Matrixt<T>& mat) {
 
 /**
  * @brief 矩阵求逆 (高斯-若尔当消元法)
- * @tparam 元素类型T(支持float或double类型)
+ * @tparam 元素类型T(仅支持float或double类型)
  * @param 需要求逆的方阵mat
  * @retval 返回mat的逆矩阵 如果矩阵奇异则返回同维度的零矩阵
  */
@@ -420,6 +463,11 @@ Matrixt<T> inv(const Matrixt<T>& mat) {
         return zeros<T>(0, 0); // 求逆操作只对方阵有效 否则返回零矩阵
     }
     arm_status s;   // 运算状态
+
+    // 仅支持浮点类型求逆，非浮点直接返回零矩阵
+    if constexpr (!std::is_floating_point_v<T>) {
+        return zeros<T>(0, 0);
+    }
 
     Matrixt<T> res(dim, dim);
 

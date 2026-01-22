@@ -98,6 +98,7 @@ enum class EModuleID{
 enum class EAlgoID{
     ALGO_NULL = -1,         ///< 空算法
     ALGO_IMU_AVE = 0,       ///< IMU互补滤波
+    ALGO_KF = 1,            ///< 基本卡尔曼滤波
     ALGO_IMU_EKF,           ///< IMU扩展卡尔曼滤波
 };
 

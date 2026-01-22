@@ -96,6 +96,46 @@ EAppStatus CDevBoardLink::SendPackage(EPacketID pack_id){
 		Modify_CanTxData(data_buf.data());
 		break;
 	}
+	case PKT_CTRLER_L_B:{
+		// 获取数据
+		controllerbackcmd_l_b_pkt.pack_id = PKT_CTRLER_L_B;
+		memcpy(data_buf.data(), &controllerbackcmd_l_b_pkt, sizeof(controllerbackcmd_l_b_pkt));
+
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+	}
+	case PKT_CTRLER_R_B:{
+		// 获取数据
+		controllerbackcmd_r_b_pkt.pack_id = PKT_CTRLER_R_B;
+		memcpy(data_buf.data(), &controllerbackcmd_r_b_pkt, sizeof(controllerbackcmd_r_b_pkt));
+
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+	}
+	case PKT_CTRLER_L_F:{
+		// 获取数据
+		controllerfrontcmd_l_f_pkt.pack_id = PKT_CTRLER_L_F;
+		memcpy(data_buf.data(), &controllerfrontcmd_l_f_pkt, sizeof(controllerfrontcmd_l_f_pkt));
+
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+	}
+	case PKT_CTRLER_R_F:{
+		// 获取数据
+		controllerfrontcmd_r_f_pkt.pack_id = PKT_CTRLER_R_F;
+		memcpy(data_buf.data(), &controllerfrontcmd_r_f_pkt, sizeof(controllerfrontcmd_r_f_pkt));
+
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+	}
+	case PKT_KEYB:{
+		// 获取数据
+		keyboard_pkt.pack_id = PKT_KEYB;
+		memcpy(data_buf.data(), &keyboard_pkt, sizeof(keyboard_pkt));
+
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+	}
 	default:
 		return APP_ERROR;
 	}

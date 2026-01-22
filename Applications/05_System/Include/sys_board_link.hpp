@@ -80,7 +80,6 @@ public:
         uint8_t  reserved[4];               ///< 预留给未来扩展
     } __packed ctrlFlags = {};
 
-
 	// 接收信息结构体
     struct SFeedbackPack {
         uint8_t  pack_id;
@@ -92,6 +91,85 @@ public:
         uint8_t  link_status;       ///< 通信状态（0=RESET 1=OFFLINE 2=ONLINE）
         uint8_t  reserved[5];       ///< 预留
     } __packed fdbInfo = {};
+
+    struct SControllerBackCmd_L{
+        uint8_t pack_id;        ///< 包ID = 3
+
+        // 角度指令
+        int16_t yaw;            ///< Yaw角度 (×100)
+	    int16_t pitch1;         ///< Pitch1角度 (×100)
+	    int16_t pitch2;         ///< Pitch2角度 (×100)
+        uint8_t  reserved;          ///< 预留
+        
+    } __packed controllerbackcmd_l = {};
+
+    struct SControllerBackCmd_R{
+        uint8_t pack_id;        ///< 包ID = 4
+
+        // 角度指令
+        int16_t yaw;            ///< Yaw角度 (×100)
+	    int16_t pitch1;         ///< Pitch1角度 (×100)
+	    int16_t pitch2;         ///< Pitch2角度 (×100)
+        uint8_t  reserved;          ///< 预留
+        
+    } __packed controllerbackcmd_r = {};
+
+    struct SControllerFrontCmd_L{
+        uint8_t pack_id;        ///< 包ID = 5
+
+        // 角度指令
+        int16_t roll;       ///< Roll角度 (×100)
+	    int16_t pitch_end;  ///< PitchEnd角度 (×100)
+        int8_t roll_end;    ///< 左臂roll_end增量 (-100~100)，控制第6轴
+        uint8_t grip_close; ///< 夹爪闭合
+
+        uint8_t reserved[2];    ///< 保留
+        
+    } __packed controllerfrontcmd_l = {};
+
+    struct SControllerFrontCmd_R{
+        uint8_t pack_id;        ///< 包ID = 6
+
+        // 角度指令
+        int16_t roll;       ///< Roll角度 (×100)
+	    int16_t pitch_end;  ///< PitchEnd角度 (×100)
+        int8_t roll_end;    ///< 右臂roll_end增量 (-100~100)，控制第6轴
+        uint8_t grip_close; ///< 夹爪闭合
+        uint8_t chassis_speed;  ///< 底盘速度
+
+        uint8_t reserved;    ///< 保留
+        
+    } __packed controllerfrontcmd_r = {};
+
+    struct SKeyBoardInfo{
+        uint8_t pack_id;        ///< 包ID = 7
+        
+        uint8_t KEY_W     : 1;      ///< W键
+        uint8_t KEY_S     : 1;      ///< S键
+        uint8_t KEY_A     : 1;      ///< A键
+        uint8_t KEY_D     : 1;      ///< D键
+        uint8_t KEY_SHIFT : 1;      ///< SHIFT键
+        uint8_t KEY_CTRL  : 1;      ///< CTRL键
+        uint8_t KEY_Q     : 1;      ///< Q键
+        uint8_t KEY_E     : 1;      ///< E键
+
+        uint8_t KEY_R     : 1;      ///< R键
+        uint8_t KEY_F     : 1;      ///< F键
+        uint8_t KEY_G     : 1;      ///< G键
+        uint8_t KEY_Z     : 1;      ///< Z键
+        uint8_t KEY_X     : 1;      ///< X键
+        uint8_t KEY_C     : 1;      ///< C键
+        uint8_t KEY_V     : 1;      ///< V键
+        uint8_t KEY_B     : 1;      ///< B键
+
+        uint8_t MOUSE_L   : 1;      ///< 左键
+        uint8_t MOUSE_R   : 1;      ///< 右键
+        uint8_t reserved  : 6;      ///< 保留
+
+        int16_t mouse_vx;           ///< 鼠标x轴速度
+        int16_t mouse_vy;           ///< 鼠标y轴速度
+        
+    } __packed keyboard = {};
 
 	// 初始化系统
 	EAppStatus InitSystem(SSystemInitParam_Base *pStruct) final;

@@ -19,6 +19,7 @@
 #include "algo_other.hpp"
 #include "algo_ave_filter.hpp"
 #include "algo_imu_ekf.hpp"
+#include "algo_kf_filter.hpp"
 
 #define I_AM_CONTROLLER 0 // 当前板子是控制器
 

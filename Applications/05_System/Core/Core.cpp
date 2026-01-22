@@ -365,6 +365,56 @@ void CSystemCore::BoardLink_Info_Update_(){
     SysBoardLink.ctrlFlags.gimbal_auto_ctrl = gimbal_auto_ctrl;
     SysBoardLink.ctrlFlags.arm_auto_ctrl = parm_->armCmd.isAutoCtrl;
 
+    // 包3 - 控制器左臂后三轴命令包
+    SysBoardLink.controllerbackcmd_l.pack_id = 3;
+    SysBoardLink.controllerbackcmd_l.yaw = SysControllerLink.controllerInfo.left_arm.yaw;          ///< 左臂yaw
+    SysBoardLink.controllerbackcmd_l.pitch1 = SysControllerLink.controllerInfo.left_arm.pitch1;    ///< 左臂pitch1
+    SysBoardLink.controllerbackcmd_l.pitch2 = SysControllerLink.controllerInfo.left_arm.pitch2;    ///< 左臂pitch2
+
+    // 包4 - 控制器右臂后三轴命令包
+    SysBoardLink.controllerbackcmd_r.pack_id = 4;
+    SysBoardLink.controllerbackcmd_r.yaw = SysControllerLink.controllerInfo.right_arm.yaw;          ///< 右臂yaw
+    SysBoardLink.controllerbackcmd_r.pitch1 = SysControllerLink.controllerInfo.right_arm.pitch1;       ///< 右臂pitch1
+    SysBoardLink.controllerbackcmd_r.pitch2 = SysControllerLink.controllerInfo.right_arm.pitch2;       ///< 右臂pitch2
+
+    // 包5 - 控制器左臂前三轴命令包
+    SysBoardLink.controllerfrontcmd_l.pack_id = 5;
+    SysBoardLink.controllerfrontcmd_l.roll = SysControllerLink.controllerInfo.left_arm.roll;              ///< 左臂roll
+    SysBoardLink.controllerfrontcmd_l.pitch_end = SysControllerLink.controllerInfo.left_arm.pitch_end;    ///< 左臂末端pitch
+    SysBoardLink.controllerfrontcmd_l.roll_end = SysControllerLink.controllerInfo.rocker_LX;              ///< 左臂末端roll(增量式)
+    SysBoardLink.controllerfrontcmd_l.grip_close = SysControllerLink.controllerInfo.gripper_left_close;  ///< 左臂夹爪开合
+
+    // 包6 - 控制器右臂前三轴命令包
+    SysBoardLink.controllerfrontcmd_r.pack_id = 6;
+    SysBoardLink.controllerfrontcmd_r.roll = SysControllerLink.controllerInfo.right_arm.roll;        ///< 右臂roll
+    SysBoardLink.controllerfrontcmd_r.pitch_end = SysControllerLink.controllerInfo.right_arm.pitch_end;   ///< 右臂末端pitch
+    SysBoardLink.controllerfrontcmd_r.roll_end = SysControllerLink.controllerInfo.rocker_RX;    ///< 右臂末端roll(增量式)
+    SysBoardLink.controllerfrontcmd_r.grip_close = SysControllerLink.controllerInfo.gripper_right_close;  ///< 右臂夹爪开合
+    SysBoardLink.controllerfrontcmd_r.chassis_speed = SysControllerLink.controllerInfo.rocker_RY;         ///< 底盘速度
+
+    // 包7 - 键鼠信息包
+    SysBoardLink.keyboard.KEY_W = SysRemote.remoteInfo.keyboard.key_W;
+    SysBoardLink.keyboard.KEY_S = SysRemote.remoteInfo.keyboard.key_S;
+    SysBoardLink.keyboard.KEY_A = SysRemote.remoteInfo.keyboard.key_A;
+    SysBoardLink.keyboard.KEY_D = SysRemote.remoteInfo.keyboard.key_D;
+    SysBoardLink.keyboard.KEY_SHIFT = SysRemote.remoteInfo.keyboard.key_Shift;
+    SysBoardLink.keyboard.KEY_CTRL = SysRemote.remoteInfo.keyboard.key_Ctrl;
+    SysBoardLink.keyboard.KEY_Q = SysRemote.remoteInfo.keyboard.key_Q;
+    SysBoardLink.keyboard.KEY_E = SysRemote.remoteInfo.keyboard.key_E;
+
+    SysBoardLink.keyboard.KEY_R = SysRemote.remoteInfo.keyboard.key_R;
+    SysBoardLink.keyboard.KEY_F = SysRemote.remoteInfo.keyboard.key_F;
+    SysBoardLink.keyboard.KEY_G = SysRemote.remoteInfo.keyboard.key_G;
+    SysBoardLink.keyboard.KEY_Z = SysRemote.remoteInfo.keyboard.key_Z;
+    SysBoardLink.keyboard.KEY_X = SysRemote.remoteInfo.keyboard.key_X;
+    SysBoardLink.keyboard.KEY_C = SysRemote.remoteInfo.keyboard.key_C;
+    SysBoardLink.keyboard.KEY_V = SysRemote.remoteInfo.keyboard.key_V;
+    SysBoardLink.keyboard.KEY_B = SysRemote.remoteInfo.keyboard.key_B;
+
+    SysBoardLink.keyboard.MOUSE_L = SysRemote.remoteInfo.keyboard.mouse_L;       ///< 鼠标左键
+    SysBoardLink.keyboard.MOUSE_R = SysRemote.remoteInfo.keyboard.mouse_R;       ///< 鼠标右键
+    SysBoardLink.keyboard.mouse_vx = SysRemote.remoteInfo.keyboard.mouse_X;     ///< 鼠标x轴速度
+    SysBoardLink.keyboard.mouse_vy = SysRemote.remoteInfo.keyboard.mouse_Y;     ///< 鼠标y轴速度
 }
 
 

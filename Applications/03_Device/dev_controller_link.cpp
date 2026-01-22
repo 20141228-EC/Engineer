@@ -3,9 +3,11 @@
  * 
  * @file         dev_controller_link.cpp
  * @author       Fish_Joe (2328339747@qq.com)
- * @version      V1.0
+ * @version      V2.0
  * @date         2025-04-05
- * 
+ * @LastEditors  Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-17
+ *
  * @copyright    Copyright (c) 2025
  * 
  ******************************************************************************/
@@ -31,14 +33,14 @@ EAppStatus CDevControllerLink::InitDevice(const SDevInitParam_Base *pStructInitP
 	deviceID = controllerLinkParam.deviceID;
 	uartInterface_ = reinterpret_cast<CInfUART *>(InterfaceIDMap.at(controllerLinkParam.interfaceID));
 
-	auto callback = [this](auto &buffer, auto len) { ///< lambda表达式
+	auto callback = [this](auto &buffer, auto len) {
 		if (len > 512) return;
 		std::copy(buffer.data(), buffer.data() + len , rxBuffer_.data());
-		rxTimestamp_ = HAL_GetTick(); ///< 将数据存入rxbuffer并更新时间戳
+		rxTimestamp_ = HAL_GetTick();
 	};
 
 	RegisterDevice_();
-	uartInterface_->RegisterRxSaveDataCallback(callback); ///< 串口中断调用这个callback
+	uartInterface_->RegisterRxSaveDataCallback(callback);
 
 	deviceStatus = APP_OK;
 	controllerLinkStatus = EControllerLinkStatus::OFFLINE;
@@ -64,9 +66,9 @@ EAppStatus CDevControllerLink::SendPackage(EPackageID packageID, SPkgHeader &pac
 			auto pkg = reinterpret_cast<SControllerDataPkg *>(&packageHeader);
 			pkg->header.SOF = 0xA5;
 			pkg->header.seq++;
-			pkg->header.pkgLen = sizeof(SControllerDataPkg) - sizeof(SPkgHeader) - 2; // 2 bytes for CRC16
+			pkg->header.pkgLen = sizeof(SControllerDataPkg) - sizeof(SPkgHeader) - 2; // 24 bytes
 			pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&(pkg->header)), 4);
-			pkg->header.cmd_Id = 0x0302;
+			pkg->header.cmd_Id = 0x0302;///<自定义控制器与机器人交互数据
 			pkg->CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(pkg), sizeof(SControllerDataPkg) - 2);
 
 			return uartInterface_->Transmit(reinterpret_cast<uint8_t *>(pkg), sizeof(SControllerDataPkg));
@@ -76,13 +78,24 @@ EAppStatus CDevControllerLink::SendPackage(EPackageID packageID, SPkgHeader &pac
 			auto pkg = reinterpret_cast<SRobotDataPkg *>(&packageHeader);
 			pkg->header.SOF = 0xA5;
 			pkg->header.seq++;
-			pkg->header.pkgLen = sizeof(SRobotDataPkg) - sizeof(SPkgHeader)- 2; // 2 bytes for CRC16
+			pkg->header.pkgLen = sizeof(SRobotDataPkg) - sizeof(SPkgHeader)- 2; // 24 bytes
 			pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&(pkg->header)), 4);
 			pkg->header.cmd_Id = 0x0309;
 			pkg->CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(pkg), sizeof(SRobotDataPkg) - 2);
 
 			return uartInterface_->Transmit(reinterpret_cast<uint8_t *>(pkg), sizeof(SRobotDataPkg));
 		}
+		// case ID_CHOSELEVEL_DATA: {
+		// 	auto pkg = reinterpret_cast<SChoseLevelDataPkg *>(&packageHeader);
+		// 	pkg->header.SOF = 0xA5;
+		// 	pkg->header.seq++;
+		// 	pkg->header.pkgLen = sizeof(SChoseLevelDataPkg) - sizeof(SPkgHeader) - 2; // 2 bytes for CRC16
+		// 	pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&(pkg->header)), 4);
+		// 	pkg->header.cmd_Id = 0x0306; 
+		// 	pkg->CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(pkg), sizeof(SChoseLevelDataPkg) - 2);
+
+		// 	return uartInterface_->Transmit(reinterpret_cast<uint8_t *>(pkg), sizeof(SChoseLevelDataPkg));
+		// }
 
 		default:
 			return APP_ERROR;
@@ -135,13 +148,13 @@ EAppStatus CDevControllerLink::ResolveRxPackage_(){
 		}
 
 		auto header = reinterpret_cast<SPkgHeader *>(&rxBuffer_[i]);
-		if (CCrcValidator::Crc8Verify(rxBuffer_.data(), header->CRC8, 4) != APP_OK) {
+		if (CCrcValidator::Crc8Verify(&rxBuffer_[i], header->CRC8, 4) != APP_OK) {
 			continue;
 		}
 
 		switch (header->cmd_Id) {
 
-			case 0x0302: {
+			case 0x0302: { ///> 自定义控制器-->机器人
 				if (i + sizeof(SControllerDataPkg) > rxBuffer_.size())
 					break;
 				auto pkg = reinterpret_cast<SControllerDataPkg *>(header);
@@ -152,7 +165,7 @@ EAppStatus CDevControllerLink::ResolveRxPackage_(){
 				break;
 			}
 
-			case 0x0309: {
+			case 0x0309: { ///> 己方机器人→对应操作手选手端
 				if (i + sizeof(SRobotDataPkg) > rxBuffer_.size())
 					break;
 				auto pkg = reinterpret_cast<SRobotDataPkg *>(header);
