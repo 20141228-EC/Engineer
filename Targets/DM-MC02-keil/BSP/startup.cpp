@@ -26,6 +26,7 @@ extern "C" {
   void MX_ADC1_Init();
   void MX_ADC3_Init();
   void MX_CRC_Init();
+  void MX_TIM1_Init();
   void MX_TIM3_Init();
   void MX_TIM12_Init();
   void MX_SPI2_Init();
@@ -74,6 +75,7 @@ int main() {
   MX_ADC1_Init();
   MX_ADC3_Init();
   // MX_CRC_Init();
+  MX_TIM1_Init();
   MX_TIM3_Init();
   MX_TIM12_Init();
   MX_SPI2_Init();

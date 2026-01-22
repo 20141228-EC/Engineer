@@ -1,9 +1,12 @@
 /**
  * @file mod_gimbal.hpp
  * @author Ciallo
- * @brief 云台模块 - 升降 (双M2006同步) + 俯仰 (单M2006)
- * @version 2.0
- * @date 2025-12-17
+ * @brief 云台模块:升降 (双M2006同步)、俯仰 (舵机/电机可切换)
+ * @version 2.1
+ * @date 2025-01-19
+ *
+ * @note 使用 USE_PITCH_SERVO 宏来切换俯仰控制方式
+ *       定义该宏则使用舵机，否则使用M2006电机
  *
  * @copyright Copyright (c) 2025
  *
@@ -13,6 +16,16 @@
 #define MOD_GIMBAL_HPP
 
 #include "mod_common.hpp"
+
+// ----------------- 俯仰控制方式选择 -----------------
+// 定义此宏使用舵机控制俯仰，注释掉则使用M2006电机
+#define USE_PITCH_SERVO
+
+
+// 声明舵机设备类
+#ifdef USE_PITCH_SERVO
+class CDevServo;
+#endif
 
 // -------------------- 升降组件参数 ---------------------
 #define GIMBAL_LIFT_PHYSICAL_RANGE 100.0f       ///< 升降物理行程 (mm)
@@ -43,11 +56,19 @@ public:
 		CAlgoPid::SAlgoInitParam_Pid liftPosPidParam;
 		CAlgoPid::SAlgoInitParam_Pid liftSpdPidParam;
 
+#ifdef USE_PITCH_SERVO
+		// 俯仰组件 (舵机版本)
+		EDeviceID pitchServoID = EDeviceID::DEV_NULL;
+		float_t servoAngleMin = 0.0f;      ///< 舵机最小角度
+		float_t servoAngleMax = 180.0f;    ///< 舵机最大角度
+		float_t servoAngleOffset = 45.0f;  ///< 舵机角度偏移（物理0度对应的舵机角度）
+#else
 		// 俯仰组件 (单电机)
 		EDeviceID pitchMotorID = EDeviceID::DEV_NULL;
 		CInfCAN::CCanTxNode *pitchMotorTxNode = nullptr;
 		CAlgoPid::SAlgoInitParam_Pid pitchPosPidParam;
 		CAlgoPid::SAlgoInitParam_Pid pitchSpdPidParam;
+#endif
 	};
 
 	// 云台信息
@@ -108,6 +129,40 @@ private:
 
 	} comLift_;
 
+#ifdef USE_PITCH_SERVO
+	// 俯仰组件 (舵机版本)
+	class CComPitchServo: public CComponentBase{
+	public:
+
+		struct SPitchInfo{
+			float_t posit = 0;      ///< 当前角度（度）
+			bool isPositArrived = false;
+		} pitchInfo;
+
+		struct SPitchCmd{
+			float_t setPosit = 0;   ///< 目标角度（度）
+		} pitchCmd;
+
+		CDevServo *servo = nullptr;
+
+		// 舵机角度参数
+		float_t servoAngleMin = 0.0f;
+		float_t servoAngleMax = 180.0f;
+		float_t servoAngleOffset = 0.0f;
+
+		EAppStatus InitComponent(SModInitParam_Base &param) final;
+
+		EAppStatus UpdateComponent() final;
+
+		static float_t PhyPositToSetPosit(float_t phyPosit);
+
+		static float_t SetPositToPhyPosit(float_t setPosit);
+
+		EAppStatus _UpdateServoOutput(float_t posit);
+
+	} comPitchServo_;
+
+#else
 	// 俯仰组件 (单电机)
 	class CComPitch: public CComponentBase{
 	public:
@@ -142,6 +197,7 @@ private:
 		EAppStatus _UpdateOutput(float_t posit);
 
 	} comPitch_;
+#endif
 
 	// 重写基类函数
     void UpdateHandler_() final;

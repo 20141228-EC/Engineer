@@ -2,8 +2,10 @@
  * @file mod_gimbal.cpp
  * @author Ciallo～(∠·ω< )⌒☆
  * @brief 云台模块
- * @version 2.0
- * @date 2025-12-17
+ * @version 2.1
+ * @date 2025-01-19
+ *
+ * @note 支持舵机/电机切换，通过 USE_PITCH_SERVO 宏控制
  *
  * @copyright Copyright (c) 2025
  *
@@ -32,14 +34,19 @@ EAppStatus CModGimbal::InitModule(SModInitParam_Base &param){
 	// 初始化云台升降组件 (双电机同步)
 	comLift_.InitComponent(param);
 
+#ifdef USE_PITCH_SERVO
+	// 初始化云台俯仰组件 (舵机版本)
+	comPitchServo_.InitComponent(param);
+#else
 	// 初始化云台俯仰组件 (单电机)
 	comPitch_.InitComponent(param);
+#endif
 
 	// 创建任务并注册模块
 	CreateModuleTask_();
 	RegisterModule_();
 
-	// test
+	// 调试用全局指针
 	pGimbal_test = this;
 
 	Module_FSMFlag_ = FSM_RESET;
@@ -56,19 +63,32 @@ void CModGimbal::UpdateHandler_(){
 	// 检查模块状态
 	if (moduleStatus == APP_RESET) return;
 
-	// 更新所有组件
+	// 更新升降组件
 	comLift_.UpdateComponent();
-	comPitch_.UpdateComponent();
 
-	// 更新模块信息 - 升降
+#ifdef USE_PITCH_SERVO
+	// 更新俯仰组件 (舵机版本)
+	comPitchServo_.UpdateComponent();
+#else
+	// 更新俯仰组件 (电机版本)
+	comPitch_.UpdateComponent();
+#endif
+
+	// 更新模块信息:升降
 	gimbalInfo.posit_lift =
 		comLift_.MtrPositToPhyPosit(comLift_.liftInfo.posit);
 	gimbalInfo.isPositArrived_Lift = comLift_.liftInfo.isPositArrived;
 
-	// 更新模块信息 - 俯仰
+#ifdef USE_PITCH_SERVO
+	// 更新模块信息:俯仰 (舵机版本)
+	gimbalInfo.posit_pitch = comPitchServo_.pitchInfo.posit;
+	gimbalInfo.isPositArrived_Pitch = comPitchServo_.pitchInfo.isPositArrived;
+#else
+	// 更新模块信息:俯仰 (电机版本)
 	gimbalInfo.posit_pitch =
 		comPitch_.MtrPositToPhyPosit(comPitch_.pitchInfo.posit);
 	gimbalInfo.isPositArrived_Pitch = comPitch_.pitchInfo.isPositArrived;
+#endif
 
 	// 填充数据发送缓冲区 - 升降左电机
 	CDevMtrDJI::FillCanTxBuffer(comLift_.motor[CComLift::L],
@@ -80,10 +100,12 @@ void CModGimbal::UpdateHandler_(){
 								comLift_.mtrCanTxNode[CComLift::R]->dataBuffer,
 								comLift_.mtrOutputBuffer[CComLift::R]);
 
-	// 填充数据发送缓冲区 - 俯仰电机
+#ifndef USE_PITCH_SERVO
+	// 填充数据发送缓冲区 - 俯仰电机 (仅电机版本需要)
 	CDevMtrDJI::FillCanTxBuffer(comPitch_.motor,
 								comPitch_.mtrCanTxNode->dataBuffer,
 								comPitch_.mtrOutputBuffer[0]);
+#endif
 
 }
 

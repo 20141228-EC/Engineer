@@ -106,7 +106,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				while(motor[P1]->motorData[CDevMtr::DATA_POSIT] < -32767)
 					motor[P1]->motorData[CDevMtr::DATA_POSIT] += 65535;//归位到-32767~32768范围内
 				motor[P1]->motorData[CDevMtr::DATA_POSIT] +=	POSIT_JOINT2_PITCH1_MACH_PHY * 182.04f * ARM_PITCH1_MOTOR_DIR;			///<这个是等效连杆和水平面的夹角
-				jointCmd.setPosit_pitch1 = static_cast<int32_t>(70.0f * 182.04f);																		///<这个初始角度
+				jointCmd.setPosit_pitch1 = static_cast<int32_t>(70.0f * 182.04f);	///<182.04表示的是每一度对应的编码器值																	///<这个初始角度
 
 				motor[P2]->motorData[CDevMtr::DATA_POSIT] = motor[P2]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT3_PITCH2_MACH;
 				while(motor[P2]->motorData[CDevMtr::DATA_POSIT] < -32767)
@@ -127,7 +127,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 						Component_FSMFlag_ = FSM_INIT;
 						return APP_OK;
 					}
-					else if(motor[Y]->motorStatus == CDevMtr::EMotorStatus::STALL){				///<通过堵转来重新标定零点				
+					else if(motor[Y]->motorStatus == CDevMtr::EMotorStatus::STALL){				///<通过堵转来重新标定yaw				
 						motor[Y]->motorData[CDevMtr::DATA_POSIT] = 36484 * ARM_YAW_MOTOR_DIR; ///< 36484是Yaw电机的初始位置
 						jointCmd.setPosit_yaw = 0;
 					}

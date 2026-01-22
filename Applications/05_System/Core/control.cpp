@@ -188,6 +188,8 @@ void CSystemCore::ControlFromRemote_() {
         if (pgimbal_) {                                                             ///< 云台抬升 (左摇杆Y)
             pgimbal_->gimbalCmd.set_posit_lift +=
                 (remote.joystick_LY / 100.f) * 100.f / freq;
+            pgimbal_->gimbalCmd.set_posit_pitch +=
+                (remote.joystick_RY / 100.f) * 100.f / freq;
         }
         if (parm_) {
             parm_->armCmd.set_length_grip +=                                        ///< 夹爪控制：正值张开，负值闭合

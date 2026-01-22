@@ -149,13 +149,13 @@ EAppStatus CModArm::RestrictArmCommand_() {
 		std::clamp(armCmd.set_angle_Yaw, ARM_YAW_PHYSICAL_RANGE_MIN, ARM_YAW_PHYSICAL_RANGE_MAX);
 	armCmd.set_angle_Pitch1 =
 		std::clamp(armCmd.set_angle_Pitch1,
-				   ARM_PITCH1_PHYSICAL_RANGE_MIN, ARM_PITCH1_PHYSICAL_RANGE_MAX);
-	if (armCmd.set_angle_Pitch2 < ARM_PITCH2_PHYSICAL_RANGE_MIN) {
+				   ARM_PITCH1_PHYSICAL_RANGE_MIN, ARM_PITCH1_PHYSICAL_RANGE_MAX);///<各自的软件限位
+	if (armCmd.set_angle_Pitch2 < ARM_PITCH2_PHYSICAL_RANGE_MIN) {///<p2的下限
 		armCmd.set_angle_Pitch2 = ARM_PITCH2_PHYSICAL_RANGE_MIN;
 	} else {
 		armCmd.set_angle_Pitch2 =
 			std::clamp(armCmd.set_angle_Pitch2,
-				ARM_PITCH2_PHYSICAL_RANGE_MIN, 1.25f * armCmd.set_angle_Pitch1);
+				ARM_PITCH2_PHYSICAL_RANGE_MIN, 1.25f * armCmd.set_angle_Pitch1);//p2的上限
 	}
 	if (armCmd.set_angle_Pitch2 > ARM_PITCH2_PHYSICAL_RANGE_MAX) {
 		armCmd.set_angle_Pitch2 = ARM_PITCH2_PHYSICAL_RANGE_MAX;

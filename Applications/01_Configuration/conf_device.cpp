@@ -11,8 +11,10 @@
 #include "conf_device.hpp"
 #include "conf_CanTxNode.hpp"
 #include "Device.hpp"
+#include "dev_servo.hpp"
+#include "mod_gimbal.hpp"  // for USE_PITCH_SERVO macro
 
-// extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim1;  // 舵机PWM定时器
 extern TIM_HandleTypeDef htim3;
 
 namespace my_engineer {
@@ -189,7 +191,15 @@ EAppStatus InitAllDevice(){
     gimbalMotor_Lift_R_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
     gimbalMotor_Lift_R.InitDevice(&gimbalMotor_Lift_R_initparam);
 
-    // 云台俯仰电机
+#ifdef USE_PITCH_SERVO
+    static CDevServo gimbalServo_Pitch;
+    CDevServo::SDevInitParam_Servo gimbalServo_Pitch_initparam;
+    gimbalServo_Pitch_initparam.deviceID = EDeviceID::DEV_GIMBAL_SERVO_PITCH;
+    gimbalServo_Pitch_initparam.servoHalTimHandle = &htim1;
+    gimbalServo_Pitch_initparam.servoTimChannel = TIM_CHANNEL_3;  // PE13
+    gimbalServo_Pitch.InitDevice(&gimbalServo_Pitch_initparam);
+#else
+    // 云台俯仰电机 (电机版本)
     static CDevMtrM2006 gimbalMotor_Pitch;
     CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Pitch_initparam;
     gimbalMotor_Pitch_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_PITCH;
@@ -199,6 +209,7 @@ EAppStatus InitAllDevice(){
     gimbalMotor_Pitch_initparam.useStallMonit = true;
     gimbalMotor_Pitch_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
     gimbalMotor_Pitch.InitDevice(&gimbalMotor_Pitch_initparam);
+#endif
 
     /******************************************
      * 机械臂电机

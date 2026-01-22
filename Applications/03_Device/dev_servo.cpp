@@ -63,8 +63,12 @@ void CDevServo::UpdateHandler_() {
 
 	servoCmd.set_angle = std::clamp(servoCmd.set_angle, 0.f, 180.f); // 限制舵机角度范围
 
-	// PWM输出
-	uint16_t pulse = static_cast<uint16_t>(servoCmd.set_angle/180.f * 200 + 50);
+	// PWM输出 (TIM1周期=20000)
+	constexpr uint16_t PULSE_MIN = 500;   // 0度对应的脉冲值
+	constexpr uint16_t PULSE_MAX = 1680;  // 180度对应的脉冲值
+
+	uint16_t pulse = static_cast<uint16_t>(
+		servoCmd.set_angle / 180.f * (PULSE_MAX - PULSE_MIN) + PULSE_MIN);
 	__HAL_TIM_SET_COMPARE(servoHalTimHandle_, servoTimChannel_, pulse);
 
 }
