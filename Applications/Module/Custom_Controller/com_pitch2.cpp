@@ -1,3 +1,17 @@
+/******************************************************************************
+ * @brief
+ *
+ * @file         com_pitch2.cpp
+ * @author       Fish_Joe (2328339747@qq.com)
+ * @version      V1.0
+ * @date         2025-03-30
+ * @LastEditors  Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-22
+ *
+ * @copyright    Copyright (c) 2025
+ *
+ ******************************************************************************/
+
 #include "mod_controller.hpp"
 
 namespace my_engineer {
@@ -68,7 +82,11 @@ EAppStatus CModController::CComPitch2::UpdateComponent() {
 
         case FSM_CTRL: {
             if (pitch2Cmd.isFree) {
+                float_t savedTF = pitch2Cmd.setParam[EMotorParam::TF];
+                float_t savedKD = pitch2Cmd.setParam[EMotorParam::KD];
                 std::fill(std::begin(pitch2Cmd.setParam), std::end(pitch2Cmd.setParam), 0.0f);
+                pitch2Cmd.setParam[EMotorParam::TF] = savedTF;
+                pitch2Cmd.setParam[EMotorParam::KD] = savedKD;
                 return _UpdateOutput(pitch2Cmd.setParam);
             }
             return _UpdateOutput(pitch2Cmd.setParam);
@@ -90,9 +108,8 @@ EAppStatus CModController::CComPitch2::UpdateComponent() {
  * @return   float_t 
  ******************************************************************************/
 float_t CModController::CComPitch2::OffsetPositToMotortruePosit_test(float_t offsetPosit) {
-    const float_t zeroOffset = 4.1f; 
-    const float_t scale = 180.0f / PI; 
-    return (static_cast<float_t>(offsetPosit - zeroOffset) / scale);
+    const float_t scale = 180.0f / PI;
+    return (static_cast<float_t>(offsetPosit - CONTROLLER_GRAV_COMP_PITCH2_OFFSET) / scale);
 }
 
 /******************************************************************************
@@ -102,10 +119,9 @@ float_t CModController::CComPitch2::OffsetPositToMotortruePosit_test(float_t off
  * @return   float_t 
  ******************************************************************************/
 float_t CModController::CComPitch2::MotortruePositToOffsetPosit_test(float_t motortruePosit) {
-    const float_t zeroOffset = 4.1f;
     const float_t scale = 180.0f / PI;
-    
-    return (static_cast<float_t>(motortruePosit * scale) + zeroOffset);
+
+    return (static_cast<float_t>(motortruePosit * scale) + CONTROLLER_GRAV_COMP_PITCH2_OFFSET);
 }
 
 /******************************************************************************

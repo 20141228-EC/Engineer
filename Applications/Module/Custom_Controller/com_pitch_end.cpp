@@ -5,7 +5,7 @@
  * @version      V1.1
  * @date         2025-03-30
  * @LastEditors  Ciallo(1002046597@qq.com)
- * @LastEditTime 2026-01-15
+ * @LastEditTime 2026-01-22
  *
  * @copyright    Copyright (c) 2025
  *
@@ -83,7 +83,11 @@ EAppStatus CModController::CComPitchEnd::UpdateComponent() {
 
         case FSM_CTRL: {
             if (pitchEndCmd.isFree) {
+                float_t savedTF = pitchEndCmd.setParam[EMotorParam::TF];
+                float_t savedKD = pitchEndCmd.setParam[EMotorParam::KD];
                 std::fill(std::begin(pitchEndCmd.setParam), std::end(pitchEndCmd.setParam), 0.0f);
+                pitchEndCmd.setParam[EMotorParam::TF] = savedTF;
+                pitchEndCmd.setParam[EMotorParam::KD] = savedKD;
                 return _UpdateOutput(pitchEndCmd.setParam);
             }
             return _UpdateOutput(pitchEndCmd.setParam);
@@ -105,9 +109,8 @@ EAppStatus CModController::CComPitchEnd::UpdateComponent() {
  * @return   float_t
  ******************************************************************************/
 float_t CModController::CComPitchEnd::OffsetPositToMotortruePosit(float_t offsetPosit) {
-    const float_t zeroOffset = 90.0f;   // 90度为零点
     const float_t scale = 180.0f / PI;
-    return (static_cast<float_t>(offsetPosit - zeroOffset) / scale);
+    return (static_cast<float_t>(offsetPosit - CONTROLLER_GRAV_COMP_PITCHEND_OFFSET) / scale);
 }
 
 /******************************************************************************
@@ -117,10 +120,9 @@ float_t CModController::CComPitchEnd::OffsetPositToMotortruePosit(float_t offset
  * @return   float_t
  ******************************************************************************/
 float_t CModController::CComPitchEnd::MotortruePositToOffsetPosit(float_t motortruePosit) {
-    const float_t zeroOffset = 90.0f;   // 90度为零点
     const float_t scale = 180.0f / PI;
 
-    return (static_cast<float_t>(motortruePosit * scale) + zeroOffset);
+    return (static_cast<float_t>(motortruePosit * scale) + CONTROLLER_GRAV_COMP_PITCHEND_OFFSET);
 }
 
 /******************************************************************************

@@ -6,7 +6,7 @@
  * @version      V1.1
  * @date         2025-04-01
  * @LastEditors  Ciallo(1002046597@qq.com)
- * @LastEditTime 2026-01-15
+ * @LastEditTime 2026-01-22
  *
  * @copyright    Copyright (c) 2025
  *
@@ -39,6 +39,10 @@ EAppStatus CModController::InitModule(SModInitParam_Base &param) {
 	comRocker_.InitComponent(param);
 	comBuzzer_.InitComponent(param);
 
+	// 初始化重力补偿算法
+	gravityComp_.Init();
+	gravityCompEnabled_ = true;  // 默认开启
+
 
 	// 创建任务并注册模块
 	CreateModuleTask_();
@@ -60,6 +64,9 @@ void CModController::UpdateHandler_() {
 
 	// 检查模块状态
 	if (moduleStatus == APP_RESET) return ;
+
+	// 计算并应用重力补偿（在组件更新前执行）
+	UpdateGravityComp_();
 
 	// 更新组件
 	comPitch1_.UpdateComponent();
@@ -128,7 +135,7 @@ EAppStatus CModController::RestrictControllerCommand_() {
 	ControllerCmd.cmd_yaw =
 		std::clamp(ControllerCmd.cmd_yaw, CONTROLLER_YAW_PHYSICAL_RANGE_MIN, CONTROLLER_YAW_PHYSICAL_RANGE_MAX);
 	ControllerCmd.cmd_pitch1 =
-		std::clamp(ControllerCmd.cmd_pitch1, 4.0f, CONTROLLER_PITCH1_PHYSICAL_RANGE);
+		std::clamp(ControllerCmd.cmd_pitch1, CONTROLLER_PITCH1_PHYSICAL_RANGE_MIN, CONTROLLER_PITCH1_PHYSICAL_RANGE_MAX);
 	ControllerCmd.cmd_pitch2 =
 		std::clamp(ControllerCmd.cmd_pitch2, CONTROLLER_PITCH2_PHYSICAL_RANGE_MIN, CONTROLLER_PITCH2_PHYSICAL_RANGE_MAX);
 	ControllerCmd.cmd_roll =
@@ -138,6 +145,47 @@ EAppStatus CModController::RestrictControllerCommand_() {
 
 	return APP_OK;
 
+}
+
+/******************************************************************************
+ * @brief    计算并应用重力补偿
+ ******************************************************************************/
+void CModController::UpdateGravityComp_() {
+	// 清零TF辅助函数
+	auto clearTorques = [this]() {
+		comPitch1_.pitch1Cmd.setParam[EMotorParam::TF] = 0.0f;
+		comPitch2_.pitch2Cmd.setParam[EMotorParam::TF] = 0.0f;
+		comRoll_.rollCmd.setParam[EMotorParam::TF] = 0.0f;
+		comPitchEnd_.pitchEndCmd.setParam[EMotorParam::TF] = 0.0f;
+	};
+
+	// 未使能或组件未就绪时清零并退出
+	if (!gravityCompEnabled_) { clearTorques(); return; }
+	if (comPitch1_.componentStatus != APP_OK) { clearTorques(); return; }
+	if (comPitch2_.componentStatus != APP_OK) { clearTorques(); return; }
+	if (comRoll_.componentStatus != APP_OK) { clearTorques(); return; }
+	if (comPitchEnd_.componentStatus != APP_OK) { clearTorques(); return; }
+
+	constexpr float DEG2RAD = PI / 180.0f;
+
+	// 物理角度(deg) -> 编码器角度(rad)
+	float enc_pitch1 = (comPitch1_.pitch1Info.posit - CONTROLLER_GRAV_COMP_PITCH1_OFFSET) * DEG2RAD;
+	float enc_pitch2 = (comPitch2_.pitch2Info.posit - CONTROLLER_GRAV_COMP_PITCH2_OFFSET) * DEG2RAD;
+	float enc_roll = (comRoll_.rollInfo.posit - CONTROLLER_GRAV_COMP_ROLL_OFFSET) * DEG2RAD;
+	float enc_pitchEnd = (comPitchEnd_.pitchEndInfo.posit - CONTROLLER_GRAV_COMP_PITCHEND_OFFSET) * DEG2RAD;
+
+	// 计算补偿力矩
+	auto torques = gravityComp_.Calculate(enc_pitch1, enc_pitch2, enc_roll, enc_pitchEnd);
+
+	// 应用补偿力矩（带限幅保护）
+	comPitch1_.pitch1Cmd.setParam[EMotorParam::TF] =
+		std::clamp(torques.tau_pitch1, -CONTROLLER_GRAV_COMP_TAU_LIMIT_DM4310, CONTROLLER_GRAV_COMP_TAU_LIMIT_DM4310);
+	comPitch2_.pitch2Cmd.setParam[EMotorParam::TF] =
+		std::clamp(torques.tau_pitch2, -CONTROLLER_GRAV_COMP_TAU_LIMIT_DM4310, CONTROLLER_GRAV_COMP_TAU_LIMIT_DM4310);
+	comRoll_.rollCmd.setParam[EMotorParam::TF] =
+		std::clamp(torques.tau_roll, -CONTROLLER_GRAV_COMP_TAU_LIMIT_DM3510, CONTROLLER_GRAV_COMP_TAU_LIMIT_DM3510);
+	comPitchEnd_.pitchEndCmd.setParam[EMotorParam::TF] =
+		std::clamp(torques.tau_pitchEnd, -CONTROLLER_GRAV_COMP_TAU_LIMIT_DM3510, CONTROLLER_GRAV_COMP_TAU_LIMIT_DM3510);
 }
 
 

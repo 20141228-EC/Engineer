@@ -519,6 +519,11 @@
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\Algorithm\algo_other.cpp</FilePath>
             </File>
+            <File>
+              <FileName>algo_gravity_comp.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\Algorithm\algo_gravity_comp.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

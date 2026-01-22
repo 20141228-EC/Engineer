@@ -5,7 +5,7 @@
  * @version      V1.2
  * @date         2025-03-30
  * @LastEditors  Ciallo(1002046597@qq.com)
- * @LastEditTime 2026-01-17
+ * @LastEditTime 2026-01-22
  *
  * @copyright    Copyright (c) 2025
  *
@@ -81,7 +81,11 @@ EAppStatus CModController::CComRoll::UpdateComponent() {
 
         case FSM_CTRL: {
             if (rollCmd.isFree) {
+                float_t savedTF = rollCmd.setParam[EMotorParam::TF];
+                float_t savedKD = rollCmd.setParam[EMotorParam::KD];
                 std::fill(std::begin(rollCmd.setParam), std::end(rollCmd.setParam), 0.0f);
+                rollCmd.setParam[EMotorParam::TF] = savedTF;
+                rollCmd.setParam[EMotorParam::KD] = savedKD;
                 return _UpdateOutput(rollCmd.setParam);
             }
             return _UpdateOutput(rollCmd.setParam);
@@ -103,9 +107,8 @@ EAppStatus CModController::CComRoll::UpdateComponent() {
  * @return   float_t
  ******************************************************************************/
 float_t CModController::CComRoll::OffsetPositToMotortruePosit(float_t offsetPosit) {
-    const float_t zeroOffset = 0.0f;
     const float_t scale = 180.0f / PI;
-    return (static_cast<float_t>(offsetPosit - zeroOffset) / scale);
+    return (static_cast<float_t>(offsetPosit - CONTROLLER_GRAV_COMP_ROLL_OFFSET) / scale);
 }
 
 /******************************************************************************
@@ -115,10 +118,9 @@ float_t CModController::CComRoll::OffsetPositToMotortruePosit(float_t offsetPosi
  * @return   float_t
  ******************************************************************************/
 float_t CModController::CComRoll::MotortruePositToOffsetPosit(float_t motortruePosit) {
-    const float_t zeroOffset = 0.0f;
     const float_t scale = 180.0f / PI;
 
-    return (static_cast<float_t>(motortruePosit * scale) + zeroOffset);
+    return (static_cast<float_t>(motortruePosit * scale) + CONTROLLER_GRAV_COMP_ROLL_OFFSET);
 }
 
 /******************************************************************************

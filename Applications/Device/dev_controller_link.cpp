@@ -165,7 +165,7 @@ EAppStatus CDevControllerLink::ResolveRxPackage_(){
 				break;
 			}
 
-			case 0x0309: {///>己方机器人→对应操作手选手端
+			case 0x0309: {///>己方机器人->对应操作手选手端
 				if (i + sizeof(SRobotDataPkg) > rxBuffer_.size())
 					break;
 				auto pkg = reinterpret_cast<SRobotDataPkg *>(header);

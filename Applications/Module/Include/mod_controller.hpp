@@ -1,19 +1,22 @@
 /******************************************************************************
- * @brief        
- * 
+ * @brief
+ *
  * @file         mod_controller.hpp
  * @author       Fish_Joe (2328339747@qq.com)
  * @version      V1.0
  * @date         2025-03-30
- * 
+ * @LastEditors  Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-22
+ *
  * @copyright    Copyright (c) 2025
- * 
+ *
  ******************************************************************************/
 
 #ifndef MOD_CONTROLLER_HPP
 #define MOD_CONTROLLER_HPP
 
 #include "mod_common.hpp"
+#include "algo_gravity_comp.hpp"
 
 // 直接把机器人的物理位置给自定义控制器，懒得转换了
 #define CONTROLLER_YAW_PHYSICAL_RANGE 195.0f
@@ -22,6 +25,8 @@
 #define CONTROLLER_YAW_PHYSICAL_RANGE_MAX 97.5f
 #define CONTROLLER_YAW_MOTOR_MACH 4800
 /*------------------------------------------------------------------------------------------*/
+#define CONTROLLER_PITCH1_PHYSICAL_RANGE_MIN 0.0f
+#define CONTROLLER_PITCH1_PHYSICAL_RANGE_MAX 90.0f
 #define CONTROLLER_PITCH1_PHYSICAL_RANGE 328.6f
 #define CONTROLLER_PITCH1_MOTOR_RANGE 392000
 #define CONTROLLER_PITCH1_MOTOR_OFFSET 0
@@ -37,6 +42,14 @@
 #define CONTROLLER_PITCH_END_MOTOR_RANGE 4201
 #define CONTROLLER_PITCH_END_MOTOR_RATIO (CONTROLLER_PITCH_END_MOTOR_RANGE / (CONTROLLER_PITCH_END_PHYSICAL_RANGE_MAX - CONTROLLER_PITCH_END_PHYSICAL_RANGE_MIN))
 #define CONTROLLER_PITCH_END_MOTOR_OFFSET 3345
+/*----------------------------------重力补偿安装偏移(deg)------------------------------------*/
+#define CONTROLLER_GRAV_COMP_PITCH1_OFFSET    5.0f
+#define CONTROLLER_GRAV_COMP_PITCH2_OFFSET    4.1f
+#define CONTROLLER_GRAV_COMP_ROLL_OFFSET      0.0f
+#define CONTROLLER_GRAV_COMP_PITCHEND_OFFSET  90.0f
+/*----------------------------------重力补偿力矩限幅(N·m)------------------------------------*/
+#define CONTROLLER_GRAV_COMP_TAU_LIMIT_DM4310  10.0f   // Pitch1/2 (DM4310)
+#define CONTROLLER_GRAV_COMP_TAU_LIMIT_DM3510  3.0f    // Roll/PitchEnd (DM3510)
 /*------------------------------------------------------------------------------------------*/
 #define CONTROLLER_PITCH1_MOTOR_RATIO (CONTROLLER_PITCH1_MOTOR_RANGE / CONTROLLER_PITCH1_PHYSICAL_RANGE)
 #define CONTROLLER_YAW_MOTOR_RATIO (CONTROLLER_YAW_MOTOR_RANGE / (CONTROLLER_YAW_PHYSICAL_RANGE_MAX - CONTROLLER_YAW_PHYSICAL_RANGE_MIN))
@@ -151,6 +164,12 @@ public:
 	int16_t get_rocker_x() {return comRocker_.rockerInfo.X;};
 	int16_t get_rocker_y() {return comRocker_.rockerInfo.Y;};
 
+	// 重力补偿控制接口
+	void SetGravityCompEnabled(bool enabled) { gravityCompEnabled_ = enabled; }
+	bool IsGravityCompEnabled() const { return gravityCompEnabled_; }
+	void SetGravityCompScale(float scale) { gravityComp_.SetScale(scale); }
+	float GetGravityCompScale() const { return gravityComp_.GetScale(); }
+
 private:
 
 	// 定义yaw轴电机组件类并实例化
@@ -250,7 +269,7 @@ private:
 
 		// 定义Pitch2轴控制命令结构体并实例化
 		struct SPitch2Cmd {
-			bool isFree = false;	 ///< Pitch1 Free
+			bool isFree = false;	 ///< Pitch2 Free
 			float_t setParam[static_cast<int>(EMotorParam::COUNT_)] = {0};
 		} pitch2Cmd;
 
@@ -415,6 +434,11 @@ private:
 
 	// 控制量限制函数
 	EAppStatus RestrictControllerCommand_();
+
+	// 重力补偿相关
+	CAlgoGravityComp gravityComp_;             ///< 重力补偿算法实例
+	bool gravityCompEnabled_ = true;           ///< 重力补偿使能标志
+	void UpdateGravityComp_();                  ///< 计算并应用重力补偿
 
 };
 
