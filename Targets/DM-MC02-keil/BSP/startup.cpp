@@ -50,7 +50,7 @@ extern "C" {
  *
  * @return (int) None
  */
-int main() {
+ int main() {
   // __disable_irq();  // 禁用全局中断
   /* Enable CPU Cache */
   SCB_EnableICache();
@@ -65,7 +65,7 @@ int main() {
   /* System Clock Initialize */
   SystemClock_Config();
   PeriphCommonClock_Config();
-
+																
 
   /* Peripheral Initialize */
   // MX_IWDG1_Init();

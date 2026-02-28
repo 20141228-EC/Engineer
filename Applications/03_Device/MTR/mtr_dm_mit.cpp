@@ -192,8 +192,18 @@ void CDevMtrDM_MIT::UpdateHandler_() {
 		motorData[DATA_ID] = (uint8_t)(canRxNode_.dataBuffer[0] & 0x0F); // 电机ID
 		motorData[DATA_ERR] = (uint8_t)(canRxNode_.dataBuffer[0] >> 4); // 错误位
 		motorData[DATA_ANGLE] = (int16_t)(canRxNode_.dataBuffer[1] << 8 | canRxNode_.dataBuffer[2]); // 角度
+		// int16_t raw_speed = (canRxNode_.dataBuffer[3] << 4) | (canRxNode_.dataBuffer[4] >> 4);
+        // if (raw_speed & 0x0800) { // 检查12位的最高位（即符号位）
+        //     raw_speed |= 0xF000;  // 如果是负数，将更高位全部置1
+        // }
+        // motorData[DATA_SPEED] = raw_speed;
 		motorData[DATA_SPEED] = (int16_t)(canRxNode_.dataBuffer[3] << 4 | canRxNode_.dataBuffer[4] >> 4); // 速度
-		motorData[DATA_TORQUE] = (int16_t)(canRxNode_.dataBuffer[4] & 0x0F << 8 | canRxNode_.dataBuffer[5]); // 扭矩
+		int16_t raw_torque = ((canRxNode_.dataBuffer[4] & 0x0F) << 8) | canRxNode_.dataBuffer[5];
+        if (raw_torque & 0x0800) { // 检查12位的最高位（即符号位）
+            raw_torque |= 0xF000; // 如果是负数，将更高位全部置1
+        }
+        motorData[DATA_TORQUE] = raw_torque;
+		// motorData[DATA_TORQUE] = (int16_t)(canRxNode_.dataBuffer[4] & 0x0F << 8 | canRxNode_.dataBuffer[5]); // 扭矩
 		motorData[DATA_TEMP] = (int8_t)(canRxNode_.dataBuffer[6]); // 温度
 		motorData[DATA_POSIT] = (useAngleToPosit_) ? getPosition_() : 0; // 位置
 		motorPhyAngle = uint_to_float(

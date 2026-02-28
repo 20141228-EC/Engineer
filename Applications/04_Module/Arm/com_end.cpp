@@ -108,46 +108,57 @@ EAppStatus CModArm::CComEnd::UpdateComponent() {
             pidSpdCtrl.ResetPidController();
             pidGripPosCtrl.ResetPidController();
             pidGripSpdCtrl.ResetPidController();
+
+            // 重置独立初始化标志位
+            isEndInit_ = false;
+            isGripInit_ = false;
             
             Component_FSMFlag_ = FSM_INIT;
             return APP_OK;
         }
 
         case FSM_INIT: {
-            // 末端初始化逻辑
-            bool isEndMotorStall = (motor[L]->motorStatus == CDevMtr::EMotorStatus::STALL || 
-                                    motor[R]->motorStatus == CDevMtr::EMotorStatus::STALL);
-            if (isEndMotorStall) {
-                motor[L]->motorData[CDevMtr::DATA_POSIT] = -(static_cast<int32_t>(0.5 * 8192) + rangeLimit_Pitch);
-                motor[R]->motorData[CDevMtr::DATA_POSIT] = (static_cast<int32_t>(0.5 * 8192) + rangeLimit_Pitch);
-                pidPosCtrl.ResetPidController();
-                pidSpdCtrl.ResetPidController();
+            // --- 末端独立初始化 ---
+            if (!isEndInit_) {
+                bool isEndMotorStall = (motor[L]->motorStatus == CDevMtr::EMotorStatus::STALL || 
+                                        motor[R]->motorStatus == CDevMtr::EMotorStatus::STALL);
+                if (isEndMotorStall) {
+                    motor[L]->motorData[CDevMtr::DATA_POSIT] = -(static_cast<int32_t>(0.5 * 8192) + rangeLimit_Pitch);
+                    motor[R]->motorData[CDevMtr::DATA_POSIT] = (static_cast<int32_t>(0.5 * 8192) + rangeLimit_Pitch);
+                    pidPosCtrl.ResetPidController();
+                    pidSpdCtrl.ResetPidController();
+                    isEndInit_ = true; // 标记末端初始化完成
+                } else {
+                    endCmd.setPosit_Pitch += 200; // 驱动电机寻找限位
+                }
             }
 
-            // 夹爪初始化逻辑（原CComGrip的INIT逻辑）
-            bool isGripMotorStall = (motor[GRIP]->motorStatus == CDevMtr::EMotorStatus::STALL);
-            if(isGripMotorStall) {
-                endCmd.setPosit_grip = 0;         ///< 堵转之后设置目标值
-                motor[GRIP]->motorData[CDevMtr::DATA_POSIT] = static_cast<int32_t> (0.1*8192 + rangeLimit_Grip) * ARM_GRIP_MOTOR_DIR;///< 堵转零点超量标定
-                endInfo.isGripped = false;        ///< 重置夹持状态
-                endInfo.holdPosit_Grip = 0;       ///< 清空夹持记忆位置
-                endInfo.lastSetPosit = 0;         ///< 初始化上次设定位置
-                endInfo.rollPositAtGripInit_ = endInfo.posit_Roll; ///< 记录初始化时的Roll位置
-                pidGripPosCtrl.ResetPidController();
-                pidGripSpdCtrl.ResetPidController();
+            // --- 夹爪独立初始化 ---
+            if (!isGripInit_) {
+                bool isGripMotorStall = (motor[GRIP]->motorStatus == CDevMtr::EMotorStatus::STALL);
+                if(isGripMotorStall) {
+                    endCmd.setPosit_grip = 0;
+                    motor[GRIP]->motorData[CDevMtr::DATA_POSIT] = static_cast<int32_t> (0.1*8192 + rangeLimit_Grip) * ARM_GRIP_MOTOR_DIR;
+                    endInfo.isGripped = false;
+                    endInfo.holdPosit_Grip = 0;
+                    endInfo.lastSetPosit = 0;
+                    endInfo.rollPositAtGripInit_ = endInfo.posit_Roll;
+                    pidGripPosCtrl.ResetPidController();
+                    pidGripSpdCtrl.ResetPidController();
+                    isGripInit_ = true; // 标记夹爪初始化完成
+                } else {
+                    endCmd.setPosit_grip += 500; // 驱动电机寻找限位
+                }
             }
 
-            if (isEndMotorStall || isGripMotorStall) { ///< 只要有一个堵转就进入ctrl
+            // --- 最终检查 ---
+            if (isEndInit_ && isGripInit_) {
                 Component_FSMFlag_ = FSM_CTRL;
                 componentStatus = APP_OK;
                 return APP_OK;
             }
-
-            // 逐步增加目标位置完成初始化
-            endCmd.setPosit_Pitch += 200;
-            endCmd.setPosit_grip += 500;
             
-            // 更新末端和夹爪输出
+            // 更新输出以驱动电机
             _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch), static_cast<float_t>(0));
             _UpdateOutput_Grip(static_cast<float_t>(endCmd.setPosit_grip));
             return APP_OK;

@@ -82,8 +82,8 @@ typedef struct
 
 extern gimbal_transform_t EKFgim_trans;
 extern QEKF_INS_t QEKF_INS;
-extern float chiSquare;
-extern float ChiSquareTestThreshold;
+extern float chiSquare; // 卡方值
+extern float ChiSquareTestThreshold;    // 卡方检验阈值
 void IMU_QuaternionEKF_Init(float* init_quaternion,float process_noise1, float process_noise2, float measure_noise, float lambda);
 void IMU_QuaternionEKF_Update(float gx, float gy, float gz, float ax, float ay, float az, float dt);
 void transform_init(gimbal_transform_t *gim_trans);

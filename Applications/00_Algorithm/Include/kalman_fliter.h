@@ -44,18 +44,18 @@ extern "C" {
 
 typedef struct kf_t
 {
-    float *FilteredValue;
-    float *MeasuredVector;
-    float *ControlVector;
+    float *FilteredValue;       ///< 滤波值
+    float *MeasuredVector;      ///< 测量矩阵
+    float *ControlVector;       ///< 控制矩阵
 
     uint8_t xhatSize;
     uint8_t uSize;
     uint8_t zSize;
 
-    uint8_t UseAutoAdjustment;
-    uint8_t MeasurementValidNum;
+    uint8_t UseAutoAdjustment;      ///< 是否开启自动调整
+    uint8_t MeasurementValidNum;    ///< 当前周期内有效测量值的个数
 
-    uint8_t *MeasurementMap;      // 量测与状态的关系 how measurement relates to the state
+    uint8_t *MeasurementMap;      // 量测与状态的对应关系 量测对应状态矩阵中的哪一维 how measurement relates to the state
     float *MeasurementDegree;     // 测量值对应H矩阵元素值 elements of each measurement in H
     float *MatR_DiagonalElements; // 量测方差 variance for each measurement
     float *StateMinVariance;      // 最小方差 避免方差过度收敛 suppress filter excessive convergence
@@ -79,7 +79,7 @@ typedef struct kf_t
     mat K;         // kalman gain  K卡尔曼增益矩阵
     mat S, temp_matrix, temp_matrix1, temp_vector, temp_vector1;
 
-    int8_t MatStatus;
+    int8_t MatStatus;       // 矩阵状态
 
     // 用户定义函数,可以替换或扩展基准KF的功能
     void (*User_Func0_f)(struct kf_t *kf);

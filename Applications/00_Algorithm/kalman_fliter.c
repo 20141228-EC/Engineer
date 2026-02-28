@@ -263,6 +263,11 @@ void Kalman_Filter_Init(KalmanFilter_t *kf, uint8_t xhatSize, uint8_t uSize, uin
     kf->SkipEq5 = 0;
 }
 
+/**
+ * @brief 更新观测量
+ * @details 更新观测量矩阵和控制矩阵，并且可根据需要开启或关闭自动调整H K R
+ * 
+ */
 void Kalman_Filter_Measure(KalmanFilter_t *kf)
 {
     // 矩阵H K R根据量测情况自动调整
@@ -278,6 +283,10 @@ void Kalman_Filter_Measure(KalmanFilter_t *kf)
     memcpy(kf->u_data, kf->ControlVector, sizeof_float * kf->uSize);
 }
 
+/**
+ * @brief 先验状态更新
+ * 
+ */
 void Kalman_Filter_xhatMinusUpdate(KalmanFilter_t *kf)
 {
     if (!kf->SkipEq1)
@@ -299,6 +308,10 @@ void Kalman_Filter_xhatMinusUpdate(KalmanFilter_t *kf)
     }
 }
 
+/**
+ * @brief 先验状态协方差更新
+ * 
+ */
 void Kalman_Filter_PminusUpdate(KalmanFilter_t *kf)
 {
     if (!kf->SkipEq2)
@@ -311,6 +324,11 @@ void Kalman_Filter_PminusUpdate(KalmanFilter_t *kf)
         kf->MatStatus = Matrix_Add(&kf->temp_matrix, &kf->Q, &kf->Pminus);
     }
 }
+
+/**
+ * @brief 更新卡尔曼增益
+ * 
+ */
 void Kalman_Filter_SetK(KalmanFilter_t *kf)
 {
     if (!kf->SkipEq3)
@@ -332,6 +350,11 @@ void Kalman_Filter_SetK(KalmanFilter_t *kf)
         kf->MatStatus = Matrix_Multiply(&kf->temp_matrix, &kf->temp_matrix1, &kf->K);
     }
 }
+
+/**
+ * @brief 更新后验状态估计
+ * 
+ */
 void Kalman_Filter_xhatUpdate(KalmanFilter_t *kf)
 {
     if (!kf->SkipEq4)
@@ -348,6 +371,11 @@ void Kalman_Filter_xhatUpdate(KalmanFilter_t *kf)
         kf->MatStatus = Matrix_Add(&kf->xhatminus, &kf->temp_vector, &kf->xhat);
     }
 }
+
+/**
+ * @brief 更新后验状态估计协方差
+ * 
+ */
 void Kalman_Filter_P_Update(KalmanFilter_t *kf)
 {
     if (!kf->SkipEq5)

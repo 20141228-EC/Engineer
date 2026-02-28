@@ -31,7 +31,7 @@ EAppStatus CDevBoardLink::InitDevice(const SDevInitParam_Base *pStructInitParam)
 	canInterface_ = reinterpret_cast<CInfCAN *>(InterfaceIDMap.at(boardLinkParam.interfaceID));
 
 	// 初始化CAN接收节点
-    auto canRxID = 0x300;
+    auto canRxID = 0x302;
     canRxNode_.InitRxNode(boardLinkParam.interfaceID, canRxID, 
                                 CInfCAN::ECanFrameType::DATA, 
                                 CInfCAN::ECanFrameDlc::DLC_8);
@@ -66,26 +66,6 @@ EAppStatus CDevBoardLink::SendPackage(EPacketID pack_id){
 
 	switch (pack_id) ///< 这些获取的逻辑还得具体实现
 	{
-	case PKT_REMOTE_1:{
-
-		// 获取数据
-		remoteInfo1_pkt.pack_id = PKT_REMOTE_1;
-    	memcpy(data_buf.data(), &remoteInfo1_pkt, sizeof(remoteInfo1_pkt));
-
-		// 填充数据帧
-		Modify_CanTxData(data_buf.data());
-		break;
-	}
-	case PKT_REMOTE_2:{
-
-		// 获取数据
-		remoteInfo2_pkt.pack_id = PKT_REMOTE_2;
-		memcpy(data_buf.data(), &remoteInfo2_pkt, sizeof(remoteInfo2_pkt));
-
-		// 填充数据帧
-		Modify_CanTxData(data_buf.data());
-		break;
-	}
 	case PKT_CTRL_FLAGS:{
 
 		// 获取数据
@@ -103,14 +83,7 @@ EAppStatus CDevBoardLink::SendPackage(EPacketID pack_id){
 
 		// 填充数据帧
 		Modify_CanTxData(data_buf.data());
-	}
-	case PKT_CTRLER_R_B:{
-		// 获取数据
-		controllerbackcmd_r_b_pkt.pack_id = PKT_CTRLER_R_B;
-		memcpy(data_buf.data(), &controllerbackcmd_r_b_pkt, sizeof(controllerbackcmd_r_b_pkt));
-
-		// 填充数据帧
-		Modify_CanTxData(data_buf.data());
+		break;
 	}
 	case PKT_CTRLER_L_F:{
 		// 获取数据
@@ -119,22 +92,7 @@ EAppStatus CDevBoardLink::SendPackage(EPacketID pack_id){
 
 		// 填充数据帧
 		Modify_CanTxData(data_buf.data());
-	}
-	case PKT_CTRLER_R_F:{
-		// 获取数据
-		controllerfrontcmd_r_f_pkt.pack_id = PKT_CTRLER_R_F;
-		memcpy(data_buf.data(), &controllerfrontcmd_r_f_pkt, sizeof(controllerfrontcmd_r_f_pkt));
-
-		// 填充数据帧
-		Modify_CanTxData(data_buf.data());
-	}
-	case PKT_KEYB:{
-		// 获取数据
-		keyboard_pkt.pack_id = PKT_KEYB;
-		memcpy(data_buf.data(), &keyboard_pkt, sizeof(keyboard_pkt));
-
-		// 填充数据帧
-		Modify_CanTxData(data_buf.data());
+		break;
 	}
 	default:
 		return APP_ERROR;

@@ -2,9 +2,9 @@
  * @brief        
  * 
  * @file         mod_arm.hpp
- * @author       Fish_Joe (2328339747@qq.com)
+ * @author       sllllr (2997708711@qq.com)
  * @version      V1.0
- * @date         2025-05-04
+ * @date         2026-01-27
  * 
  * @copyright    Copyright (c) 2025
  * 
@@ -14,22 +14,24 @@
 
 /*-------------------------------------物理限位---------------------------------------------------*/
 #define ARM_YAW_PHYSICAL_RANGE_MIN -97.5f
-#define ARM_YAW_PHYSICAL_RANGE_MAX 97.5f
-#define ARM_PITCH1_PHYSICAL_RANGE_MIN 4.0f
-#define ARM_PITCH1_PHYSICAL_RANGE_MAX 104.0f  ///< 118.0f
-#define ARM_PITCH2_PHYSICAL_RANGE_MIN 11.0f
-#define ARM_PITCH2_PHYSICAL_RANGE_MAX 132.0f
+#define ARM_YAW_PHYSICAL_RANGE_MAX 53.f
+#define ARM_PITCH1_PHYSICAL_RANGE_MIN 0.0f
+#define ARM_PITCH1_PHYSICAL_RANGE_MAX 95.f  ///< 118.0f
+#define ARM_PITCH2_PHYSICAL_RANGE_MIN 0.f
+#define ARM_PITCH2_PHYSICAL_RANGE_MAX 119.f
 #define ARM_ROLL_PHYSICAL_RANGE_MIN -169.0f
 #define ARM_ROLL_PHYSICAL_RANGE_MAX 180.0f
 #define ARM_END_PITCH_PHYSICAL_RANGE_MIN -145.0f
 #define ARM_END_PITCH_PHYSICAL_RANGE_MAX 60.0f
+#define ARM_END_GRIP_PHYSICAL_RANGE_MIN 40.f
+#define ARM_END_GRIP_PHYSICAL_RANGE_MAX 103.f
 #define ARM_END_GRIP_PHYSICAL_RANGE 106.f		//初版末端机械行程是106mm
 
 /*-------------------------------------电机限位----------------------------------------------------*/
 //原始限位编码器器范围
-#define ARM_YAW_MOTOR_RANGE 65535
-#define ARM_PITCH1_MOTOR_RANGE 20755
-#define ARM_PITCH2_MOTOR_RANGE 65535
+#define ARM_YAW_MOTOR_RANGE 54750
+#define ARM_PITCH1_MOTOR_RANGE 17262
+#define ARM_PITCH2_MOTOR_RANGE 21823
 #define ARM_END_PITCH_MOTOR_RANGE 325993
 #define ARM_END_GRIP_MOTOR_RANGE 201464     ///(8192*22+10240+11000)
 
@@ -46,7 +48,7 @@
 #define ARM_YAW_MOTOR_OFFSET -ARM_YAW_PHYSICAL_RANGE_MIN * ARM_YAW_MOTOR_RATIO
 #define ARM_PITCH1_MOTOR_OFFSET -ARM_PITCH1_PHYSICAL_RANGE_MIN * ARM_PITCH1_MOTOR_RATIO
 #define ARM_PITCH2_MOTOR_OFFSET -ARM_PITCH2_PHYSICAL_RANGE_MIN * ARM_PITCH2_MOTOR_RATIO
-#define ARM_ROLL_MOTOR_OFFSET 209.49f // 但这个比较特殊，测量这个就是从电机0位置到物理0位置总共的角度
+#define ARM_ROLL_MOTOR_OFFSET 0.f // 但这个比较特殊，测量这个就是从电机0位置到物理0位置总共的角度
 #define ARM_END_PITCH_MOTOR_OFFSET -ARM_END_PITCH_PHYSICAL_RANGE_MIN * ARM_END_PITCH_MOTOR_RATIO
 
 /*-------------------------------------方向设定---------------------------------------------------------*/
@@ -66,25 +68,24 @@
 #define ARM_END_ROLL_HALF_TURN   (ARM_END_ROLL_ONE_TURN / 2)
 
 /*-------------------------------------初始化数据--------------------------------------------------------*/
-#define ARM_YAW_INIT_ANGLE 0.0f
-#define ARM_PITCH1_INIT_ANGLE 11.0f
-#define ARM_PITCH2_INIT_ANGLE 18.0f
+#define ARM_YAW_INIT_ANGLE 1.2f
+#define ARM_PITCH1_INIT_ANGLE 4.f
+#define ARM_PITCH2_INIT_ANGLE 11.f
 #define ARM_ROLL_INIT_ANGLE 0.0f
 #define ARM_END_PITCH_INIT_ANGLE 0.0f
 #define ARM_END_ROLL_INIT_ANGLE 0.0f
 #define ARM_GRIP_INIT_LENGTH 0.0f
 
-/*-------------------------------------LHK_SET----------------------------------------------------------*/
-#define POSIT_JOINT1_YAW_MACH 42879
-#define ARM_YAW_MOTOR_RANGE_LHK 71431
+#define POSIT_JOINT1_YAW_MACH 20000
+#define ARM_YAW_MOTOR_RANGE_LHK 54750
 
-#define POSIT_JOINT2_PITCH1_MACH 15259
-#define POSIT_JOINT2_PITCH1_MACH_PHY 4.0f
-#define POSIT_JOINT2_PITCH1_INIT_PHY 11.0f
+#define POSIT_JOINT2_PITCH1_MACH 57338
+#define POSIT_JOINT2_PITCH1_MACH_PHY 0.f
+#define POSIT_JOINT2_PITCH1_INIT_PHY 4.0f
 
-#define POSIT_JOINT3_PITCH2_MACH 9152//12837
-#define POSIT_JOINT3_PITCH2_MACH_PHY 11.0f
-#define POSIT_JOINT3_PITCH2_INIT_PHY 18.0f
+#define POSIT_JOINT3_PITCH2_MACH 44889 //12837
+#define POSIT_JOINT3_PITCH2_MACH_PHY 0.f
+#define POSIT_JOINT3_PITCH2_INIT_PHY 11.0f
 
 #define POSIT_JOINT4_ROLL_OFFSET 0
 
@@ -409,6 +410,10 @@ private:
 
 		// 电机can发送节点
 		std::array<CInfCAN::CCanTxNode*, 3> mtrCanTxNode;
+
+		// 独立初始化标志位
+        bool isEndInit_ = false;
+        bool isGripInit_ = false;
 
 	} comEnd_;
 

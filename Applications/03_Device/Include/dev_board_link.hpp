@@ -37,49 +37,19 @@ public:
      * @note  pack_id位于每个数据包的第一个字节
      */
     enum EPacketID : uint8_t {
-        PKT_REMOTE_1 = 0,      ///< 遥控器值（右摇杆xy、左摇杆x）
-        PKT_REMOTE_2 = 1,      ///< 遥控器值（左摇杆y、拨轮和拨杆）
-        PKT_CTRL_FLAGS = 2,  ///< 控制标志
-        PKT_CTRLER_L_B = 3,     ///< 控制器左臂后三轴
-        PKT_CTRLER_R_B = 4,     ///< 控制器右臂后三轴
-        PKT_CTRLER_L_F = 5,     ///< 控制器左臂前三轴
-        PKT_CTRLER_R_F = 6,     ///< 控制器右臂前三轴
-        PKT_KEYB = 7,          ///< 键鼠
+        PKT_CTRL_FLAGS = 0,  ///< 控制标志
+        PKT_CTRLER_L_B = 1,     ///< 控制器左臂后三轴
+        PKT_CTRLER_L_F = 2,     ///< 控制器左臂前三轴
         PKT_COUNT,           ///< 发送包类型数量
         PKT_FEEDBACK   = 0xFE,  ///< 反馈包（副板发送给主板）
     };
 
     /**
-     * @brief 包0 - 遥控器摇杆包1
-     * @note  8字节，包含右摇杆XY和左摇杆X的原始值
-     */
-    struct SRemoteJoystick1 {
-        uint8_t  pack_id;           ///< 包ID = 0
-        int16_t  joystick_RX;       ///< 右摇杆X(原始值归一到±100.f内再放大220倍)
-        int16_t  joystick_RY;       ///< 右摇杆Y(原始值归一到±100.f内再放大220倍)
-        int16_t  joystick_LX;       ///< 左摇杆X(原始值归一到±100.f内再放大220倍)
-        uint8_t  reserved;          ///< 预留
-    } __packed remoteInfo1_pkt = {};
-
-    /**
-     * @brief 包1 - 遥控器包2
-     * @note  8字节，包含左摇杆Y和拨轮的原始值和拨杆值
-     */
-    struct SRemoteJoystick2 {
-        uint8_t  pack_id;           ///< 包ID = 1
-        int16_t  joystick_LY;       ///< 左摇杆Y(原始值归一到±100.f内再放大220倍)
-        int16_t  thumbWheel;        ///< 拨轮(原始值归一到±100.f内再放大220倍)
-        uint8_t  switch_l;          ///< 左拨杆
-        uint8_t  switch_r;          ///< 右拨杆
-        uint8_t  reserved[1];       ///< 预留
-    } __packed remoteInfo2_pkt = {};
-
-    /**
-     * @brief 包2 - 控制标志
+     * @brief 包0 - 控制标志
      * @note  8字节，包含遥控器状态、工作模式、命令标志等
      */
     struct SControlFlags {
-        uint8_t  pack_id;           ///< 包ID = 2
+        uint8_t  pack_id;           ///< 包ID = 0
 
         // 控制模式 (1字节)
         uint8_t  chassis_ctrl : 1;          ///< 底盘控制使能
@@ -115,7 +85,7 @@ public:
      * 
      */
     struct SControllerBackCmd_L{
-        uint8_t pack_id;        ///< 包ID = 3
+        uint8_t pack_id;        ///< 包ID = 1
 
         // 角度指令
         int16_t yaw;            ///< Yaw角度 (×100)
@@ -126,28 +96,12 @@ public:
     } __packed controllerbackcmd_l_b_pkt = {};
 
     /**
-     * @brief 自定义控制器右臂后三轴命令包
-     * @note  自定义控制模式下的臂目标位置等
-     * 
-     */
-    struct SControllerBackCmd_R{
-        uint8_t pack_id;        ///< 包ID = 4
-
-        // 角度指令
-        int16_t yaw;            ///< Yaw角度 (×100)
-	    int16_t pitch1;         ///< Pitch1角度 (×100)
-	    int16_t pitch2;         ///< Pitch2角度 (×100)
-        uint8_t  reserved;          ///< 预留
-        
-    } __packed controllerbackcmd_r_b_pkt = {};
-
-    /**
      * @brief 自定义控制器左臂前三轴命令包
      * @note  自定义控制模式下的臂目标位置等
      * 
      */
     struct SControllerFrontCmd_L{
-        uint8_t pack_id;        ///< 包ID = 5
+        uint8_t pack_id;        ///< 包ID = 2
 
         // 角度指令
         int16_t roll;       ///< Roll角度 (×100)
@@ -155,64 +109,10 @@ public:
         int8_t roll_end;    ///< 左臂roll_end增量 (-100~100)，控制第6轴
         uint8_t grip_close; ///< 夹爪闭合
 
-        uint8_t reserved;    ///< 保留
-        
-    } __packed controllerfrontcmd_l_f_pkt = {};
-
-    /**
-     * @brief 自定义控制器右臂前三轴命令包
-     * @note  自定义控制模式下的臂目标位置等
-     * 
-     */
-    struct SControllerFrontCmd_R{
-        uint8_t pack_id;        ///< 包ID = 6
-
-        // 角度指令
-        int16_t roll;       ///< Roll角度 (×100)
-	    int16_t pitch_end;  ///< PitchEnd角度 (×100)
-        int8_t roll_end;    ///< 右臂roll_end增量 (-100~100)，控制第6轴
-        uint8_t grip_close; ///< 夹爪闭合
         uint8_t chassis_speed;  ///< 底盘速度
         
-    } __packed controllerfrontcmd_r_f_pkt = {};
-
-    /**
-     * @brief 键鼠信息包
-     * @note  包括键盘和鼠标信息
-     * 
-     */
-    struct SKeyBoardInfo{
-        uint8_t pack_id;        ///< 包ID = 7
-        
-        uint8_t KEY_W     : 1;      ///< W键
-        uint8_t KEY_S     : 1;      ///< S键
-        uint8_t KEY_A     : 1;      ///< A键
-        uint8_t KEY_D     : 1;      ///< D键
-        uint8_t KEY_SHIFT : 1;      ///< SHIFT键
-        uint8_t KEY_CTRL  : 1;      ///< CTRL键
-        uint8_t KEY_Q     : 1;      ///< Q键
-        uint8_t KEY_E     : 1;      ///< E键
-
-        uint8_t KEY_R     : 1;      ///< R键
-        uint8_t KEY_F     : 1;      ///< F键
-        uint8_t KEY_G     : 1;      ///< G键
-        uint8_t KEY_Z     : 1;      ///< Z键
-        uint8_t KEY_X     : 1;      ///< X键
-        uint8_t KEY_C     : 1;      ///< C键
-        uint8_t KEY_V     : 1;      ///< V键
-        uint8_t KEY_B     : 1;      ///< B键
-
-        uint8_t MOUSE_L   : 1;      ///< 左键
-        uint8_t MOUSE_R   : 1;      ///< 右键
-        uint8_t reserved  : 6;      ///< 保留
-
-        int16_t mouse_vx;           ///< 鼠标x轴速度
-        int16_t mouse_vy;           ///< 鼠标y轴速度
-        
-    } __packed keyboard_pkt = {};
+    } __packed controllerfrontcmd_l_f_pkt = {};
     
-    
-
     /**
      * @brief 反馈包 - 副板发送给主板
      * @note  8字节，包含接收状态和通信状态

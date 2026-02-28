@@ -63,7 +63,7 @@ void StartUpdateTask(void *argument) {
         for(const auto &item : AlgoIDMap){
             item.second->UpdateHandler_();      ///< 和设备、模块以相同频率更新
         }
-		UpdateImuEkf();
+		// UpdateImuEkf();
 
         // 更新系统核心
         SystemCore.UpdateHandler_();            ///<系统核心的更新放在设备更新之后，模块更新之前,以便模块可以使用系统核心的数据   
@@ -74,12 +74,13 @@ void StartUpdateTask(void *argument) {
         }
 
         // 执行can发送
+        TxNode_Can3_200.Transmit(); ///< 履带电机
 		if(HalfTickRate) {              ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载                  
 		    TxNode_Can3_280.Transmit(); ///< 机械臂后三轴电机 500Hz
         }
             
         TxNode_Can1_200.Transmit(); ///< 底盘轮毂电机
-        TxNode_Can2_200.Transmit(); ///< 末端pitch roll和夹爪收放  待改
+        TxNode_Can2_1FF.Transmit(); ///< 末端pitch roll和夹爪收放
 
         proc_waitMs(1); // 1000Hz
 

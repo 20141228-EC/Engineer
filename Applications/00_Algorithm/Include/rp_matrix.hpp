@@ -48,8 +48,8 @@ public:
         }
     }
 
-    // 移动构造
-    Matrixt(Matrixt&& mat) noexcept 
+    // 移动构造(右值引用)
+    Matrixt(Matrixt&& mat) noexcept
         : rows_(mat.rows_), cols_(mat.cols_), data_(std::move(mat.data_)) {     // 转移unique_ptr所有权
         if constexpr (std::is_same_v<T, float>) {
             arm_mat_init_f32(&arm_mat_, rows_, cols_, (float32_t*)data_.get());
@@ -58,7 +58,7 @@ public:
         mat.cols_ = 0;
     }
 
-    // 移动赋值
+    // 移动赋值(右值引用)
     Matrixt<T>& operator=(Matrixt<T>&& mat) noexcept {
         if (this != &mat) {
             rows_ = mat.rows_;
@@ -353,11 +353,11 @@ public:
     // 获取元素总数
     size_t size() const { return rows_ * cols_; }
 
-    T* get_data() { return data_.get();}                ///< 获取可读可写的原始指针
-    const T* get_data() const { return data_.get();}    ///< 获取只可读的原始指针
+    inline T* get_data() { return data_.get();}                ///< 获取可读可写的原始指针
+    inline const T* get_data() const { return data_.get();}    ///< 获取只可读的原始指针
 
-    ARM_MAT_INS* get_arm_mat() { return &arm_mat_; }    ///< 获取可读可写的原始指针
-    const ARM_MAT_INS* get_arm_mat() const { return &arm_mat_; }    ///< 获取只可读的原始指针
+    inline ARM_MAT_INS* get_arm_mat() { return &arm_mat_; }    ///< 获取可读可写的原始指针
+    inline const ARM_MAT_INS* get_arm_mat() const { return &arm_mat_; }    ///< 获取只可读的原始指针
 
 private:
     int rows_;                  ///< 行维度

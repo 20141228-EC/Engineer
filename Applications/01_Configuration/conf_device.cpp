@@ -126,14 +126,14 @@ EAppStatus InitAllDevice(){
     CDevMtrM3508::SMtrInitParam_M3508 chassisMotor_LF_initparam;
     chassisMotor_LF_initparam.deviceID = EDeviceID::DEV_CHAS_MTR_LF;
     chassisMotor_LF_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    chassisMotor_LF_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_2;
+    chassisMotor_LF_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_1;
     chassisMotor_LF.InitDevice(&chassisMotor_LF_initparam);
 
     static CDevMtrM3508 chassisMotor_RF;
     CDevMtrM3508::SMtrInitParam_M3508 chassisMotor_RF_initparam;
     chassisMotor_RF_initparam.deviceID = EDeviceID::DEV_CHAS_MTR_RF;
     chassisMotor_RF_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    chassisMotor_RF_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_1;
+    chassisMotor_RF_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_2;
     chassisMotor_RF.InitDevice(&chassisMotor_RF_initparam);
 
     static CDevMtrM3508 chassisMotor_LB;
@@ -158,7 +158,7 @@ EAppStatus InitAllDevice(){
     chassisMotor_L_HIP_initparam.SlaveID = 0x33; ///< 发送节点
     chassisMotor_L_HIP_initparam.Q_MAX = 3.1416;
     chassisMotor_L_HIP_initparam.DQ_MAX = 30.0f;
-    chassisMotor_L_HIP_initparam.TAU_MAX = 10.0f;
+    chassisMotor_L_HIP_initparam.TAU_MAX = 40.0f;
     chassisMotor_L_HIP_initparam.useAngleToPosit = true;
     chassisMotor_L_HIP_initparam.encoderResolution = 65536; ///< 不牺牲精度
     chassisMotor_L_HIP.InitDevice(&chassisMotor_L_HIP_initparam); ///< 左髋关节电机
@@ -171,10 +171,24 @@ EAppStatus InitAllDevice(){
     chassisMotor_R_HIP_initparam.SlaveID = 0x35; ///< 发送节点
     chassisMotor_R_HIP_initparam.Q_MAX = 3.1416;
     chassisMotor_R_HIP_initparam.DQ_MAX = 30.0f;
-    chassisMotor_R_HIP_initparam.TAU_MAX = 10.0f;
+    chassisMotor_R_HIP_initparam.TAU_MAX = 40.0f;
     chassisMotor_R_HIP_initparam.useAngleToPosit = true;
     chassisMotor_R_HIP_initparam.encoderResolution = 65536; ///< 不牺牲精度
     chassisMotor_R_HIP.InitDevice(&chassisMotor_R_HIP_initparam); ///< 右髋关节电机
+
+    static CDevMtrM3508 chassisMotor_L_CRAWLER;
+    CDevMtrM3508::SMtrInitParam_M3508 chassisMotor_L_Crawler_initparam;
+    chassisMotor_L_Crawler_initparam.deviceID = EDeviceID::DEV_CHAS_CRAWLER_L;
+    chassisMotor_L_Crawler_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    chassisMotor_L_Crawler_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_1;
+    chassisMotor_L_CRAWLER.InitDevice(&chassisMotor_L_Crawler_initparam);
+
+    static CDevMtrM3508 chassisMotor_R_CRAWLER;
+    CDevMtrM3508::SMtrInitParam_M3508 chassisMotor_R_Crawler_initparam;
+    chassisMotor_R_Crawler_initparam.deviceID = EDeviceID::DEV_CHAS_CRAWLER_R;
+    chassisMotor_R_Crawler_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    chassisMotor_R_Crawler_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_2;
+    chassisMotor_R_CRAWLER.InitDevice(&chassisMotor_R_Crawler_initparam);
 
     /******************************************
      * 机械臂电机
