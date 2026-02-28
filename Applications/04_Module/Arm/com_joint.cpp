@@ -1,12 +1,12 @@
 /******************************************************************************
  * @brief        
  * 
- * @file         com_yaw.cpp
- * @author       Fish_Joe (2328339747@qq.com)
+ * @file         com_joint.cpp
+ * @author       sllllr (2997708711@qq.com)
  * @version      V1.0
- * @date         2025-07-10
+ * @date         2026-01-27
  * 
- * @copyright    Copyright (c) 2025
+ * @copyright    Copyright (c) 2026
  * 
  ******************************************************************************/
 
@@ -179,7 +179,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 			jointCmd.setPosit_yaw = std::clamp(jointCmd.setPosit_yaw, static_cast<int32_t>(-rangeLimit_yaw/2),  static_cast<int32_t>(rangeLimit_yaw/2));///<对Yaw进行机械限位
 			
 			is_record = true; ///< 臂初始化完之后开始记录数据
-			Need_Grav_Compensation = true; //臂初始化完之后启用重力补偿
+			// Need_Grav_Compensation = true; //臂初始化完之后启用重力补偿
 			return _UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 				static_cast<float_t>(jointCmd.setPosit_pitch1),
 				static_cast<float_t>(jointCmd.setPosit_pitch2));

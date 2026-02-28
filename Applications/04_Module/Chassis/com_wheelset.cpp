@@ -43,8 +43,10 @@ EAppStatus CModChassis::CComWheelset::InitComponent(SModInitParam_Base &param){
     mtrCanTxNode[RB] = chassisParam.wheelsetMotorTxNode_RB;
 
     // 初始化PID控制器
-    chassisParam.wheelsetSpdPidParam.threadNum = 4;
-    pidSpdCtrl.InitPID(&chassisParam.wheelsetSpdPidParam);
+    for (int i = 0; i < 4; i++) {
+        chassisParam.wheelsetSpdPidParam[i].threadNum = 1;
+        pidSpdCtrl[i].InitPID(&chassisParam.wheelsetSpdPidParam[i]);
+    }
 
     chassisParam.lineCorrectionPidParam.threadNum = 3;
     pidLineCorrectionCtrl.InitPID(&chassisParam.lineCorrectionPidParam);
@@ -87,8 +89,9 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
             motor[RF]->motorData[CDevMtr::DATA_POSIT] = 0;
             motor[LB]->motorData[CDevMtr::DATA_POSIT] = 0;
             motor[RB]->motorData[CDevMtr::DATA_POSIT] = 0;
-            mtrOutputBuffer.fill(0);
-            pidSpdCtrl.ResetPidController();
+            for (auto &pid : pidSpdCtrl) {
+                pid.ResetPidController();
+            }
             pidYawCtrl.ResetPidController();
             Component_FSMFlag_ = FSM_INIT;
         }
@@ -166,7 +169,12 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     };
 
     // 计算输出
-    auto output = pidSpdCtrl.UpdatePidController(wheelSpd, wheelSpdMeasure);
+    DataBuffer<float_t> output;
+    for (int i = 0; i < 4; i++) {
+        DataBuffer<float_t> wheelSpd_i = {wheelSpd[i]};
+        DataBuffer<float_t> wheelSpdMeasure_i = {wheelSpdMeasure[i]};
+        output[i] = pidSpdCtrl[i].UpdatePidController(wheelSpd_i, wheelSpdMeasure_i)[0];
+    }
 
     // 将输出值存入电机数据输出缓冲区
     mtrOutputBuffer = {

@@ -2,9 +2,9 @@
  * @brief        
  * 
  * @file         mod_arm.hpp
- * @author       Fish_Joe (2328339747@qq.com)
+ * @author       sllllr (2997708711@qq.com)
  * @version      V1.0
- * @date         2025-05-04
+ * @date         2026-01-27
  * 
  * @copyright    Copyright (c) 2025
  * 
@@ -14,22 +14,24 @@
 
 /*-------------------------------------物理限位---------------------------------------------------*/
 #define ARM_YAW_PHYSICAL_RANGE_MIN -97.5f
-#define ARM_YAW_PHYSICAL_RANGE_MAX 97.5f
-#define ARM_PITCH1_PHYSICAL_RANGE_MIN 4.0f
-#define ARM_PITCH1_PHYSICAL_RANGE_MAX 104.0f  ///< 118.0f
-#define ARM_PITCH2_PHYSICAL_RANGE_MIN 11.0f
-#define ARM_PITCH2_PHYSICAL_RANGE_MAX 132.0f
+#define ARM_YAW_PHYSICAL_RANGE_MAX 53.f
+#define ARM_PITCH1_PHYSICAL_RANGE_MIN 0.0f
+#define ARM_PITCH1_PHYSICAL_RANGE_MAX 95.f  ///< 118.0f
+#define ARM_PITCH2_PHYSICAL_RANGE_MIN 0.f
+#define ARM_PITCH2_PHYSICAL_RANGE_MAX 119.f
 #define ARM_ROLL_PHYSICAL_RANGE_MIN -169.0f
 #define ARM_ROLL_PHYSICAL_RANGE_MAX 180.0f
 #define ARM_END_PITCH_PHYSICAL_RANGE_MIN -145.0f
 #define ARM_END_PITCH_PHYSICAL_RANGE_MAX 60.0f
+#define ARM_END_GRIP_PHYSICAL_RANGE_MIN 40.f
+#define ARM_END_GRIP_PHYSICAL_RANGE_MAX 103.f
 #define ARM_END_GRIP_PHYSICAL_RANGE 106.f		//初版末端机械行程是106mm
 
 /*-------------------------------------电机限位----------------------------------------------------*/
 //原始限位编码器器范围
-#define ARM_YAW_MOTOR_RANGE 65535
-#define ARM_PITCH1_MOTOR_RANGE 20755
-#define ARM_PITCH2_MOTOR_RANGE 65535
+#define ARM_YAW_MOTOR_RANGE 54750
+#define ARM_PITCH1_MOTOR_RANGE 17262
+#define ARM_PITCH2_MOTOR_RANGE 21823
 #define ARM_END_PITCH_MOTOR_RANGE 325993
 #define ARM_END_GRIP_MOTOR_RANGE 201464     ///(8192*22+10240+11000)
 
@@ -39,14 +41,14 @@
 #define ARM_YAW_MOTOR_RATIO (ARM_YAW_MOTOR_RANGE / (ARM_YAW_PHYSICAL_RANGE_MAX - ARM_YAW_PHYSICAL_RANGE_MIN))
 #define ARM_END_PITCH_MOTOR_RATIO (ARM_END_PITCH_MOTOR_RANGE / (ARM_END_PITCH_PHYSICAL_RANGE_MAX - ARM_END_PITCH_PHYSICAL_RANGE_MIN))
 #define ARM_END_ROLL_MOTOR_RATIO 3524.07f
-#define ARM_END_GRIP_MOTOR_RATIO (  ARM_END_GRIP_MOTOR_RANGE / ARM_END_GRIP_PHYSICAL_RANGE) //编码器与物理距离转换比（单位mm）
+#define ARM_END_GRIP_MOTOR_RATIO (ARM_END_GRIP_MOTOR_RANGE / ARM_END_GRIP_PHYSICAL_RANGE) //编码器与物理距离转换比（单位mm）
 
 /*-------------------------------------零点偏移--------------------------------------------------------*/
 // 这里的offset都是物理的零点相对电机的零点的偏移值，电机的零点在物理的最小值
 #define ARM_YAW_MOTOR_OFFSET -ARM_YAW_PHYSICAL_RANGE_MIN * ARM_YAW_MOTOR_RATIO
 #define ARM_PITCH1_MOTOR_OFFSET -ARM_PITCH1_PHYSICAL_RANGE_MIN * ARM_PITCH1_MOTOR_RATIO
 #define ARM_PITCH2_MOTOR_OFFSET -ARM_PITCH2_PHYSICAL_RANGE_MIN * ARM_PITCH2_MOTOR_RATIO
-#define ARM_ROLL_MOTOR_OFFSET 209.49f // 但这个比较特殊，测量这个就是从电机0位置到物理0位置总共的角度
+#define ARM_ROLL_MOTOR_OFFSET 0.f // 但这个比较特殊，测量这个就是从电机0位置到物理0位置总共的角度
 #define ARM_END_PITCH_MOTOR_OFFSET -ARM_END_PITCH_PHYSICAL_RANGE_MIN * ARM_END_PITCH_MOTOR_RATIO
 
 /*-------------------------------------方向设定---------------------------------------------------------*/
@@ -60,26 +62,30 @@
 #define ARM_END_ROLL_MOTOR_R_DIR -1
 #define ARM_GRIP_MOTOR_DIR 1	// 张开方向与编码器值增大方向一致
 
+/*-------------------------------------Roll-Grip耦合补偿-----------------------------------------------*/
+#define ARM_ROLL_GRIP_COUPLING_RATIO 0.25f     ///< 传动链: EndRoll -> 差速器(1:2) -> 锥齿轮(1:2) -> 夹爪电机,总耦合比例 = 0.5 * 0.5 = 0.25
+#define ARM_END_ROLL_ONE_TURN    static_cast<int32_t>(360.0f * ARM_END_ROLL_MOTOR_RATIO)     ///< 一圈对应的编码器值,用于增量补偿的跨圈检测
+#define ARM_END_ROLL_HALF_TURN   (ARM_END_ROLL_ONE_TURN / 2)
+
 /*-------------------------------------初始化数据--------------------------------------------------------*/
-#define ARM_YAW_INIT_ANGLE 0.0f
-#define ARM_PITCH1_INIT_ANGLE 11.0f
-#define ARM_PITCH2_INIT_ANGLE 18.0f
+#define ARM_YAW_INIT_ANGLE 1.2f
+#define ARM_PITCH1_INIT_ANGLE 4.f
+#define ARM_PITCH2_INIT_ANGLE 11.f
 #define ARM_ROLL_INIT_ANGLE 0.0f
 #define ARM_END_PITCH_INIT_ANGLE 0.0f
 #define ARM_END_ROLL_INIT_ANGLE 0.0f
 #define ARM_GRIP_INIT_LENGTH 0.0f
 
-/*-------------------------------------LHK_SET----------------------------------------------------------*/
-#define POSIT_JOINT1_YAW_MACH 42879
-#define ARM_YAW_MOTOR_RANGE_LHK 71431
+#define POSIT_JOINT1_YAW_MACH 20000
+#define ARM_YAW_MOTOR_RANGE_LHK 54750
 
-#define POSIT_JOINT2_PITCH1_MACH 15259
-#define POSIT_JOINT2_PITCH1_MACH_PHY 4.0f
-#define POSIT_JOINT2_PITCH1_INIT_PHY 11.0f
+#define POSIT_JOINT2_PITCH1_MACH 57338
+#define POSIT_JOINT2_PITCH1_MACH_PHY 0.f
+#define POSIT_JOINT2_PITCH1_INIT_PHY 4.0f
 
-#define POSIT_JOINT3_PITCH2_MACH 9152//12837
-#define POSIT_JOINT3_PITCH2_MACH_PHY 11.0f
-#define POSIT_JOINT3_PITCH2_INIT_PHY 18.0f
+#define POSIT_JOINT3_PITCH2_MACH 44889 //12837
+#define POSIT_JOINT3_PITCH2_MACH_PHY 0.f
+#define POSIT_JOINT3_PITCH2_INIT_PHY 11.0f
 
 #define POSIT_JOINT4_ROLL_OFFSET 0
 
@@ -100,7 +106,6 @@
 #define MG8010_i36V2_Torque_Constant	0.15	
 #define DMJ4310_Torque_Constant			0.975	///< 对应电机的扭矩常数
 
-
 #include "mod_common.hpp"
 
 namespace my_engineer {
@@ -111,7 +116,6 @@ namespace my_engineer {
  */
 class CModArm final: public CModBase {
 public:
-
 	// 定义机械臂模块初始化参数结构体
 	struct SModInitParam_Arm: public SModInitParam_Base {
 		EDeviceID MotorID_Yaw = EDeviceID::DEV_NULL;
@@ -187,7 +191,6 @@ public:
 	uint8_t should_limit_yaw = 0; ///< 是否限制Yaw角度
 
 private:
-
 	// 定义机械臂Yaw关节组件类并实例化
 	class CComJoint: public CComponentBase {
 	public:
@@ -227,6 +230,8 @@ private:
 		// 重补输出
 		float_t Grav_Pitch1_Out = 0;
 		float_t Grav_Pitch2_Out = 0;
+		float_t g_pitch1 = 0;
+		float_t g_pitch2 = 0;
 
 		// 电机实例指针
 		CDevMtr* motor[3] = {nullptr};
@@ -323,7 +328,7 @@ private:
 		const int32_t rangeLimit_Pitch = ARM_END_PITCH_MOTOR_RANGE; ///< 电机位置范围限制
 		const int32_t rangeLimit_Grip = ARM_END_GRIP_MOTOR_RANGE; ///< 夹爪电机位置范围限制
 
-		// 扩展末端信息结构体：包含末端Pitch/Roll + 夹爪信息
+		// 扩展末端信息结构体：包含末端Pitch/Roll + 夹爪信息（新增Roll耦合补偿字段）
 		struct SEndInfo {
 			// 末端原有信息
 			int32_t posit_Pitch = 0;    ///< 末端pitch
@@ -331,14 +336,18 @@ private:
 			bool isPositArrived_Pitch = false; ///< 末端pitch是否到达
 			bool isPositArrived_Roll = false; ///< 末端roll是否到达
 			
-			// 夹爪信息（原CComGrip的SGripInfo）
+			// 夹爪信息（原CComGrip的SGripInfo + Roll耦合补偿）
 			int32_t posit_grip = 0;           	///< 夹爪当前角度
 			float_t distance = 0;       		///< 夹爪距离
-			int32_t holdPosit_Grip = 0;			///<记忆夹持位置
+			int32_t holdPosit_Grip = 0;			///< 记忆夹持位置
 			bool isPositArrived_Grip = false;   ///< 夹爪角度是否到达目标
 			bool isGripped = false; 			///< 是否夹住
         	bool cmdGrip = false;   			///< 抓取（自适应力控）
         	bool cmdRelease = false;   			///< 释放
+			int32_t lastSetPosit = 0;			///< 上一次设定位置（用于方向判断）
+			int32_t lastEndRollPosit = 0;       ///< 上一次的 Roll 位置（耦合补偿用）
+			float_t rollCompAccum = 0.0f;       ///< 累积的 Roll 补偿量（耦合补偿用）
+			int32_t rollPositAtGripInit_ = 0;   ///< 夹爪初始化时的Roll位置基准
 		} endInfo;
 
 		// 扩展末端控制命令结构体：包含末端Pitch/Roll + 夹爪命令
@@ -390,14 +399,21 @@ private:
 		// 末端输出更新函数
 		EAppStatus _UpdateOutput(float_t posit_Pitch, float_t posit_Roll);
 
-		// 夹爪输出更新函数
+		// 夹爪输出更新函数（含Roll耦合补偿）
 		EAppStatus _UpdateOutput_Grip(float_t posit_grip);
 
 		// 统一输出更新函数（包含末端+夹爪）
 		EAppStatus _UpdateOutput_All(float_t posit_Pitch, float_t posit_Roll, float_t posit_grip);
 
+		// Roll补偿累积更新函数（原CComGrip的私有函数）
+		void _UpdateRollCompensation(int32_t endRollPosit);
+
 		// 电机can发送节点
 		std::array<CInfCAN::CCanTxNode*, 3> mtrCanTxNode;
+
+		// 独立初始化标志位
+        bool isEndInit_ = false;
+        bool isGripInit_ = false;
 
 	} comEnd_;
 

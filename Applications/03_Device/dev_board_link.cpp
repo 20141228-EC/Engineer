@@ -31,7 +31,7 @@ EAppStatus CDevBoardLink::InitDevice(const SDevInitParam_Base *pStructInitParam)
 	canInterface_ = reinterpret_cast<CInfCAN *>(InterfaceIDMap.at(boardLinkParam.interfaceID));
 
 	// 初始化CAN接收节点
-    auto canRxID = 0x300;
+    auto canRxID = 0x302;
     canRxNode_.InitRxNode(boardLinkParam.interfaceID, canRxID, 
                                 CInfCAN::ECanFrameType::DATA, 
                                 CInfCAN::ECanFrameDlc::DLC_8);
@@ -66,31 +66,29 @@ EAppStatus CDevBoardLink::SendPackage(EPacketID pack_id){
 
 	switch (pack_id) ///< 这些获取的逻辑还得具体实现
 	{
-	case PKT_REMOTE_1:{
-
-		// 获取数据
-		remoteInfo1_pkt.pack_id = PKT_REMOTE_1;
-    	memcpy(data_buf.data(), &remoteInfo1_pkt, sizeof(remoteInfo1_pkt));
-
-		// 填充数据帧
-		Modify_CanTxData(data_buf.data());
-		break;
-	}
-	case PKT_REMOTE_2:{
-
-		// 获取数据
-		remoteInfo2_pkt.pack_id = PKT_REMOTE_2;
-		memcpy(data_buf.data(), &remoteInfo2_pkt, sizeof(remoteInfo2_pkt));
-
-		// 填充数据帧
-		Modify_CanTxData(data_buf.data());
-		break;
-	}
 	case PKT_CTRL_FLAGS:{
 
 		// 获取数据
 		ctrlFlags_pkt.pack_id = PKT_CTRL_FLAGS;
 		memcpy(data_buf.data(), &ctrlFlags_pkt, sizeof(ctrlFlags_pkt));
+
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+		break;
+	}
+	case PKT_CTRLER_L_B:{
+		// 获取数据
+		controllerbackcmd_l_b_pkt.pack_id = PKT_CTRLER_L_B;
+		memcpy(data_buf.data(), &controllerbackcmd_l_b_pkt, sizeof(controllerbackcmd_l_b_pkt));
+
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+		break;
+	}
+	case PKT_CTRLER_L_F:{
+		// 获取数据
+		controllerfrontcmd_l_f_pkt.pack_id = PKT_CTRLER_L_F;
+		memcpy(data_buf.data(), &controllerfrontcmd_l_f_pkt, sizeof(controllerfrontcmd_l_f_pkt));
 
 		// 填充数据帧
 		Modify_CanTxData(data_buf.data());

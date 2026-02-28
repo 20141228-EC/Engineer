@@ -15,27 +15,28 @@
 #include "mod_common.hpp"
 #include "algo_ave_filter.hpp"
 
-#define LASER_ZERO_OFFSET_L 0
-#define LASER_ZERO_OFFSET_R 0
-#define L_LIFT_MOTOR_DIR -1                 ///< 左腿编码器与腿长增加方向是否一致 一致为1 否则为-1
-#define R_LIFT_MOTOR_DIR 1                  ///< 右腿编码器与腿长增加方向是否一致 一致为1 否则为-1
-#define ROLL_LIFT_DIR   1                   ///< roll轴增大方向是否和抬头方向一致 一致为1 否则为-1
+#define L_LIFT_MOTOR_DIR -1 //-1                 ///< 左腿编码器与腿长增加方向是否一致 一致为1 否则为-1
+#define R_LIFT_MOTOR_DIR 1 //1                  ///< 右腿编码器与腿长增加方向是否一致 一致为1 否则为-1
+#define ROLL_LIFT_DIR   -1                   ///< roll轴增大方向是否和抬头方向一致 一致为1 否则为-1
 #define CHASSIS_HIP_INIT_LENGTH 0.0f        ///< 初始化腿长 后续待改
-#define CHASSIS_HIP_INIT_ECD_L  -500.f
-#define CHASSIS_HIP_INIT_ECD_R  500.f       ///< 这两个是左右电机在初始化腿长时候的编码器值  这个得和陀螺仪数据0对应
+#define CHASSIS_HIP_INIT_ECD_L  0.3f//15.f//
+#define CHASSIS_HIP_INIT_ECD_R  -0.5f//-38.f//      ///< 这两个是左右电机在初始化腿长时候的编码器值  这个得和陀螺仪数据0对应
 #define CHASSIS_HIP_PHY_MAX     100.0f
 #define CHASSIS_HIP_PHY_MIN     0.0f        ///< 这个是最大和最短腿长  这两个目前还用不到
-#define CHASSIS_HIP_ECD_MAX_L   0.0f
-#define CHASSIS_HIP_ECD_MIN_L   -6000.0f
-#define CHASSIS_HIP_ECD_MAX_R   6000.0f
-#define CHASSIS_HIP_ECD_MIN_R   0.0f        ///< 这几个是极限腿长时候两个电机对应的编码值 即软件限位 待改
-#define ECD_LENGTH_RATIO        1.0f        ///< 这是腿长range和编码器range的线性对应关系，即传动比 这个保持为1就行
-#define ROLL_DEG_ECD_RATIO     100.f        ///< 这是roll动一度的时候编码器的变化值，待改
+#define CHASSIS_HIP_ECD_MAX_L   9.3f//1685.f//
+#define CHASSIS_HIP_ECD_MIN_L   0.f//0.0f
+#define CHASSIS_HIP_ECD_MAX_R   0.f//0.0f
+#define CHASSIS_HIP_ECD_MIN_R   -9.4f//-1717.f//        ///< 这几个是极限腿长时候两个电机对应的编码值 即软件限位 待改
+#define ECD_LENGTH_RATIO        -1.0f        ///< 这是腿长range和编码器range的线性对应关系，即传动比 这个保持为1就行
+#define ROLL_DEG_ECD_RATIO     50.f        ///< 这是roll动一度的时候编码器的变化值，待改
 #define G 9.7803f    ///< 南山区的g值
 
 #define deg2rad(x) ((x) * 0.017453292519943295769236907684886)
 #define rad2deg(x) ((x) * 57.295779513082320876798154814105)
 #define ecd2rad(x) ((x) * 0.0000958251953125) ///< 编码器总值到角度转化 0.0054931640625
+
+#define DM8009P_CURRENT_TO_TORQUE_L 1 //0.1946174202  ///< 1.5 * 9 * 21 * 0.0006864812
+#define DM8009P_CURRENT_TO_TORQUE_R 1 //1.1798274915  ///< 1.5 * 9 * 21 * 0.004161649
 
 /* public定义用户层方便调试和获取信息，private定义了底层用于直接驱动电机，而不会因为外界的干扰影响了输出的值 */
 
@@ -57,23 +58,36 @@ public:
         EDeviceID wheelsetMotorID_RB = EDeviceID::DEV_NULL;
         EDeviceID hipMotorID_L_L = EDeviceID::DEV_NULL;
         EDeviceID hipMotorID_L_R = EDeviceID::DEV_NULL; ///< 后腿电机
+        EDeviceID crawlerMotorID_L = EDeviceID::DEV_NULL;
+        EDeviceID crawlerMotorID_R = EDeviceID::DEV_NULL;   ///< 履带电机
         CInfCAN::CCanTxNode *wheelsetMotorTxNode_LF;
         CInfCAN::CCanTxNode *wheelsetMotorTxNode_RF;
         CInfCAN::CCanTxNode *wheelsetMotorTxNode_LB;
         CInfCAN::CCanTxNode *wheelsetMotorTxNode_RB;
         CInfCAN::CCanTxNode *hipMotorTxNodeID_L_L;
         CInfCAN::CCanTxNode *hipMotorTxNodeID_L_R;
+        CInfCAN::CCanTxNode *crawlerMotorTxNodeID_L;
+        CInfCAN::CCanTxNode *crawlerMotorTxNodeID_R;
         float_t MIT_L_kp = 0.0f; ///< MIT控制器比例系数
 		float_t MIT_L_kd = 0.0f; ///< MIT控制器微分系数
-        CAlgoPid::SAlgoInitParam_Pid wheelsetSpdPidParam;
+        float_t MIT_L_tau = 0.0f;   ///< MIT控制器前馈扭矩
+        float_t MIT_R_kp = 0.0f; ///< MIT控制器比例系数
+		float_t MIT_R_kd = 0.0f; ///< MIT控制器微分系数
+        float_t MIT_R_tau = 0.0f;   ///< MIT控制器前馈扭矩
+        std::array<CAlgoPid::SAlgoInitParam_Pid, 4> wheelsetSpdPidParam;
         CAlgoPid::SAlgoInitParam_Pid lineCorrectionPidParam;
         CAlgoPid::SAlgoInitParam_Pid yawCorrectionPidParam;
         CAlgoPid::SAlgoInitParam_Pid rollCorrectionPidParam; ///< roll轴控制pid
+        CAlgoPid::SAlgoInitParam_Pid HipPosPidParam_L;
+        CAlgoPid::SAlgoInitParam_Pid HipPosPidParam_R;
+        CAlgoPid::SAlgoInitParam_Pid HipSpdPidParam_L;
+        CAlgoPid::SAlgoInitParam_Pid HipSpdPidParam_R;
+        CAlgoPid::SAlgoInitParam_Pid CrawlerSpdPidParam;    ///< 履带电机用同一套pid
         CAlgoPowerControl::SAlgoInitParamPower powerParamLF;  // 左前电机功率参数
         CAlgoPowerControl::SAlgoInitParamPower powerParamRF;  // 右前电机功率参数
         CAlgoPowerControl::SAlgoInitParamPower powerParamLB;  // 左后电机功率参数
         CAlgoPowerControl::SAlgoInitParamPower powerParamRB;  // 右后电机功率参数
-        uint16_t chassisMaxPower = 110;                       // 底盘总功率限制
+        uint16_t chassisMaxPower = 120;                       // 底盘总功率限制
     };
 
     // 定义底盘信息结构体并实例化
@@ -96,6 +110,7 @@ public:
         float_t speed_Y = 0;    ///< 底盘Y轴速度(范围-100％~100％)
         float_t speed_W = 0;    ///< 底盘角速度(范围-100％~100％)
         float_t L_length = 0.0f; ///< 后腿腿长
+        float_t speed_crawler = 0;  ///< 履带电机速度
     } chassisCmd;
 
     // 互补滤波算法实例指针
@@ -128,9 +143,12 @@ public:
     // 复位腿的标志位
     EVarStatus reset_hip = false;
 
+    // 启动履带的标志位
+    EVarStatus crawler_on = false;
+
 private:
 
-    uint16_t chassisMaxPower_ = 110; // 底盘总功率限制
+    uint16_t chassisMaxPower_ = 120; // 底盘总功率限制
     // 底盘电机功率控制实例
     CAlgoPowerControl powerCtrlLF_;  // 左前电机功率控制实例
     CAlgoPowerControl powerCtrlRF_;  // 右前电机功率控制实例
@@ -166,10 +184,9 @@ private:
         // 定义底盘PID控制器
         CAlgoPid pidYawCtrl;                    ///<控制底盘角速度（Yaw旋转）
         CAlgoPid pidLineCorrectionCtrl;         ///<修正X、Y、W三个方向的误差
-        CAlgoPid pidSpdCtrl;                    ///<控制4个轮子的速度
-
+        std::array<CAlgoPid, 4> pidSpdCtrl;     ///<控制4个轮子的速度
         // 电机数据输出缓冲区
-        std::array<int16_t, 6> mtrOutputBuffer = {0};
+        std::array<int16_t, 4> mtrOutputBuffer = {0};
 
         // 初始化组件
         EAppStatus InitComponent(SModInitParam_Base &param) final;
@@ -218,8 +235,57 @@ private:
         // 电机实例指针数组
         CDevMtr *motor[2] = {nullptr};
 
-        // 定义底盘PID控制器
+        // 底盘类父类指针，用于访问髋关节复位标志位
+        CModChassis *parent = nullptr;
+
+        // 定义髋关节PID控制器
+        CAlgoPid HipPosPid[2];
+        CAlgoPid HipSpdPid[2];
         CAlgoPid pidRollCtrl;                  ///< 整车roll轴控制
+
+        // 电机数据输出缓冲区
+        std::array<float_t, 2> mtrOutputBuffer = {0};
+
+        // 初始化组件
+        EAppStatus InitComponent(SModInitParam_Base &param) final;
+
+        // 重写组件更新函数
+        EAppStatus UpdateComponent() final;
+
+        // 声明组件输出更新函数(负责根据控制量进行解算，以及进行PID运算，最后得到输出值)
+        EAppStatus _UpdateOutput(float_t posit_L, float_t posit_R);
+    
+        // 电机can发送节点
+        std::array<CInfCAN::CCanTxNode*, 2> mtrCanTxNode;
+
+        // 面向髋关节组件的运动模式标志位
+        EmovMode MovMode_ = EmovMode::NORMAL;
+    }comHip_;
+
+    // 定义履带组件并实例化
+    class CComCrawler final: public CComponentBase{
+     public:
+        enum{L = 0, R = 1};
+
+        // 定义底盘履带信息结构体并实例化
+        struct SCrawlerInfo {                                   
+            float_t speed_L = 0.0f;
+            float_t speed_R = 0.0f;
+        } CrawlerInfo;
+
+        // 定义底盘履带控制命令结构体并实例化
+        struct SCrawlerCommand {
+            float_t speed_crawler = 0.f;    ///< 履带转速       
+        } CrawlerCmd;
+
+        // 电机实例指针数组
+        CDevMtr *motor[2] = {nullptr};
+
+        // 底盘类父类指针，用于访问启停履带标志位
+        CModChassis *parent = nullptr;
+
+        // 定义履带PID控制器
+        CAlgoPid PidCrawlerSpdCtrl;
 
         // 电机数据输出缓冲区
         std::array<int16_t, 2> mtrOutputBuffer = {0};
@@ -231,14 +297,14 @@ private:
         EAppStatus UpdateComponent() final;
 
         // 声明组件输出更新函数(负责根据控制量进行解算，以及进行PID运算，最后得到输出值)
-        EAppStatus _UpdateOutput(float L_Length);
+        EAppStatus _UpdateOutput(float_t speed);
     
         // 电机can发送节点
         std::array<CInfCAN::CCanTxNode*, 2> mtrCanTxNode;
 
-        // 面向髋关节组件的运动模式标志位
+        // 面向履带组件的运动模式标志位
         EmovMode MovMode_ = EmovMode::NORMAL;
-    }comHip_;
+    }comCrawler_;
 
     // 重写基类函数
     void UpdateHandler_() final;
@@ -269,5 +335,10 @@ private:
 };
 
 } // namespace my_engineer
+
+extern float wheel_power_lf;
+extern float wheel_power_rf;
+extern float wheel_power_lb;
+extern float wheel_power_rb;
 
 #endif // MOD_CHASSIS_HPP   

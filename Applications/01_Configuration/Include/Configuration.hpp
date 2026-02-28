@@ -64,15 +64,17 @@ enum class EDeviceID{
     DEV_CHAS_MTR_RF,        ///< 底盘电机前右（M3508）
     DEV_CHAS_MTR_LB,        ///< 底盘电机后左（M3508）
     DEV_CHAS_MTR_RB,        ///< 底盘电机后右（M3508）
-    DEV_ARM_MTR_YAW,            ///< 机械臂YAW轴电机(DM-MIT mode)
+    DEV_ARM_MTR_YAW,            ///< 机械臂YAW轴电机(KT)
     DEV_ARM_MTR_PITCH1,        ///< 机械臂Pitch1轴电机(KT)
     DEV_ARM_MTR_PITCH2,        ///< 机械臂Pitch2轴电机(KT)
-    DEV_ARM_MTR_ROLL,          ///< 机械臂Roll轴电机(KT)
+    DEV_ARM_MTR_ROLL,          ///< 机械臂Roll轴电机(DM-MIT mode)
     DEV_ARM_MTR_END_L,   ///< 机械臂末端左轴电机(M2006)
     DEV_ARM_MTR_END_R,   ///< 机械臂末端右轴电机(M2006)
-    DEV_CHAS_L_HIP,      ///< 底盘后腿电机左（DM-8009）
-    DEV_CHAS_R_HIP,      ///< 底盘后腿电机右 （DM-8009）
+    DEV_CHAS_L_HIP,      ///< 底盘后腿电机左（DM-8009P）
+    DEV_CHAS_R_HIP,      ///< 底盘后腿电机右 （DM-8009P）
     DEV_ARM_MTR_GRIP,        ///< 机械臂夹爪电机(M2006)
+    DEV_CHAS_CRAWLER_L,     ///< 履带电机左（M3508）
+    DEV_CHAS_CRAWLER_R,     ///< 履带电机右（M3508）
 };
 
 /**
@@ -98,6 +100,7 @@ enum class EModuleID{
 enum class EAlgoID{
     ALGO_NULL = -1,         ///< 空算法
     ALGO_IMU_AVE = 0,       ///< IMU互补滤波
+    ALGO_KF = 1,            ///< 基本卡尔曼滤波
     ALGO_IMU_EKF,           ///< IMU扩展卡尔曼滤波
 };
 

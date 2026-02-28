@@ -86,20 +86,14 @@ void CSystemBoardLink::UpdateHandler_() {
         pboardLink_->SendPackage(CDevBoardLink::EPacketID::PKT_CTRL_FLAGS); 
     }
 
-    // 发送中频数据包 (250Hz)
-    if (now - last_forwardarm_send_time >= 2)
-    {
-        last_forwardarm_send_time = now;
-        pboardLink_->SendPackage(CDevBoardLink::EPacketID::PKT_REMOTE_1);
+    // 发送控制器数据包 (250Hz)
+   if (now - last_backarm_send_time >= 4)
+   {
+       last_backarm_send_time = now;
+       for(int i = CDevBoardLink::EPacketID::PKT_CTRLER_L_B; i < CDevBoardLink::EPacketID::PKT_COUNT; ++i){
+           pboardLink_->SendPackage(static_cast<CDevBoardLink::EPacketID>(i));
+   }   // 暂且写成for循环发 后面不行再看看改一下
     }
-
-    // 发送低频数据包 (125Hz)
-    if (now - last_backarm_send_time >= 4)
-    {
-        last_backarm_send_time = now;
-        pboardLink_->SendPackage(CDevBoardLink::EPacketID::PKT_REMOTE_2);
-    }
-    
     //如果can负载爆了的话也可以试试不用for 换上面这种方式发
 }
 
@@ -124,25 +118,12 @@ void CSystemBoardLink::UpdateBoardRxData_() {
  * @brief 更新发送数据包
  */
 void CSystemBoardLink::UpdateBoardTxPkg_() {
-	if (systemStatus != APP_OK) return;
-	if (!pboardLink_) return;
+    if (systemStatus != APP_OK) return;
+    if (!pboardLink_) return;
 
-	// 更新发送包的信息 将系统层的数据传递给设备层
+    // 更新发送包的信息 将系统层的数据传递给设备层
 
-    // 更新包0 - 遥控器值（右摇杆xy、左摇杆x）
-    pboardLink_->remoteInfo1_pkt.pack_id = remoteInfo1.pack_id;
-    pboardLink_->remoteInfo1_pkt.joystick_RX = remoteInfo1.joystick_RX;
-    pboardLink_->remoteInfo1_pkt.joystick_RY = remoteInfo1.joystick_RY;
-    pboardLink_->remoteInfo1_pkt.joystick_LX = remoteInfo1.joystick_LX;
-
-    // 更新包1 - 遥控器值（左摇杆y、拨轮和拨杆）
-    pboardLink_->remoteInfo2_pkt.pack_id = remoteInfo2.pack_id;
-    pboardLink_->remoteInfo2_pkt.joystick_LY = remoteInfo2.joystick_LY;
-    pboardLink_->remoteInfo2_pkt.switch_l = remoteInfo2.switch_l;
-    pboardLink_->remoteInfo2_pkt.switch_r = remoteInfo2.switch_r;
-    pboardLink_->remoteInfo2_pkt.thumbWheel = remoteInfo2.thumbWheel;
-
-    // 更新包2 - 控制标志
+    // 更新包0 - 控制标志
     pboardLink_->ctrlFlags_pkt.pack_id = ctrlFlags.pack_id;
     pboardLink_->ctrlFlags_pkt.chassis_ctrl = ctrlFlags.chassis_ctrl;
     pboardLink_->ctrlFlags_pkt.gimbal_ctrl = ctrlFlags.gimbal_ctrl;
@@ -162,6 +143,21 @@ void CSystemBoardLink::UpdateBoardTxPkg_() {
     pboardLink_->ctrlFlags_pkt.gimbal_auto_ctrl = ctrlFlags.gimbal_auto_ctrl;
     pboardLink_->ctrlFlags_pkt.arm_auto_ctrl = ctrlFlags.arm_auto_ctrl;
     pboardLink_->ctrlFlags_pkt.auto_ctrl_mode = ctrlFlags.auto_ctrl_mode;
+
+    // 更新包1 - 控制器左臂后三轴命令包
+    pboardLink_->controllerbackcmd_l_b_pkt.pack_id = controllerbackcmd_l.pack_id;
+    pboardLink_->controllerbackcmd_l_b_pkt.yaw = controllerbackcmd_l.yaw;
+    pboardLink_->controllerbackcmd_l_b_pkt.pitch1 = controllerbackcmd_l.pitch1;
+    pboardLink_->controllerbackcmd_l_b_pkt.pitch2 = controllerbackcmd_l.pitch2;
+
+    // 更新包3 - 控制器左臂前三轴命令包
+    pboardLink_->controllerfrontcmd_l_f_pkt.pack_id = controllerfrontcmd_l.pack_id;
+    pboardLink_->controllerfrontcmd_l_f_pkt.roll = controllerfrontcmd_l.roll;
+    pboardLink_->controllerfrontcmd_l_f_pkt.pitch_end = controllerfrontcmd_l.pitch_end;
+    pboardLink_->controllerfrontcmd_l_f_pkt.roll_end = controllerfrontcmd_l.roll_end;
+    pboardLink_->controllerfrontcmd_l_f_pkt.grip_close = controllerfrontcmd_l.grip_close;
+    pboardLink_->controllerfrontcmd_l_f_pkt.chassis_speed = controllerfrontcmd_l.chassis_speed;
+    
 }
 
 /**

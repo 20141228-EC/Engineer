@@ -2,11 +2,11 @@
  * @brief        
  * 
  * @file         mod_arm.cpp
- * @author       Fish_Joe (2328339747@qq.com)
+ * @author       sllllr (2997708711@qq.com)
  * @version      V1.0
- * @date         2025-05-04
+ * @date         2026-01-28
  * 
- * @copyright    Copyright (c) 2025
+ * @copyright    Copyright (c) 2026
  * 
  ******************************************************************************/
 
@@ -153,58 +153,67 @@ EAppStatus CModArm::RestrictArmCommand_() {
 		return APP_ERROR;
 	}
 
-	// 限制控制命令大小
-	armCmd.set_angle_Yaw =
-		std::clamp(armCmd.set_angle_Yaw, ARM_YAW_PHYSICAL_RANGE_MIN, ARM_YAW_PHYSICAL_RANGE_MAX);
-	armCmd.set_angle_Pitch1 =
-		std::clamp(armCmd.set_angle_Pitch1,
-				   ARM_PITCH1_PHYSICAL_RANGE_MIN, ARM_PITCH1_PHYSICAL_RANGE_MAX);
-	if (armCmd.set_angle_Pitch2 < ARM_PITCH2_PHYSICAL_RANGE_MIN) {
-		armCmd.set_angle_Pitch2 = ARM_PITCH2_PHYSICAL_RANGE_MIN;
-	} else {
-		armCmd.set_angle_Pitch2 =
-			std::clamp(armCmd.set_angle_Pitch2,
-				ARM_PITCH2_PHYSICAL_RANGE_MIN, 1.25f * armCmd.set_angle_Pitch1);
-	}
-	if (armCmd.set_angle_Pitch2 > ARM_PITCH2_PHYSICAL_RANGE_MAX) {
-		armCmd.set_angle_Pitch2 = ARM_PITCH2_PHYSICAL_RANGE_MAX;
-	}
-	armCmd.set_angle_Roll =
-		std::clamp(armCmd.set_angle_Roll,
-				   ARM_ROLL_PHYSICAL_RANGE_MIN, ARM_ROLL_PHYSICAL_RANGE_MAX);
-	armCmd.set_angle_end_pitch =
-		std::clamp(armCmd.set_angle_end_pitch,
-				   ARM_END_PITCH_PHYSICAL_RANGE_MIN, ARM_END_PITCH_PHYSICAL_RANGE_MAX);
+    // 物理限位
+    armCmd.set_angle_Yaw =
+        std::clamp(armCmd.set_angle_Yaw, ARM_YAW_PHYSICAL_RANGE_MIN, ARM_YAW_PHYSICAL_RANGE_MAX);
+    armCmd.set_angle_Pitch1 =
+        std::clamp(armCmd.set_angle_Pitch1,
+                   ARM_PITCH1_PHYSICAL_RANGE_MIN, ARM_PITCH1_PHYSICAL_RANGE_MAX);
+    armCmd.set_angle_Pitch2 =
+        std::clamp(armCmd.set_angle_Pitch2,
+                   ARM_PITCH2_PHYSICAL_RANGE_MIN, ARM_PITCH2_PHYSICAL_RANGE_MAX);
+    armCmd.set_angle_Roll =
+        std::clamp(armCmd.set_angle_Roll,
+                   ARM_ROLL_PHYSICAL_RANGE_MIN, ARM_ROLL_PHYSICAL_RANGE_MAX);
+    armCmd.set_angle_end_pitch =
+        std::clamp(armCmd.set_angle_end_pitch,
+                   ARM_END_PITCH_PHYSICAL_RANGE_MIN, ARM_END_PITCH_PHYSICAL_RANGE_MAX);
+    armCmd.set_length_grip = 
+        std::clamp(armCmd.set_length_grip,
+            ARM_END_GRIP_PHYSICAL_RANGE_MIN, ARM_END_GRIP_PHYSICAL_RANGE_MAX);
 
-	if(armCmd.isCustomCtrl)
-	armCmd.set_angle_Pitch1 =
-		std::clamp(armCmd.set_angle_Pitch1,
-				   18.0f, ARM_PITCH1_PHYSICAL_RANGE_MAX);
+    // 自定义控制器限制
+    if(armCmd.isCustomCtrl) {
+        armCmd.set_angle_Pitch1 =
+            std::clamp(armCmd.set_angle_Pitch1,
+                       18.0f, ARM_PITCH1_PHYSICAL_RANGE_MAX);
+    }
 
-	// 自动控制启用，则不继续做限制
-	if (armCmd.isAutoCtrl) return APP_OK;
+    // 自动控制模式下跳过后续更复杂的动态限位
+    if (armCmd.isAutoCtrl) {
+        return APP_OK;
+    }
 
-	if (armCmd.set_angle_Pitch1 >= 65.0f) {
-		armCmd.set_angle_Pitch2 = std::clamp(armCmd.set_angle_Pitch2,
-			32.0f, 32.0f + armCmd.set_angle_Pitch1);
-	}
-	
-	if (armCmd.set_angle_Pitch1 < 45.0f) {
-		armCmd.set_angle_Yaw = std::clamp(armCmd.set_angle_Yaw,
-			-12.0f, 5.0f);
-	}
+    // 动态关联限位
+    // Pitch1 和 Pitch2 的关联
+    float_t pitch2_min_limit = 0.f;
+	float_t pitch2_max_limit = 23.f + armCmd.set_angle_Pitch1;
+    if (armCmd.set_angle_Pitch1 >= 36.f) {
+        pitch2_min_limit = 23.f;
+    }
+	if (armCmd.set_angle_Pitch1 >= 65.f) {
+        pitch2_min_limit = 25.f;
+    }
+    armCmd.set_angle_Pitch2 = std::clamp(armCmd.set_angle_Pitch2, pitch2_min_limit, pitch2_max_limit);
 
-	if (armCmd.set_angle_Pitch2 < 20.0f) {
-		armCmd.set_angle_Roll = std::clamp(armCmd.set_angle_Roll,
-			-15.0f, 15.0f);
-	}
+    // Pitch2 和 Roll 的关联
+    if (armCmd.set_angle_Pitch2 < 20.0f) {
+        armCmd.set_angle_Roll = std::clamp(armCmd.set_angle_Roll,
+            ARM_ROLL_PHYSICAL_RANGE_MIN, 18.f);
+    }
 
-	if (should_limit_yaw) {
-		armCmd.set_angle_Yaw = std::clamp(armCmd.set_angle_Yaw,
-			-12.0f, 6.0f);
-	}
+    // Pitch1 和 Yaw 的关联
+    if (armCmd.set_angle_Pitch1 < 25.f) {
+        armCmd.set_angle_Yaw = std::clamp(armCmd.set_angle_Yaw,
+            0.f, 53.f);
+    }
 
-	return APP_OK;
+    // 最高优先级的限位
+    if (should_limit_yaw) {
+        armCmd.set_angle_Yaw = std::clamp(armCmd.set_angle_Yaw,
+            -12.0f, 6.0f);
+    }
+		return APP_OK;
 }
 
 /** 
@@ -218,6 +227,9 @@ EAppStatus CModArm::Grav_Compemsation_Pitch1()
 	float_t pitch2 = deg2rad(armInfo.angle_Pitch2 - 11);
 	float_t roll = deg2rad(armInfo.angle_Roll);
 	float_t end_pitch = deg2rad(armInfo.angle_end_pitch); ///< 获取关节角
+
+	this->comjoint_.g_pitch1 = pitch1;
+	this->comjoint_.g_pitch2 = pitch2;
 	
 	this->comjoint_.Grav_Pitch1_Out = (26.0*cos(pitch1 + 0.34) - 7.8*cos(pitch1 + pitch2 + 0.08) - 0.21*cos(pitch1 + pitch2 + roll - 1.4) - 0.21*cos(pitch1 + pitch2 - roll - 1.5) + 0.19*cos(pitch1 + pitch2 + 0.12)*cos(end_pitch) + 0.19*cos(pitch1 + pitch2 + 0.12)*sin(roll)*sin(end_pitch)) / MG8010_i36V2_Torque_Constant;
 	return APP_OK;

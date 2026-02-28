@@ -28,8 +28,26 @@ EAppStatus InitAllAlgo(){
     imu_ave_initparam.DT = 0.001f;
     imu_ave_initparam.memsDevID = EDeviceID::DEV_MEMS_BMI088;
 
-    // 使用初始化后的参数创建 ImuAveFilter 实例
+    // 使用初始化后的参数创建ImuAveFilter实例
     static auto ImuAveFilter = CAlgo_IMU_Ave(imu_ave_initparam);
+
+    /****************初始化卡尔曼滤波****************/
+    CAlgo_Kf::SAlgoKfInitParam kf_initparam;
+    kf_initparam.AlgoID = EAlgoID::ALGO_KF;
+    kf_initparam.DT = 0.001f;
+    kf_initparam.measurement_degree = {1};
+    kf_initparam.measurement_map = {1};
+    kf_initparam.memsDevID = EDeviceID::DEV_MEMS_BMI088;
+    kf_initparam.r_diagonal_elements = {0.01f};
+    kf_initparam.state_min_variance = {0.0001f};
+    kf_initparam.u_size = 0;
+    kf_initparam.use_auto_adjustment = false;
+    kf_initparam.x_size = 1;
+    kf_initparam.z_size = 1;
+    // test param...
+
+    // 使用初始化后的参数创建KfFilter实例
+    static auto KfFilter = CAlgo_Kf(kf_initparam);
 
     return APP_OK;
 }

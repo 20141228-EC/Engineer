@@ -23,9 +23,9 @@ set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build (Debug, Rele
 #####################################
 # 项目设置 Project Settings
 #####################################
-project(RM25-Engineer-Template
+project(RM26-Engineer-Template
         VERSION 0.0.1
-        DESCRIPTION "RoboMaster 25 Engineer Robot Firmware Template"
+        DESCRIPTION "RoboMaster 26 Engineer Robot Firmware Template"
         LANGUAGES C CXX ASM)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)

@@ -1,10 +1,11 @@
 /**
  * @file com_end.cpp
  * @author sllllr (2997708711@qq.com)
- * @brief 机械臂末端组件
- * @version 1.0
+ * @brief 机械臂末端组件（整合夹爪+Roll耦合补偿）
+ * @version 1.1
  * @date 2025-12-09
  *
+ * @details V1.1: 整合夹爪功能，新增Roll轴耦合补偿逻辑，解决Roll转动时夹爪被动移动问题
  * @copyright Copyright (c) 2025
  *
  */
@@ -24,14 +25,14 @@ EAppStatus CModArm::CComEnd::InitComponent(SModInitParam_Base &param) {
 
     auto armParam = static_cast<SModInitParam_Arm &>(param);
 
+    // 初始化末端电机和夹爪电机
     motor[L] = MotorIDMap.at(armParam.MotorID_End_L);
     motor[R] = MotorIDMap.at(armParam.MotorID_End_R);
     motor[GRIP] = MotorIDMap.at(armParam.MotorID_Grip);
 
-    // 初始化末端CAN发送节点
+    // 初始化CAN发送节点
     mtrCanTxNode[L] = armParam.MotorTxNode_End_L;
     mtrCanTxNode[R] = armParam.MotorTxNode_End_R;
-    // 初始化夹爪CAN发送节点
     mtrCanTxNode[GRIP] = armParam.MotorTxNode_Grip;
 
     // 初始化末端PID参数
@@ -49,6 +50,11 @@ EAppStatus CModArm::CComEnd::InitComponent(SModInitParam_Base &param) {
     // 输出缓冲区清零
     mtrOutputBuffer.fill(0);
 
+    // 初始化Roll耦合补偿相关参数
+    endInfo.lastEndRollPosit = 0;
+    endInfo.rollCompAccum = 0.0f;
+    endInfo.rollPositAtGripInit_ = 0;
+
     Component_FSMFlag_ = FSM_RESET;
     componentStatus = APP_OK;
 
@@ -56,7 +62,7 @@ EAppStatus CModArm::CComEnd::InitComponent(SModInitParam_Base &param) {
 }
 
 /**
- * @brief 更新组件
+ * @brief 更新组件（整合末端+夹爪逻辑，含Roll耦合补偿）
  *
  */
 EAppStatus CModArm::CComEnd::UpdateComponent() {
@@ -69,9 +75,12 @@ EAppStatus CModArm::CComEnd::UpdateComponent() {
     endInfo.isPositArrived_Pitch = (abs(endCmd.setPosit_Pitch - endInfo.posit_Pitch) < 8192 * 2);
     endInfo.isPositArrived_Roll = (abs(endCmd.setPosit_Roll - endInfo.posit_Roll) < 8192 * 2);
 
-    // -------------------------- 夹爪更新逻辑 --------------------------
+    // -------------------------- 夹爪更新逻辑（含Roll耦合补偿） --------------------------
     endInfo.posit_grip = motor[GRIP]->motorData[CDevMtr::DATA_POSIT] * ARM_GRIP_MOTOR_DIR;
     endInfo.isPositArrived_Grip = (abs(endCmd.setPosit_grip - endInfo.posit_grip) < 819); ///< 位置误差小于1度认为到达目标
+
+    // 更新Roll耦合补偿
+    _UpdateRollCompensation(endInfo.posit_Roll);
 
     switch (Component_FSMFlag_) {
         case FSM_RESET: {
@@ -87,6 +96,9 @@ EAppStatus CModArm::CComEnd::UpdateComponent() {
         case FSM_PREINIT: {
             // 预初始化状态
             endCmd.setPosit_Pitch = 0;
+            endCmd.setPosit_Roll = 0;
+            endCmd.setPosit_grip = 0;
+            
             motor[L]->motorData[CDevMtr::DATA_POSIT] = 0;
             motor[R]->motorData[CDevMtr::DATA_POSIT] = 0;
             motor[GRIP]->motorData[CDevMtr::DATA_POSIT] = 0;
@@ -96,77 +108,89 @@ EAppStatus CModArm::CComEnd::UpdateComponent() {
             pidSpdCtrl.ResetPidController();
             pidGripPosCtrl.ResetPidController();
             pidGripSpdCtrl.ResetPidController();
+
+            // 重置独立初始化标志位
+            isEndInit_ = false;
+            isGripInit_ = false;
             
             Component_FSMFlag_ = FSM_INIT;
             return APP_OK;
         }
 
         case FSM_INIT: {
-
-            // 末端初始化逻辑
-            bool isEndMotorStall = (motor[L]->motorStatus == CDevMtr::EMotorStatus::STALL || 
-                                    motor[R]->motorStatus == CDevMtr::EMotorStatus::STALL);
-            if (isEndMotorStall) {
-                motor[L]->motorData[CDevMtr::DATA_POSIT] = -(static_cast<int32_t>(0.5 * 8192) + rangeLimit_Pitch);
-                motor[R]->motorData[CDevMtr::DATA_POSIT] = (static_cast<int32_t>(0.5 * 8192) + rangeLimit_Pitch);
-                pidPosCtrl.ResetPidController();
-                pidSpdCtrl.ResetPidController();
+            // --- 末端独立初始化 ---
+            if (!isEndInit_) {
+                bool isEndMotorStall = (motor[L]->motorStatus == CDevMtr::EMotorStatus::STALL || 
+                                        motor[R]->motorStatus == CDevMtr::EMotorStatus::STALL);
+                if (isEndMotorStall) {
+                    motor[L]->motorData[CDevMtr::DATA_POSIT] = -(static_cast<int32_t>(0.5 * 8192) + rangeLimit_Pitch);
+                    motor[R]->motorData[CDevMtr::DATA_POSIT] = (static_cast<int32_t>(0.5 * 8192) + rangeLimit_Pitch);
+                    pidPosCtrl.ResetPidController();
+                    pidSpdCtrl.ResetPidController();
+                    isEndInit_ = true; // 标记末端初始化完成
+                } else {
+                    endCmd.setPosit_Pitch += 200; // 驱动电机寻找限位
+                }
             }
 
-            // 夹爪初始化逻辑
-            bool isGripMotorStall = (motor[GRIP]->motorStatus == CDevMtr::EMotorStatus::STALL);
-            if(isGripMotorStall) {
-                endCmd.setPosit_grip = 0;         ///<堵转之后设置目标值
-                motor[GRIP]->motorData[CDevMtr::DATA_POSIT] = static_cast<int32_t> (0.1*8192 + rangeLimit_Grip) * ARM_GRIP_MOTOR_DIR;///<堵转零点超量标定
-                endInfo.isGripped = false;        ///<重置夹持状态
-                endInfo.holdPosit_Grip = 0;       ///<清空夹持记忆位置
-                pidGripPosCtrl.ResetPidController();
-                pidGripSpdCtrl.ResetPidController();
+            // --- 夹爪独立初始化 ---
+            if (!isGripInit_) {
+                bool isGripMotorStall = (motor[GRIP]->motorStatus == CDevMtr::EMotorStatus::STALL);
+                if(isGripMotorStall) {
+                    endCmd.setPosit_grip = 0;
+                    motor[GRIP]->motorData[CDevMtr::DATA_POSIT] = static_cast<int32_t> (0.1*8192 + rangeLimit_Grip) * ARM_GRIP_MOTOR_DIR;
+                    endInfo.isGripped = false;
+                    endInfo.holdPosit_Grip = 0;
+                    endInfo.lastSetPosit = 0;
+                    endInfo.rollPositAtGripInit_ = endInfo.posit_Roll;
+                    pidGripPosCtrl.ResetPidController();
+                    pidGripSpdCtrl.ResetPidController();
+                    isGripInit_ = true; // 标记夹爪初始化完成
+                } else {
+                    endCmd.setPosit_grip += 500; // 驱动电机寻找限位
+                }
             }
 
-            if (isEndMotorStall || isGripMotorStall) { ///< 只要有一个堵转就进入ctrl
+            // --- 最终检查 ---
+            if (isEndInit_ && isGripInit_) {
                 Component_FSMFlag_ = FSM_CTRL;
                 componentStatus = APP_OK;
                 return APP_OK;
             }
-
-            // 逐步增加目标位置完成初始化
-            endCmd.setPosit_Pitch += 200;
-            endCmd.setPosit_grip += 500;
             
-            // 更新末端和夹爪输出
+            // 更新输出以驱动电机
             _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch), static_cast<float_t>(0));
             _UpdateOutput_Grip(static_cast<float_t>(endCmd.setPosit_grip));
             return APP_OK;
         }
 
         case FSM_CTRL: {
-
             // 末端控制逻辑
             _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch), static_cast<float_t>(endCmd.setPosit_Roll));
 
-            // 夹爪控制逻辑
+            // 夹爪控制逻辑（原CComGrip的CTRL逻辑）
             endCmd.setPosit_grip = std::clamp<int32_t>(endCmd.setPosit_grip, static_cast<int32_t>(0), rangeLimit_Grip);
 
             if(endInfo.isGripped) {
-                // 夹持模式
-                if(endCmd.setPosit_grip > endInfo.holdPosit_Grip + 819) { ///<目标位置向张开方向移动超过阈值，退出夹持
+                // 夹持模式：向张开方向超过阈值则退出夹持
+                if(endCmd.setPosit_grip > endInfo.holdPosit_Grip + 819) { 
                     endInfo.isGripped = false;
+                    endInfo.lastSetPosit = endCmd.setPosit_grip;  // 更新上次设定位置
                     _UpdateOutput_Grip(static_cast<float_t>(endCmd.setPosit_grip));
                 } 
                 else {
-                    _UpdateOutput_Grip(static_cast<float_t>(endInfo.holdPosit_Grip)); ///<保持夹持位置
+                    endInfo.lastSetPosit = endCmd.setPosit_grip;  
+                    _UpdateOutput_Grip(static_cast<float_t>(endInfo.holdPosit_Grip)); ///< 保持夹持位置
                 }
             } 
             else {
-                // 正常模式
-                bool isClosingDirection = (endCmd.setPosit_grip < endInfo.posit_grip);
-                
-                // 向闭合方向运动时堵转 即成功夹取到物体
+                // 正常模式：堵转且闭合方向移动时进入夹持状态
+                bool isClosingDirection = (endCmd.setPosit_grip - endInfo.lastSetPosit < -100);
                 if(motor[GRIP]->motorStatus == CDevMtr::EMotorStatus::STALL && isClosingDirection) {
-                    endInfo.isGripped = true; ///< 进入夹持模式
-                    endInfo.holdPosit_Grip = endCmd.setPosit_grip; ///<记忆夹持位置
+                    endInfo.isGripped = true;
+                    endInfo.holdPosit_Grip = endCmd.setPosit_grip; ///< 记忆夹持位置
                 }
+                endInfo.lastSetPosit = endCmd.setPosit_grip; 
                 _UpdateOutput_Grip(static_cast<float_t>(endCmd.setPosit_grip));
             }
             return APP_OK;
@@ -300,24 +324,30 @@ EAppStatus CModArm::CComEnd::_UpdateOutput(float_t posit_Pitch, float_t posit_Ro
 }
 
 /**
- * @brief 夹爪输出更新函数
+ * @brief 夹爪输出更新函数（含Roll耦合补偿）
  *
- * @param posit_Grip
+ * @param posit_Grip 夹爪目标位置（电机坐标系）
  * @return EAppStatus
  */
 EAppStatus CModArm::CComEnd::_UpdateOutput_Grip(float posit_Grip) {
+    // 目标位置转换为电机坐标系
     DataBuffer<float_t> gripPos = {
         static_cast<float_t>(posit_Grip) * ARM_GRIP_MOTOR_DIR
     };
 
-    DataBuffer<float_t> gripPosMeasured = {static_cast<float_t>(motor[GRIP]->motorData[CDevMtr::DATA_POSIT])};
+    // 编码器读数 + 累积Roll补偿量 = 夹爪真实位置（核心补偿逻辑）
+    float_t actualGripPosit = static_cast<float_t>(motor[GRIP]->motorData[CDevMtr::DATA_POSIT])
+                              + endInfo.rollCompAccum; 
+    DataBuffer<float_t> gripPosMeasured = {actualGripPosit};
 
+    // 位置PID计算
     auto pidPosOutput = pidGripPosCtrl.UpdatePidController(gripPos, gripPosMeasured);
 
+    // 速度PID计算
     DataBuffer<float_t> gripSpdMeasured = {static_cast<float_t>(motor[GRIP]->motorData[CDevMtr::DATA_SPEED])};
-
     auto Output = pidGripSpdCtrl.UpdatePidController(pidPosOutput, gripSpdMeasured);
 
+    // 更新夹爪输出缓冲区
     mtrOutputBuffer[GRIP] = static_cast<int16_t>(Output[0]);
 
     return APP_OK;
@@ -335,6 +365,26 @@ EAppStatus CModArm::CComEnd::_UpdateOutput_All(float_t posit_Pitch, float_t posi
     _UpdateOutput(posit_Pitch, posit_Roll);
     _UpdateOutput_Grip(posit_grip);
     return APP_OK;
+}
+
+/**
+ * @brief Roll补偿累积更新函数（增量式补偿，避免跨圈溢出）
+ *
+ * @param endRollPosit 末端Roll当前位置
+ */
+void CModArm::CComEnd::_UpdateRollCompensation(int32_t endRollPosit) {
+    int32_t deltaRoll = endRollPosit - endInfo.lastEndRollPosit;
+
+    // 增量超过半圈说明是编码器溢出，修正增量值
+    if (deltaRoll > ARM_END_ROLL_HALF_TURN) {
+        deltaRoll -= ARM_END_ROLL_ONE_TURN;
+    } else if (deltaRoll < -ARM_END_ROLL_HALF_TURN) {
+        deltaRoll += ARM_END_ROLL_ONE_TURN;
+    }
+
+    // 累积补偿量 = 增量 * 耦合比例
+    endInfo.rollCompAccum += static_cast<float_t>(deltaRoll) * ARM_ROLL_GRIP_COUPLING_RATIO;
+    endInfo.lastEndRollPosit = endRollPosit;
 }
 
 } // namespace my_engineer

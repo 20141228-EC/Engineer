@@ -37,44 +37,19 @@ public:
      * @note  pack_id位于每个数据包的第一个字节
      */
     enum EPacketID : uint8_t {
-        PKT_REMOTE_1 = 0,      ///< 遥控器值（右摇杆xy、左摇杆x）
-        PKT_REMOTE_2 = 1,      ///< 遥控器值（左摇杆y、拨轮和拨杆）
-        PKT_CTRL_FLAGS = 2,  ///< 控制标志
-        PKT_COUNT,           ///< 包类型数量
+        PKT_CTRL_FLAGS = 0,  ///< 控制标志
+        PKT_CTRLER_L_B = 1,     ///< 控制器左臂后三轴
+        PKT_CTRLER_L_F = 2,     ///< 控制器左臂前三轴
+        PKT_COUNT,           ///< 发送包类型数量
         PKT_FEEDBACK   = 0xFE,  ///< 反馈包（副板发送给主板）
     };
 
     /**
-     * @brief 包0 - 遥控器摇杆包1
-     * @note  8字节，包含右摇杆XY和左摇杆X的原始值
-     */
-    struct SRemoteJoystick1 {
-        uint8_t  pack_id;           ///< 包ID = 0
-        int16_t  joystick_RX;       ///< 右摇杆X(原始值归一到±100.f内再放大220倍)
-        int16_t  joystick_RY;       ///< 右摇杆Y(原始值归一到±100.f内再放大220倍)
-        int16_t  joystick_LX;       ///< 左摇杆X(原始值归一到±100.f内再放大220倍)
-        uint8_t  reserved;          ///< 预留
-    } __packed remoteInfo1_pkt = {};
-
-    /**
-     * @brief 包1 - 遥控器包2
-     * @note  8字节，包含左摇杆Y和拨轮的原始值和拨杆值
-     */
-    struct SRemoteJoystick2 {
-        uint8_t  pack_id;           ///< 包ID = 1
-        int16_t  joystick_LY;       ///< 左摇杆Y(原始值归一到±100.f内再放大220倍)
-        int16_t  thumbWheel;        ///< 拨轮(原始值归一到±100.f内再放大220倍)
-        uint8_t  switch_l;          ///< 左拨杆
-        uint8_t  switch_r;          ///< 右拨杆
-        uint8_t  reserved[1];       ///< 预留
-    } __packed remoteInfo2_pkt = {};
-
-    /**
-     * @brief 包2 - 控制标志
+     * @brief 包0 - 控制标志
      * @note  8字节，包含遥控器状态、工作模式、命令标志等
      */
     struct SControlFlags {
-        uint8_t  pack_id;           ///< 包ID = 2
+        uint8_t  pack_id;           ///< 包ID = 0
 
         // 控制模式 (1字节)
         uint8_t  chassis_ctrl : 1;          ///< 底盘控制使能
@@ -104,6 +79,40 @@ public:
         uint8_t  reserved[3];               ///< 预留给未来扩展
     } __packed ctrlFlags_pkt = {};
 
+    /**
+     * @brief 自定义控制器左臂后三轴命令包
+     * @note  自定义控制模式下的臂目标位置等
+     * 
+     */
+    struct SControllerBackCmd_L{
+        uint8_t pack_id;        ///< 包ID = 1
+
+        // 角度指令
+        int16_t yaw;            ///< Yaw角度 (×100)
+	    int16_t pitch1;         ///< Pitch1角度 (×100)
+	    int16_t pitch2;         ///< Pitch2角度 (×100)
+        uint8_t  reserved;          ///< 预留
+        
+    } __packed controllerbackcmd_l_b_pkt = {};
+
+    /**
+     * @brief 自定义控制器左臂前三轴命令包
+     * @note  自定义控制模式下的臂目标位置等
+     * 
+     */
+    struct SControllerFrontCmd_L{
+        uint8_t pack_id;        ///< 包ID = 2
+
+        // 角度指令
+        int16_t roll;       ///< Roll角度 (×100)
+	    int16_t pitch_end;  ///< PitchEnd角度 (×100)
+        int8_t roll_end;    ///< 左臂roll_end增量 (-100~100)，控制第6轴
+        uint8_t grip_close; ///< 夹爪闭合
+
+        uint8_t chassis_speed;  ///< 底盘速度
+        
+    } __packed controllerfrontcmd_l_f_pkt = {};
+    
     /**
      * @brief 反馈包 - 副板发送给主板
      * @note  8字节，包含接收状态和通信状态

@@ -342,21 +342,7 @@ void CSystemCore::BoardLink_Info_Update_(){
     if (coreStatus == APP_RESET) return;
 
     // 包0数据更新
-    SysBoardLink.remoteInfo1.pack_id = 0;
-    SysBoardLink.remoteInfo1.joystick_RX = SysRemote.remoteInfo.remote.joystick_RX * 220; ///< 右摇杆x
-    SysBoardLink.remoteInfo1.joystick_RY = SysRemote.remoteInfo.remote.joystick_RY * 220; ///< 右摇杆y
-    SysBoardLink.remoteInfo1.joystick_LX = SysRemote.remoteInfo.remote.joystick_LX * 220; ///< 左摇杆x
-
-    // 包1数据更新
-    SysBoardLink.remoteInfo2.pack_id = 1;
-    SysBoardLink.remoteInfo2.joystick_LY = SysRemote.remoteInfo.remote.joystick_LY * 220; ///< 左摇杆y
-    SysBoardLink.remoteInfo2.thumbWheel = SysRemote.remoteInfo.remote.thumbWheel * 220;    ///< 拨轮
-    // 上面这些放大220倍是为了保留两位小数点精度，在保证不超int16_t范围的同时尽可能保证发过去的是原始遥控器数据，副板只需要*3.f再除100.f转浮点数即可获取原始遥控器数据
-    SysBoardLink.remoteInfo2.switch_l = SysRemote.remoteInfo.remote.switch_L;   ///< 左拨杆
-    SysBoardLink.remoteInfo2.switch_r = SysRemote.remoteInfo.remote.switch_R;   ///< 右拨杆
-
-    // 包2数据更新
-    SysBoardLink.ctrlFlags.pack_id = 2;
+    SysBoardLink.ctrlFlags.pack_id = 0;
     SysBoardLink.ctrlFlags.rc_status = SysRemote.systemStatus;
     SysBoardLink.ctrlFlags.ctrl_mode = static_cast<uint8_t>(ctrlmode_);
     SysBoardLink.ctrlFlags.move_mode = static_cast<uint8_t>(movemode_);
@@ -364,6 +350,20 @@ void CSystemCore::BoardLink_Info_Update_(){
     SysBoardLink.ctrlFlags.chassis_auto_ctrl = pchassis_->chassisCmd.isAutoCtrl;
     SysBoardLink.ctrlFlags.gimbal_auto_ctrl = gimbal_auto_ctrl;
     SysBoardLink.ctrlFlags.arm_auto_ctrl = parm_->armCmd.isAutoCtrl;
+
+    // 包1 - 控制器左臂后三轴命令包
+    SysBoardLink.controllerbackcmd_l.pack_id = 1;
+    SysBoardLink.controllerbackcmd_l.yaw = SysControllerLink.controllerInfo.left_arm.yaw;          ///< 左臂yaw
+    SysBoardLink.controllerbackcmd_l.pitch1 = SysControllerLink.controllerInfo.left_arm.pitch1;    ///< 左臂pitch1
+    SysBoardLink.controllerbackcmd_l.pitch2 = SysControllerLink.controllerInfo.left_arm.pitch2;    ///< 左臂pitch2
+
+    // 包2 - 控制器左臂前三轴命令包
+    SysBoardLink.controllerfrontcmd_l.pack_id = 2;
+    SysBoardLink.controllerfrontcmd_l.roll = SysControllerLink.controllerInfo.left_arm.roll;              ///< 左臂roll
+    SysBoardLink.controllerfrontcmd_l.pitch_end = SysControllerLink.controllerInfo.left_arm.pitch_end;    ///< 左臂末端pitch
+    SysBoardLink.controllerfrontcmd_l.roll_end = SysControllerLink.controllerInfo.rocker_LX;              ///< 左臂末端roll(增量式)
+    SysBoardLink.controllerfrontcmd_l.grip_close = SysControllerLink.controllerInfo.gripper_left_close;  ///< 左臂夹爪开合
+    SysBoardLink.controllerfrontcmd_l.chassis_speed = SysControllerLink.controllerInfo.rocker_RY;           ///< 底盘速度
 
 }
 
