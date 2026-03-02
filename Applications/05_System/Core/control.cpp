@@ -188,6 +188,8 @@ void CSystemCore::ControlFromRemote_() {
         if (pgimbal_) {                                                             ///< 云台抬升 (左摇杆Y)
             pgimbal_->gimbalCmd.set_posit_lift +=
                 (remote.joystick_LY / 100.f) * 100.f / freq;
+            pgimbal_->gimbalCmd.set_posit_pitch +=
+                (remote.joystick_RY / 100.f) * 100.f / freq;
         }
         if (parm_) {
             parm_->armCmd.set_length_grip +=                                        ///< 夹爪控制：正值张开，负值闭合
@@ -381,14 +383,13 @@ void CSystemCore::ControlFromController_() {
     const auto freq = 1000.f; // 系统核心频率
     static uint16_t last_key_F,last_key_G;
 
-    auto &controller = SysControllerLink.controllerInfo;
+    auto &controller = SysControllerLink.controllerInfo;     ///<从自定义控制器获取的数据
 
-    auto &keyboard = SysRemote.remoteInfo.keyboard;
+    auto &keyboard = SysRemote.remoteInfo.keyboard;          /// 从键盘获取的数据
 
     SysControllerLink.robotInfo.controlled_by_controller = true;
     SysControllerLink.robotInfo.ask_return_flag = true;
 
-    static CSystemControllerLink::KEY_STATUS last_rocker_key_status;
 
     // 将模块启动
     if (SysRemote.systemStatus == APP_OK) {
@@ -437,30 +438,33 @@ void CSystemCore::ControlFromController_() {
     */
 
     /******************* 机械臂 *******************/
-    //  if (controller.return_success) {
+    // 使用右臂数据控制机械臂
     if (parm_) {
+        auto &arm = controller.right_arm;  // 使用右臂数据
+
         parm_->armCmd.set_angle_Yaw =
             LowPassFilter(parm_->armCmd.set_angle_Yaw,
-                Round(controller.angle_yaw), 0.5f);
+                Round(arm.yaw), 0.5f);
         parm_->armCmd.set_angle_Pitch1 =
             LowPassFilter(parm_->armCmd.set_angle_Pitch1,
-                Round(controller.angle_pitch1 + 20.0f), 0.5f);
+                Round(arm.pitch1 + 20.0f), 0.5f);
         parm_->armCmd.set_angle_Pitch2 =
             LowPassFilter(parm_->armCmd.set_angle_Pitch2,
-                Round(controller.angle_pitch2 + 20.0f), 0.5f);
+                Round(arm.pitch2 + 20.0f), 0.5f);
         parm_->armCmd.set_angle_Roll =
             LowPassFilter(parm_->armCmd.set_angle_Roll,
-                Round(-controller.angle_roll), 0.5f);
-        if (controller.angle_pitch1 < 38.0f) {
+                Round(-arm.roll), 0.5f);
+        if (arm.pitch1 < 38.0f) {
             parm_->armCmd.set_angle_end_pitch =
                 std::clamp(parm_->armCmd.set_angle_end_pitch, 0.0f, 40.0f);
         }
         else {
             parm_->armCmd.set_angle_end_pitch =
             LowPassFilter(parm_->armCmd.set_angle_end_pitch,
-                Round(controller.angle_pitch_end), 0.5f);
+                Round(arm.pitch_end), 0.5f);
         }
-        // 只有末端的roll轴是增量式控制
+        // 末端roll轴: 摇杆增量控制 + 键盘微调
+        parm_->armCmd.set_angle_end_roll += controller.rocker_LX * 0.1f;  // 摇杆增量
         parm_->armCmd.set_angle_end_roll += 110.0f*(keyboard.key_F - keyboard.key_G)/freq;
         if( SysRemote.remoteInfo.keyboard.key_Z){
             if(last_key_F != SysRemote.remoteInfo.keyboard.key_F)

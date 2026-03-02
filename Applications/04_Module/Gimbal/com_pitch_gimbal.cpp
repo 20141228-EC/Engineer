@@ -1,15 +1,20 @@
 /**
  * @file com_pitch_gimbal.cpp
- * @author Ciallo～(∠·ω< )⌒☆
- * @brief 云台俯仰组件 (单M2006控制)
+ * @author Ciallo
+ * @brief 云台俯仰组件 (单M2006控制) - 电机版本
  * @version 1.0
  * @date 2025-12-17
+ *
+ * @note 仅在电机模式下编译，舵机模式下使用 com_pitch_servo_gimbal.cpp
  *
  * @copyright Copyright (c) 2025
  *
  */
 
 #include "mod_gimbal.hpp"
+
+// 仅在电机模式下编译此文件
+#ifndef USE_PITCH_SERVO
 
 namespace my_engineer {
 
@@ -175,3 +180,5 @@ EAppStatus CModGimbal::CComPitch::_UpdateOutput(float_t posit) {
 }
 
 } // namespace my_engineer
+
+#endif // USE_PITCH_SERVO

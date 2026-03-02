@@ -84,7 +84,7 @@ EAppStatus InitAllModule() {
    armInitParam.endSpdPidParam.maxIntegral = 4000.0f;
    armInitParam.endSpdPidParam.maxOutput = 4500.0f;
    // 初始化 GripPosPidParam 的成员
-   armInitParam.GripPosPidParam.kp = 0.2f;
+   armInitParam.GripPosPidParam.kp = 0.35f;
     armInitParam.GripPosPidParam.ki = 0.0f;
     armInitParam.GripPosPidParam.kd = 0.0f;
     armInitParam.GripPosPidParam.maxOutput = 3000.0f;
@@ -93,7 +93,7 @@ EAppStatus InitAllModule() {
     armInitParam.GripSpdPidParam.ki = 0.0f;
     armInitParam.GripSpdPidParam.kd = 0.0f;
     armInitParam.GripSpdPidParam.maxIntegral = 1500.0f;
-    armInitParam.GripSpdPidParam.maxOutput = 2000.0f;
+    armInitParam.GripSpdPidParam.maxOutput = 4000.0f;
     // 使用初始化后的参数创建 armModule 实例
     static auto armModule = CModArm(armInitParam);
 
@@ -150,18 +150,16 @@ EAppStatus InitAllModule() {
     // 使用初始化后的参数创建 subGantryModule 实例
     static auto subGantryModule = CModSubGantry(subGantryInitParam);
 */
-    /******初始化云台模块 (双电机升降 、单电机俯仰) ******/
+    /******初始化云台模块 (双电机升降 + 舵机/电机俯仰) ******/
     CModGimbal::SModInitParam_Gimbal gimbalInitParam;
     gimbalInitParam.moduleID = EModuleID::MOD_GIMBAL;
-    // 升降电机ID 
+    // 升降电机ID
     gimbalInitParam.liftMotorID_L = EDeviceID::DEV_GIMBAL_MTR_LIFT_L;
     gimbalInitParam.liftMotorID_R = EDeviceID::DEV_GIMBAL_MTR_LIFT_R;
-    // 俯仰电机ID 
-    gimbalInitParam.pitchMotorID = EDeviceID::DEV_GIMBAL_MTR_PITCH;
-    // 设置CAN发送节点
+    // 设置CAN发送节点 - 升降
     gimbalInitParam.liftMotorTxNode_L = &TxNode_Can2_1FF;
     gimbalInitParam.liftMotorTxNode_R = &TxNode_Can2_1FF;
-    gimbalInitParam.pitchMotorTxNode = &TxNode_Can2_1FF;
+    //gimbalInitParam.pitchMotorTxNode = &TxNode_Can2_1FF;
     // 初始化 liftPosPidParam ，双电机共享参数
     gimbalInitParam.liftPosPidParam.kp = 0.3f;
     gimbalInitParam.liftPosPidParam.ki = 0.0f;
@@ -174,16 +172,26 @@ EAppStatus InitAllModule() {
     gimbalInitParam.liftSpdPidParam.maxIntegral = 2000.0f;
     gimbalInitParam.liftSpdPidParam.maxOutput = 3000.0f;
 
+#ifdef USE_PITCH_SERVO
+    // 俯仰舵机参数 (临时方案)
+    gimbalInitParam.pitchServoID = EDeviceID::DEV_GIMBAL_SERVO_PITCH;
+    gimbalInitParam.servoAngleMin = 0.0f;      // 舵机最小角度
+    gimbalInitParam.servoAngleMax = 180.0f;    // 舵机最大角度
+    gimbalInitParam.servoAngleOffset = 0.0f;   // 舵机角度偏移量
+#else
+    // 俯仰电机ID
+    gimbalInitParam.pitchMotorID = EDeviceID::DEV_GIMBAL_MTR_PITCH;
+    gimbalInitParam.pitchMotorTxNode = &TxNode_Can2_1FF;
     gimbalInitParam.pitchPosPidParam.kp = 0.3f;
     gimbalInitParam.pitchPosPidParam.ki = 0.0f;
     gimbalInitParam.pitchPosPidParam.kd = 0.3f;
     gimbalInitParam.pitchPosPidParam.maxOutput = 4500.0f;
-
     gimbalInitParam.pitchSpdPidParam.kp = 2.0f;
     gimbalInitParam.pitchSpdPidParam.ki = 0.1f;
     gimbalInitParam.pitchSpdPidParam.kd = 0.0f;
     gimbalInitParam.pitchSpdPidParam.maxIntegral = 2000.0f;
     gimbalInitParam.pitchSpdPidParam.maxOutput = 3000.0f;
+#endif
     // 使用初始化后的参数创建 gimbalModule 实例
     static auto gimbalModule = CModGimbal(gimbalInitParam);
 

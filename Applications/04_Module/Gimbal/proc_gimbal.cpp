@@ -2,8 +2,10 @@
  * @file proc_gimbal.cpp
  * @author Ciallo～(∠·ω< )⌒☆
  * @brief 云台任务
- * @version 2.0
- * @date 2025-12-17
+ * @version 2.1
+ * @date 2025-01-19
+ *
+ * @note 支持舵机/电机切换，通过 USE_PITCH_SERVO 宏控制
  *
  * @copyright Copyright (c) 2025
  *
@@ -13,7 +15,7 @@
 #include "RTT_DEBUG.h"
 
 // RTT 调试开关 (1=开启, 0=关闭)
-#define GIMBAL_RTT_DEBUG_ENABLE 1
+#define GIMBAL_RTT_DEBUG_ENABLE 0
 // RTT 打印间隔 (ms)
 #define GIMBAL_RTT_PRINT_INTERVAL 100
 
@@ -31,7 +33,7 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 
 	// 类型转换
 	auto &gimbal = *static_cast<CModGimbal *>(argument);
-//test
+
 #if GIMBAL_RTT_DEBUG_ENABLE
 	// RTT 打印计数器
 	uint32_t rttPrintCounter = 0;
@@ -47,7 +49,11 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 
 				gimbal.gimbalInfo.isModuleAvailable = false;
 				gimbal.comLift_.StopComponent();
+#ifdef USE_PITCH_SERVO
+				gimbal.comPitchServo_.StopComponent();
+#else
 				gimbal.comPitch_.StopComponent();
+#endif
 
 				proc_waitMs(20);
 				continue; // 跳过下面的代码，直接进入下一次循环
@@ -61,18 +67,28 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 				gimbal.comLift_.StartComponent();
 				proc_waitUntil(gimbal.comLift_.componentStatus == APP_OK);
 
-				// 启动俯仰组件
+#ifdef USE_PITCH_SERVO
+				// 启动俯仰组件 (舵机版本)
+				gimbal.comPitchServo_.StartComponent();
+				proc_waitUntil(gimbal.comPitchServo_.componentStatus == APP_OK);
+#else
+				// 启动俯仰组件 (电机版本)
 				gimbal.comPitch_.StartComponent();
 				proc_waitUntil(gimbal.comPitch_.componentStatus == APP_OK);
+#endif
 
 				gimbal.gimbalCmd = SGimbalCmd();
 				gimbal.gimbalCmd.set_posit_lift = GIMBAL_LIFT_PHYSICAL_RANGE;
 				gimbal.gimbalCmd.set_posit_pitch = 0.0f;
 				gimbal.gimbalInfo.isModuleAvailable = true;
 				gimbal.Module_FSMFlag_ = FSM_CTRL;
-//test
+
 #if GIMBAL_RTT_DEBUG_ENABLE
-				RTT_LOG_INFO("[云台] 初始化完成，进入控制模式");
+#ifdef USE_PITCH_SERVO
+				RTT_LOG_INFO("[云台] 初始化完成(舵机模式)，进入控制模式");
+#else
+				RTT_LOG_INFO("[云台] 初始化完成(电机模式)，进入控制模式");
+#endif
 #endif
 
 				break;
@@ -87,10 +103,16 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 				gimbal.comLift_.liftCmd.setPosit =
 					CComLift::PhyPositToMtrPosit(gimbal.gimbalCmd.set_posit_lift);
 
-				// 将控制量转换为电机控制量 - 俯仰
+#ifdef USE_PITCH_SERVO
+				// 将控制量转换为舵机控制量 - 俯仰 (舵机版本)
+				gimbal.comPitchServo_.pitchCmd.setPosit =
+					CComPitchServo::PhyPositToSetPosit(gimbal.gimbalCmd.set_posit_pitch);
+#else
+				// 将控制量转换为电机控制量 - 俯仰 (电机版本)
 				gimbal.comPitch_.pitchCmd.setPosit =
 					CComPitch::PhyPositToMtrPosit(gimbal.gimbalCmd.set_posit_pitch);
-//test
+#endif
+
 #if GIMBAL_RTT_DEBUG_ENABLE
 				// 定时打印调试信息
 				if (++rttPrintCounter >= GIMBAL_RTT_PRINT_INTERVAL) {
@@ -104,11 +126,17 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 						gimbal.comLift_.liftCmd.setPosit,
 						gimbal.comLift_.liftInfo.posit);
 
-					RTT_LOG_INFO("[俯仰] 设定:%.2fdeg 实际:%.2fdeg | 电机设定:%d 电机实际:%d",
+#ifdef USE_PITCH_SERVO
+					RTT_LOG_INFO("[俯仰-舵机] 设定:%.2fdeg 实际:%.2fdeg",
+						gimbal.gimbalCmd.set_posit_pitch,
+						gimbal.gimbalInfo.posit_pitch);
+#else
+					RTT_LOG_INFO("[俯仰-电机] 设定:%.2fdeg 实际:%.2fdeg | 电机设定:%d 电机实际:%d",
 						gimbal.gimbalCmd.set_posit_pitch,
 						gimbal.gimbalInfo.posit_pitch,
 						gimbal.comPitch_.pitchCmd.setPosit,
 						gimbal.comPitch_.pitchInfo.posit);
+#endif
 
 					// ------- PID 输出数据 ------
 					RTT_LOG_INFO("[云台] ----- PID输出 ------");
@@ -116,8 +144,10 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 						gimbal.comLift_.mtrOutputBuffer[0],
 						gimbal.comLift_.mtrOutputBuffer[1]);
 
+#ifndef USE_PITCH_SERVO
 					RTT_LOG_INFO("[俯仰] 电机输出:%d",
 						gimbal.comPitch_.mtrOutputBuffer[0]);
+#endif
 
 					// ------- 状态标志 ---------
 					RTT_LOG_INFO("[云台] 到位状态: 升降=%d 俯仰=%d",
