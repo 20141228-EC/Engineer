@@ -23,6 +23,7 @@ void ApplicationEntryPoint(){
     // 顺序一定不要搞错啊！！
     InitAllInterface();
     InitAllDevice(); // 初始化所有设备配置 如电机can总线 帧头 id等
+    InitAllAlgo();  // 初始化所有算法
     InitAllModule(); // 初始化模块PID等
     InitProcess(); // 初始化四个汇总任务
     

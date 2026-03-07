@@ -1,11 +1,11 @@
 /**
  * @file mod_gimbal.hpp
- * @author Ciallo～(∠·ω< )⌒☆
- * @brief 云台模块 - 升降 (双M2006同步) + 俯仰 (单M2006)
- * @version 2.0
- * @date 2025-12-17
+ * @author sllllr
+ * @brief 云台模块
+ * @version 1.0
+ * @date 2026-03-06
  *
- * @copyright Copyright (c) 2025
+ * @copyright Copyright (c) 2026
  *
  */
 
@@ -13,20 +13,14 @@
 #define MOD_GIMBAL_HPP
 
 #include "mod_common.hpp"
+#include "algo_ave_filter.hpp"
 
-// -------------------- 升降组件参数 ---------------------
-#define GIMBAL_LIFT_PHYSICAL_RANGE 100.0f       ///< 升降物理行程 (mm)
-#define GIMBAL_LIFT_MOTOR_RANGE 184000          ///< 升降电机编码器范围
-#define GIMBAL_LIFT_MOTOR_RATIO (GIMBAL_LIFT_MOTOR_RANGE / GIMBAL_LIFT_PHYSICAL_RANGE)
-#define GIMBAL_LIFT_MOTOR_DIR_L 1               ///< 左电机方向
-#define GIMBAL_LIFT_MOTOR_DIR_R -1              ///< 右电机方向
+#define GIMBAL_YAW_MOTOR_DIR 1		///< 目前给1
+#define GINBAL_FRONT_MOTOR_ANGLE 0	///< 目前给0 后续改成朝前时的编码器值
+#define GIMBAL_YAW_INIT_ANGLE	GINBAL_FRONT_MOTOR_ANGLE	///< 初始化编码器值（朝前）
 
-// -------------------- 俯仰组件参数 ---------------------
-#define GIMBAL_PITCH_PHYSICAL_RANGE 90.0f       ///< 俯仰物理行程 (degree)
-#define GIMBAL_PITCH_MOTOR_RANGE 73728          ///< 俯仰电机编码器范围
-#define GIMBAL_PITCH_MOTOR_RATIO (GIMBAL_PITCH_MOTOR_RANGE / GIMBAL_PITCH_PHYSICAL_RANGE)
-#define GIMBAL_PITCH_MOTOR_DIR 1                ///< 俯仰电机方向
-
+#define deg2rad(x) ((x) * 0.017453292519943295769236907684886)
+#define rad2deg(x) ((x) * 57.295779513082320876798154814105)
 
 namespace my_engineer {
 
@@ -35,35 +29,29 @@ public:
 
 	// 云台模块初始化参数
 	struct SModInitParam_Gimbal: public SModInitParam_Base{
-		// 升降组件 (双电机同步)
-		EDeviceID liftMotorID_L = EDeviceID::DEV_NULL;
-		EDeviceID liftMotorID_R = EDeviceID::DEV_NULL;
-		CInfCAN::CCanTxNode *liftMotorTxNode_L = nullptr;
-		CInfCAN::CCanTxNode *liftMotorTxNode_R = nullptr;
-		CAlgoPid::SAlgoInitParam_Pid liftPosPidParam;
-		CAlgoPid::SAlgoInitParam_Pid liftSpdPidParam;
-
-		// 俯仰组件 (单电机)
-		EDeviceID pitchMotorID = EDeviceID::DEV_NULL;
-		CInfCAN::CCanTxNode *pitchMotorTxNode = nullptr;
-		CAlgoPid::SAlgoInitParam_Pid pitchPosPidParam;
-		CAlgoPid::SAlgoInitParam_Pid pitchSpdPidParam;
+		EDeviceID memsDevID = EDeviceID::DEV_NULL;	///< 陀螺仪设备
+		EAlgoID FilterID = EAlgoID::ALGO_NULL;	///< 滤波算法
+		EDeviceID yawMotorID = EDeviceID::DEV_NULL;
+		CInfCAN::CCanTxNode *MotorTxNode_Yaw; ///< 云台Yaw电机发送节点
+		CAlgoPid::SAlgoInitParam_Pid YawPosPidParam_Gyro;
+		CAlgoPid::SAlgoInitParam_Pid YawSpdPidParam_Gyro;	// 陀螺仪模式pid
+		CAlgoPid::SAlgoInitParam_Pid YawPosPidParam_Mec;
+		CAlgoPid::SAlgoInitParam_Pid YawSpdPidParam_Mec;	// 机械模式pid
 	};
 
 	// 云台信息
 	struct SGimbalInfo{
 		EVarStatus isModuleAvailable = false;
-		float_t posit_lift = 0.0f;
-		bool isPositArrived_Lift = false;
-		float_t posit_pitch = 0.0f;
-		bool isPositArrived_Pitch = false;
+		float_t posit_yaw = 0.0f;	// yaw轴角度
+		int32_t encoder_yaw = 0.f;	// yaw轴编码器
+		bool isPositArrived = false;
 	} gimbalInfo;
 
 	// 云台控制命令
 	struct SGimbalCmd{
 		EVarStatus isAutoCtrl = false;
-		float_t set_posit_lift = 0.0f;
-		float_t set_posit_pitch = 0.0f;
+		float_t set_posit_yaw = 0.f;	// 角度目标值
+		int32_t set_encoder_yaw = 0.f;	// 编码器目标值
 	} gimbalCmd;
 
 	CModGimbal() = default;
@@ -77,71 +65,42 @@ public:
 	EAppStatus InitModule(SModInitParam_Base &param) final;
 
 private:
-	// 升降组件 (双电机同步)
-	class CComLift: public CComponentBase{
+	// 大yaw组件
+	class CComYaw: public CComponentBase{
 	public:
 
-		enum { L = 0, R = 1 };
-
-		const int32_t rangeLimit = GIMBAL_LIFT_MOTOR_RANGE;
-
-		struct SLiftInfo{
-			int32_t posit = 0;
+		struct SYawInfo{
+			float_t posit = 0;		// 陀螺仪角度
+			int32_t encoder = 0;	// 编码器值
 			bool isPositArrived = false;
-		} liftInfo;
+		} yawInfo;
 
-		struct SLiftCmd{
-			int32_t setPosit = 0;
-		} liftCmd;
+		struct SYawCmd{
+			int32_t setPosit = 0;	// 陀螺仪目标角度
+			int16_t setEncoder = 0;	// 编码器目标值
+		} yawCmd;
 
-		std::array<CDevMtr*, 2> motor = {nullptr, nullptr};
-		CAlgoPid pidPosCtrl;
-		CAlgoPid pidSpdCtrl;
-		std::array<int16_t, 2> mtrOutputBuffer = {0, 0};
-		std::array<CInfCAN::CCanTxNode*, 2> mtrCanTxNode = {nullptr, nullptr};
-
-		EAppStatus InitComponent(SModInitParam_Base &param) final;
-		EAppStatus UpdateComponent() final;
-		static int32_t PhyPositToMtrPosit(float_t phyPosit);
-		static float_t MtrPositToPhyPosit(int32_t mtrPosit);
-		EAppStatus _UpdateOutput(float_t posit);
-
-	} comLift_;
-
-	// 俯仰组件 (单电机)
-	class CComPitch: public CComponentBase{
-	public:
-
-		const int32_t rangeLimit = GIMBAL_PITCH_MOTOR_RANGE;
-
-		struct SPitchInfo{
-			int32_t posit = 0;
-			bool isPositArrived = false;
-		} pitchInfo;
-
-		struct SPitchCmd{
-			int32_t setPosit = 0;
-		} pitchCmd;
-
-		CDevMtr *motor = nullptr;
-
-		CAlgoPid pidPosCtrl;
-		CAlgoPid pidSpdCtrl;
-
-		std::array<int16_t, 1> mtrOutputBuffer = {0};
+		CDevMtr* motor = nullptr;
+		CAlgoPid pidPosCtrl_Gyro;
+		CAlgoPid pidSpdCtrl_Gyro;
+		CAlgoPid pidPosCtrl_Mec;
+		CAlgoPid pidSpdCtrl_Mec;
+		int16_t mtrOutputBuffer = 0;	// 电机输出缓冲区
 		CInfCAN::CCanTxNode* mtrCanTxNode = nullptr;
 
+		// 传感器实例指针
+        CMemsBase *mems = nullptr;
+
+		// 互补滤波算法实例指针
+    	CAlgo_IMU_Ave *filter = nullptr;
+
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
-
 		EAppStatus UpdateComponent() final;
+		EAppStatus _UpdateOutput_Mec(float_t encoder);
+		EAppStatus _UpdateOutput_Gyro(float_t encoder);
 
-		static int32_t PhyPositToMtrPosit(float_t phyPosit);
+	} comYaw_;
 
-		static float_t MtrPositToPhyPosit(int32_t mtrPosit);
-
-		EAppStatus _UpdateOutput(float_t posit);
-
-	} comPitch_;
 
 	// 重写基类函数
     void UpdateHandler_() final;

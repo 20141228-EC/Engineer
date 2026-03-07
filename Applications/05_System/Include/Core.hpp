@@ -60,7 +60,6 @@ private:
     const float_t freq = 1000.f;
 
     // 模块指针
-    CModChassis *pchassis_ = nullptr;
     CModGimbal *pgimbal_ = nullptr;
     // CModGantry *pgantry_ = nullptr;
     // CModClimber *pclimber_ = nullptr;

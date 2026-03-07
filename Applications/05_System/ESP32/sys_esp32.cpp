@@ -77,9 +77,7 @@ void CSystemESP32::UpdateHandler_() {
 	*/
 	// 云台电机在线状态 (检查升降左/右和俯仰电机)
 	pESP32_->robotInfo.Gimbal =
-		reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_GIMBAL_MTR_LIFT_L))->IsMotorOnline() &&
-		reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_GIMBAL_MTR_LIFT_R))->IsMotorOnline() &&
-		reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_GIMBAL_MTR_PITCH))->IsMotorOnline();
+		reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_GIMBAL_MTR_YAW))->IsMotorOnline();
 	// 删除子龙门电机在线状态检查
 	/*
 	pESP32_->robotInfo.SubGantry_Lift_L = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_SUBGANTRY_MTR_LIFT_L))->IsMotorOnline();

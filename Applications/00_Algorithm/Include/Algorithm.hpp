@@ -1,0 +1,20 @@
+/**
+ * @file Algorithm.hpp
+ * @author sllllr (2997708711@qq.com)
+ * @brief 算法汇总头文件
+ * @version 1.0
+ * @date 2026-01-12
+ * 
+ * @copyright Copyright (c) 2026
+ * 
+ */
+
+#ifndef ALGORITHM_HPP
+#define ALGORITHM_HPP
+
+#include "algo_ave_filter.hpp"
+
+namespace my_engineer{
+
+}   // ALGORITHM_HPP
+#endif

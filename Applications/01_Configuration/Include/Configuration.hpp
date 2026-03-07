@@ -18,6 +18,7 @@
 #include "conf_interface.hpp"
 #include "conf_module.hpp"
 #include "conf_device.hpp"
+#include "conf_algo.hpp"
 
 namespace my_engineer {
 
@@ -63,16 +64,15 @@ enum class EDeviceID{
     DEV_CHAS_MTR_RF,        ///< 底盘电机前右（M3508）
     DEV_CHAS_MTR_LB,        ///< 底盘电机后左（M3508）
     DEV_CHAS_MTR_RB,        ///< 底盘电机后右（M3508）
-    DEV_GIMBAL_MTR_LIFT_L,		///< 云台升降电机左（M2006）
-    DEV_GIMBAL_MTR_LIFT_R,		///< 云台升降电机右（M2006）
-    DEV_GIMBAL_MTR_PITCH,		///< 云台俯仰电机（M2006）
+    DEV_GIMBAL_MTR_YAW,      ///< 云台大yaw电机(KT)
     // DEV_SUBGANTRY_MTR_LIFT_L,   ///< 子龙门升降电机左（M2006） - 已删除
     // DEV_SUBGANTRY_MTR_LIFT_R,   ///< 子龙门升降电机右（M2006） - 已删除
     // DEV_SUBGANTRY_MTR_STRETCH_L,///< 子龙门伸缩电机左（M2006） - 已删除
     // DEV_SUBGANTRY_MTR_STRETCH_R,///< 子龙门伸缩电机右（M2006） - 已删除
-    DEV_ARM_MTR_YAW,            ///< 机械臂YAW轴电机(DM-MIT mode)
+    DEV_ARM_MTR_YAW,            ///< 机械臂YAW轴电机(KT)
     DEV_ARM_MTR_PITCH1,        ///< 机械臂Pitch1轴电机(KT)
     DEV_ARM_MTR_PITCH2,        ///< 机械臂Pitch2轴电机(KT)
+    DEV_ARM_MTR_PITCH3,         ///< 机械臂Pitch3轴电机(KT)
     DEV_ARM_MTR_ROLL,          ///< 机械臂Roll轴电机(KT)
     DEV_ARM_MTR_END_L,   ///< 机械臂末端左轴电机(M2006)
     DEV_ARM_MTR_END_R,   ///< 机械臂末端右轴电机(M2006)
@@ -93,6 +93,17 @@ enum class EModuleID{
     // MOD_SUBGANTRY,          ///< 子龙门模块 - 已删除
     MOD_ARM,                ///< 机械臂模块
 
+};
+
+/**
+ * @brief 算法ID枚举类型
+ * 
+ */
+enum class EAlgoID{
+    ALGO_NULL = -1,         ///< 空算法
+    ALGO_IMU_AVE = 0,       ///< IMU互补滤波
+    ALGO_KF = 1,            ///< 基本卡尔曼滤波
+    ALGO_IMU_EKF,           ///< IMU扩展卡尔曼滤波
 };
 
 /**

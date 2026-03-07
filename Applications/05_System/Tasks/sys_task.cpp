@@ -26,15 +26,11 @@ void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠
     while (true) {
 
         for (const auto &item : SystemIDMap) {
-            if(item.second->systemID != ESystemID::SYS_BOARD_LINK) {
                 item.second->UpdateHandler_();
-            }
-        }
-
         proc_waitMs(4); // 250Hz
     }
+    }
 }
-
 uint32_t sys_test_n = 0;
 
 /**
@@ -58,8 +54,10 @@ void StartUpdateTask(void *argument) {
             item.second->UpdateHandler_();
         }
 
-        // 更新板间通信系统,取板间通信指针向上转换为基类型
-        static_cast<CSystemBase*>(&SysBoardLink)->UpdateHandler_();
+        // 更新所有算法
+        for(const auto &item : AlgoIDMap){
+            item.second->UpdateHandler_();      ///< 和设备、模块以相同频率更新
+        }
 
         // 更新系统核心
         SystemCore.UpdateHandler_();            ///<系统核心的更新放在设备更新之后，模块更新之前,以便模块可以使用系统核心的数据   
@@ -75,11 +73,10 @@ void StartUpdateTask(void *argument) {
         TxNode_Can1_1FF.Transmit();         ///< 板2: 末端电机(End_L/R) + 夹爪(Grip)
         TxNode_Can2_200.Transmit();
 		TxNode_Can2_1FF.Transmit();         ///< 云台电机
-		TxNode_Can3_280.Transmit();         ///< 瓴控电机(Yaw, Pitch1, Pitch2)
-		TxNode_Can3_300.Transmit();         ///< 板间通信反馈
+		TxNode_Can3_280.Transmit();         ///< 瓴控电机(大Yaw)
 
 
-        proc_waitMs(2); // 500Hz
+        proc_waitMs(1); // 1000Hz
 
     }
 }

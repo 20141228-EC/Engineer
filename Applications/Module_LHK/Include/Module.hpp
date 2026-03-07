@@ -16,7 +16,6 @@
 
 #include "mod_common.hpp"
 #include "mod_roboticarm.hpp"
-#include "mod_chassis.hpp"
 #include "mod_toiletplunger.hpp"
 #include "mod_gimbal.hpp"
 

@@ -15,15 +15,6 @@ namespace my_engineer {
 
 void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) {
 
-    /* 副板无底盘，注释底盘启动代码
-    if (pchassis_) {
-        if (!pchassis_->chassisInfo.isModuleAvailable               ///<说明模块已经注册了
-            && pchassis_->moduleStatus == APP_OK) {
-            pchassis_->StartModule();                               ///<在创建任务的时候还会再调用一次初始化函数
-        }
-    }
-    */
-
     if (pgimbal_) {
         if (!pgimbal_->gimbalInfo.isModuleAvailable
             && pgimbal_->moduleStatus == APP_OK) {
@@ -119,7 +110,7 @@ void CSystemCore::ControlFromRemote_() {
         parm_->should_limit_yaw = 0;
     }
 
-    // LOW + MID 云台抬升（副板无底盘控制）
+    // LOW + MID 图传抬升（底盘控制在另一个板）
     if (remote.switch_L == LOW && remote.switch_R == MID) {
         SysRemote.SetRemoteDeadZone(10.f);
         /* 副板无底盘，注释底盘控制代码
@@ -130,24 +121,24 @@ void CSystemCore::ControlFromRemote_() {
         }
         */
         // 云台抬升
-        if (pgimbal_) {
-            pgimbal_->gimbalCmd.set_posit_lift +=
-                (remote.joystick_RY / 100.f) * 100.f / freq;
-        }
+        // if (pgimbal_) {
+        //     pgimbal_->gimbalCmd.set_posit_lift +=
+        //         (remote.joystick_RY / 100.f) * 100.f / freq;
+        // }
     }
 
     // MID + HIG 机械臂前四轴
     if (remote.switch_L == MID && remote.switch_R == HIG) {
         SysRemote.SetRemoteDeadZone(10.f);
         if (parm_) {
-            parm_->armCmd.set_angle_Yaw +=
-                (remote.joystick_LX / 100.f) * 90.f / freq;
-            parm_->armCmd.set_angle_Pitch1 +=
-                (remote.joystick_LY / 100.f) * 90.f / freq;
-            parm_->armCmd.set_angle_Pitch2 +=
-                (remote.joystick_RY / 100.f) * 90.f / freq;
-            parm_->armCmd.set_angle_Roll +=
-                (remote.joystick_RX / 100.f) * 90.f / freq;
+            // parm_->armCmd.set_angle_Yaw +=
+            //     (remote.joystick_LX / 100.f) * 90.f / freq;
+            // parm_->armCmd.set_angle_Pitch1 +=
+            //     (remote.joystick_LY / 100.f) * 90.f / freq;
+            // parm_->armCmd.set_angle_Pitch2 +=
+            //     (remote.joystick_RY / 100.f) * 90.f / freq;
+            // parm_->armCmd.set_angle_Roll +=
+            //     (remote.joystick_RX / 100.f) * 90.f / freq;
         }
     }
 
@@ -155,14 +146,14 @@ void CSystemCore::ControlFromRemote_() {
     if (remote.switch_L == MID && remote.switch_R == MID) {
         SysRemote.SetRemoteDeadZone(10.f);
         if (parm_) {
-            parm_->armCmd.set_angle_Pitch2 +=
-                (remote.joystick_LY / 100.f) * 90.f / freq;
-            parm_->armCmd.set_angle_Roll +=
-                (remote.joystick_LX / 100.f) * 90.f / freq;
-            parm_->armCmd.set_angle_end_pitch +=
-                (remote.joystick_RY / 100.f) * 90.f / freq;
-            parm_->armCmd.set_angle_end_roll +=
-                (remote.joystick_RX / 100.f) * 90.f / freq;
+            // parm_->armCmd.set_angle_Pitch2 +=
+            //     (remote.joystick_LY / 100.f) * 90.f / freq;
+            // parm_->armCmd.set_angle_Roll +=
+            //     (remote.joystick_LX / 100.f) * 90.f / freq;
+            // parm_->armCmd.set_angle_end_pitch +=
+            //     (remote.joystick_RY / 100.f) * 90.f / freq;
+            // parm_->armCmd.set_angle_end_roll +=
+            //     (remote.joystick_RX / 100.f) * 90.f / freq;
         }
     }
 /* 删除 MID + LOW 子龙门控制代码
@@ -185,16 +176,16 @@ void CSystemCore::ControlFromRemote_() {
     // MID + LOW 云台 + 夹爪控制
     if (remote.switch_L == MID && remote.switch_R == LOW) {
         SysRemote.SetRemoteDeadZone(10.f);
-        if (pgimbal_) {                                                             ///< 云台抬升 (左摇杆Y)
-            pgimbal_->gimbalCmd.set_posit_lift +=
-                (remote.joystick_LY / 100.f) * 100.f / freq;
-        }
-        if (parm_) {
-            parm_->armCmd.set_length_grip +=                                        ///< 夹爪控制：正值张开，负值闭合
-                (remote.thumbWheel / 100.f) * 150.f / freq;
-            parm_->armCmd.set_length_grip =
-                std::clamp(parm_->armCmd.set_length_grip, 0.0f, 65.0f);            ///< 限幅：0~65mm
-        }
+        // if (pgimbal_) {                                                             ///< 云台抬升 (左摇杆Y)
+        //     pgimbal_->gimbalCmd.set_posit_lift +=
+        //         (remote.joystick_LY / 100.f) * 100.f / freq;
+        // }
+        // if (parm_) {
+        //     parm_->armCmd.set_length_grip +=                                        ///< 夹爪控制：正值张开，负值闭合
+        //         (remote.thumbWheel / 100.f) * 150.f / freq;
+        //     parm_->armCmd.set_length_grip =
+        //         std::clamp(parm_->armCmd.set_length_grip, 0.0f, 65.0f);            ///< 限幅：0~65mm
+        // }
     }
 }
 
@@ -260,15 +251,15 @@ void CSystemCore::ControlFromKeyboard_() {
     */
 
     /******************* 云台手动控制 *******************/
-    if (pgimbal_) {
-        if (!keyboard.key_Ctrl &&
-            !pgimbal_->gimbalCmd.isAutoCtrl) {
-            // (F键)
-            if (keyboard.key_F) {
-                pgimbal_->gimbalCmd.set_posit_lift += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 120.0f / freq;
-            }
-        }
-    }
+    // if (pgimbal_) {
+    //     if (!keyboard.key_Ctrl &&
+    //         !pgimbal_->gimbalCmd.isAutoCtrl) {
+    //         // (F键)
+    //         if (keyboard.key_F) {
+    //             pgimbal_->gimbalCmd.set_posit_lift += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 120.0f / freq;
+    //         }
+    //     }
+    // }
 
     /******************* 机械臂手动控制 *******************/
     if (parm_) {
@@ -478,7 +469,7 @@ void CSystemCore::ControlFromController_() {
 
     // 云台抬升
     if (pgimbal_) {
-        pgimbal_->gimbalCmd.set_posit_lift += static_cast<float_t>(keyboard.key_Z - keyboard.key_X) * 60.0f / freq;
+        // pgimbal_->gimbalCmd.set_posit_lift += static_cast<float_t>(keyboard.key_Z - keyboard.key_X) * 60.0f / freq;
     }
 
 /*删除自定义控制器对应的兑矿操作

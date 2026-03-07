@@ -29,11 +29,8 @@ EAppStatus CModGimbal::InitModule(SModInitParam_Base &param){
 	auto gimbalParam = static_cast<SModInitParam_Gimbal &>(param);
 	moduleID = gimbalParam.moduleID;
 
-	// 初始化云台升降组件 (双电机同步)
-	comLift_.InitComponent(param);
-
-	// 初始化云台俯仰组件 (单电机)
-	comPitch_.InitComponent(param);
+	// 初始化云台
+	comYaw_.InitComponent(param);
 
 	// 创建任务并注册模块
 	CreateModuleTask_();
@@ -57,34 +54,17 @@ void CModGimbal::UpdateHandler_(){
 	if (moduleStatus == APP_RESET) return;
 
 	// 更新所有组件
-	comLift_.UpdateComponent();
-	comPitch_.UpdateComponent();
+	comYaw_.UpdateComponent();
 
-	// 更新模块信息 - 升降
-	gimbalInfo.posit_lift =
-		comLift_.MtrPositToPhyPosit(comLift_.liftInfo.posit);
-	gimbalInfo.isPositArrived_Lift = comLift_.liftInfo.isPositArrived;
+	// 更新模块信息
+	gimbalInfo.posit_yaw = comYaw_.yawInfo.posit;
+	gimbalInfo.encoder_yaw = comYaw_.yawInfo.encoder;
+	gimbalInfo.isPositArrived = comYaw_.yawInfo.isPositArrived;
 
-	// 更新模块信息 - 俯仰
-	gimbalInfo.posit_pitch =
-		comPitch_.MtrPositToPhyPosit(comPitch_.pitchInfo.posit);
-	gimbalInfo.isPositArrived_Pitch = comPitch_.pitchInfo.isPositArrived;
-
-	// 填充数据发送缓冲区 - 升降左电机
-	CDevMtrDJI::FillCanTxBuffer(comLift_.motor[CComLift::L],
-								comLift_.mtrCanTxNode[CComLift::L]->dataBuffer,
-								comLift_.mtrOutputBuffer[CComLift::L]);
-
-	// 填充数据发送缓冲区 - 升降右电机
-	CDevMtrDJI::FillCanTxBuffer(comLift_.motor[CComLift::R],
-								comLift_.mtrCanTxNode[CComLift::R]->dataBuffer,
-								comLift_.mtrOutputBuffer[CComLift::R]);
-
-	// 填充数据发送缓冲区 - 俯仰电机
-	CDevMtrDJI::FillCanTxBuffer(comPitch_.motor,
-								comPitch_.mtrCanTxNode->dataBuffer,
-								comPitch_.mtrOutputBuffer[0]);
-
+	// 填充数据发送缓冲区
+	CDevMtrKT::FillCanTxBuffer(comYaw_.motor,
+								comYaw_.mtrCanTxNode->dataBuffer,
+								comYaw_.mtrOutputBuffer);
 }
 
 /**
@@ -124,13 +104,9 @@ EAppStatus CModGimbal::RestrictGimbalCommand_(){
 		return APP_ERROR;
 	}
 
-	// 限制升降控制命令
-	gimbalCmd.set_posit_lift =
-		std::clamp(gimbalCmd.set_posit_lift, 0.0f, GIMBAL_LIFT_PHYSICAL_RANGE);
-
-	// 限制俯仰控制命令
-	gimbalCmd.set_posit_pitch =
-		std::clamp(gimbalCmd.set_posit_pitch, 0.0f, GIMBAL_PITCH_PHYSICAL_RANGE);
+	// 限制控制命令
+	// gimbalCmd.set_posit_yaw =
+	// 	std::clamp(gimbalCmd.set_posit_yaw, 0.0f, GIMBAL_YAW_PHYSICAL_RANGE);
 
 	// 自动控制启用，则不继续做限制
 	if (gimbalCmd.isAutoCtrl) return APP_OK;

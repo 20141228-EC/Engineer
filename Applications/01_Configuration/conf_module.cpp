@@ -150,80 +150,37 @@ EAppStatus InitAllModule() {
     // 使用初始化后的参数创建 subGantryModule 实例
     static auto subGantryModule = CModSubGantry(subGantryInitParam);
 */
-    /******初始化云台模块 (双电机升降 、单电机俯仰) ******/
+    /******初始化云台模块******/
     CModGimbal::SModInitParam_Gimbal gimbalInitParam;
     gimbalInitParam.moduleID = EModuleID::MOD_GIMBAL;
-    // 升降电机ID 
-    gimbalInitParam.liftMotorID_L = EDeviceID::DEV_GIMBAL_MTR_LIFT_L;
-    gimbalInitParam.liftMotorID_R = EDeviceID::DEV_GIMBAL_MTR_LIFT_R;
-    // 俯仰电机ID 
-    gimbalInitParam.pitchMotorID = EDeviceID::DEV_GIMBAL_MTR_PITCH;
-    // 设置CAN发送节点
-    gimbalInitParam.liftMotorTxNode_L = &TxNode_Can2_1FF;
-    gimbalInitParam.liftMotorTxNode_R = &TxNode_Can2_1FF;
-    gimbalInitParam.pitchMotorTxNode = &TxNode_Can2_1FF;
-    // 初始化 liftPosPidParam ，双电机共享参数
-    gimbalInitParam.liftPosPidParam.kp = 0.3f;
-    gimbalInitParam.liftPosPidParam.ki = 0.0f;
-    gimbalInitParam.liftPosPidParam.kd = 0.3f;
-    gimbalInitParam.liftPosPidParam.maxOutput = 4500.0f;
+    gimbalInitParam.yawMotorID = EDeviceID::DEV_GIMBAL_MTR_YAW;
+    gimbalInitParam.MotorTxNode_Yaw = &TxNode_Can3_280;
+    gimbalInitParam.FilterID = EAlgoID::ALGO_IMU_AVE;
+    gimbalInitParam.memsDevID = EDeviceID::DEV_MEMS_BMI088;
+    // 初始化pid参数
+    gimbalInitParam.YawPosPidParam_Gyro.kp = 0.f;
+    gimbalInitParam.YawPosPidParam_Gyro.ki = 0.0f;
+    gimbalInitParam.YawPosPidParam_Gyro.kd = 0.f;
+    gimbalInitParam.YawPosPidParam_Gyro.maxOutput = 4500.0f;
 
-    gimbalInitParam.liftSpdPidParam.kp = 2.0f;
-    gimbalInitParam.liftSpdPidParam.ki = 0.1f;
-    gimbalInitParam.liftSpdPidParam.kd = 0.0f;
-    gimbalInitParam.liftSpdPidParam.maxIntegral = 2000.0f;
-    gimbalInitParam.liftSpdPidParam.maxOutput = 3000.0f;
+    gimbalInitParam.YawSpdPidParam_Gyro.kp = 0.f;
+    gimbalInitParam.YawSpdPidParam_Gyro.ki = 0.f;
+    gimbalInitParam.YawSpdPidParam_Gyro.kd = 0.0f;
+    gimbalInitParam.YawSpdPidParam_Gyro.maxIntegral = 2000.0f;
+    gimbalInitParam.YawSpdPidParam_Gyro.maxOutput = 3000.0f;
 
-    gimbalInitParam.pitchPosPidParam.kp = 0.3f;
-    gimbalInitParam.pitchPosPidParam.ki = 0.0f;
-    gimbalInitParam.pitchPosPidParam.kd = 0.3f;
-    gimbalInitParam.pitchPosPidParam.maxOutput = 4500.0f;
+    gimbalInitParam.YawPosPidParam_Mec.kp = 0.f;
+    gimbalInitParam.YawPosPidParam_Mec.ki = 0.0f;
+    gimbalInitParam.YawPosPidParam_Mec.kd = 0.f;
+    gimbalInitParam.YawPosPidParam_Mec.maxOutput = 4500.0f;
 
-    gimbalInitParam.pitchSpdPidParam.kp = 2.0f;
-    gimbalInitParam.pitchSpdPidParam.ki = 0.1f;
-    gimbalInitParam.pitchSpdPidParam.kd = 0.0f;
-    gimbalInitParam.pitchSpdPidParam.maxIntegral = 2000.0f;
-    gimbalInitParam.pitchSpdPidParam.maxOutput = 3000.0f;
+    gimbalInitParam.YawSpdPidParam_Mec.kp = 0.f;
+    gimbalInitParam.YawSpdPidParam_Mec.ki = 0.f;
+    gimbalInitParam.YawSpdPidParam_Mec.kd = 0.0f;
+    gimbalInitParam.YawSpdPidParam_Mec.maxIntegral = 2000.0f;
+    gimbalInitParam.YawSpdPidParam_Mec.maxOutput = 3000.0f;   ///< pid参数待调
     // 使用初始化后的参数创建 gimbalModule 实例
     static auto gimbalModule = CModGimbal(gimbalInitParam);
-
-    /******初始化底盘模块******/
-    /* 副板不包含底盘电机，注释底盘模块初始化
-    CModChassis::SModInitParam_Chassis chassisInitParam;
-    chassisInitParam.moduleID = EModuleID::MOD_CHASSIS;
-    chassisInitParam.memsDevID = EDeviceID::DEV_MEMS_BMI088;
-    chassisInitParam.wheelsetMotorID_LF = EDeviceID::DEV_CHAS_MTR_LF;
-    chassisInitParam.wheelsetMotorID_RF = EDeviceID::DEV_CHAS_MTR_RF;
-    chassisInitParam.wheelsetMotorID_LB = EDeviceID::DEV_CHAS_MTR_LB;
-    chassisInitParam.wheelsetMotorID_RB = EDeviceID::DEV_CHAS_MTR_RB;
-    // 设置can发送节点
-    chassisInitParam.wheelsetMotorTxNode_LF = &TxNode_Can1_200;
-    chassisInitParam.wheelsetMotorTxNode_RF = &TxNode_Can1_200;
-    chassisInitParam.wheelsetMotorTxNode_LB = &TxNode_Can1_200;
-    chassisInitParam.wheelsetMotorTxNode_RB = &TxNode_Can1_200;
-    // 设置PID参数
-    chassisInitParam.yawCorrectionPidParam.kp = 10.0f;
-    chassisInitParam.yawCorrectionPidParam.ki = 20.0f;
-    chassisInitParam.yawCorrectionPidParam.kd = 0.0f;
-    chassisInitParam.yawCorrectionPidParam.Input_deadband = 1.0f;
-    chassisInitParam.yawCorrectionPidParam.maxIntegral = 50.0f;
-    chassisInitParam.yawCorrectionPidParam.maxOutput = 5000.0f;
-    chassisInitParam.lineCorrectionPidParam.kp = 0.0f;
-    chassisInitParam.lineCorrectionPidParam.ki = 0.0f;
-    chassisInitParam.lineCorrectionPidParam.kd = 0.0f;
-    chassisInitParam.lineCorrectionPidParam.maxIntegral = 0.0f;
-    chassisInitParam.lineCorrectionPidParam.maxOutput = 0.0f;
-    chassisInitParam.wheelsetSpdPidParam.kp = 8.0f;
-    chassisInitParam.wheelsetSpdPidParam.ki = 1.0f;
-    chassisInitParam.wheelsetSpdPidParam.kd = 0.0f;
-    chassisInitParam.wheelsetSpdPidParam.Input_deadband = 1.0f;
-    chassisInitParam.wheelsetSpdPidParam.maxIntegral = 4000.0f;
-    chassisInitParam.wheelsetSpdPidParam.maxOutput = 15000.0f;
-    // 使用初始化后的参数创建 chassisModule 实例
-    static auto chassisModule = CModChassis(chassisInitParam);
-    */
-
-
 
 
     return APP_OK;

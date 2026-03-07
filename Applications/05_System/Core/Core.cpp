@@ -62,11 +62,6 @@ EAppStatus CSystemCore::InitSystemCore() {
     SysBoardLink.InitSystem(&boardLinkInitParam);
 
     // 获取模块的指针（安全查找，避免异常）
-    auto it_chassis = ModuleIDMap.find(EModuleID::MOD_CHASSIS);
-    if (it_chassis != ModuleIDMap.end() && it_chassis->second != nullptr) {
-        pchassis_ = reinterpret_cast<CModChassis *>(it_chassis->second);
-    }
-
     auto it_gimbal = ModuleIDMap.find(EModuleID::MOD_GIMBAL);
     if (it_gimbal != ModuleIDMap.end() && it_gimbal->second != nullptr) {
         pgimbal_ = reinterpret_cast<CModGimbal *>(it_gimbal->second);
