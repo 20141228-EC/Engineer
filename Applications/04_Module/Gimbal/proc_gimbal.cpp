@@ -1,11 +1,11 @@
 /**
  * @file proc_gimbal.cpp
- * @author Ciallo～(∠·ω< )⌒☆
+ * @author sllllr
  * @brief 云台任务
- * @version 2.0
- * @date 2025-12-17
+ * @version 1.0
+ * @date 2025-03-06
  *
- * @copyright Copyright (c) 2025
+ * @copyright Copyright (c) 2026
  *
  */
 

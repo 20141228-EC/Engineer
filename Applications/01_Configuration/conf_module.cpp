@@ -1,11 +1,11 @@
 /**
  * @file conf_module.cpp
- * @author Fish_Joe (2328339747@qq.com)
+ * @author sllllr (2997708711@qq.com)
  * @brief 完成所有模块的配置
  * @version 1.0
- * @date 2024-11-05
+ * @date 2026-03-06
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2026
  * 
  */
 
