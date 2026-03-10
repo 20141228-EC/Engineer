@@ -228,7 +228,7 @@ private:
 			int32_t setPosit_yaw = 0.0f;        ///< Yaw关节目标位置
 			int32_t setPosit_pitch1 = POSIT_JOINT2_PITCH1_INIT_PHY; ///< Pitch1关节目标位置
 			int32_t setPosit_pitch2 = POSIT_JOINT3_PITCH2_INIT_PHY; ///< Pitch2关节目标位置
-			int32_t setPosit_pitch3 = POSIT_JOINT3_PITCH3_INIT_PHY;	///< Pitch3关节目标位置
+			int32_t setPosit_pitch3 = POSIT_JOINT4_PITCH3_INIT_PHY;	///< Pitch3关节目标位置
 		} jointCmd;
 
 		// PID控制器

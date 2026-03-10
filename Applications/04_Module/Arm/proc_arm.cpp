@@ -56,15 +56,15 @@ void CModArm::StartArmModuleTask(void *argument) {					///<该任务在mod_arm.c
 				arm.comGrip_.StartComponent();
 				proc_waitUntil(arm.comGrip_.componentStatus == APP_OK);
 
-				// arm.comjoint_.StartComponent();												///<刚开始的时候设置为busy状态，当初始化以后就设置为ok状态
-				// proc_waitUntil(arm.comjoint_.componentStatus == APP_OK);					///<此处先挂起10ms之后，一直等待关节电机任务初始化结束否者就一直10ms的等
+				arm.comjoint_.StartComponent();												///<刚开始的时候设置为busy状态，当初始化以后就设置为ok状态
+				proc_waitUntil(arm.comjoint_.componentStatus == APP_OK);					///<此处先挂起10ms之后，一直等待关节电机任务初始化结束否者就一直10ms的等
 				
 				
 
 				
-				// arm.comRoll_.StartComponent();		///<当关节电机初始化完成之后，启动末端夹爪和夹爪roll电机任务
-				// proc_waitUntil(arm.comEnd_.componentStatus == APP_OK &&
-				// 			   arm.comRoll_.componentStatus == APP_OK);
+				arm.comRoll_.StartComponent();		///<当关节电机初始化完成之后，启动末端夹爪和夹爪roll电机任务
+				proc_waitUntil(arm.comEnd_.componentStatus == APP_OK &&
+							   arm.comRoll_.componentStatus == APP_OK);
 
 				arm.armCmd = SArmCmd();
 				arm.armCmd.set_angle_Yaw = ARM_YAW_INIT_ANGLE;
@@ -90,6 +90,8 @@ void CModArm::StartArmModuleTask(void *argument) {					///<该任务在mod_arm.c
 					CComJoint::PhyPositToMtrPosit_pitch1(arm.armCmd.set_angle_Pitch1);
 				arm.comjoint_.jointCmd.setPosit_pitch2 =
 					CComJoint::PhyPositToMtrPosit_pitch2(arm.armCmd.set_angle_Pitch2);
+				arm.comjoint_.jointCmd.setPosit_pitch3 =
+					CComJoint::PhyPositToMtrPosit_pitch3(arm.armCmd.set_angle_Pitch3);
 				arm.comRoll_.rollCmd.setAngle =
 					CComRoll::PhyAngleToMtrAngle(arm.armCmd.set_angle_Roll);
 				arm.comEnd_.endCmd.setPosit_Pitch =

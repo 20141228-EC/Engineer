@@ -300,32 +300,38 @@ float_t CModArm::CComJoint::MtrPositToPhyPosit_pitch3(int32_t mtrPosit) {
 }
 /*------------------------------------------------------------------------------------*/
 // 输出更新函数
-EAppStatus CModArm::CComJoint::_UpdateOutput(float_t posit_yaw, float_t posit_pitch1, float_t posit_pitch2) {
+EAppStatus CModArm::CComJoint::_UpdateOutput(float_t posit_yaw, float_t posit_pitch1, float_t posit_pitch2, float_t posit_pitch3) {
 
 	DataBuffer<float_t> Pos_yaw = { static_cast<float_t>(posit_yaw * ARM_YAW_MOTOR_DIR) };
 	DataBuffer<float_t> Pos_pitch1 = { static_cast<float_t>(posit_pitch1 * ARM_PITCH1_MOTOR_DIR) };
-	DataBuffer<float_t> Pos_pitch2 = { static_cast<float_t>(posit_pitch2 * ARM_PITCH2_MOTOR_DIR) };			 ///<更新目标角度
+	DataBuffer<float_t> Pos_pitch2 = { static_cast<float_t>(posit_pitch2 * ARM_PITCH2_MOTOR_DIR) };
+	DataBuffer<float_t> Pos_pitch3 = { static_cast<float_t>(posit_pitch3 * ARM_PITCH3_MOTOR_DIR) };			 ///<更新目标角度
 
 	DataBuffer<float_t> PosMeasure_yaw = {static_cast<float_t>(motor[Y]->motorData[CDevMtr::DATA_POSIT])};
 	DataBuffer<float_t> PosMeasure_pitch1 = {static_cast<float_t>(motor[P1]->motorData[CDevMtr::DATA_POSIT])};
-	DataBuffer<float_t> PosMeasure_pitch2 = {static_cast<float_t>(motor[P2]->motorData[CDevMtr::DATA_POSIT])};///<获取测量值
+	DataBuffer<float_t> PosMeasure_pitch2 = {static_cast<float_t>(motor[P2]->motorData[CDevMtr::DATA_POSIT])};
+	DataBuffer<float_t> PosMeasure_pitch3 = {static_cast<float_t>(motor[P3]->motorData[CDevMtr::DATA_POSIT])};///<获取测量值
 
 	auto Spd_yaw = pidPosCtrl_yaw.UpdatePidController(Pos_yaw, PosMeasure_yaw);								///<角度环
 	auto Spd_pitch1 = pidPosCtrl_pitch1.UpdatePidController(Pos_pitch1, PosMeasure_pitch1);
 	auto Spd_pitch2 = pidPosCtrl_pitch2.UpdatePidController(Pos_pitch2, PosMeasure_pitch2);
+	auto Spd_pitch3 = pidPosCtrl_pitch3.UpdatePidController(Pos_pitch3, PosMeasure_pitch3);
 
 	DataBuffer<float_t> SpdMeasure_yaw = {static_cast<float_t>(motor[Y]->motorData[CDevMtr::DATA_SPEED])};
 	DataBuffer<float_t> SpdMeasure_pitch1 = {static_cast<float_t>(motor[P1]->motorData[CDevMtr::DATA_SPEED])};
 	DataBuffer<float_t> SpdMeasure_pitch2 = {static_cast<float_t>(motor[P2]->motorData[CDevMtr::DATA_SPEED])};
+	DataBuffer<float_t> SpdMeasure_pitch3 = {static_cast<float_t>(motor[P3]->motorData[CDevMtr::DATA_SPEED])};
 
 	auto output_yaw = pidSpdCtrl_yaw.UpdatePidController(Spd_yaw, SpdMeasure_yaw);							///<速度环
 	auto output_pitch1 = pidSpdCtrl_pitch1.UpdatePidController(Spd_pitch1, SpdMeasure_pitch1);
 	auto output_pitch2 = pidSpdCtrl_pitch2.UpdatePidController(Spd_pitch2, SpdMeasure_pitch2);
+	auto output_pitch3 = pidSpdCtrl_pitch3.UpdatePidController(Spd_pitch3, SpdMeasure_pitch3);
 
 	mtrOutputBuffer = { 
 		static_cast<int16_t>(output_yaw[0]),
 		static_cast<int16_t>(output_pitch1[0]),
-		static_cast<int16_t>(output_pitch2[0]) };
+		static_cast<int16_t>(output_pitch2[0]), 
+		static_cast<int16_t>(output_pitch3[0])};
 
 	return APP_OK;
 }
@@ -388,6 +394,26 @@ EAppStatus CModArm::CComJoint::_UpdateOutput_Pitch2(float_t posit_pitch2) {
 	auto output_pitch2 = pidSpdCtrl_pitch2.UpdatePidController(Spd_pitch2, SpdMeasure_pitch2);
 
 	mtrOutputBuffer[CComJoint::P2] = static_cast<int16_t>(output_pitch2[0]);
+	return APP_OK;
+}
+
+/**
+ * @brief Pitch3电机输出更新函数
+ * 
+ * @param posit_pitch3 Pitch3目标位置
+ * @retval int16_t 电机输出值
+ */
+EAppStatus CModArm::CComJoint::_UpdateOutput_Pitch3(float_t posit_pitch3) {
+	DataBuffer<float_t> Pos_pitch3 = { static_cast<float_t>(posit_pitch3 * ARM_PITCH3_MOTOR_DIR) };
+	DataBuffer<float_t> PosMeasure_pitch3 = {static_cast<float_t>(motor[P3]->motorData[CDevMtr::DATA_POSIT])};
+
+	auto Spd_pitch3 = pidPosCtrl_pitch3.UpdatePidController(Pos_pitch3, PosMeasure_pitch3);
+
+	DataBuffer<float_t> SpdMeasure_pitch3 = {static_cast<float_t>(motor[P3]->motorData[CDevMtr::DATA_SPEED])};
+
+	auto output_pitch3 = pidSpdCtrl_pitch3.UpdatePidController(Spd_pitch3, SpdMeasure_pitch3);
+
+	mtrOutputBuffer[CComJoint::P3] = static_cast<int16_t>(output_pitch3[0]);
 	return APP_OK;
 }
 

@@ -2,17 +2,15 @@
  * @brief        
  * 
  * @file         mod_arm.cpp
- * @author       Fish_Joe (2328339747@qq.com)
+ * @author       sllllr (2997708711@qq.com)
  * @version      V1.0
- * @date         2025-05-04
+ * @date         2026-03-09
  * 
- * @copyright    Copyright (c) 2025
+ * @copyright    Copyright (c) 2026
  * 
  ******************************************************************************/
 
 #include "mod_arm.hpp"
-
-
 
 namespace my_engineer {
 
@@ -73,7 +71,8 @@ void CModArm::UpdateHandler_() {
 	// 更新模块信息
 	armInfo.angle_Yaw = comjoint_.MtrPositToPhyPosit_yaw(comjoint_.jointInfo.posit_yaw);
 	armInfo.angle_Pitch1 = comjoint_.MtrPositToPhyPosit_pitch1(comjoint_.jointInfo.posit_pitch1);
-	armInfo.angle_Pitch2 = comjoint_.MtrPositToPhyPosit_pitch2(comjoint_.jointInfo.posit_pitch2);	///<这里是将底层的关节信息转换为用户层的arm信息
+	armInfo.angle_Pitch2 = comjoint_.MtrPositToPhyPosit_pitch2(comjoint_.jointInfo.posit_pitch2);
+	armInfo.angle_Pitch3 = comjoint_.MtrPositToPhyPosit_pitch3(comjoint_.jointInfo.posit_pitch3);	///<这里是将底层的关节信息转换为用户层的arm信息
 	armInfo.angle_Roll = comRoll_.MtrAngleToPhyAngle(comRoll_.rollInfo.angle);
 	armInfo.angle_end_pitch =
 		comEnd_.MtrPositToPhyPosit_Pitch(comEnd_.endInfo.posit_Pitch);
@@ -83,6 +82,7 @@ void CModArm::UpdateHandler_() {
 	armInfo.isAngleArrived_Yaw = comjoint_.jointInfo.isPositArrived_yaw;
 	armInfo.isAngleArrived_Pitch1 = comjoint_.jointInfo.isPositArrived_pitch1;
 	armInfo.isAngleArrived_Pitch2 = comjoint_.jointInfo.isPositArrived_pitch2;
+	armInfo.isAngleArrived_Pitch3 = comjoint_.jointInfo.isPositArrived_pitch3;
 	armInfo.isAngleArrived_Roll = comRoll_.rollInfo.isAngleArrived;
 	armInfo.isAngleArrived_End_Pitch = comEnd_.endInfo.isPositArrived_Pitch;
 	armInfo.isAngleArrived_End_Roll = comEnd_.endInfo.isPositArrived_Roll;
@@ -94,6 +94,9 @@ void CModArm::UpdateHandler_() {
 	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P2],
 								comjoint_.mtrCanTxNode[CComJoint::P2]->dataBuffer,
 								comjoint_.mtrOutputBuffer[CComJoint::P2]);
+	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P3],
+								comjoint_.mtrCanTxNode[CComJoint::P3]->dataBuffer,
+								comjoint_.mtrOutputBuffer[CComJoint::P3]);							
 	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::Y],
 								comjoint_.mtrCanTxNode[CComJoint::Y]->dataBuffer,
 								comjoint_.mtrOutputBuffer[CComJoint::Y]);

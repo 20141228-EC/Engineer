@@ -133,8 +133,9 @@ EAppStatus InitAllDevice(){
 */
 
     /******************************************
-     * 云台电机(大yaw)
+     * 云台电机
      *****************************************/
+    // 大yaw
     static CDevMtrKT gimbalMotor_Yaw;
     CDevMtrKT::SMtrInitParam_KT gimbalMotor_Yaw_initparam;
     gimbalMotor_Yaw_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_YAW;
@@ -148,13 +149,45 @@ EAppStatus InitAllDevice(){
     gimbalMotor_Yaw_initparam.stallTime = 200;
     gimbalMotor_Yaw.InitDevice(&gimbalMotor_Yaw_initparam);
 
+    // 云台升降电机 - 左
+    static CDevMtrM2006 gimbalMotor_Lift_L;
+    CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Lift_L_initparam;
+    gimbalMotor_Lift_L_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_LIFT_L;
+    gimbalMotor_Lift_L_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    gimbalMotor_Lift_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
+    gimbalMotor_Lift_L_initparam.useAngleToPosit = true;
+    gimbalMotor_Lift_L_initparam.useStallMonit = true;
+    gimbalMotor_Lift_L_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
+    gimbalMotor_Lift_L.InitDevice(&gimbalMotor_Lift_L_initparam);
+
+    // 云台升降电机 - 右
+    static CDevMtrM2006 gimbalMotor_Lift_R;
+    CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Lift_R_initparam;
+    gimbalMotor_Lift_R_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_LIFT_R;
+    gimbalMotor_Lift_R_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    gimbalMotor_Lift_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
+    gimbalMotor_Lift_R_initparam.useAngleToPosit = true;
+    gimbalMotor_Lift_R_initparam.useStallMonit = true;
+    gimbalMotor_Lift_R_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
+    gimbalMotor_Lift_R.InitDevice(&gimbalMotor_Lift_R_initparam);
+
+    static CDevMtrM2006 gimbalMotor_Pitch;
+    CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Pitch_initparam;
+    gimbalMotor_Pitch_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_PITCH;
+    gimbalMotor_Pitch_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    gimbalMotor_Pitch_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_7;
+    gimbalMotor_Pitch_initparam.useAngleToPosit = true;
+    gimbalMotor_Pitch_initparam.useStallMonit = true;
+    gimbalMotor_Pitch_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
+    gimbalMotor_Pitch.InitDevice(&gimbalMotor_Pitch_initparam);
+
     /******************************************
      * 机械臂电机
      *****************************************/
     static CDevMtrM2006 armMotor_End_L;
     CDevMtrM2006::SMtrInitParam_M2006 armMotor_End_L_initparam;
     armMotor_End_L_initparam.deviceID = EDeviceID::DEV_ARM_MTR_END_L;
-    armMotor_End_L_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    armMotor_End_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
     armMotor_End_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
     armMotor_End_L_initparam.useAngleToPosit = true;
     armMotor_End_L_initparam.useStallMonit = true;
@@ -165,7 +198,7 @@ EAppStatus InitAllDevice(){
     static CDevMtrM2006 armMotor_End_R;
     CDevMtrM2006::SMtrInitParam_M2006 armMotor_End_R_initparam;
     armMotor_End_R_initparam.deviceID = EDeviceID::DEV_ARM_MTR_END_R;
-    armMotor_End_R_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    armMotor_End_R_initparam.interfaceID = EInterfaceID::INF_CAN2;
     armMotor_End_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_7;
     armMotor_End_R_initparam.useAngleToPosit = true;
     armMotor_End_R_initparam.useStallMonit = true;
@@ -176,7 +209,7 @@ EAppStatus InitAllDevice(){
     static CDevMtrKT armMotor_Yaw;
     CDevMtrKT::SMtrInitParam_KT armMotor_Yaw_initparam;
     armMotor_Yaw_initparam.deviceID = EDeviceID::DEV_ARM_MTR_YAW;
-    armMotor_Yaw_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    armMotor_Yaw_initparam.interfaceID = EInterfaceID::INF_CAN1;
     armMotor_Yaw_initparam.ktMtrID = CDevMtrKT::EKtMtrID::ID_1;
     armMotor_Yaw_initparam.encoderResolution = 65535;
     armMotor_Yaw_initparam.useAngleToPosit = true;
@@ -189,7 +222,7 @@ EAppStatus InitAllDevice(){
     static CDevMtrKT armMotor_Pitch1;
     CDevMtrKT::SMtrInitParam_KT armMotor_Pitch1_initparam;
     armMotor_Pitch1_initparam.deviceID = EDeviceID::DEV_ARM_MTR_PITCH1;
-    armMotor_Pitch1_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    armMotor_Pitch1_initparam.interfaceID = EInterfaceID::INF_CAN1;
     armMotor_Pitch1_initparam.ktMtrID = CDevMtrKT::EKtMtrID::ID_2;
     armMotor_Pitch1_initparam.encoderResolution = 65535;
     armMotor_Pitch1_initparam.useAngleToPosit = true;
@@ -202,7 +235,7 @@ EAppStatus InitAllDevice(){
     static CDevMtrKT armMotor_Pitch2;
     CDevMtrKT::SMtrInitParam_KT armMotor_Pitch2_initparam;
     armMotor_Pitch2_initparam.deviceID = EDeviceID::DEV_ARM_MTR_PITCH2;
-    armMotor_Pitch2_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    armMotor_Pitch2_initparam.interfaceID = EInterfaceID::INF_CAN1;
     armMotor_Pitch2_initparam.ktMtrID = CDevMtrKT::EKtMtrID::ID_3;
     armMotor_Pitch2_initparam.encoderResolution = 65535;
     armMotor_Pitch2_initparam.useAngleToPosit = true;
@@ -211,6 +244,19 @@ EAppStatus InitAllDevice(){
     armMotor_Pitch2_initparam.stallThreshold = 200;
     armMotor_Pitch2_initparam.stallTime = 200;
     armMotor_Pitch2.InitDevice(&armMotor_Pitch2_initparam);
+
+    static CDevMtrKT armMotor_Pitch3;
+    CDevMtrKT::SMtrInitParam_KT armMotor_Pitch3_initparam;
+    armMotor_Pitch3_initparam.deviceID = EDeviceID::DEV_ARM_MTR_PITCH3;
+    armMotor_Pitch3_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    armMotor_Pitch3_initparam.ktMtrID = CDevMtrKT::EKtMtrID::ID_4;
+    armMotor_Pitch3_initparam.encoderResolution = 65535;
+    armMotor_Pitch3_initparam.useAngleToPosit = true;
+    armMotor_Pitch3_initparam.useStallMonit = true;
+    armMotor_Pitch3_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
+    armMotor_Pitch3_initparam.stallThreshold = 200;
+    armMotor_Pitch3_initparam.stallTime = 200;
+    armMotor_Pitch3.InitDevice(&armMotor_Pitch3_initparam);
 
     static CDevMtrDM_MIT armMotor_Roll;
     CDevMtrDM_MIT::SMtrInitParam_DM_MIT armMotor_Roll_initparam;
@@ -230,7 +276,7 @@ EAppStatus InitAllDevice(){
     static CDevMtrM2006 armMotor_Grip;
     CDevMtrM2006::SMtrInitParam_M2006 armMotor_Grip_initparam;
     armMotor_Grip_initparam.deviceID = EDeviceID::DEV_ARM_MTR_GRIP;
-    armMotor_Grip_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    armMotor_Grip_initparam.interfaceID = EInterfaceID::INF_CAN2;
     armMotor_Grip_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_8;//暂时使用can2的ID8
     armMotor_Grip_initparam.useAngleToPosit = true;
     armMotor_Grip_initparam.useStallMonit = true;

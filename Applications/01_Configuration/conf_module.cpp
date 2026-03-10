@@ -22,17 +22,19 @@ EAppStatus InitAllModule() {
     armInitParam.MotorID_Yaw = EDeviceID::DEV_ARM_MTR_YAW;
     armInitParam.MotorID_Pitch1 = EDeviceID::DEV_ARM_MTR_PITCH1;
     armInitParam.MotorID_Pitch2 = EDeviceID::DEV_ARM_MTR_PITCH2;
+    armInitParam.MotorID_Pitch3 = EDeviceID::DEV_ARM_MTR_PITCH3;
     armInitParam.MotorID_Roll = EDeviceID::DEV_ARM_MTR_ROLL;
     armInitParam.MotorID_End_L = EDeviceID::DEV_ARM_MTR_END_L;
     armInitParam.MotorID_End_R = EDeviceID::DEV_ARM_MTR_END_R;
     armInitParam.MotorID_Grip = EDeviceID::DEV_ARM_MTR_GRIP;
     // 设置can发送节点
-    armInitParam.MotorTxNode_Yaw = &TxNode_Can3_280;
-    armInitParam.MotorTxNode_Pitch1 = &TxNode_Can3_280;
-    armInitParam.MotorTxNode_Pitch2 = &TxNode_Can3_280;
-    armInitParam.MotorTxNode_End_L = &TxNode_Can1_1FF;  // 板2: CAN2->CAN1
-    armInitParam.MotorTxNode_End_R = &TxNode_Can1_1FF;  // 板2: CAN2->CAN1
-    armInitParam.MotorTxNode_Grip = &TxNode_Can1_1FF;   // 板2: CAN2->CAN1
+    armInitParam.MotorTxNode_Yaw = &TxNode_Can1_280;
+    armInitParam.MotorTxNode_Pitch1 = &TxNode_Can1_280;
+    armInitParam.MotorTxNode_Pitch2 = &TxNode_Can1_280;
+    armInitParam.MotorTxNode_Pitch3 = &TxNode_Can1_280;
+    armInitParam.MotorTxNode_End_L = &TxNode_Can2_1FF;  // 板2: CAN2->CAN1
+    armInitParam.MotorTxNode_End_R = &TxNode_Can2_1FF;  // 板2: CAN2->CAN1
+    armInitParam.MotorTxNode_Grip = &TxNode_Can2_1FF;   // 板2: CAN2->CAN1
     // 初始化 YawPosPidParam 的成员
    armInitParam.YawPosPidParam.kp = 0.4;
    armInitParam.YawPosPidParam.ki = 0.0f;
@@ -69,6 +71,18 @@ EAppStatus InitAllModule() {
    armInitParam.Pitch2SpdPidParam.kd = 0.0f;
    armInitParam.Pitch2SpdPidParam.maxIntegral = 2000.0f;
    armInitParam.Pitch2SpdPidParam.maxOutput = 2000.0f;
+   // 初始化 Pitch3PosPidParam 的成员
+   armInitParam.Pitch3PosPidParam.kp = 0.f;
+   armInitParam.Pitch3PosPidParam.ki = 0.0f;
+   armInitParam.Pitch3PosPidParam.kd = 0.0f;
+   armInitParam.Pitch3PosPidParam.maxIntegral = 3000.0f;
+   armInitParam.Pitch3PosPidParam.maxOutput = 3000.0f;
+   // 初始化 Pitch3SpdPidParam 的成员
+   armInitParam.Pitch3SpdPidParam.kp = 0.f;
+   armInitParam.Pitch3SpdPidParam.ki = 0.0f;
+   armInitParam.Pitch3SpdPidParam.kd = 0.0f;
+   armInitParam.Pitch3SpdPidParam.maxIntegral = 2000.0f;
+   armInitParam.Pitch3SpdPidParam.maxOutput = 2000.0f;
    // 初始化 mitCtrl_Roll 的成员
    armInitParam.MIT_Roll_kp = 20.0f;
    armInitParam.MIT_Roll_kd = 1.0f;
@@ -154,7 +168,13 @@ EAppStatus InitAllModule() {
     CModGimbal::SModInitParam_Gimbal gimbalInitParam;
     gimbalInitParam.moduleID = EModuleID::MOD_GIMBAL;
     gimbalInitParam.yawMotorID = EDeviceID::DEV_GIMBAL_MTR_YAW;
+    gimbalInitParam.liftMotorID_L = EDeviceID::DEV_GIMBAL_MTR_LIFT_L;
+    gimbalInitParam.liftMotorID_R = EDeviceID::DEV_GIMBAL_MTR_LIFT_R;
+    gimbalInitParam.pitchMotorID = EDeviceID::DEV_GIMBAL_MTR_PITCH;
     gimbalInitParam.MotorTxNode_Yaw = &TxNode_Can3_280;
+    gimbalInitParam.liftMotorTxNode_L = &TxNode_Can1_1FF;
+    gimbalInitParam.liftMotorTxNode_R = &TxNode_Can1_1FF;
+    gimbalInitParam.pitchMotorTxNode = &TxNode_Can1_1FF;
     gimbalInitParam.FilterID = EAlgoID::ALGO_IMU_AVE;
     gimbalInitParam.memsDevID = EDeviceID::DEV_MEMS_BMI088;
     // 初始化pid参数
@@ -179,9 +199,32 @@ EAppStatus InitAllModule() {
     gimbalInitParam.YawSpdPidParam_Mec.kd = 0.0f;
     gimbalInitParam.YawSpdPidParam_Mec.maxIntegral = 2000.0f;
     gimbalInitParam.YawSpdPidParam_Mec.maxOutput = 3000.0f;   ///< pid参数待调
+
+    // 初始化 liftPosPidParam ，双电机用同一套参数
+    gimbalInitParam.liftPosPidParam.kp = 0.f;
+    gimbalInitParam.liftPosPidParam.ki = 0.0f;
+    gimbalInitParam.liftPosPidParam.kd = 0.f;
+    gimbalInitParam.liftPosPidParam.maxOutput = 4500.0f;
+
+    gimbalInitParam.liftSpdPidParam.kp = 0.0f;
+    gimbalInitParam.liftSpdPidParam.ki = 0.f;
+    gimbalInitParam.liftSpdPidParam.kd = 0.0f;
+    gimbalInitParam.liftSpdPidParam.maxIntegral = 2000.0f;
+    gimbalInitParam.liftSpdPidParam.maxOutput = 3000.0f;
+
+    // 俯仰参数
+    gimbalInitParam.pitchPosPidParam.kp = 0.f;
+    gimbalInitParam.pitchPosPidParam.ki = 0.0f;
+    gimbalInitParam.pitchPosPidParam.kd = 0.f;
+    gimbalInitParam.pitchPosPidParam.maxOutput = 4500.0f;
+    gimbalInitParam.pitchSpdPidParam.kp = 0.f;
+    gimbalInitParam.pitchSpdPidParam.ki = 0.f;
+    gimbalInitParam.pitchSpdPidParam.kd = 0.0f;
+    gimbalInitParam.pitchSpdPidParam.maxIntegral = 2000.0f;
+    gimbalInitParam.pitchSpdPidParam.maxOutput = 3000.0f;
+
     // 使用初始化后的参数创建 gimbalModule 实例
     static auto gimbalModule = CModGimbal(gimbalInitParam);
-
 
     return APP_OK;
 }
