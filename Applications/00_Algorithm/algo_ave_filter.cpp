@@ -90,6 +90,16 @@ EAppStatus CAlgo_IMU_Ave::UpdateHandler_()
         Imu_Ave_Info.imu_ave_pitch += rad2deg(gy_raw * DT);
         Imu_Ave_Info.imu_ave_yaw += rad2deg(gz_raw * DT);
 
+        // 将yaw轴角度限制在-180到180之间
+        if (Imu_Ave_Info.imu_ave_yaw > 180.0f)
+        {
+            Imu_Ave_Info.imu_ave_yaw -= 360.0f;
+        }
+        else if (Imu_Ave_Info.imu_ave_yaw < -180.0f)
+        {
+            Imu_Ave_Info.imu_ave_yaw += 360.0f;
+        }
+
         // 加速度计计算姿态（长期参考，消除漂移）
         float pitch_acc = rad2deg(atan2f(ax_raw, sqrtf(ay_raw * ay_raw + az_raw * az_raw)));
         float roll_acc = rad2deg(atan2f(-ay_raw, az_raw));

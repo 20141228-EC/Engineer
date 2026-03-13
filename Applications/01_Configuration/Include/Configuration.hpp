@@ -65,9 +65,12 @@ enum class EDeviceID{
     DEV_CHAS_MTR_LB,        ///< 底盘电机后左（M3508）
     DEV_CHAS_MTR_RB,        ///< 底盘电机后右（M3508）
     DEV_GIMBAL_MTR_YAW,      ///< 云台大yaw电机(KT)
-    DEV_GIMBAL_MTR_LIFT_L,  /// 云台抬升电机左
-    DEV_GIMBAL_MTR_LIFT_R,  /// 云台抬升电机右
-    DEV_GIMBAL_MTR_PITCH,   /// 云台pitch电机
+    DEV_GIMBAL_MTR_LIFT_L,  /// 云台抬升电机左（M2006）
+    DEV_GIMBAL_MTR_LIFT_R,  /// 云台抬升电机右（M2006）
+    DEV_GIMBAL_MTR_PITCH,   /// 云台pitch电机（M2006）
+    DEV_GIMBAL_MTR_STORAGE_B,   /// 存矿电机后（M2006）
+    DEV_GIMBAL_MTR_STORAGE_F,   /// 存矿电机前（M2006）
+    DEV_GIMBAL_MTR_HORIZONTAL,  /// 云台平动电机（M2006）
     // DEV_SUBGANTRY_MTR_LIFT_L,   ///< 子龙门升降电机左（M2006） - 已删除
     // DEV_SUBGANTRY_MTR_LIFT_R,   ///< 子龙门升降电机右（M2006） - 已删除
     // DEV_SUBGANTRY_MTR_STRETCH_L,///< 子龙门伸缩电机左（M2006） - 已删除

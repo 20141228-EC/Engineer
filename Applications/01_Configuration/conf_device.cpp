@@ -149,27 +149,27 @@ EAppStatus InitAllDevice(){
     gimbalMotor_Yaw_initparam.stallTime = 200;
     gimbalMotor_Yaw.InitDevice(&gimbalMotor_Yaw_initparam);
 
-    // 云台升降电机 - 左
-    static CDevMtrM2006 gimbalMotor_Lift_L;
-    CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Lift_L_initparam;
-    gimbalMotor_Lift_L_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_LIFT_L;
-    gimbalMotor_Lift_L_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    gimbalMotor_Lift_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
-    gimbalMotor_Lift_L_initparam.useAngleToPosit = true;
-    gimbalMotor_Lift_L_initparam.useStallMonit = true;
-    gimbalMotor_Lift_L_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    gimbalMotor_Lift_L.InitDevice(&gimbalMotor_Lift_L_initparam);
+    // 云台存矿电机 - 前
+    static CDevMtrM2006 gimbalMotor_Storage_F;
+    CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Storage_F_initparam;
+    gimbalMotor_Storage_F_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_STORAGE_F;
+    gimbalMotor_Storage_F_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    gimbalMotor_Storage_F_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
+    gimbalMotor_Storage_F_initparam.useAngleToPosit = true;
+    gimbalMotor_Storage_F_initparam.useStallMonit = true;
+    gimbalMotor_Storage_F_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
+    gimbalMotor_Storage_F.InitDevice(&gimbalMotor_Storage_F_initparam);
 
-    // 云台升降电机 - 右
-    static CDevMtrM2006 gimbalMotor_Lift_R;
-    CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Lift_R_initparam;
-    gimbalMotor_Lift_R_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_LIFT_R;
-    gimbalMotor_Lift_R_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    gimbalMotor_Lift_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
-    gimbalMotor_Lift_R_initparam.useAngleToPosit = true;
-    gimbalMotor_Lift_R_initparam.useStallMonit = true;
-    gimbalMotor_Lift_R_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    gimbalMotor_Lift_R.InitDevice(&gimbalMotor_Lift_R_initparam);
+    // 云台存矿电机 - 后
+    static CDevMtrM2006 gimbalMotor_Storage_B;
+    CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Storage_B_initparam;
+    gimbalMotor_Storage_B_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_STORAGE_B;
+    gimbalMotor_Storage_B_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    gimbalMotor_Storage_B_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
+    gimbalMotor_Storage_B_initparam.useAngleToPosit = true;
+    gimbalMotor_Storage_B_initparam.useStallMonit = true;
+    gimbalMotor_Storage_B_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
+    gimbalMotor_Storage_B.InitDevice(&gimbalMotor_Storage_B_initparam);
 
     static CDevMtrM2006 gimbalMotor_Pitch;
     CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Pitch_initparam;
@@ -261,7 +261,7 @@ EAppStatus InitAllDevice(){
     static CDevMtrDM_MIT armMotor_Roll;
     CDevMtrDM_MIT::SMtrInitParam_DM_MIT armMotor_Roll_initparam;
     armMotor_Roll_initparam.deviceID = EDeviceID::DEV_ARM_MTR_ROLL;
-    armMotor_Roll_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    armMotor_Roll_initparam.interfaceID = EInterfaceID::INF_CAN2;
     armMotor_Roll_initparam.MasterID = 0x30;
     armMotor_Roll_initparam.SlaveID = 0x31;
     armMotor_Roll_initparam.Q_MAX = 3.1416f;

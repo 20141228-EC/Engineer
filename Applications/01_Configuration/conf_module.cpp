@@ -168,12 +168,12 @@ EAppStatus InitAllModule() {
     CModGimbal::SModInitParam_Gimbal gimbalInitParam;
     gimbalInitParam.moduleID = EModuleID::MOD_GIMBAL;
     gimbalInitParam.yawMotorID = EDeviceID::DEV_GIMBAL_MTR_YAW;
-    gimbalInitParam.liftMotorID_L = EDeviceID::DEV_GIMBAL_MTR_LIFT_L;
-    gimbalInitParam.liftMotorID_R = EDeviceID::DEV_GIMBAL_MTR_LIFT_R;
+    gimbalInitParam.storageMotorID_B = EDeviceID::DEV_GIMBAL_MTR_STORAGE_B;
+    gimbalInitParam.storageMotorID_F = EDeviceID::DEV_GIMBAL_MTR_STORAGE_F;
     gimbalInitParam.pitchMotorID = EDeviceID::DEV_GIMBAL_MTR_PITCH;
     gimbalInitParam.MotorTxNode_Yaw = &TxNode_Can3_280;
-    gimbalInitParam.liftMotorTxNode_L = &TxNode_Can1_1FF;
-    gimbalInitParam.liftMotorTxNode_R = &TxNode_Can1_1FF;
+    gimbalInitParam.storageMotorTxNode_F = &TxNode_Can1_1FF;
+    gimbalInitParam.storageMotorTxNode_B = &TxNode_Can1_1FF;
     gimbalInitParam.pitchMotorTxNode = &TxNode_Can1_1FF;
     gimbalInitParam.FilterID = EAlgoID::ALGO_IMU_AVE;
     gimbalInitParam.memsDevID = EDeviceID::DEV_MEMS_BMI088;
@@ -200,17 +200,17 @@ EAppStatus InitAllModule() {
     gimbalInitParam.YawSpdPidParam_Mec.maxIntegral = 2000.0f;
     gimbalInitParam.YawSpdPidParam_Mec.maxOutput = 3000.0f;   ///< pid参数待调
 
-    // 初始化 liftPosPidParam ，双电机用同一套参数
-    gimbalInitParam.liftPosPidParam.kp = 0.f;
-    gimbalInitParam.liftPosPidParam.ki = 0.0f;
-    gimbalInitParam.liftPosPidParam.kd = 0.f;
-    gimbalInitParam.liftPosPidParam.maxOutput = 4500.0f;
+    // 初始化存矿电机参数，双电机用同一套参数
+    gimbalInitParam.storagePosPidParam.kp = 0.f;
+    gimbalInitParam.storagePosPidParam.ki = 0.0f;
+    gimbalInitParam.storagePosPidParam.kd = 0.f;
+    gimbalInitParam.storagePosPidParam.maxOutput = 4500.0f;
 
-    gimbalInitParam.liftSpdPidParam.kp = 0.0f;
-    gimbalInitParam.liftSpdPidParam.ki = 0.f;
-    gimbalInitParam.liftSpdPidParam.kd = 0.0f;
-    gimbalInitParam.liftSpdPidParam.maxIntegral = 2000.0f;
-    gimbalInitParam.liftSpdPidParam.maxOutput = 3000.0f;
+    gimbalInitParam.storageSpdPidParam.kp = 0.0f;
+    gimbalInitParam.storageSpdPidParam.ki = 0.f;
+    gimbalInitParam.storageSpdPidParam.kd = 0.0f;
+    gimbalInitParam.storageSpdPidParam.maxIntegral = 2000.0f;
+    gimbalInitParam.storageSpdPidParam.maxOutput = 3000.0f;
 
     // 俯仰参数
     gimbalInitParam.pitchPosPidParam.kp = 0.f;

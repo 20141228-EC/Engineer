@@ -64,7 +64,7 @@ EAppStatus CModGimbal::CComPitch::UpdateComponent() {
 
 	// 更新组件信息
 	pitchInfo.posit = (motor->motorData[CDevMtr::DATA_POSIT] * GIMBAL_PITCH_MOTOR_DIR);
-	pitchInfo.isPositArrived = (abs(pitchCmd.setPosit - pitchInfo.posit) < 8192 * 1);
+	pitchInfo.isPositArrived = (abs(pitchCmd.setPosit - pitchInfo.posit) < 8192 * 1);	///< 暂且给1 后面得调整
 
 	switch (Component_FSMFlag_){
 		case FSM_RESET: {
