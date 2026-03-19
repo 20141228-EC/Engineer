@@ -49,6 +49,7 @@ public:
   static void ButtonPressUpCallback(void *btn);
   static void ButtonLongPressCallback(void *btn);
   static void ButtonDoubleClickCallback(void *btn);  // 双击回调
+  static void ButtonSingleClickCallback(void *btn); // 单击回调（二次夹紧）
 
   EAppStatus InitDevice(const SDevInitParam_Base *pStructInitParam) override;
 
@@ -61,6 +62,7 @@ public:
   static bool isGripperRight;       // 右手夹爪按下状态
   static bool isGripperLeftClose;   // 左手夹爪闭合状态（长按闭合/双击张开）
   static bool isGripperRightClose;  // 右手夹爪闭合状态（长按闭合/双击张开）
+  static bool isGripperRightReGrip; // 右手夹爪二次夹紧请求（单击触发，脉冲信号）
 };
 
 }

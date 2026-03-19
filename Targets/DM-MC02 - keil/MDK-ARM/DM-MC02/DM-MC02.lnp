@@ -22,6 +22,7 @@
 "dm-mc02\algo_crc.o"
 "dm-mc02\algo_pid.o"
 "dm-mc02\algo_other.o"
+"dm-mc02\algo_gravity_comp.o"
 "dm-mc02\device.o"
 "dm-mc02\motor.o"
 "dm-mc02\mtr_dji.o"

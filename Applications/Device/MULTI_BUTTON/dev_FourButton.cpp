@@ -29,6 +29,7 @@ bool CDevFourButton::isGripperLeft = false;
 bool CDevFourButton::isGripperRight = false;
 bool CDevFourButton::isGripperLeftClose = false;   // 长按闭合/双击张开
 bool CDevFourButton::isGripperRightClose = false;  // 长按闭合/双击张开
+bool CDevFourButton::isGripperRightReGrip = false; // 单击二次夹紧（脉冲信号）
 
 CDevFourButton::singlebutton CDevFourButton::buttons_[static_cast<int>(EButtonID::BUTTON_MAX)] = {};
 
@@ -111,6 +112,21 @@ void CDevFourButton::ButtonDoubleClickCallback(void *btn) {
   }
 }
 
+void CDevFourButton::ButtonSingleClickCallback(void *btn) {
+  Button* button = static_cast<Button *>(btn);
+  uint8_t button_id = button->button_id;
+  // 单击触发二次夹紧（仅在已夹持闭合状态下有效）
+  switch(button_id){
+    case EButtonID::GRIPPER_RIGHT:
+      if (isGripperRightClose) {
+        isGripperRightReGrip = true;
+      }
+      break;
+    default:
+      break;
+  }
+}
+
 
 /**
  * @brief 初始化设备
@@ -139,6 +155,7 @@ EAppStatus CDevFourButton::InitDevice(const SDevInitParam_Base *pStructInitParam
       button_attach(&buttons_[i].User_button, PressEvent::PRESS_UP, ButtonPressUpCallback);
       button_attach(&buttons_[i].User_button, PressEvent::LONG_PRESS_HOLD, ButtonLongPressCallback);
       button_attach(&buttons_[i].User_button, PressEvent::DOUBLE_CLICK, ButtonDoubleClickCallback);
+      button_attach(&buttons_[i].User_button, PressEvent::SINGLE_CLICK, ButtonSingleClickCallback);
       button_start(&buttons_[i].User_button);
     }
   }

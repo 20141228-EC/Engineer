@@ -79,10 +79,10 @@ void CSystemCore::UpdateHandler_() {
             && pcontroller_left_->moduleStatus == APP_OK) {
             pcontroller_left_->StartModule();
         }
-        // 上传左臂数据 (控制器 -> 机器人)
+        // 上传左臂数据 (控制器 -> 机器人)，pitch1/2减去零点标定偏移
         SysControllerLink.controllerInfo.left_arm.yaw = pcontroller_left_->ControllerInfo.posit_yaw;
-        SysControllerLink.controllerInfo.left_arm.pitch1 = pcontroller_left_->ControllerInfo.posit_pitch1;
-        SysControllerLink.controllerInfo.left_arm.pitch2 = pcontroller_left_->ControllerInfo.posit_pitch2;
+        SysControllerLink.controllerInfo.left_arm.pitch1 = pcontroller_left_->ControllerInfo.posit_pitch1 - CONTROLLER_PITCH1_ZERO_OFFSET;
+        SysControllerLink.controllerInfo.left_arm.pitch2 = pcontroller_left_->ControllerInfo.posit_pitch2 - CONTROLLER_PITCH2_ZERO_OFFSET;
         SysControllerLink.controllerInfo.left_arm.roll = pcontroller_left_->ControllerInfo.posit_roll;
         SysControllerLink.controllerInfo.left_arm.pitch_end = pcontroller_left_->ControllerInfo.posit_pitch_end;
         // 接收左臂数据 (机器人 -> 控制器)
@@ -101,12 +101,12 @@ void CSystemCore::UpdateHandler_() {
             && pcontroller_right_->moduleStatus == APP_OK) {
             pcontroller_right_->StartModule();
         }
-        // 上传右臂数据 (控制器 -> 机器人)
+        // 上传右臂数据 (控制器 -> 机器人)，pitch1/2减去零点标定偏移
         SysControllerLink.controllerInfo.right_arm.yaw = pcontroller_right_->ControllerInfo.posit_yaw;
-        SysControllerLink.controllerInfo.right_arm.pitch1 = pcontroller_right_->ControllerInfo.posit_pitch1;
-        SysControllerLink.controllerInfo.right_arm.pitch2 = pcontroller_right_->ControllerInfo.posit_pitch2;
-        SysControllerLink.controllerInfo.right_arm.roll = pcontroller_right_->ControllerInfo.posit_roll;
-        SysControllerLink.controllerInfo.right_arm.pitch_end = pcontroller_right_->ControllerInfo.posit_pitch_end;
+        SysControllerLink.controllerInfo.right_arm.pitch1 = pcontroller_right_->ControllerInfo.posit_pitch1 - CONTROLLER_PITCH1_ZERO_OFFSET;
+        SysControllerLink.controllerInfo.right_arm.pitch2 = pcontroller_right_->ControllerInfo.posit_pitch2 - CONTROLLER_PITCH2_ZERO_OFFSET;
+        SysControllerLink.controllerInfo.right_arm.roll = -pcontroller_right_->ControllerInfo.posit_roll;
+        SysControllerLink.controllerInfo.right_arm.pitch_end = -pcontroller_right_->ControllerInfo.posit_pitch_end;
         // 接收右臂数据 (机器人 -> 控制器)
         pcontroller_right_->ControllerCmd.StartControl = SysControllerLink.robotInfo.controlled_by_controller;
         pcontroller_right_->ControllerCmd.cmd_yaw = SysControllerLink.robotInfo.right_arm.yaw;

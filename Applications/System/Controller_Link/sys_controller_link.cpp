@@ -205,6 +205,11 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 	pkg.status_flags |= (static_cast<uint8_t>(controllerInfo.toggle_switch) << STATUS_TOGGLE_SHIFT) & STATUS_TOGGLE_MASK;
 	if (controllerInfo.gripper_left_close) pkg.status_flags |= STATUS_GRIPPER_LEFT;
 	if (controllerInfo.gripper_right_close) pkg.status_flags |= STATUS_GRIPPER_RIGHT;
+	// 二次夹紧：脉冲信号，打包后自动清除
+	if (controllerInfo.gripper_right_regrip) {
+		pkg.status_flags |= STATUS_REGRIP_RIGHT;
+		controllerInfo.gripper_right_regrip = false;
+	}
 
 	// 压缩左臂角度数据 (float -> int16)
 	pkg.left_arm.yaw = CDevControllerLink::CompressAngle(controllerInfo.left_arm.yaw);
@@ -241,21 +246,21 @@ void CSystemControllerLink::UpdateButtonInfo_() {
 	if (systemStatus != APP_OK) return;
 
 	// 从模块层获取摇杆数据（模块层已转换为 -100~100 范围，直接赋值即可）
-	auto it_left = ModuleIDMap.find(EModuleID::MOD_CONTROLLER_LEFT);
-	if (it_left != ModuleIDMap.end() && it_left->second != nullptr) {
-		auto *pController = static_cast<CModController*>(it_left->second);
-		// 左臂摇杆X轴
-		controllerInfo.rocker_LX = pController->ControllerInfo.rocker_X;
-	}
+	// auto it_left = ModuleIDMap.find(EModuleID::MOD_CONTROLLER_LEFT);
+	// if (it_left != ModuleIDMap.end() && it_left->second != nullptr) {
+	// 	auto *pController = static_cast<CModController*>(it_left->second);
+	// 	// 左臂摇杆X轴
+	// 	controllerInfo.rocker_LX = pController->ControllerInfo.rocker_X;  // 摇杆故障，暂时禁用
+	// }
 
 	// 右臂 roll_end 摇杆
 	auto it_right = ModuleIDMap.find(EModuleID::MOD_CONTROLLER_RIGHT);
 	if (it_right != ModuleIDMap.end() && it_right->second != nullptr) {
 		auto *pController = static_cast<CModController*>(it_right->second);
 		// 右臂摇杆X轴
-		controllerInfo.rocker_RX = pController->ControllerInfo.rocker_X;
+		controllerInfo.rocker_RX = pController->ControllerInfo.rocker_X;  
 		// 右臂摇杆Y轴
-		controllerInfo.rocker_RY = pController->ControllerInfo.rocker_Y;
+		controllerInfo.rocker_RY = pController->ControllerInfo.rocker_Y;  
 	}
 
 	// 3档拨杆状态 (0=中档, 1=臂Roll末端模式, 2=底盘模式)
@@ -270,6 +275,12 @@ void CSystemControllerLink::UpdateButtonInfo_() {
 	// 双夹爪按钮状态
 	controllerInfo.gripper_left_close = CDevFourButton::isGripperLeftClose;
 	controllerInfo.gripper_right_close = CDevFourButton::isGripperRightClose;
+
+	// 二次夹紧（脉冲信号：读取后立即清除源标志）
+	if (CDevFourButton::isGripperRightReGrip) {
+		controllerInfo.gripper_right_regrip = true;
+		CDevFourButton::isGripperRightReGrip = false;
+	}
 }
 
 } // namespace my_engineer

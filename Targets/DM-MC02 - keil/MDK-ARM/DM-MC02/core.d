@@ -122,6 +122,7 @@ dm-mc02/core.o: ..\..\..\Applications\System\Core\Core.cpp \
   ..\..\..\Applications\Module\Include\mod_common.hpp \
   ..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp \
   ..\..\..\Applications\Module\Include\mod_controller.hpp \
+  ..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp \
   ..\..\..\Applications\System\Include\System.hpp \
   ..\..\..\Applications\System\Include\sys_common.hpp \
   ..\..\..\Applications\System\Include\sys_controller_link.hpp

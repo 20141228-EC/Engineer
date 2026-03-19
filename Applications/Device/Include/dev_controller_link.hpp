@@ -30,6 +30,7 @@ namespace my_engineer {
 #define STATUS_TOGGLE_SHIFT       2
 #define STATUS_GRIPPER_LEFT       (1 << 4)  // bit4: 左夹爪闭合
 #define STATUS_GRIPPER_RIGHT      (1 << 5)  // bit5: 右夹爪闭合
+#define STATUS_REGRIP_RIGHT       (1 << 6)  // bit6: 右夹爪二次夹紧请求（脉冲）
 
 // RobotData (机器人 -> 控制器)
 #define STATUS_ASK_RESET          (1 << 0)  // bit0: 要求复位
@@ -83,8 +84,8 @@ public:
 
 	/**
 	 * @brief 控制器数据包 (Controller -> Robot)
-	 * 数据段大小: 24 bytes (满足30字节限制)
-	 * 完整包大小: 7(header) + 24(data) + 2(CRC16) = 33 bytes
+	 * 数据段大小: 30 bytes (满足30字节限制)
+	 * 完整包大小: 7(header) + 30(data) + 2(CRC16) = 39 bytes
 	 */
 	struct SControllerDataPkg {
 		SPkgHeader header;
@@ -94,19 +95,21 @@ public:
 		int8_t rocker_LX = 0;               ///< 左臂roll_end增量 (-100~100)
 		int8_t rocker_RX = 0;               ///< 右臂roll_end增量 (-100~100)
 		int8_t rocker_RY = 0;               ///< 底盘前进 (-100~100)
+		uint8_t reserved[6] = {0};          ///< 保留字段 (6 bytes)
 		uint16_t CRC16 = 0x0000;            ///< CRC16校验
 	} __packed controllerData_info_pkg = { };
 
 	/**
 	 * @brief 机器人数据包 (Robot -> Controller)
-	 * 用于同步机器人当前位置到控制器
+	 * 数据段大小: 30 bytes (满足30字节限制)
+	 * 完整包大小: 7(header) + 30(data) + 2(CRC16) = 39 bytes
 	 */
 	struct SRobotDataPkg {
 		SPkgHeader header;
 		uint8_t status_flags = 0;           ///< 状态标志位 (bit-packed)
 		SArmAnglesCompressed left_arm;      ///< 左臂5轴角度 (10 bytes)
 		SArmAnglesCompressed right_arm;     ///< 右臂5轴角度 (10 bytes)
-		int8_t reserved[3] = {0};           ///< 保留字段
+		int8_t reserved[9] = {0};           ///< 保留字段 (9 bytes)
 		uint16_t CRC16 = 0x0000;            ///< CRC16校验
 	} __packed robotData_info_pkg = { };
 

@@ -30,12 +30,17 @@
 #define CONTROLLER_PITCH1_PHYSICAL_RANGE 328.6f
 #define CONTROLLER_PITCH1_MOTOR_RANGE 392000
 #define CONTROLLER_PITCH1_MOTOR_OFFSET 0
-/*------------------------------------------------------------------------------------------*/
-#define CONTROLLER_PITCH2_PHYSICAL_RANGE_MIN 0.0f     // TODO: 标定后修改
-#define CONTROLLER_PITCH2_PHYSICAL_RANGE_MAX 180.0f   // TODO: 标定后修改
-/*------------------------------------------------------------------------------------------*/
-#define CONTROLLER_ROLL_PHYSICAL_RANGE_MIN -90.0f     // TODO: 标定后修改
-#define CONTROLLER_ROLL_PHYSICAL_RANGE_MAX 90.0f      // TODO: 标定后修改
+/*----------------------------------零点标定偏移(deg)-------------------------------------------*/
+// 上电时关节未精确停在物理0°导致的偏差，正值表示电机0rad对应的物理角度
+// 例如：偏移8.0表示电机报告0rad时，控制器关节实际在物理8°位置
+#define CONTROLLER_PITCH1_ZERO_OFFSET  0.0f   // P1零点偏移(deg)，根据实测调节
+#define CONTROLLER_PITCH2_ZERO_OFFSET  8.0f   // P2零点偏移(deg)，根据实测调节
+/*----------------------------------Pitch2限幅范围-----------------------------------------------*/
+#define CONTROLLER_PITCH2_PHYSICAL_RANGE_MIN 0.0f
+#define CONTROLLER_PITCH2_PHYSICAL_RANGE_MAX 180.0f
+/*----------------------------------roll限幅范围------------------------------------------*/
+#define CONTROLLER_ROLL_PHYSICAL_RANGE_MIN -163.0f     ///< 对应机器人 Roll 上限 163°（映射取反）
+#define CONTROLLER_ROLL_PHYSICAL_RANGE_MAX 175.0f      ///< 对应机器人 Roll 下限 -175°（映射取反）
 /*----------------------------------Pitch_End-----------------------------------------------*/
 #define CONTROLLER_PITCH_END_PHYSICAL_RANGE_MAX 145.0f
 #define CONTROLLER_PITCH_END_PHYSICAL_RANGE_MIN -60.0f
@@ -43,13 +48,21 @@
 #define CONTROLLER_PITCH_END_MOTOR_RATIO (CONTROLLER_PITCH_END_MOTOR_RANGE / (CONTROLLER_PITCH_END_PHYSICAL_RANGE_MAX - CONTROLLER_PITCH_END_PHYSICAL_RANGE_MIN))
 #define CONTROLLER_PITCH_END_MOTOR_OFFSET 3345
 /*----------------------------------重力补偿安装偏移(deg)------------------------------------*/
-#define CONTROLLER_GRAV_COMP_PITCH1_OFFSET    5.0f
-#define CONTROLLER_GRAV_COMP_PITCH2_OFFSET    4.1f
-#define CONTROLLER_GRAV_COMP_ROLL_OFFSET      0.0f
-#define CONTROLLER_GRAV_COMP_PITCHEND_OFFSET  90.0f
+// DH角度 = (物理角度 - OFFSET) * DEG2RAD
+// K3_end符号修正后：零力矩跳变点在P2≈50°，需移至90°，P2偏移+40°
+#define CONTROLLER_GRAV_COMP_PITCH1_OFFSET    188.0f    // P1: 最小值在90°
+#define CONTROLLER_GRAV_COMP_PITCH2_OFFSET    170.0f    // P2: 最小值在90°
+#define CONTROLLER_GRAV_COMP_ROLL_OFFSET      10.0f     // Roll: DH零点偏移（无关点-80°和+100°的中点）
+#define CONTROLLER_GRAV_COMP_PITCHEND_OFFSET  20.0f     // PitchEnd: 42+20，补偿PITCH2_OFFSET变化的影响
 /*----------------------------------重力补偿力矩限幅(N·m)------------------------------------*/
-#define CONTROLLER_GRAV_COMP_TAU_LIMIT_DM4310  10.0f   // Pitch1/2 (DM4310)
-#define CONTROLLER_GRAV_COMP_TAU_LIMIT_DM3510  3.0f    // Roll/PitchEnd (DM3510)
+#define CONTROLLER_GRAV_COMP_TAU_LIMIT_DM4310  2.5f    // Pitch1/2 (DM4310) 额定3N·m，留余量
+#define CONTROLLER_GRAV_COMP_TAU_LIMIT_DM3510  0.5f    // Roll/PitchEnd (DM3510) 峰值力矩测试
+/*----------------------------------电机减速比------------------------------------------------*/
+#define CONTROLLER_GEAR_RATIO_DM4310  10.0f   // Pitch1/2 (DM4310) 减速比 10:1
+/*----------------------------------各轴效率/补偿缩放(欠补偿时增大，过补偿时减小)---------------*/
+#define CONTROLLER_PITCH1_EFFICIENCY_COMP   1.5f    // Pitch1 (DM4310) 减速器效率补偿
+#define CONTROLLER_PITCH2_EFFICIENCY_COMP   1.5f    // Pitch2 (DM4310) 减速器效率补偿
+#define CONTROLLER_PITCHEND_EFFICIENCY_COMP 1.0f     // PitchEnd (DM3510) K5_1已校准，无需额外缩放
 /*------------------------------------------------------------------------------------------*/
 #define CONTROLLER_PITCH1_MOTOR_RATIO (CONTROLLER_PITCH1_MOTOR_RANGE / CONTROLLER_PITCH1_PHYSICAL_RANGE)
 #define CONTROLLER_YAW_MOTOR_RATIO (CONTROLLER_YAW_MOTOR_RANGE / (CONTROLLER_YAW_PHYSICAL_RANGE_MAX - CONTROLLER_YAW_PHYSICAL_RANGE_MIN))
@@ -59,20 +72,13 @@
 // 当物理位置从0增大时，电机位置的变化方向
 #define CONTROLLER_YAW_MOTOR_DIR 1
 #define CONTROLLER_PITCH1_MOTOR_DIR -1
-#define CONTROLLER_PITCH2_MOTOR_DIR 1
+#define CONTROLLER_PITCH2_MOTOR_DIR -1
 #define CONTROLLER_ROLL_MOTOR_DIR -1
-#define CONTROLLER_PITCH_END_MOTOR_DIR -1
+#define CONTROLLER_PITCH_END_MOTOR_DIR -1     // PitchEnd: MotortruePositToOffsetPosit含取反，与P2同理
 
 // 摇杆校准参数
 #define CONTROLLER_ROCKER_DEAD_ZONE 2000   // 摇杆死区
 
-// X轴摇杆校准参数 (实测: 8600 ~ 61200)
-#define CONTROLLER_ROCKER_X_CENTER 34900       // X轴中心值
-#define CONTROLLER_ROCKER_X_HALF_RANGE 26300   // X轴半范围
-
-// Y轴摇杆校准参数 (实测: 7500 ~ 58600)
-#define CONTROLLER_ROCKER_Y_CENTER 33050       // Y轴中心值
-#define CONTROLLER_ROCKER_Y_HALF_RANGE 25550   // Y轴半范围
 #define CONTROLLER_ROCKER_KEY_LONG_PRESS_DURATION 2000
 #define CONTROLLER_ROLL_SPEED_MAX 200.0f // 大Roll轴电机最大有效速度
 
@@ -82,9 +88,16 @@
 
 namespace my_engineer {
 
+// 前向声明
+class CModController;
+
+// 左右臂控制器实例（定义在conf_module.cpp，调试器可直接查看）
+extern CModController controllerModuleLeft;
+extern CModController controllerModuleRight;
+
 /**
  * @brief 控制器模块类
- * 
+ *
  */
 class CModController final: public CModBase{
 public:
@@ -94,6 +107,16 @@ public:
 		EDeviceID rocker_id 		= EDeviceID::DEV_NULL; ///< 摇杆设备ID
 		EDeviceID button_id 		= EDeviceID::DEV_NULL; ///< 按键设备ID
 		EDeviceID buzzer_id 		= EDeviceID::DEV_NULL; ///< 蜂鸣器设备ID
+		/*--------------------------摇杆X轴校准参数--------------------------------------*/
+		int32_t rocker_x_center    = 34900;  ///< X轴中心值 (ADC原始值)
+		int32_t rocker_x_range_pos = 26300;  ///< X轴正向范围 (raw > center 方向)
+		int32_t rocker_x_range_neg = 26300;  ///< X轴负向范围 (raw < center 方向)
+		int8_t  rocker_x_dir       = -1;     ///< X轴方向系数 (-1 或 +1)
+		/*--------------------------摇杆Y轴校准参数--------------------------------------*/
+		int32_t rocker_y_center    = 46880;  ///< Y轴中心值 (ADC原始值)
+		int32_t rocker_y_range_pos = 26080;  ///< Y轴正向范围 (raw > center 方向)
+		int32_t rocker_y_range_neg = 24960;  ///< Y轴负向范围 (raw < center 方向)
+		int8_t  rocker_y_dir       = 1;      ///< Y轴方向系数 (-1 或 +1)
 		EDeviceID yaw_id 				= EDeviceID::DEV_NULL; ///< yaw电机设备ID
 		EDeviceID pitch1_id 		= EDeviceID::DEV_NULL; ///< 大pitch电机设备ID
 		EDeviceID pitch2_id 		= EDeviceID::DEV_NULL; ///<小pitch电机设备ID
@@ -176,7 +199,7 @@ private:
 	class CComYaw: public CComponentBase{
 	public:
 
-		const int32_t rangeLimit = CONTROLLER_YAW_MOTOR_RANGE; ///< 电机位置范围限制
+		const int32_t rangeLimit = static_cast<int32_t>(CONTROLLER_YAW_MOTOR_RANGE); ///< 电机位置范围限制
 
 		// 定义Yaw轴信息结构体并实例化
 		struct SYawInfo {
@@ -224,7 +247,7 @@ private:
 	class CComPitch1: public CComponentBase{
 	public:
 
-		const int32_t rangeLimit = CONTROLLER_PITCH1_MOTOR_RANGE; ///< 电机位置范围限制
+		const int32_t rangeLimit = static_cast<int32_t>(CONTROLLER_PITCH1_MOTOR_RANGE); ///< 电机位置范围限制
 
 		// 定义Pitch1轴信息结构体并实例化
 		struct SPitch1Info {
@@ -376,6 +399,18 @@ private:
 		CDevRocker *rocker = nullptr; ///< 摇杆设备指针
 
 		using KEY_STATUS = CModController::KEY_STATUS;
+
+		// X轴校准参数（每个摇杆实例独立）
+		int32_t x_center    = 34900;  ///< X轴中心值
+		int32_t x_range_pos = 26300;  ///< X轴正向归一化范围
+		int32_t x_range_neg = 26300;  ///< X轴负向归一化范围
+		int8_t  x_dir       = -1;     ///< X轴方向系数
+
+		// Y轴校准参数（每个摇杆实例独立）
+		int32_t y_center    = 46880;  ///< Y轴中心值
+		int32_t y_range_pos = 26080;  ///< Y轴正向归一化范围
+		int32_t y_range_neg = 24960;  ///< Y轴负向归一化范围
+		int8_t  y_dir       = 1;      ///< Y轴方向系数
 
 		// 定义摇杆信息结构体并实例化
 		struct SRockerInfo {

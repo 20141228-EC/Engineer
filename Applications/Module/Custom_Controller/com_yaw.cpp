@@ -91,7 +91,7 @@ EAppStatus CModController::CComYaw::UpdateComponent() {
 		}
 
 		case FSM_CTRL: {
-			yawCmd.setPosit = std::clamp(yawCmd.setPosit, static_cast<int32_t>(0), rangeLimit);
+			yawCmd.setPosit = std::clamp(yawCmd.setPosit, -(rangeLimit / 2), rangeLimit / 2);
 			if (yawCmd.isFree) {
 				mtrOutputBuffer.fill(0);
 				return APP_OK;

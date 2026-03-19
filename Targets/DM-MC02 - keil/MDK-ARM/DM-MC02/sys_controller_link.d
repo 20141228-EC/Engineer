@@ -122,4 +122,5 @@ dm-mc02/sys_controller_link.o: \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h \
-  ..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp
+  ..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp \
+  ..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp

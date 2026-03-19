@@ -106,18 +106,18 @@ EAppStatus InitAllDevice(){
     controllerLink.InitDevice(&controllerLink_initparam);
 
     /*----------- 左臂电机 -----------*/
-    // 左臂Yaw (M6020, CAN1 ID5)
+    // 左臂Yaw (M6020, CAN1 ID6)
     static CDevMtrM6020 mtr_Yaw_L;
     CDevMtrM6020::SMtrInitParam_M6020 mtr_Yaw_L_initparam;
     mtr_Yaw_L_initparam.deviceID = EDeviceID::DEV_MTR_YAW_L;
     mtr_Yaw_L_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    mtr_Yaw_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
+    mtr_Yaw_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
     mtr_Yaw_L_initparam.useAngleToPosit = true;
     mtr_Yaw_L_initparam.useStallMonit = true;
     mtr_Yaw_L_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
     mtr_Yaw_L.InitDevice(&mtr_Yaw_L_initparam);
 
-    // 左臂Pitch1 (DM4310, CAN2 0x30)
+    // 左臂Pitch1 (DM4310, CAN2, CAN_ID=0x31, Master_ID=0x30)
     static CDevMtrDM mtr_Pitch1_L;
     CDevMtrDM::SMtrInitParam_DM mtr_Pitch1_L_initparam;
     mtr_Pitch1_L_initparam.deviceID = EDeviceID::DEV_MTR_PITCH1_L;
@@ -127,11 +127,11 @@ EAppStatus InitAllDevice(){
     mtr_Pitch1_L_initparam.useAngleToPosit = false;
     mtr_Pitch1_L_initparam.Kp = 10.0f;
     mtr_Pitch1_L_initparam.Kd = 2.0f;
-    mtr_Pitch1_L_initparam.MIT_RxCANID = 0x31;
-    mtr_Pitch1_L_initparam.MIT_TxCANID = 0x30;
+    mtr_Pitch1_L_initparam.MIT_TxCANID = 0x31;  // 发送到电机的CAN_ID
+    mtr_Pitch1_L_initparam.MIT_RxCANID = 0x30;  // 接收电机反馈的Master_ID
     mtr_Pitch1_L.InitDevice(&mtr_Pitch1_L_initparam);
 
-    // 左臂Pitch2 (DM4310, CAN2 0x32)
+    // 左臂Pitch2 (DM4310, CAN2, CAN_ID=0x33, Master_ID=0x32)
     static CDevMtrDM mtr_Pitch2_L;
     CDevMtrDM::SMtrInitParam_DM mtr_Pitch2_L_initparam;
     mtr_Pitch2_L_initparam.deviceID = EDeviceID::DEV_MTR_PITCH2_L;
@@ -141,11 +141,11 @@ EAppStatus InitAllDevice(){
     mtr_Pitch2_L_initparam.useAngleToPosit = false;
     mtr_Pitch2_L_initparam.Kp = 10.0f;
     mtr_Pitch2_L_initparam.Kd = 2.0f;
-    mtr_Pitch2_L_initparam.MIT_RxCANID = 0x33;
-    mtr_Pitch2_L_initparam.MIT_TxCANID = 0x32;
+    mtr_Pitch2_L_initparam.MIT_TxCANID = 0x33;  // 发送到电机的CAN_ID
+    mtr_Pitch2_L_initparam.MIT_RxCANID = 0x32;  // 接收电机反馈的Master_ID
     mtr_Pitch2_L.InitDevice(&mtr_Pitch2_L_initparam);
 
-    // 左臂Roll (DM3510, CAN2 0x34)
+    // 左臂Roll (DM3510, CAN2, CAN_ID=0x35, Master_ID=0x34)
     static CDevMtrDM mtr_Roll_L;
     CDevMtrDM::SMtrInitParam_DM mtr_Roll_L_initparam;
     mtr_Roll_L_initparam.deviceID = EDeviceID::DEV_MTR_ROLL_L;
@@ -153,13 +153,15 @@ EAppStatus InitAllDevice(){
     mtr_Roll_L_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
     mtr_Roll_L_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
     mtr_Roll_L_initparam.useAngleToPosit = false;
-    mtr_Roll_L_initparam.Kp = 10.0f;
-    mtr_Roll_L_initparam.Kd = 2.0f;
-    mtr_Roll_L_initparam.MIT_RxCANID = 0x35;
-    mtr_Roll_L_initparam.MIT_TxCANID = 0x34;
+    mtr_Roll_L_initparam.Kp = 0.123f;
+    mtr_Roll_L_initparam.Kd = 0.0074f;
+    mtr_Roll_L_initparam.MIT_TxCANID = 0x35;  // 发送到电机的CAN_ID
+    mtr_Roll_L_initparam.MIT_RxCANID = 0x34;  // 接收电机反馈的Master_ID
+    mtr_Roll_L_initparam.TAU_MAX = 1.0f;      // DM3510 力矩范围 ±1 N·m
+    mtr_Roll_L_initparam.DQ_MAX = 280.0f;     // DM3510 速度范围 ±280 rad/s
     mtr_Roll_L.InitDevice(&mtr_Roll_L_initparam);
 
-    // 左臂PitchEnd (DM3510, CAN2 0x36)
+    // 左臂PitchEnd (DM3510, CAN2, CAN_ID=0x37, Master_ID=0x36)
     static CDevMtrDM mtr_PitchEnd_L;
     CDevMtrDM::SMtrInitParam_DM mtr_PitchEnd_L_initparam;
     mtr_PitchEnd_L_initparam.deviceID = EDeviceID::DEV_MTR_PITCH_END_L;
@@ -167,25 +169,27 @@ EAppStatus InitAllDevice(){
     mtr_PitchEnd_L_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
     mtr_PitchEnd_L_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
     mtr_PitchEnd_L_initparam.useAngleToPosit = false;
-    mtr_PitchEnd_L_initparam.Kp = 10.0f;
-    mtr_PitchEnd_L_initparam.Kd = 2.0f;
-    mtr_PitchEnd_L_initparam.MIT_RxCANID = 0x37;
-    mtr_PitchEnd_L_initparam.MIT_TxCANID = 0x36;
+    mtr_PitchEnd_L_initparam.Kp = 0.123f;
+    mtr_PitchEnd_L_initparam.Kd = 0.0074f;
+    mtr_PitchEnd_L_initparam.MIT_TxCANID = 0x37;  // 发送到电机的CAN_ID
+    mtr_PitchEnd_L_initparam.MIT_RxCANID = 0x36;  // 接收电机反馈的Master_ID
+    mtr_PitchEnd_L_initparam.TAU_MAX = 1.0f;      // DM3510 力矩范围 ±1 N·m
+    mtr_PitchEnd_L_initparam.DQ_MAX = 280.0f;     // DM3510 速度范围 ±280 rad/s
     mtr_PitchEnd_L.InitDevice(&mtr_PitchEnd_L_initparam);
 
     /*----------- 右臂电机 -----------*/
-    // 右臂Yaw (M6020, CAN1 ID6)
+    // 右臂Yaw (M6020, CAN1 ID5)
     static CDevMtrM6020 mtr_Yaw_R;
     CDevMtrM6020::SMtrInitParam_M6020 mtr_Yaw_R_initparam;
     mtr_Yaw_R_initparam.deviceID = EDeviceID::DEV_MTR_YAW_R;
     mtr_Yaw_R_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    mtr_Yaw_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
+    mtr_Yaw_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
     mtr_Yaw_R_initparam.useAngleToPosit = true;
     mtr_Yaw_R_initparam.useStallMonit = true;
     mtr_Yaw_R_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
     mtr_Yaw_R.InitDevice(&mtr_Yaw_R_initparam);
 
-    // 右臂Pitch1 (DM4310, CAN3 0x30)
+    // 右臂Pitch1 (DM4310, CAN3, CAN_ID=0x31, Master_ID=0x30)
     static CDevMtrDM mtr_Pitch1_R;
     CDevMtrDM::SMtrInitParam_DM mtr_Pitch1_R_initparam;
     mtr_Pitch1_R_initparam.deviceID = EDeviceID::DEV_MTR_PITCH1_R;
@@ -195,11 +199,11 @@ EAppStatus InitAllDevice(){
     mtr_Pitch1_R_initparam.useAngleToPosit = false;
     mtr_Pitch1_R_initparam.Kp = 10.0f;
     mtr_Pitch1_R_initparam.Kd = 2.0f;
-    mtr_Pitch1_R_initparam.MIT_RxCANID = 0x31;
-    mtr_Pitch1_R_initparam.MIT_TxCANID = 0x30;
+    mtr_Pitch1_R_initparam.MIT_TxCANID = 0x31;  // 发送到电机的CAN_ID
+    mtr_Pitch1_R_initparam.MIT_RxCANID = 0x30;  // 接收电机反馈的Master_ID
     mtr_Pitch1_R.InitDevice(&mtr_Pitch1_R_initparam);
 
-    // 右臂Pitch2 (DM4310, CAN3 0x32)
+    // 右臂Pitch2 (DM4310, CAN3, CAN_ID=0x33, Master_ID=0x32)
     static CDevMtrDM mtr_Pitch2_R;
     CDevMtrDM::SMtrInitParam_DM mtr_Pitch2_R_initparam;
     mtr_Pitch2_R_initparam.deviceID = EDeviceID::DEV_MTR_PITCH2_R;
@@ -209,11 +213,11 @@ EAppStatus InitAllDevice(){
     mtr_Pitch2_R_initparam.useAngleToPosit = false;
     mtr_Pitch2_R_initparam.Kp = 10.0f;
     mtr_Pitch2_R_initparam.Kd = 2.0f;
-    mtr_Pitch2_R_initparam.MIT_RxCANID = 0x33;
-    mtr_Pitch2_R_initparam.MIT_TxCANID = 0x32;
+    mtr_Pitch2_R_initparam.MIT_TxCANID = 0x33;  // 发送到电机的CAN_ID
+    mtr_Pitch2_R_initparam.MIT_RxCANID = 0x32;  // 接收电机反馈的Master_ID
     mtr_Pitch2_R.InitDevice(&mtr_Pitch2_R_initparam);
 
-    // 右臂Roll (DM3510, CAN3 0x34)
+    // 右臂Roll (DM3510, CAN3, CAN_ID=0x35, Master_ID=0x34)
     static CDevMtrDM mtr_Roll_R;
     CDevMtrDM::SMtrInitParam_DM mtr_Roll_R_initparam;
     mtr_Roll_R_initparam.deviceID = EDeviceID::DEV_MTR_ROLL_R;
@@ -221,13 +225,15 @@ EAppStatus InitAllDevice(){
     mtr_Roll_R_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
     mtr_Roll_R_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
     mtr_Roll_R_initparam.useAngleToPosit = false;
-    mtr_Roll_R_initparam.Kp = 10.0f;
-    mtr_Roll_R_initparam.Kd = 2.0f;
-    mtr_Roll_R_initparam.MIT_RxCANID = 0x35;
-    mtr_Roll_R_initparam.MIT_TxCANID = 0x34;
+    mtr_Roll_R_initparam.Kp = 0.123f;
+    mtr_Roll_R_initparam.Kd = 0.015f;
+    mtr_Roll_R_initparam.MIT_TxCANID = 0x35;  // 发送到电机的CAN_ID
+    mtr_Roll_R_initparam.MIT_RxCANID = 0x34;  // 接收电机反馈的Master_ID
+    mtr_Roll_R_initparam.TAU_MAX = 1.0f;      // DM3510 力矩范围 ±1 N·m
+    mtr_Roll_R_initparam.DQ_MAX = 280.0f;     // DM3510 速度范围 ±280 rad/s
     mtr_Roll_R.InitDevice(&mtr_Roll_R_initparam);
 
-    // 右臂PitchEnd (DM3510, CAN3 0x36)
+    // 右臂PitchEnd (DM3510, CAN3, CAN_ID=0x37, Master_ID=0x36)
     static CDevMtrDM mtr_PitchEnd_R;
     CDevMtrDM::SMtrInitParam_DM mtr_PitchEnd_R_initparam;
     mtr_PitchEnd_R_initparam.deviceID = EDeviceID::DEV_MTR_PITCH_END_R;
@@ -235,10 +241,12 @@ EAppStatus InitAllDevice(){
     mtr_PitchEnd_R_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
     mtr_PitchEnd_R_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
     mtr_PitchEnd_R_initparam.useAngleToPosit = false;
-    mtr_PitchEnd_R_initparam.Kp = 10.0f;
-    mtr_PitchEnd_R_initparam.Kd = 2.0f;
-    mtr_PitchEnd_R_initparam.MIT_RxCANID = 0x37;
-    mtr_PitchEnd_R_initparam.MIT_TxCANID = 0x36;
+    mtr_PitchEnd_R_initparam.Kp = 0.123f;//0.123
+    mtr_PitchEnd_R_initparam.Kd = 0.015f;
+    mtr_PitchEnd_R_initparam.MIT_TxCANID = 0x37;  // 发送到电机的CAN_ID
+    mtr_PitchEnd_R_initparam.MIT_RxCANID = 0x36;  // 接收电机反馈的Master_ID
+    mtr_PitchEnd_R_initparam.TAU_MAX = 1.0f;      // DM3510 力矩范围 ±1 N·m
+    mtr_PitchEnd_R_initparam.DQ_MAX = 280.0f;     // DM3510 速度范围 ±280 rad/s
     mtr_PitchEnd_R.InitDevice(&mtr_PitchEnd_R_initparam);
 
     return APP_OK;

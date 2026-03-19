@@ -24,7 +24,7 @@ void CModController::StartControllerModuleTask(void *argument) {
 	if (argument == nullptr) proc_return();
 
 	// 类型转换
-	auto controller = *static_cast<CModController *>(argument);
+	auto &controller = *static_cast<CModController *>(argument);
 
 	// 任务循环
 	while (true) {
@@ -55,8 +55,8 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comPitch2_.StartComponent();
 				proc_waitUntil(controller.comPitch1_.componentStatus == APP_OK
 					&& controller.comPitch2_.componentStatus == APP_OK);
-				controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] = 30.0f;
-				controller.comPitch2_.pitch2Cmd.setParam[EMotorParam::POSIT] = 35.0f;
+				controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] = 4.0f;
+				controller.comPitch2_.pitch2Cmd.setParam[EMotorParam::POSIT] = 11.0f;
 				proc_waitUntil(controller.comPitch1_.pitch1Info.isPositArrived
 					&& controller.comPitch2_.pitch2Info.isPositArrived);
 
@@ -74,7 +74,7 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comRoll_.rollCmd.isFree = true; ///< 允许自由控制
 				controller.comPitchEnd_.pitchEndCmd.isFree = true; ///< 允许自由控制
 
-				controller.comBuzzer_.buzzerCmd.musicType = CDevBuzzer::MusicType::STARTUP;
+				// controller.comBuzzer_.buzzerCmd.musicType = CDevBuzzer::MusicType::STARTUP;  // 暂时关闭启动音乐
 
 				controller.ControllerCmd = SControllerCmd();
 				controller.ControllerCmd.isFree = true;
@@ -108,7 +108,7 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comRoll_.rollCmd.isFree = controller.ControllerCmd.isFree;
 				controller.comPitchEnd_.pitchEndCmd.isFree = controller.ControllerCmd.isFree;
 
-				
+				// 联动控制模式：机械臂的数据会回传回自定义控制器做同步的角度映射
 				if(!controller.ControllerCmd.isFree) {  
 					controller.comYaw_.yawCmd.setPosit = CModController::CComYaw::PhyPositToMtrPosit(controller.ControllerCmd.cmd_yaw);
 					controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch1;

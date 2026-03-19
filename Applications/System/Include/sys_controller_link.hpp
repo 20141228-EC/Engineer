@@ -69,6 +69,7 @@ public:
 		EToggleSwitch toggle_switch = TOGGLE_MIDDLE;  ///< 拨杆档位
 		bool gripper_left_close = false;     ///< 左夹爪闭合
 		bool gripper_right_close = false;    ///< 右夹爪闭合
+		bool gripper_right_regrip = false;   ///< 右夹爪二次夹紧请求（脉冲信号）
 		SArmAngles left_arm;                 ///< 左臂5轴角度
 		SArmAngles right_arm;                ///< 右臂5轴角度
 		int8_t rocker_LX = 0;                ///< 左臂roll_end(-100~100)

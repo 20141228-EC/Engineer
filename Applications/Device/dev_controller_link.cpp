@@ -66,7 +66,7 @@ EAppStatus CDevControllerLink::SendPackage(EPackageID packageID, SPkgHeader &pac
 			auto pkg = reinterpret_cast<SControllerDataPkg *>(&packageHeader);
 			pkg->header.SOF = 0xA5;
 			pkg->header.seq++;
-			pkg->header.pkgLen = sizeof(SControllerDataPkg) - sizeof(SPkgHeader) - 2; // 24 bytes
+			pkg->header.pkgLen = sizeof(SControllerDataPkg) - sizeof(SPkgHeader) - 2; // 30 bytes
 			pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&(pkg->header)), 4);
 			pkg->header.cmd_Id = 0x0302;///<自定义控制器与机器人交互数据
 			pkg->CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(pkg), sizeof(SControllerDataPkg) - 2);
@@ -78,7 +78,7 @@ EAppStatus CDevControllerLink::SendPackage(EPackageID packageID, SPkgHeader &pac
 			auto pkg = reinterpret_cast<SRobotDataPkg *>(&packageHeader);
 			pkg->header.SOF = 0xA5;
 			pkg->header.seq++;
-			pkg->header.pkgLen = sizeof(SRobotDataPkg) - sizeof(SPkgHeader)- 2; // 24 bytes
+			pkg->header.pkgLen = sizeof(SRobotDataPkg) - sizeof(SPkgHeader) - 2; // 30 bytes
 			pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&(pkg->header)), 4);
 			pkg->header.cmd_Id = 0x0309;
 			pkg->CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(pkg), sizeof(SRobotDataPkg) - 2);
