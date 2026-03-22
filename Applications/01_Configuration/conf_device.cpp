@@ -125,30 +125,62 @@ EAppStatus InitAllDevice(){
     static CDevMtrM3508 chassisMotor_LF;
     CDevMtrM3508::SMtrInitParam_M3508 chassisMotor_LF_initparam;
     chassisMotor_LF_initparam.deviceID = EDeviceID::DEV_CHAS_MTR_LF;
-    chassisMotor_LF_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    chassisMotor_LF_initparam.interfaceID = EInterfaceID::INF_CAN2;
     chassisMotor_LF_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_1;
     chassisMotor_LF.InitDevice(&chassisMotor_LF_initparam);
 
     static CDevMtrM3508 chassisMotor_RF;
     CDevMtrM3508::SMtrInitParam_M3508 chassisMotor_RF_initparam;
     chassisMotor_RF_initparam.deviceID = EDeviceID::DEV_CHAS_MTR_RF;
-    chassisMotor_RF_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    chassisMotor_RF_initparam.interfaceID = EInterfaceID::INF_CAN2;
     chassisMotor_RF_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_2;
     chassisMotor_RF.InitDevice(&chassisMotor_RF_initparam);
 
     static CDevMtrM3508 chassisMotor_LB;
     CDevMtrM3508::SMtrInitParam_M3508 chassisMotor_LB_initparam;
     chassisMotor_LB_initparam.deviceID = EDeviceID::DEV_CHAS_MTR_LB;
-    chassisMotor_LB_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    chassisMotor_LB_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_4;
+    chassisMotor_LB_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    chassisMotor_LB_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_3;
     chassisMotor_LB.InitDevice(&chassisMotor_LB_initparam);
 
     static CDevMtrM3508 chassisMotor_RB;
     CDevMtrM3508::SMtrInitParam_M3508 chassisMotor_RB_initparam;
     chassisMotor_RB_initparam.deviceID = EDeviceID::DEV_CHAS_MTR_RB;
-    chassisMotor_RB_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    chassisMotor_RB_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_3;
+    chassisMotor_RB_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    chassisMotor_RB_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_4;
     chassisMotor_RB.InitDevice(&chassisMotor_RB_initparam);
+
+    static CDevMtrRM6020 chassisSteerMotor_LF;
+    CDevMtrRM6020::SMtrInitParam_RM6020 chassisSteerMotor_LF_initparam;
+    chassisSteerMotor_LF_initparam.deviceID = EDeviceID::DEV_CHAS_STEER_LF;
+    chassisSteerMotor_LF_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    chassisSteerMotor_LF_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
+    chassisSteerMotor_LF_initparam.useAngleToPosit = true;
+    chassisSteerMotor_LF.InitDevice(&chassisSteerMotor_LF_initparam);
+
+    static CDevMtrRM6020 chassisSteerMotor_RF;
+    CDevMtrRM6020::SMtrInitParam_RM6020 chassisSteerMotor_RF_initparam;
+    chassisSteerMotor_RF_initparam.deviceID = EDeviceID::DEV_CHAS_STEER_RF;
+    chassisSteerMotor_RF_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    chassisSteerMotor_RF_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
+    chassisSteerMotor_RF_initparam.useAngleToPosit = true;
+    chassisSteerMotor_RF.InitDevice(&chassisSteerMotor_RF_initparam);
+
+    static CDevMtrRM6020 chassisSteerMotor_LB;
+    CDevMtrRM6020::SMtrInitParam_RM6020 chassisSteerMotor_LB_initparam;
+    chassisSteerMotor_LB_initparam.deviceID = EDeviceID::DEV_CHAS_STEER_LB;
+    chassisSteerMotor_LB_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    chassisSteerMotor_LB_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_7;
+    chassisSteerMotor_LB_initparam.useAngleToPosit = true;
+    chassisSteerMotor_LB.InitDevice(&chassisSteerMotor_LB_initparam);
+
+    static CDevMtrRM6020 chassisSteerMotor_RB;
+    CDevMtrRM6020::SMtrInitParam_RM6020 chassisSteerMotor_RB_initparam;
+    chassisSteerMotor_RB_initparam.deviceID = EDeviceID::DEV_CHAS_STEER_RB;
+    chassisSteerMotor_RB_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    chassisSteerMotor_RB_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_8;
+    chassisSteerMotor_RB_initparam.useAngleToPosit = true;
+    chassisSteerMotor_RB.InitDevice(&chassisSteerMotor_RB_initparam);
 
     static CDevMtrDM_MIT chassisMotor_L_HIP;
     CDevMtrDM_MIT::SMtrInitParam_DM_MIT chassisMotor_L_HIP_initparam;

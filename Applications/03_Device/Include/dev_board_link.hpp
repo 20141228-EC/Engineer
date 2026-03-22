@@ -40,6 +40,7 @@ public:
         PKT_CTRL_FLAGS = 0,  ///< 控制标志
         PKT_CTRLER_L_B = 1,     ///< 控制器左臂后三轴
         PKT_CTRLER_L_F = 2,     ///< 控制器左臂前三轴
+        PKT_GIMBAL_INFO = 3,    ///< 云台姿态信息（副板->主板）
         PKT_COUNT,           ///< 发送包类型数量
         PKT_FEEDBACK   = 0xFE,  ///< 反馈包（副板发送给主板）
     };
@@ -127,6 +128,14 @@ public:
         uint8_t  link_status;       ///< 通信状态（0=RESET 1=OFFLINE 2=ONLINE）
         uint8_t  reserved[5];       ///< 预留
     } __packed fdbInfo_pkt = {};
+
+    struct SGimbalInfoPack {
+        uint8_t pack_id;            ///< 包ID = 3
+        int16_t yaw;                ///< 云台yaw角度(×100)
+        int16_t yaw_rate;           ///< 云台yaw角速度(×100)
+        uint8_t data_valid;         ///< 数据有效标志（1有效）
+        uint8_t reserved[2];
+    } __packed gimbalInfo_pkt = {};
 
 	enum class EBoardLinkStatus {
 		RESET,

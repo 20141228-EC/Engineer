@@ -168,6 +168,14 @@ EAppStatus CDevBoardLink::ResolveRxPackage_(){
 			// fdbInfo_pkt.pack3_status = feedbackInfo.pack3_status;
 			break;
 		}
+		case PKT_GIMBAL_INFO: {
+			SGimbalInfoPack gimbalInfo = *reinterpret_cast<SGimbalInfoPack*>(canRxNode_.dataBuffer.data());
+			gimbalInfo_pkt.pack_id = gimbalInfo.pack_id;
+			gimbalInfo_pkt.yaw = gimbalInfo.yaw;
+			gimbalInfo_pkt.yaw_rate = gimbalInfo.yaw_rate;
+			gimbalInfo_pkt.data_valid = gimbalInfo.data_valid;
+			break;
+		}
 		default:
 			break;
 		}

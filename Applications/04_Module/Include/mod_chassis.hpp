@@ -48,6 +48,8 @@ namespace my_engineer {
  */
 class CModChassis final: public CModBase{
 public:
+    static constexpr uint16_t kDefaultChassisMaxPower = 115;
+
     // 定义底盘模块初始化参数结构体
     struct SModInitParam_Chassis: public SModInitParam_Base{
         EDeviceID memsDevID = EDeviceID::DEV_NULL;
@@ -56,6 +58,10 @@ public:
         EDeviceID wheelsetMotorID_RF = EDeviceID::DEV_NULL;
         EDeviceID wheelsetMotorID_LB = EDeviceID::DEV_NULL;
         EDeviceID wheelsetMotorID_RB = EDeviceID::DEV_NULL;
+        EDeviceID steerMotorID_LF = EDeviceID::DEV_NULL;
+        EDeviceID steerMotorID_RF = EDeviceID::DEV_NULL;
+        EDeviceID steerMotorID_LB = EDeviceID::DEV_NULL;
+        EDeviceID steerMotorID_RB = EDeviceID::DEV_NULL;
         EDeviceID hipMotorID_L_L = EDeviceID::DEV_NULL;
         EDeviceID hipMotorID_L_R = EDeviceID::DEV_NULL; ///< 后腿电机
         EDeviceID crawlerMotorID_L = EDeviceID::DEV_NULL;
@@ -64,6 +70,10 @@ public:
         CInfCAN::CCanTxNode *wheelsetMotorTxNode_RF;
         CInfCAN::CCanTxNode *wheelsetMotorTxNode_LB;
         CInfCAN::CCanTxNode *wheelsetMotorTxNode_RB;
+        CInfCAN::CCanTxNode *steerMotorTxNode_LF = nullptr;
+        CInfCAN::CCanTxNode *steerMotorTxNode_RF = nullptr;
+        CInfCAN::CCanTxNode *steerMotorTxNode_LB = nullptr;
+        CInfCAN::CCanTxNode *steerMotorTxNode_RB = nullptr;
         CInfCAN::CCanTxNode *hipMotorTxNodeID_L_L;
         CInfCAN::CCanTxNode *hipMotorTxNodeID_L_R;
         CInfCAN::CCanTxNode *crawlerMotorTxNodeID_L;
@@ -77,6 +87,8 @@ public:
         std::array<CAlgoPid::SAlgoInitParam_Pid, 4> wheelsetSpdPidParam;
         CAlgoPid::SAlgoInitParam_Pid lineCorrectionPidParam;
         CAlgoPid::SAlgoInitParam_Pid yawCorrectionPidParam;
+        std::array<CAlgoPid::SAlgoInitParam_Pid, 4> steerPosPidParam;
+        std::array<CAlgoPid::SAlgoInitParam_Pid, 4> steerSpdPidParam;
         CAlgoPid::SAlgoInitParam_Pid rollCorrectionPidParam; ///< roll轴控制pid
         CAlgoPid::SAlgoInitParam_Pid HipPosPidParam_L;
         CAlgoPid::SAlgoInitParam_Pid HipPosPidParam_R;
@@ -87,7 +99,14 @@ public:
         CAlgoPowerControl::SAlgoInitParamPower powerParamRF;  // 右前电机功率参数
         CAlgoPowerControl::SAlgoInitParamPower powerParamLB;  // 左后电机功率参数
         CAlgoPowerControl::SAlgoInitParamPower powerParamRB;  // 右后电机功率参数
-        uint16_t chassisMaxPower = 120;                       // 底盘总功率限制
+        CAlgoPowerControl::SAlgoInitParamPower steerPowerParamLF; // 左前舵向电机功率参数
+        CAlgoPowerControl::SAlgoInitParamPower steerPowerParamRF; // 右前舵向电机功率参数
+        CAlgoPowerControl::SAlgoInitParamPower steerPowerParamLB; // 左后舵向电机功率参数
+        CAlgoPowerControl::SAlgoInitParamPower steerPowerParamRB; // 右后舵向电机功率参数
+        EInterfaceID powerMeterCanID = EInterfaceID::INF_NULL;     // 功率计CAN接口ID
+        uint32_t powerMeterStdID = 0;                              // 功率计标准帧ID
+        CInfCAN::ECanFrameDlc powerMeterFrameDlc = CInfCAN::ECanFrameDlc::DLC_8; // 功率计帧长度
+        uint16_t chassisMaxPower = kDefaultChassisMaxPower;   // 底盘总功率限制
     };
 
     // 定义底盘信息结构体并实例化
@@ -148,12 +167,31 @@ public:
 
 private:
 
-    uint16_t chassisMaxPower_ = 120; // 底盘总功率限制
+    static constexpr float kSoftLimitRatio_ = 0.84f;
+    static constexpr float kWarnBudgetRatio_ = 95.0f / static_cast<float>(kDefaultChassisMaxPower); // 功率预算警告阈值占比，超过这个占比时会触发警告，但不强制限制输出
+    static constexpr float kFloorBudgetRatio_ = 70.0f / static_cast<float>(kDefaultChassisMaxPower);
+    static constexpr uint32_t kPowerMeterOfflineTimeoutMs_ = 50U;
+
+    uint16_t chassisMaxPower_ = kDefaultChassisMaxPower; // 底盘总功率限制
     // 底盘电机功率控制实例
     CAlgoPowerControl powerCtrlLF_;  // 左前电机功率控制实例
     CAlgoPowerControl powerCtrlRF_;  // 右前电机功率控制实例
     CAlgoPowerControl powerCtrlLB_;  // 左后电机功率控制实例
     CAlgoPowerControl powerCtrlRB_;  // 右后电机功率控制实例
+    CAlgoPowerControl powerCtrlSteerLF_;  // 左前舵向电机功率控制实例
+    CAlgoPowerControl powerCtrlSteerRF_;  // 右前舵向电机功率控制实例
+    CAlgoPowerControl powerCtrlSteerLB_;  // 左后舵向电机功率控制实例
+    CAlgoPowerControl powerCtrlSteerRB_;  // 右后舵向电机功率控制实例
+    CInfCAN::CCanRxNode powerMeterRxNode_; // 功率计CAN接收节点
+    uint32_t powerMeterLastTimestamp_ = 0; // 功率计最近一次更新时间戳
+    float measuredPowerLpf_ = 0.0f;        // 功率计反馈低通值
+    float lastMeasuredPower_ = 0.0f;       // 上一拍功率计值
+    float feedbackMeasuredPower_ = 0.0f;   // 基于电机反馈电流估算的实际总功率(W)
+    float feedbackMeasuredPowerRaw_ = 0.0f;// 基于反馈电流估算的瞬时总功率(W)
+    float terrainOverloadPenalty_ = 0.0f;  // 陡坡/突增负载下的附加收紧量(W)
+    float dynamicPowerBudget_ = 0.0f;      // 动态硬功率预算(W)
+    float softPowerBudget_ = 0.0f;         // 软限功预算(W)
+    bool powerBudgetInitialized_ = false;  // 功率预算状态是否已完成初始化
 
     // 定义底盘轮组组件类并实例化
     class CComWheelset: public CComponentBase{
@@ -180,13 +218,18 @@ private:
 
         // 电机实例指针数组
         CDevMtr *motor[4] = {nullptr};
+        CDevMtr *steerMotor[4] = {nullptr};
 
         // 定义底盘PID控制器
         CAlgoPid pidYawCtrl;                    ///<控制底盘角速度（Yaw旋转）
         CAlgoPid pidLineCorrectionCtrl;         ///<修正X、Y、W三个方向的误差
         std::array<CAlgoPid, 4> pidSpdCtrl;     ///<控制4个轮子的速度
+        std::array<CAlgoPid, 4> pidSteerPosCtrl;///<控制4个舵向电机的位置
+        std::array<CAlgoPid, 4> pidSteerSpdCtrl;///<控制4个舵向电机的速度
         // 电机数据输出缓冲区
         std::array<int16_t, 4> mtrOutputBuffer = {0};
+        std::array<int16_t, 4> mtrSteerOutputBuffer = {0};
+        std::array<float, 4> steerErrRad = {0.0f, 0.0f, 0.0f, 0.0f};
 
         // 初始化组件
         EAppStatus InitComponent(SModInitParam_Base &param) final;
@@ -198,7 +241,11 @@ private:
         EAppStatus _UpdateOutput(float speed_X, float speed_Y, float speed_W);
     
         // 电机can发送节点
-        std::array<CInfCAN::CCanTxNode*, 4> mtrCanTxNode;
+        std::array<CInfCAN::CCanTxNode*, 4> mtrCanTxNode = {nullptr, nullptr, nullptr, nullptr};
+        std::array<CInfCAN::CCanTxNode*, 4> mtrSteerCanTxNode = {nullptr, nullptr, nullptr, nullptr};
+
+        // 舵轮使能（4个舵向电机和发送节点均有效时启用）
+        EVarStatus enableSwerve = false;
 
     } comWheelset_;
 
@@ -328,9 +375,10 @@ private:
      * @param wheelset 底盘轮组组件，包含 4 个电机的当前状态及控制输出信息
      * @return float 4 个电机的需求总功率之和，单位：瓦特（W）
      */
-    float CalcTotalDemandPower(const CComWheelset& wheelset);
+    float CalcTotalDemandPower(const CComWheelset& wheelset, float wheelDemand[4], float steerDemand[4]);
     /** 动态分配每个电机的功率上限（总功率≤120W） */
-    void AllocDynamicPower(const CComWheelset& wheelset, float targetPower[4]);
+    void AllocDynamicPower(const CComWheelset& wheelset, float targetWheelPower[4], float targetSteerPower[4]);
+    void UpdatePowerBudget_();
 
 };
 
@@ -340,5 +388,13 @@ extern float wheel_power_lf;
 extern float wheel_power_rf;
 extern float wheel_power_lb;
 extern float wheel_power_rb;
+extern float powermeter;
+extern float power_feedback_est;
+extern float power_measure_used;
+extern float power_guard_budget;
+extern float power_demand_total;
+extern float power_cmd_total;
+extern float power_budget;
+extern float power_buffer_est;
 
 #endif // MOD_CHASSIS_HPP   

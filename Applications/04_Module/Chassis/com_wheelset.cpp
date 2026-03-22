@@ -10,8 +10,14 @@
  */
 
 #include "mod_chassis.hpp"
+#include "RTT_DEBUG.h"
+#include <cmath>
 
 namespace my_engineer {
+
+// 舵轮零位补偿和方向（如需反向可将1改为-1）
+constexpr int STEER_MECH_MID[4] = {1300, 8000, 6623, 1303}; // LF, RF, LB, RB
+constexpr int STEER_DIR[4]      = {1, 1, 1, 1};
 
 CMemsBase *pmems_wheel_test = nullptr;
 
@@ -36,16 +42,40 @@ EAppStatus CModChassis::CComWheelset::InitComponent(SModInitParam_Base &param){
     motor[LB] = MotorIDMap.at(chassisParam.wheelsetMotorID_LB);
     motor[RB] = MotorIDMap.at(chassisParam.wheelsetMotorID_RB);
 
+    if (chassisParam.steerMotorID_LF != EDeviceID::DEV_NULL) {
+        steerMotor[LF] = MotorIDMap.at(chassisParam.steerMotorID_LF);
+    }
+    if (chassisParam.steerMotorID_RF != EDeviceID::DEV_NULL) {
+        steerMotor[RF] = MotorIDMap.at(chassisParam.steerMotorID_RF);
+    }
+    if (chassisParam.steerMotorID_LB != EDeviceID::DEV_NULL) {
+        steerMotor[LB] = MotorIDMap.at(chassisParam.steerMotorID_LB);
+    }
+    if (chassisParam.steerMotorID_RB != EDeviceID::DEV_NULL) {
+        steerMotor[RB] = MotorIDMap.at(chassisParam.steerMotorID_RB);
+    }
+
     // 设置发送节点
     mtrCanTxNode[LF] = chassisParam.wheelsetMotorTxNode_LF;
     mtrCanTxNode[RF] = chassisParam.wheelsetMotorTxNode_RF;
     mtrCanTxNode[LB] = chassisParam.wheelsetMotorTxNode_LB;
     mtrCanTxNode[RB] = chassisParam.wheelsetMotorTxNode_RB;
 
+    mtrSteerCanTxNode[LF] = chassisParam.steerMotorTxNode_LF;
+    mtrSteerCanTxNode[RF] = chassisParam.steerMotorTxNode_RF;
+    mtrSteerCanTxNode[LB] = chassisParam.steerMotorTxNode_LB;
+    mtrSteerCanTxNode[RB] = chassisParam.steerMotorTxNode_RB;
+
     // 初始化PID控制器
     for (int i = 0; i < 4; i++) {
         chassisParam.wheelsetSpdPidParam[i].threadNum = 1;
         pidSpdCtrl[i].InitPID(&chassisParam.wheelsetSpdPidParam[i]);
+
+        chassisParam.steerPosPidParam[i].threadNum = 1;
+        pidSteerPosCtrl[i].InitPID(&chassisParam.steerPosPidParam[i]);
+
+        chassisParam.steerSpdPidParam[i].threadNum = 1;
+        pidSteerSpdCtrl[i].InitPID(&chassisParam.steerSpdPidParam[i]);
     }
 
     chassisParam.lineCorrectionPidParam.threadNum = 3;
@@ -61,6 +91,17 @@ EAppStatus CModChassis::CComWheelset::InitComponent(SModInitParam_Base &param){
 
     // 初始化电机数据输出缓冲区
     mtrOutputBuffer.fill(0);
+    mtrSteerOutputBuffer.fill(0);
+
+    enableSwerve = (steerMotor[LF] != nullptr && steerMotor[RF] != nullptr &&
+                    steerMotor[LB] != nullptr && steerMotor[RB] != nullptr &&
+                    mtrSteerCanTxNode[LF] != nullptr && mtrSteerCanTxNode[RF] != nullptr &&
+                    mtrSteerCanTxNode[LB] != nullptr && mtrSteerCanTxNode[RB] != nullptr);
+
+    if (!enableSwerve) {
+        componentStatus = APP_ERROR;
+        return APP_ERROR;
+    }
 
     Component_FSMFlag_ = FSM_RESET;
     componentStatus = APP_OK;
@@ -81,6 +122,8 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
         case FSM_RESET: {
             // 重置状态下，电机数据输出缓冲区始终为0
             mtrOutputBuffer.fill(0);
+            mtrSteerOutputBuffer.fill(0);
+            steerErrRad.fill(0.0f);
             return APP_OK;
         }
         case FSM_PREINIT: {
@@ -89,9 +132,24 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
             motor[RF]->motorData[CDevMtr::DATA_POSIT] = 0;
             motor[LB]->motorData[CDevMtr::DATA_POSIT] = 0;
             motor[RB]->motorData[CDevMtr::DATA_POSIT] = 0;
+
+            steerMotor[LF]->motorData[CDevMtr::DATA_POSIT] = 0;
+            steerMotor[RF]->motorData[CDevMtr::DATA_POSIT] = 0;
+            steerMotor[LB]->motorData[CDevMtr::DATA_POSIT] = 0;
+            steerMotor[RB]->motorData[CDevMtr::DATA_POSIT] = 0;
+
             for (auto &pid : pidSpdCtrl) {
                 pid.ResetPidController();
             }
+
+            for (auto &pid : pidSteerPosCtrl) {
+                pid.ResetPidController();
+            }
+
+            for (auto &pid : pidSteerSpdCtrl) {
+                pid.ResetPidController();
+            }
+
             pidYawCtrl.ResetPidController();
             Component_FSMFlag_ = FSM_INIT;
         }
@@ -123,8 +181,7 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
 }
 
 /**
- * @brief 更新输出
- *        通过麦轮的逆解计算出误差，pid修正之后，加上原先的目标速度，再正解到各轮上。实现逆解补偿，正解输出的逻辑。
+ * @brief 更新输出（舵轮解算）
  * @param speed_X 
  * @param speed_Y 
  * @param speed_W 
@@ -139,50 +196,168 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
         static_cast<float_t>(motor[LB]->motorData[CDevMtr::DATA_SPEED]),
         static_cast<float_t>(motor[RB]->motorData[CDevMtr::DATA_SPEED]),
     };
-
-    // 直线校准
-    DataBuffer<float_t> target_speed = {                             ///<输入的目标速度
-        speed_X,
-        speed_Y,
-        speed_W,
+    DataBuffer<float_t> steerSpdMeasure = {
+        static_cast<float_t>(steerMotor[LF]->motorData[CDevMtr::DATA_SPEED]),
+        static_cast<float_t>(steerMotor[RF]->motorData[CDevMtr::DATA_SPEED]),
+        static_cast<float_t>(steerMotor[LB]->motorData[CDevMtr::DATA_SPEED]),
+        static_cast<float_t>(steerMotor[RB]->motorData[CDevMtr::DATA_SPEED]),
     };
 
-    DataBuffer<float_t> current_speed = {
-        (wheelSpdMeasure[LF] + wheelSpdMeasure[RF] - wheelSpdMeasure[LB] - wheelSpdMeasure[RB]) / 4,
-        (wheelSpdMeasure[LF] - wheelSpdMeasure[RF] + wheelSpdMeasure[LB] - wheelSpdMeasure[RB]) / 4,
-        (wheelSpdMeasure[LF] + wheelSpdMeasure[RF] + wheelSpdMeasure[LB] + wheelSpdMeasure[RB]) / 4,        ///<麦轮逆解
+    constexpr float kPi = 3.14159265358979323846f;
+    constexpr float kTwoPi = 2.0f * kPi;
+    constexpr float COS_45 = 0.70710678118f;
+    constexpr float SIN_45 = 0.70710678118f;
+    constexpr int32_t ECD_CYCLE = 8192;
+    constexpr int32_t ECD_HALF = ECD_CYCLE / 2;
+    constexpr int32_t ECD_QUARTER = ECD_CYCLE / 4;
+    constexpr float DJI_ECD_TO_RAD = (kTwoPi / static_cast<float>(ECD_CYCLE));
+    constexpr float RAD_TO_DJI_ECD = (static_cast<float>(ECD_CYCLE) / kTwoPi);
+    constexpr float RADPS_TO_RPM = 9.5492965855f;
+    constexpr float STEER_SPD_CMD_GAIN = 3.5f;
+    constexpr float STEER_SPD_TGT_FILTER_ALPHA = 0.98f;
+    constexpr float STEER_SPD_TGT_LIMIT = 12000.0f;
+    constexpr float STEER_CMD_LIMIT = 16000.0f;
+
+    int32_t steerErrDbg[4] = {0, 0, 0, 0};
+    float steerRawOutDbg[4] = {0, 0, 0, 0};
+    static float steerSpdTargetFilt[4] = {0, 0, 0, 0};
+    static int32_t stopHoldSteerEcd[4] = {0, 0, 0, 0};
+    static bool lastIsStopCmd = false;
+
+    auto normAngle = [kPi, kTwoPi](float angle) {
+        while (angle > kPi) angle -= kTwoPi;
+        while (angle < -kPi) angle += kTwoPi;
+        return angle;
     };
 
-    auto lineCorrection_output = pidLineCorrectionCtrl.UpdatePidController(target_speed, current_speed);    
+    const float vx = speed_X;
+    const float vy = speed_Y;
+    const float vw = -speed_W;
+    const bool isStopCmd = (std::fabs(vx) < 1e-4f && std::fabs(vy) < 1e-4f && std::fabs(vw) < 1e-4f);
 
-    // 根据直线校准的输出值调整底盘目标速度
-    speed_X += lineCorrection_output[0];
-    speed_Y += lineCorrection_output[1];
-    // speed_W += lineCorrection_output[2];
-
-    // 根据底盘目标速度解算出四个轮子的速度
-    DataBuffer<float_t> wheelSpd = {
-        speed_Y + speed_X + speed_W,
-      - speed_Y + speed_X + speed_W,                        ///<麦轮正解
-        speed_Y - speed_X + speed_W,
-      - speed_Y - speed_X + speed_W,
+    // 几何约定：X向右，Y向前，W逆时针为正；轮序：LF, RF, LB, RB
+    float targetVx[4] = {
+        vx - vw * SIN_45,
+        vx - vw * SIN_45,
+        vx + vw * SIN_45,
+        vx + vw * SIN_45,
+    };
+    float targetVy[4] = {
+        vy - vw * COS_45,
+        vy + vw * COS_45,
+        vy - vw * COS_45,
+        vy + vw * COS_45,
     };
 
-    // 计算输出
-    DataBuffer<float_t> output;
-    for (int i = 0; i < 4; i++) {
-        DataBuffer<float_t> wheelSpd_i = {wheelSpd[i]};
-        DataBuffer<float_t> wheelSpdMeasure_i = {wheelSpdMeasure[i]};
-        output[i] = pidSpdCtrl[i].UpdatePidController(wheelSpd_i, wheelSpdMeasure_i)[0];
+    if (!isStopCmd) {
+        float maxWheelVecMag = 0.0f;
+        for (int i = 0; i < 4; i++) {
+            const float wheelVecMag = std::sqrt(targetVx[i] * targetVx[i] + targetVy[i] * targetVy[i]);
+            if (wheelVecMag > maxWheelVecMag) {
+                maxWheelVecMag = wheelVecMag;
+            }
+        }
+
+        const float cmdVecMag = std::sqrt(vx * vx + vy * vy + vw * vw);
+        if (maxWheelVecMag > cmdVecMag + 1e-4f && cmdVecMag > 1e-4f) {
+            const float normScale = cmdVecMag / maxWheelVecMag;
+            for (int i = 0; i < 4; i++) {
+                targetVx[i] *= normScale;
+                targetVy[i] *= normScale;
+            }
+        }
     }
 
-    // 将输出值存入电机数据输出缓冲区
-    mtrOutputBuffer = {
-        static_cast<int16_t>(output[LF]),
-        static_cast<int16_t>(output[RF]),
-        static_cast<int16_t>(output[LB]),
-        static_cast<int16_t>(output[RB]), ///< 轮毂电机输出
-    };
+    for (int i = 0; i < 4; i++) {
+        // 获取当前电机编码值
+        int32_t rawSteerEcd = static_cast<int32_t>(steerMotor[i]->motorData[CDevMtr::DATA_ANGLE]) % ECD_CYCLE;
+        if (rawSteerEcd < 0) rawSteerEcd += ECD_CYCLE;
+        int32_t currentSteerEcd = rawSteerEcd;
+        if (currentSteerEcd < 0) currentSteerEcd += ECD_CYCLE;
+        // 计算目标速度和舵轮角度
+        float targetDriveSpeed = std::sqrt(targetVx[i] * targetVx[i] + targetVy[i] * targetVy[i]);
+        // 坐标约定：底盘前进方向(+Y)对应舵向0度
+        float targetSteerAngleRad = std::atan2(targetVx[i], targetVy[i]);
+        int32_t targetSteerEcd = static_cast<int32_t>(std::lround(targetSteerAngleRad * RAD_TO_DJI_ECD + STEER_MECH_MID[i]));
+        if (targetSteerEcd < 0) targetSteerEcd += ECD_CYCLE;
+        // 停下时锁存当前舵角，不自动回正
+        if (isStopCmd) {
+            targetDriveSpeed = 0.0f;
+            if (!lastIsStopCmd) {
+                stopHoldSteerEcd[i] = currentSteerEcd;
+            }
+            targetSteerEcd = stopHoldSteerEcd[i];
+        }
+
+        // 计算编码器误差，并进行轮子翻转优化
+        int32_t ecdErr = targetSteerEcd - currentSteerEcd;
+        if (ecdErr > ECD_HALF) {
+            ecdErr -= ECD_CYCLE;
+        } else if (ecdErr < -ECD_HALF) {
+            ecdErr += ECD_CYCLE;
+        }
+
+        if (!isStopCmd && std::abs(ecdErr) > ECD_QUARTER) {
+            targetSteerEcd -= ECD_HALF;
+            if (targetSteerEcd < 0) {
+                targetSteerEcd += ECD_CYCLE;
+            }
+            targetDriveSpeed = -targetDriveSpeed;
+
+            ecdErr = targetSteerEcd - currentSteerEcd;
+            if (ecdErr > ECD_HALF) {
+                ecdErr -= ECD_CYCLE;
+            } else if (ecdErr < -ECD_HALF) {
+                ecdErr += ECD_CYCLE;
+            }
+        }
+        steerErrDbg[i] = ecdErr;
+
+        const float delta = static_cast<float>(ecdErr) * DJI_ECD_TO_RAD;
+        steerErrRad[i] = std::fabs(delta);
+        const float alignFactor = std::pow(std::cos(delta), 3.0f);
+        targetDriveSpeed *= alignFactor;
+
+        float currentSteerAngle = static_cast<float>(currentSteerEcd) * DJI_ECD_TO_RAD;
+        float targetSteerAngle = static_cast<float>(targetSteerEcd) * DJI_ECD_TO_RAD;
+        if (currentSteerAngle > kPi) {
+            currentSteerAngle -= kTwoPi;
+        }
+        if (targetSteerAngle > kPi) {
+            targetSteerAngle -= kTwoPi;
+        }
+        targetSteerAngle = normAngle(targetSteerAngle);
+
+        DataBuffer<float_t> driveTarget = {targetDriveSpeed};
+        DataBuffer<float_t> driveMeasure = {wheelSpdMeasure[i]};
+        float driveOutput = pidSpdCtrl[i].UpdatePidController(driveTarget, driveMeasure)[0];
+
+        DataBuffer<float_t> steerTarget = {targetSteerAngle};
+        DataBuffer<float_t> steerMeasure = {currentSteerAngle};
+        float steerTargetSpdRad = pidSteerPosCtrl[i].UpdatePidController(steerTarget, steerMeasure)[0];
+        float steerTargetSpd = steerTargetSpdRad * RADPS_TO_RPM;
+        steerTargetSpd *= STEER_SPD_CMD_GAIN;
+        steerTargetSpd = std::clamp(steerTargetSpd, -STEER_SPD_TGT_LIMIT, STEER_SPD_TGT_LIMIT);
+
+        if (isStopCmd) {
+            steerSpdTargetFilt[i] = steerTargetSpd;
+        } else {
+            steerSpdTargetFilt[i] += STEER_SPD_TGT_FILTER_ALPHA * (steerTargetSpd - steerSpdTargetFilt[i]);
+        }
+
+        DataBuffer<float_t> steerSpdTarget = {steerSpdTargetFilt[i]};
+        DataBuffer<float_t> steerSpdMea = {steerSpdMeasure[i]};
+        float steerOutput = pidSteerSpdCtrl[i].UpdatePidController(steerSpdTarget, steerSpdMea)[0];
+        steerRawOutDbg[i] = steerOutput;
+        steerOutput *= STEER_DIR[i];
+        steerOutput = std::clamp(steerOutput, -STEER_CMD_LIMIT, STEER_CMD_LIMIT);
+
+        mtrOutputBuffer[i] = static_cast<int16_t>(driveOutput);
+        mtrSteerOutputBuffer[i] = static_cast<int16_t>(steerOutput);
+    }
+
+    lastIsStopCmd = isStopCmd;
+
 
     return APP_OK;
 

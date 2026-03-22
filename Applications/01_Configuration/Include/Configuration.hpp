@@ -64,6 +64,10 @@ enum class EDeviceID{
     DEV_CHAS_MTR_RF,        ///< 底盘电机前右（M3508）
     DEV_CHAS_MTR_LB,        ///< 底盘电机后左（M3508）
     DEV_CHAS_MTR_RB,        ///< 底盘电机后右（M3508）
+    DEV_CHAS_STEER_LF,      ///< 底盘舵向电机前左（RM6020）
+    DEV_CHAS_STEER_RF,      ///< 底盘舵向电机前右（RM6020）
+    DEV_CHAS_STEER_LB,      ///< 底盘舵向电机后左（RM6020）
+    DEV_CHAS_STEER_RB,      ///< 底盘舵向电机后右（RM6020）
     DEV_ARM_MTR_YAW,            ///< 机械臂YAW轴电机(KT)
     DEV_ARM_MTR_PITCH1,        ///< 机械臂Pitch1轴电机(KT)
     DEV_ARM_MTR_PITCH2,        ///< 机械臂Pitch2轴电机(KT)

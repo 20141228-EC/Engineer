@@ -13,6 +13,10 @@
 
 namespace my_engineer {
 
+volatile uint32_t g_chassis_loop_dt_ms = 0;
+volatile uint32_t g_chassis_loop_dt_max_ms = 0;
+volatile uint32_t g_chassis_loop_overrun_cnt = 0;
+
 /**
  * @brief 创建底盘任务
  * 
@@ -25,6 +29,9 @@ void CModChassis::StartChassisModuleTask(void *argument) {
 
     // 类型转换
     auto &chassis = *static_cast<CModChassis *>(argument);
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    constexpr TickType_t ctrlPeriodTicks = pdMS_TO_TICKS(1);
+    uint32_t lastLoopTickMs = HAL_GetTick();
 
     // 任务循环
     while (true) {
@@ -39,6 +46,8 @@ void CModChassis::StartChassisModuleTask(void *argument) {
                 chassis.comCrawler_.StopComponent();
 
                 proc_waitMs(20);
+                lastWakeTime = xTaskGetTickCount();
+                lastLoopTickMs = HAL_GetTick();
                 continue; // 跳过下面的代码，直接进入下一次循环
             }
 
@@ -52,6 +61,8 @@ void CModChassis::StartChassisModuleTask(void *argument) {
                 chassis.chassisInfo.isModuleAvailable = true;
                 chassis.Module_FSMFlag_ = FSM_CTRL;
                 chassis.moduleStatus = APP_OK;
+                lastWakeTime = xTaskGetTickCount();
+                lastLoopTickMs = HAL_GetTick();
 
                 continue;
             }
@@ -72,7 +83,17 @@ void CModChassis::StartChassisModuleTask(void *argument) {
                                                                 CHASSIS_HIP_ECD_MIN_R,CHASSIS_HIP_ECD_MAX_R);                                 
                 // 根据电机初始化编码器值加上目标腿长所需要改变的编码器值 得出目标位置
 
-                proc_waitMs(1); // 1000Hz
+                uint32_t nowMs = HAL_GetTick();
+                g_chassis_loop_dt_ms = nowMs - lastLoopTickMs;
+                if (g_chassis_loop_dt_ms > g_chassis_loop_dt_max_ms) {
+                    g_chassis_loop_dt_max_ms = g_chassis_loop_dt_ms;
+                }
+                if (g_chassis_loop_dt_ms > 2U) {
+                    g_chassis_loop_overrun_cnt++;
+                }
+                lastLoopTickMs = nowMs;
+
+                vTaskDelayUntil(&lastWakeTime, ctrlPeriodTicks); // 1000Hz(绝对周期)
                 continue;
             }
 

@@ -98,6 +98,14 @@ public:
         uint8_t  reserved[5];       ///< 预留
     } __packed fdbInfo = {};
 
+    struct SGimbalInfoPack {
+        uint8_t pack_id;            ///< 包ID = 3
+        int16_t yaw;                ///< 云台yaw角度(×100)
+        int16_t yaw_rate;           ///< 云台yaw角速度(×100)
+        uint8_t data_valid;         ///< 数据有效标志（1有效）
+        uint8_t reserved[2];
+    } __packed gimbalInfo = {};
+
 	// 初始化系统
 	EAppStatus InitSystem(SSystemInitParam_Base *pStruct) final;
 
