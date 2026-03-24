@@ -90,44 +90,29 @@ void CModController::StartControllerModuleTask(void *argument) {
 				// 限制控制量
 				controller.RestrictControllerCommand_();
 
-				static bool last_StartControl = false;
-
-				// // 开始进行控制
-				// if (controller.ControllerCmd.StartControl &&
-				// 	!last_StartControl)
-				// {
-				// 	controller.ControllerInfo.isReturnSuccess = false;
-				// 	controller.ControllerCmd.isFree = false;
-				// }
-				// last_StartControl = controller.ControllerCmd.StartControl;
-
-				// 将控制量传递给组件
+				// isFree 由 Core 层根据机器人端 controlled_by_controller 设置。true时控制器示教，false时控制器跟随机器人位置
 				controller.comYaw_.yawCmd.isFree = controller.ControllerCmd.isFree;
 				controller.comPitch1_.pitch1Cmd.isFree = controller.ControllerCmd.isFree;
 				controller.comPitch2_.pitch2Cmd.isFree = controller.ControllerCmd.isFree;
 				controller.comRoll_.rollCmd.isFree = controller.ControllerCmd.isFree;
 				controller.comPitchEnd_.pitchEndCmd.isFree = controller.ControllerCmd.isFree;
 
-				// 联动控制模式：机械臂的数据会回传回自定义控制器做同步的角度映射
-				if(!controller.ControllerCmd.isFree) {  
+				// 联动控制模式：将机器人回传的位置作为目标，驱动控制器电机跟随
+				if(!controller.ControllerCmd.isFree) {
 					controller.comYaw_.yawCmd.setPosit = CModController::CComYaw::PhyPositToMtrPosit(controller.ControllerCmd.cmd_yaw);
 					controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch1;
 					controller.comPitch2_.pitch2Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch2;
-					/*----------- Roll和PitchEnd改为MIT模式，直接传入角度值 -----------*/
 					controller.comRoll_.rollCmd.setParam[EMotorParam::POSIT] = controller.ControllerCmd.cmd_roll;
 					controller.comPitchEnd_.pitchEndCmd.setParam[EMotorParam::POSIT] = controller.ControllerCmd.cmd_pitch_end;
 				}
 
-				// 检查是否归位完成
-				if (controller.comPitch1_.pitch1Info.isPositArrived &&
-						controller.comPitch2_.pitch2Info.isPositArrived &&
-						controller.comYaw_.yawInfo.isPositArrived &&
-						controller.comRoll_.rollInfo.isPositArrived &&
-						controller.comPitchEnd_.pitchEndInfo.isPositArrived){
-
-						controller.ControllerInfo.isReturnSuccess = true;
-						controller.ControllerCmd.isFree = true;
-				}
+				// 是否到达固定的位置
+				controller.ControllerInfo.isReturnSuccess =
+					controller.comPitch1_.pitch1Info.isPositArrived &&
+					controller.comPitch2_.pitch2Info.isPositArrived &&
+					controller.comYaw_.yawInfo.isPositArrived &&
+					controller.comRoll_.rollInfo.isPositArrived &&
+					controller.comPitchEnd_.pitchEndInfo.isPositArrived;
 
 				proc_waitMs(1);
 

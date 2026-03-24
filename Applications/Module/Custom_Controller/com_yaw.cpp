@@ -149,7 +149,7 @@ EAppStatus CModController::CComYaw::_UpdateOutput(float_t posit) {
 		static_cast<float_t>(motor[0]->motorData[CDevMtr::DATA_POSIT]),
 	};
 
-	auto yawSpd = 
+	auto yawSpd =
 		pidPosCtrl.UpdatePidController(yawPos, yawPosMeasure);
 
 	// 速度环
@@ -157,7 +157,7 @@ EAppStatus CModController::CComYaw::_UpdateOutput(float_t posit) {
 		static_cast<float_t>(motor[0]->motorData[CDevMtr::DATA_SPEED]),
 	};
 
-	auto output = 
+	auto output =
 		pidSpdCtrl.UpdatePidController(yawSpd, yawSpdMeasure);
 
 	mtrOutputBuffer = {

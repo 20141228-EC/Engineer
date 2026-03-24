@@ -82,7 +82,7 @@ EAppStatus CModController::CComPitch2::UpdateComponent() {
 
         case FSM_CTRL: {
             if (pitch2Cmd.isFree) {
-                // 示教模式：使用低阻尼参数 + 重力补偿前馈
+                // 示教模式：使用低阻尼参数\重力补偿前馈
                 float_t savedTF = pitch2Cmd.setParam[EMotorParam::TF];
                 std::fill(std::begin(pitch2Cmd.setParam), std::end(pitch2Cmd.setParam), 0.0f);
                 pitch2Cmd.setParam[EMotorParam::KP] = 0.0f;    // 示教模式位置刚度
@@ -90,6 +90,9 @@ EAppStatus CModController::CComPitch2::UpdateComponent() {
                 pitch2Cmd.setParam[EMotorParam::TF] = savedTF; // 保留重力补偿
                 return _UpdateOutput(pitch2Cmd.setParam);
             }
+            // 联动模式：恢复位控参数，跟随机器人回传位置
+            pitch2Cmd.setParam[EMotorParam::KP] = motor[0]->Kp;
+            pitch2Cmd.setParam[EMotorParam::KD] = motor[0]->Kd;
             return _UpdateOutput(pitch2Cmd.setParam);
         }
 
@@ -131,16 +134,7 @@ EAppStatus CModController::CComPitch2::_UpdateOutput(float_t* setParam){
   float_t posit = OffsetPositToMotortruePosit_test(setParam[static_cast<int>(EMotorParam::POSIT)]);
   float_t torq = setParam[static_cast<int>(EMotorParam::TF)];
 
-  // 分频器：仅在FSM_CTRL阶段生效，初始化阶段保持1000Hz
-  static uint8_t counter = 0;
-  if (Component_FSMFlag_ == FSM_CTRL) {
-      if (++counter < 2) {
-          return APP_OK;  // 跳过本次发送
-      }
-      counter = 0;
-  }
-
-  /* 使用电机内部 TxNode 发送 */
+  /* 使用电机内部 TxNode 发送 (CAN重分配后Pitch2独占CAN3，无需降频) */
   motor[0]->Control_MIT(
       setParam[static_cast<int>(EMotorParam::KP)],
       setParam[static_cast<int>(EMotorParam::KD)],

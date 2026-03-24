@@ -24,12 +24,10 @@ CDevFourButton *pDev_button_test = nullptr;
 bool CDevFourButton::isSwitchChassis = false;
 bool CDevFourButton::isSwitchArmRollEnd = false;
 
-// 夹爪按钮状态
-bool CDevFourButton::isGripperLeft = false;
-bool CDevFourButton::isGripperRight = false;
-bool CDevFourButton::isGripperLeftClose = false;   // 长按闭合/双击张开
-bool CDevFourButton::isGripperRightClose = false;  // 长按闭合/双击张开
-bool CDevFourButton::isGripperRightReGrip = false; // 单击二次夹紧（脉冲信号）
+// 夹爪按钮状态（单夹爪，PB9）
+bool CDevFourButton::isGripperPressed = false;
+bool CDevFourButton::isGripperClose = false;      // 长按闭合/双击张开
+bool CDevFourButton::isGripperReGrip = false;     // 单击二次夹紧（脉冲信号）
 
 CDevFourButton::singlebutton CDevFourButton::buttons_[static_cast<int>(EButtonID::BUTTON_MAX)] = {};
 
@@ -40,8 +38,7 @@ uint8_t CDevFourButton::ButtonGpioRead(uint8_t button_id){
   switch(button_id){
     case EButtonID::SWITCH_CHASSIS:
     case EButtonID::SWITCH_ARM_ROLL_END:
-    case EButtonID::GRIPPER_LEFT:
-    case EButtonID::GRIPPER_RIGHT:
+    case EButtonID::GRIPPER:
       return HAL_GPIO_ReadPin(buttons_[button_id].halGpioPort, buttons_[button_id].halGpioPin);
   }
 
@@ -53,11 +50,8 @@ void CDevFourButton::ButtonPressDownCallback(void *btn) {
   uint8_t button_id = button->button_id;
 
   switch(button_id){
-    case EButtonID::GRIPPER_LEFT:
-      isGripperLeft = true;
-      break;
-    case EButtonID::GRIPPER_RIGHT:
-      isGripperRight = true;
+    case EButtonID::GRIPPER:
+      isGripperPressed = true;
       break;
     default:
       break;
@@ -69,11 +63,8 @@ void CDevFourButton::ButtonPressUpCallback(void *btn) {
   uint8_t button_id = button->button_id;
 
   switch(button_id){
-    case EButtonID::GRIPPER_LEFT:
-      isGripperLeft = false;
-      break;
-    case EButtonID::GRIPPER_RIGHT:
-      isGripperRight = false;
+    case EButtonID::GRIPPER:
+      isGripperPressed = false;
       break;
     default:
       break;
@@ -85,11 +76,8 @@ void CDevFourButton::ButtonLongPressCallback(void *btn) {
   uint8_t button_id = button->button_id;
   // 长按夹爪闭合
   switch(button_id){
-    case EButtonID::GRIPPER_LEFT:
-      isGripperLeftClose = true;
-      break;
-    case EButtonID::GRIPPER_RIGHT:
-      isGripperRightClose = true;
+    case EButtonID::GRIPPER:
+      isGripperClose = true;
       break;
     default:
       break;
@@ -101,11 +89,8 @@ void CDevFourButton::ButtonDoubleClickCallback(void *btn) {
   uint8_t button_id = button->button_id;
   // 双击夹爪张开
   switch(button_id){
-    case EButtonID::GRIPPER_LEFT:
-      isGripperLeftClose = false;
-      break;
-    case EButtonID::GRIPPER_RIGHT:
-      isGripperRightClose = false;
+    case EButtonID::GRIPPER:
+      isGripperClose = false;
       break;
     default:
       break;
@@ -117,9 +102,9 @@ void CDevFourButton::ButtonSingleClickCallback(void *btn) {
   uint8_t button_id = button->button_id;
   // 单击触发二次夹紧（仅在已夹持闭合状态下有效）
   switch(button_id){
-    case EButtonID::GRIPPER_RIGHT:
-      if (isGripperRightClose) {
-        isGripperRightReGrip = true;
+    case EButtonID::GRIPPER:
+      if (isGripperClose) {
+        isGripperReGrip = true;
       }
       break;
     default:
@@ -147,9 +132,8 @@ EAppStatus CDevFourButton::InitDevice(const SDevInitParam_Base *pStructInitParam
     buttons_[i].buttonID = initParam->buttons_[i].buttonID;
     buttons_[i] = initParam->buttons_[i];
 
-    // 只对夹爪按钮使用按钮库（拨杆使用直接GPIO检测）
-    if (buttons_[i].buttonID == EButtonID::GRIPPER_LEFT ||
-        buttons_[i].buttonID == EButtonID::GRIPPER_RIGHT) {
+    // 只对夹爪按钮使用按钮库（拨杆和保留按钮使用直接GPIO检测）
+    if (buttons_[i].buttonID == EButtonID::GRIPPER) {
       button_init(&buttons_[i].User_button, ButtonGpioRead, buttons_[i].activeLevel, static_cast<uint8_t>(buttons_[i].buttonID));
       button_attach(&buttons_[i].User_button, PressEvent::PRESS_DOWN, ButtonPressDownCallback);
       button_attach(&buttons_[i].User_button, PressEvent::PRESS_UP, ButtonPressUpCallback);

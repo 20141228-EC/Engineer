@@ -56,25 +56,18 @@ enum class EDeviceID{
     DEV_RP_VISION,          ///< RoboPilots视觉系统设备
     DEV_BOARD_LINK,         ///< 板间通信设备
     DEV_CONTROLLER_LINK,    ///< 控制器通信设备
-    DEV_ROCKER_LEFT,        ///< 左臂摇杆设备（单轴）
-    DEV_ROCKER_RIGHT,       ///< 右臂摇杆设备（双轴）
+    DEV_ROCKER,             ///< 摇杆设备（双轴）
     DEV_BUZZER,             ///< 蜂鸣器设备
     DEV_LASER_L,            ///< 激光雷达左
     DEV_LASER_R,            ///< 激光雷达右
     DEV_MEMS_BMI088,        ///< 6轴MEMS（BMI-088）
     DEV_MULTI_BUTTON,       ///< 多按键设备
-    /*----------- 左臂电机 -----------*/
-    DEV_MTR_YAW_L,          ///< 左臂Yaw电机（M6020, CAN1 ID5）
-    DEV_MTR_PITCH1_L,       ///< 左臂Pitch1电机（DM4310, CAN2 0x30）
-    DEV_MTR_PITCH2_L,       ///< 左臂Pitch2电机（DM4310, CAN2 0x32）
-    DEV_MTR_ROLL_L,         ///< 左臂Roll电机（DM3510, CAN2 0x34）
-    DEV_MTR_PITCH_END_L,    ///< 左臂末端Pitch电机（DM3510, CAN2 0x36）
-    /*----------- 右臂电机 -----------*/
-    DEV_MTR_YAW_R,          ///< 右臂Yaw电机（M6020, CAN1 ID6）
-    DEV_MTR_PITCH1_R,       ///< 右臂Pitch1电机（DM4310, CAN3 0x30）
-    DEV_MTR_PITCH2_R,       ///< 右臂Pitch2电机（DM4310, CAN3 0x32）
-    DEV_MTR_ROLL_R,         ///< 右臂Roll电机（DM3510, CAN3 0x34）
-    DEV_MTR_PITCH_END_R,    ///< 右臂末端Pitch电机（DM3510, CAN3 0x36）
+    /*----------- 单臂电机 -----------*/
+    DEV_MTR_YAW,            ///< Yaw电机（M6020, CAN1 ID5）
+    DEV_MTR_PITCH1,         ///< Pitch1电机（DM4310, CAN3 0x30）
+    DEV_MTR_PITCH2,         ///< Pitch2电机（DM4310, CAN3 0x32）
+    DEV_MTR_ROLL,           ///< Roll电机（DM3510, CAN2 0x34）
+    DEV_MTR_PITCH_END,      ///< 末端Pitch电机（DM3510, CAN2 0x36）
 };
 
 /**
@@ -89,9 +82,7 @@ enum class EModuleID{
     MOD_GIMBAL,             ///< 云台模块
     MOD_GANTRY,             ///< 龙门模块
     MOD_SUBGANTRY,          ///< 子龙门模块
-    MOD_CONTROLLER,         ///< 自定义控制器模块（单臂兼容）
-    MOD_CONTROLLER_LEFT,    ///< 左臂控制器模块
-    MOD_CONTROLLER_RIGHT,   ///< 右臂控制器模块
+    MOD_CONTROLLER,         ///< 自定义控制器模块
     MOD_BUTTON,             ///< 按键模块
 };
 

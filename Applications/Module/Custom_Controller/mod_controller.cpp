@@ -13,8 +13,14 @@
  ******************************************************************************/
 
 #include "mod_controller.hpp"
+#include "algo_other.hpp"
 
 namespace my_engineer {
+
+/*----------- Debug: 力反馈实际叠加力矩 (N·m) -----------*/
+volatile float dbg_fbTF_pitch1 = 0;
+volatile float dbg_fbTF_pitch2 = 0;
+volatile float dbg_fbTF_roll   = 0;
 
 
 /******************************************************************************
@@ -64,6 +70,9 @@ void CModController::UpdateHandler_() {
 
 	// 计算并应用重力补偿（在组件更新前执行）
 	UpdateGravityComp_();
+
+	// 叠加力反馈（在重力补偿之后、组件更新之前）
+	UpdateForceFeedback_();
 
 	// 更新组件
 	comPitch1_.UpdateComponent();
@@ -165,7 +174,7 @@ EAppStatus CModController::RestrictControllerCommand_() {
 }
 
 /******************************************************************************
- * @brief    计算并应用重力补偿 + 虚拟阻尼
+ * @brief    计算并应用重力补偿与虚拟阻尼
  ******************************************************************************/
 void CModController::UpdateGravityComp_() {
 	// 清零TF lambada函数
@@ -203,7 +212,7 @@ void CModController::UpdateGravityComp_() {
 
 	// PitchEnd 虚拟阻尼
 	if (comPitchEnd_.pitchEndCmd.isFree) {
-		// 从电机反馈读取速度 (MIT模式12bit编码 → rad/s)
+		// 从电机反馈读取速度 (MIT模式12bit编码 -> rad/s)
 		float rawVelocity = CDevMtrDM::uint_to_float(
 			comPitchEnd_.motor[0]->motorData[CDevMtr::DATA_SPEED],
 			-comPitchEnd_.motor[0]->mitLimit_.DQ_MAX,
@@ -244,8 +253,8 @@ void CModController::UpdateGravityComp_() {
 	}
 
 	// DM3510 (PitchEnd):
-	// - 示教模式(isFree): 重力补偿 + 虚拟阻尼
-	// - 位控模式(!isFree): 仅重力补偿
+	// 示教模式(isFree): 重力补偿与虚拟阻尼
+	// 位控模式(!isFree): 仅重力补偿
 	// 注意：重力补偿是物理坐标系，需要乘MOTOR_DIR；阻尼已是电机坐标系，不需要转换
 
 	// [暂时禁用末端PitchEnd重力补偿]
@@ -265,6 +274,47 @@ void CModController::UpdateGravityComp_() {
 	// }
 	// comPitchEnd_.pitchEndCmd.setParam[EMotorParam::TF] = totalTorque_pitchEnd;
 	comPitchEnd_.pitchEndCmd.setParam[EMotorParam::TF] = 0.0f;
+}
+
+/******************************************************************************
+ * @brief    力反馈：将机器人回传的力矩叠加到示教模式的 TF 前馈上
+ *
+ * 仅在示教模式(isFree=true)下生效，操作者能感受到机器人端的阻力。
+ * 力反馈增益 fbGain_ 各轴独立控制反馈强度，需根据实际的情况调整参数。
+ ******************************************************************************/
+void CModController::UpdateForceFeedback_() {
+	if (!forceFeedbackEnabled_) return;
+	if (!ControllerCmd.isFree) return;  // 联动模式不叠加力反馈
+
+	// 死区：过滤静态重力补偿力矩，只反馈碰撞外力
+	constexpr float DEADZONE_P1 = 5.0f;   // Pitch1 死区 (N·m)
+	constexpr float DEADZONE_P2 = 15.0f;   // Pitch2 死区 (N·m)
+	constexpr float DEADZONE_R  = 0.1f;   // Roll 死区 (N·m)
+	auto applyDeadzone = [](float val, float dz) -> float {
+		if (val > dz) return val - dz;
+		if (val < -dz) return val + dz;
+		return 0.0f;
+	};
+
+	// 滑动窗口滤波（窗口100，1kHz下覆盖一个10Hz通信周期）
+	static CMovingAvgFilter<100> filter_pitch1;
+	static CMovingAvgFilter<100> filter_pitch2;
+	static CMovingAvgFilter<100> filter_roll;
+
+	float avg_p1 = filter_pitch1.Update(applyDeadzone(ControllerCmd.fb_torque_pitch1, DEADZONE_P1));
+	float avg_p2 = filter_pitch2.Update(applyDeadzone(ControllerCmd.fb_torque_pitch2, DEADZONE_P2));
+	float avg_r  = filter_roll.Update(applyDeadzone(ControllerCmd.fb_torque_roll, DEADZONE_R));
+
+	// 各轴独立增益
+	dbg_fbTF_pitch1 = fbGain_.pitch1 * avg_p1;
+	dbg_fbTF_pitch2 = fbGain_.pitch2 * avg_p2;
+	dbg_fbTF_roll   = fbGain_.roll   * avg_r;
+
+	comPitch1_.pitch1Cmd.setParam[EMotorParam::TF] += dbg_fbTF_pitch1;
+	comPitch2_.pitch2Cmd.setParam[EMotorParam::TF] += dbg_fbTF_pitch2;
+	comRoll_.rollCmd.setParam[EMotorParam::TF]     += dbg_fbTF_roll;
+
+	// PitchEnd: 暂不处理（末端差速）
 }
 
 

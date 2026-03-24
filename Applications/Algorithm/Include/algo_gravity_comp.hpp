@@ -16,7 +16,7 @@
 namespace my_engineer {
 
 /**
- * @brief 重力补偿 + 虚拟阻尼算法类
+ * @brief 重力补偿  虚拟阻尼算法类
  */
 class CAlgoGravityComp {
 public:
@@ -70,7 +70,7 @@ public:
         float tau_pitchEnd = 0.0f;
     };
 
-    // 调试输出：力矩分量分解（用于诊断模型问题）
+    // 调试输出：力矩分量分解
     struct SGravDebug {
         // 输入角度 (rad)
         float q2 = 0.0f, q3 = 0.0f, q4 = 0.0f, q5 = 0.0f;

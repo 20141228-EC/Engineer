@@ -91,9 +91,8 @@ namespace my_engineer {
 // 前向声明
 class CModController;
 
-// 左右臂控制器实例（定义在conf_module.cpp，调试器可直接查看）
-extern CModController controllerModuleLeft;
-extern CModController controllerModuleRight;
+// 控制器实例（定义在conf_module.cpp，调试器可直接查看）
+extern CModController controllerModule;
 
 /**
  * @brief 控制器模块类
@@ -171,6 +170,12 @@ public:
 		float_t cmd_pitch2 = 0; ///< 小pitch电机命令
 		float_t cmd_roll = 0; ///< Roll轴电机命令 (MIT模式)
 		float_t cmd_pitch_end = 0; ///< 末端pitch电机命令 (MIT模式)
+		/*----------- 力反馈力矩（机器人端回传的电机原始值） -----------*/
+		float_t fb_torque_yaw = 0;       ///< Yaw电流反馈
+		float_t fb_torque_pitch1 = 0;    ///< Pitch1力矩反馈
+		float_t fb_torque_pitch2 = 0;    ///< Pitch2力矩反馈
+		float_t fb_torque_roll = 0;      ///< Roll电流反馈
+		float_t fb_torque_pitch_end = 0; ///< PitchEnd力矩反馈
 	} ControllerCmd = { };
 
 	CModController() = default;
@@ -192,6 +197,20 @@ public:
 	bool IsGravityCompEnabled() const { return gravityCompEnabled_; }
 	void SetGravityCompScale(float scale) { gravityComp_.SetScale(scale); }
 	float GetGravityCompScale() const { return gravityComp_.GetScale(); }
+
+	// 力反馈控制接口
+	struct SForceFeedbackGain {
+		float yaw    = 0.01f;   ///< Yaw轴力反馈增益 (KT i8v3)
+		float pitch1 = 0.02f;   ///< Pitch1轴力反馈增益 (KT i36v3, 减速比36)
+		float pitch2 = 0.02f;   ///< Pitch2轴力反馈增益 (KT i36v3, 减速比36)
+		float roll   = -0.017f;   ///< Roll轴力反馈增益 (DM4310)
+	};
+	void SetForceFeedbackEnabled(bool enabled) { forceFeedbackEnabled_ = enabled; }
+	bool IsForceFeedbackEnabled() const { return forceFeedbackEnabled_; }
+	void SetForceFeedbackGain(float yaw, float p1, float p2, float roll) {
+		fbGain_.yaw = yaw; fbGain_.pitch1 = p1; fbGain_.pitch2 = p2; fbGain_.roll = roll;
+	}
+	const SForceFeedbackGain& GetForceFeedbackGain() const { return fbGain_; }
 
 private:
 
@@ -474,6 +493,11 @@ private:
 	CAlgoGravityComp gravityComp_;             ///< 重力补偿算法实例
 	bool gravityCompEnabled_ = true;           ///< 重力补偿使能标志
 	void UpdateGravityComp_();                  ///< 计算并应用重力补偿
+
+	// 力反馈相关
+	bool forceFeedbackEnabled_ = true;        ///< 力反馈使能标志（默认关闭，调试时打开）
+	SForceFeedbackGain fbGain_;
+	void UpdateForceFeedback_();                ///< 将机器人力矩叠加到控制器 TF
 
 };
 

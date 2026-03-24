@@ -50,9 +50,8 @@ private:
     // 定义系统核心响应频率
     const float_t freq = 1000.f; //??为什么是float_t
 
-    // 双臂控制器模块指针
-    CModController *pcontroller_left_ = nullptr;   ///< 左臂控制器模块
-    CModController *pcontroller_right_ = nullptr;  ///< 右臂控制器模块
+    // 单臂控制器模块指针
+    CModController *pcontroller_ = nullptr;
 
     // 定义系统核心的更新处理
     void UpdateHandler_();

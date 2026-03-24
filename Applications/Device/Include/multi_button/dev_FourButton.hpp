@@ -20,8 +20,8 @@ public:
     BUTTON_NULL = 255,          // 空按钮标记
     SWITCH_CHASSIS = 0,         // PE13: 拨杆右档（底盘模式）
     SWITCH_ARM_ROLL_END = 1,    // PE9: 拨杆左档（臂Roll末端模式）
-    GRIPPER_LEFT = 2,           // PB8: 左手夹爪按钮
-    GRIPPER_RIGHT = 3,          // PB9: 右手夹爪按钮
+    BUTTON_RESERVED = 2,        // PB8: 保留按钮（原左手夹爪，未使用）
+    GRIPPER = 3,                // PB9: 夹爪按钮
     BUTTON_MAX = 4              // 数组大小
   };
 private:
@@ -57,12 +57,10 @@ public:
   static bool isSwitchChassis;      // PE13 高电平 = 底盘模式
   static bool isSwitchArmRollEnd;   // PE9 高电平 = 臂Roll末端模式
 
-  // 夹爪按钮状态（按钮库事件驱动）
-  static bool isGripperLeft;        // 左手夹爪按下状态
-  static bool isGripperRight;       // 右手夹爪按下状态
-  static bool isGripperLeftClose;   // 左手夹爪闭合状态（长按闭合/双击张开）
-  static bool isGripperRightClose;  // 右手夹爪闭合状态（长按闭合/双击张开）
-  static bool isGripperRightReGrip; // 右手夹爪二次夹紧请求（单击触发，脉冲信号）
+  // 夹爪按钮状态（按钮库事件驱动，单夹爪，使用PB9）
+  static bool isGripperPressed;       // 夹爪按下状态
+  static bool isGripperClose;         // 夹爪闭合状态（长按闭合/双击张开）
+  static bool isGripperReGrip;        // 夹爪二次夹紧请求
 };
 
 }

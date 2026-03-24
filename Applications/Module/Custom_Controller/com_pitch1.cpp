@@ -90,6 +90,9 @@ EAppStatus CModController::CComPitch1::UpdateComponent() {
 				pitch1Cmd.setParam[EMotorParam::TF] = savedTF; // 保留重力补偿
 				return _UpdateOutput(pitch1Cmd.setParam);
 			}
+			// 联动模式：恢复位控参数，跟随机器人回传位置
+			pitch1Cmd.setParam[EMotorParam::KP] = motor[0]->Kp;
+			pitch1Cmd.setParam[EMotorParam::KD] = motor[0]->Kd;
 			return _UpdateOutput(pitch1Cmd.setParam);
 		}
 
@@ -131,16 +134,7 @@ EAppStatus CModController::CComPitch1::_UpdateOutput(float_t* Setparam){
   float_t posit = OffsetPositToMotortruePosit_test(Setparam[static_cast<int>(EMotorParam::POSIT)]);
   float_t torq = Setparam[static_cast<int>(EMotorParam::TF)];
 
-  // 分频器：仅在FSM_CTRL阶段生效，初始化阶段保持1000Hz
-  static uint8_t counter = 0;
-  if (Component_FSMFlag_ == FSM_CTRL) {
-      if (++counter < 2) {
-          return APP_OK;  // 跳过本次发送
-      }
-      counter = 0;
-  }
-
-  /* 使用电机内部 TxNode 发送 */
+  /* 使用电机内部 TxNode 发送 (CAN重分配后Pitch1独占CAN3，无需降频) */
   motor[0]->Control_MIT(
       Setparam[static_cast<int>(EMotorParam::KP)],
       Setparam[static_cast<int>(EMotorParam::KD)],

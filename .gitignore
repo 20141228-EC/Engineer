@@ -1,3 +1,23 @@
 build/
 
 *.log
+
+# Keil MDK-ARM 编译中间文件和用户配置
+**/MDK-ARM/**/DebugConfig/
+**/MDK-ARM/**/*.o
+**/MDK-ARM/**/*.d
+**/MDK-ARM/**/*.axf
+**/MDK-ARM/**/*.hex
+**/MDK-ARM/**/*.htm
+**/MDK-ARM/**/*.build_log.htm
+**/MDK-ARM/**/*.dep
+**/MDK-ARM/**/*.lnp
+**/MDK-ARM/**/*.sct
+**/MDK-ARM/**/*.Bak
+**/MDK-ARM/**/*.map
+**/MDK-ARM/**/*.iex
+**/MDK-ARM/**/*.uvoptx
+**/MDK-ARM/**/*.uvguix.*
+**/MDK-ARM/**/JLinkLog.txt
+**/MDK-ARM/**/JLinkSettings.ini
+**/MDK-ARM/**/RTE/
