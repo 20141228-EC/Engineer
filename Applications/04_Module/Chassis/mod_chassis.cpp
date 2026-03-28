@@ -19,13 +19,16 @@ float wheel_torque_lf = 0.0f;
 float wheel_torque_rf = 0.0f;
 float wheel_torque_lb = 0.0f;
 float wheel_torque_rb = 0.0f;
-float_t crawler_torque_l = 0.0f;
-float_t crawler_torque_r = 0.0f;
 float raw_torque_LL = 0.0f;
 float raw_torque_LR = 0.0f;
 float actual_torque_LL = 0.0f;
 float actual_torque_LR = 0.0f;
 float_t raw_speed_LL = 0.0f;
+float_t crawler_torque_l = 0.f;
+float_t crawler_torque_r = 0.f;
+bool is_climbing_debug = false;
+bool is_climbed_debug = false;
+
 
 namespace my_engineer {
 
@@ -143,37 +146,20 @@ void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetPo
             )
         };
 
-        // 前轮多分功率版
-        const float front_weight = 1.f; // 1000.f 定义前轮权重
-        const float back_weight = 1.5f;
+        // // 前轮多分功率版
+        // const float front_weight = 1.f; // 1000.f 定义前轮权重
+        // const float back_weight = 1.f;
 
-        // 计算加权后的各轮需求
-        float weighted_demand_lf = std::max(demand[0], 0.0f) * front_weight;
-        float weighted_demand_rf = std::max(demand[1], 0.0f) * front_weight;
-        float weighted_demand_lb = std::max(demand[2], 0.0f) * back_weight;
-        float weighted_demand_rb = std::max(demand[3], 0.0f) * back_weight;
+        // // 计算加权后的各轮需求
+        // float weighted_demand_lf = std::max(demand[0], 0.0f) * front_weight;
+        // float weighted_demand_rf = std::max(demand[1], 0.0f) * front_weight;
+        // float weighted_demand_lb = std::max(demand[2], 0.0f) * back_weight;
+        // float weighted_demand_rb = std::max(demand[3], 0.0f) * back_weight;
 
-        // 2. 计算加权后的总需求
-        float total_weighted_demand = weighted_demand_lf + weighted_demand_rf + weighted_demand_lb + weighted_demand_rb;
+        // // 2. 计算加权后的总需求
+        // float total_weighted_demand = weighted_demand_lf + weighted_demand_rf + weighted_demand_lb + weighted_demand_rb;
 
-        if (total_weighted_demand < 1e-3f) {
-            // 无有效需求时，平均分配总功率
-            float avgPower = maxTotal / 4.0f;
-            targetPower[0] = avgPower;
-            targetPower[1] = avgPower;
-            targetPower[2] = avgPower;
-            targetPower[3] = avgPower;
-        } else {
-            // 3. 按加权后的比例分配总功率
-            targetPower[0] = (weighted_demand_lf / total_weighted_demand) * maxTotal;
-            targetPower[1] = (weighted_demand_rf / total_weighted_demand) * maxTotal;
-            targetPower[2] = (weighted_demand_lb / total_weighted_demand) * maxTotal;
-            targetPower[3] = (weighted_demand_rb / total_weighted_demand) * maxTotal;
-        }
-
-        // // 计算总需求
-        // float totalAbsDemand = std::max(demand[0], 0.0f) + std::max(demand[1], 0.0f) + std::max(demand[2], 0.0f) + std::max(demand[3], 0.0f);
-        // if (totalAbsDemand < 1e-3f) {
+        // if (total_weighted_demand < 1e-3f) {
         //     // 无有效需求时，平均分配总功率
         //     float avgPower = maxTotal / 4.0f;
         //     targetPower[0] = avgPower;
@@ -181,12 +167,29 @@ void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetPo
         //     targetPower[2] = avgPower;
         //     targetPower[3] = avgPower;
         // } else {
-        //     // 按负载比例动态分配总功率
-        //     targetPower[0] = (std::max(demand[0], 0.0f) / totalAbsDemand) * maxTotal;
-        //     targetPower[1] = (std::max(demand[1], 0.0f) / totalAbsDemand) * maxTotal;
-        //     targetPower[2] = (std::max(demand[2], 0.0f) / totalAbsDemand) * maxTotal;
-        //     targetPower[3] = (std::max(demand[3], 0.0f) / totalAbsDemand) * maxTotal;
+        //     // 3. 按加权后的比例分配总功率
+        //     targetPower[0] = (weighted_demand_lf / total_weighted_demand) * maxTotal;
+        //     targetPower[1] = (weighted_demand_rf / total_weighted_demand) * maxTotal;
+        //     targetPower[2] = (weighted_demand_lb / total_weighted_demand) * maxTotal;
+        //     targetPower[3] = (weighted_demand_rb / total_weighted_demand) * maxTotal;
         // }
+
+        // 计算总需求
+        float totalAbsDemand = std::max(demand[0], 0.0f) + std::max(demand[1], 0.0f) + std::max(demand[2], 0.0f) + std::max(demand[3], 0.0f);
+        if (totalAbsDemand < 1e-3f) {
+            // 无有效需求时，平均分配总功率
+            float avgPower = maxTotal / 4.0f;
+            targetPower[0] = avgPower;
+            targetPower[1] = avgPower;
+            targetPower[2] = avgPower;
+            targetPower[3] = avgPower;
+        } else {
+            // 按负载比例动态分配总功率
+            targetPower[0] = (std::max(demand[0], 0.0f) / totalAbsDemand) * maxTotal;
+            targetPower[1] = (std::max(demand[1], 0.0f) / totalAbsDemand) * maxTotal;
+            targetPower[2] = (std::max(demand[2], 0.0f) / totalAbsDemand) * maxTotal;
+            targetPower[3] = (std::max(demand[3], 0.0f) / totalAbsDemand) * maxTotal;
+        }
 
         // 二次校准：消除浮点误差，确保总功率不超限
         float allocTotal = targetPower[0] + targetPower[1] + targetPower[2] + targetPower[3];
@@ -209,6 +212,13 @@ void CModChassis::UpdateHandler_(){
     // 检查模块状态
     if (moduleStatus == APP_RESET) return;
 
+    // 定义3508转换系数
+    const float FEEDBACK_TO_AMP_RATIO = 20.0f / 16384.0f; // 反馈电流值到安培的转换系数
+    const float TORQUE_CONSTANT_NM_PER_A = 0.3f;          // 电机扭矩常数 (N·m/A)
+
+    static EVarStatus left_is_on = false;
+    static EVarStatus right_is_on = false;
+
     // 用于无符号类型的转化
     static auto uint_to_float = [](uint16_t x_uint, float xmin, float xmax, uint8_t bits) -> float {
         float span = xmax - xmin;
@@ -226,15 +236,46 @@ void CModChassis::UpdateHandler_(){
         return (data_norm + 1.0f) * 0.5f * span + xmin;
     };
 
+    // 计算每个电机轴上的实际物理扭矩 (N·m)，并做一阶低通滤波
+    constexpr float WHEEL_TORQUE_LPF_ALPHA = 0.2f;
+    static bool wheelTorqueFilterInited = false;
+    static float wheelTorqueFiltered[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+    float rawWheelTorque[4] = {
+        static_cast<float>(comWheelset_.motor[CComWheelset::LF]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
+        static_cast<float>(comWheelset_.motor[CComWheelset::RF]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
+        static_cast<float>(comWheelset_.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
+        static_cast<float>(comWheelset_.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A
+    };
+
+    if (!wheelTorqueFilterInited) {
+        for (int i = 0; i < 4; i++) {
+            wheelTorqueFiltered[i] = rawWheelTorque[i];
+        }
+        wheelTorqueFilterInited = true;
+    } else {
+        for (int i = 0; i < 4; i++) {
+            wheelTorqueFiltered[i] += WHEEL_TORQUE_LPF_ALPHA * (rawWheelTorque[i] - wheelTorqueFiltered[i]);
+        }
+    }
+
+    wheel_torque_lf = wheelTorqueFiltered[0];
+    wheel_torque_rf = wheelTorqueFiltered[1];
+    wheel_torque_lb = wheelTorqueFiltered[2];
+    wheel_torque_rb = wheelTorqueFiltered[3];
+
     static uint8_t HalfTickRate = 0;
 	HalfTickRate = 1 - HalfTickRate;
 
     comHip_.MovMode_ = MovMode; ///< 更新面向底层髋关节组件的运动模式
 
-    DataBuffer<float_t> roll_Target = {-4.0f}; ///< 目标roll角度，目前暂时写这个，后续出车之后根据实际可能有些误差待改
+    DataBuffer<float_t> roll_Target = {0.0f}; ///< 目标roll角度，目前暂时写这个，后续出车之后根据实际可能有些误差待改
 
-    // 计算Roll角
-    roll_Measure = {filter->Imu_Ave_Info.imu_ave_pitch};
+    // 更新Roll角
+    chassisInfo.roll_Measure = {filter->Imu_Ave_Info.imu_ave_pitch};
+
+    // 更新加速度
+    chassisInfo.accel_y = filter->Imu_Ave_Info.accel_y;
 
     // 底盘roll轴是一个三环pid控制，最外环为控roll轴角度，输出目标腿长，内环是控腿长
     DataBuffer<float_t> roll_target_climbing;
@@ -244,10 +285,11 @@ void CModChassis::UpdateHandler_(){
             chassisCmd.L_length = 0; ///< 直接回到初始化腿长
             roll_target_climbing = {0};
             comHip_.pidRollCtrl.ResetPidController(); ///< 同时重置PID控制器
+            reset_hip = 0;
         }
         else{
-            roll_target_climbing = comHip_.pidRollCtrl.UpdatePidController(roll_Target, roll_Measure);
-            chassisCmd.L_length += roll_target_climbing[0] * ROLL_DEG_ECD_RATIO * ROLL_LIFT_DIR * 3.f / 1000.f / 10.f; ///< 在当前腿长目标基础上进行累加
+            // roll_target_climbing = comHip_.pidRollCtrl.UpdatePidController(roll_Target, chassisInfo.roll_Measure);
+            // chassisCmd.L_length += roll_target_climbing[0] * ROLL_DEG_ECD_RATIO * ROLL_LIFT_DIR * 1.f / 1000.f / 10.f; ///< 在当前腿长目标基础上进行累加
         }
     } 
     else if(MovMode == EmovMode::NORMAL && reset_hip){   ///< 普通行进模式下复位腿标志位用一次清一次
@@ -256,7 +298,29 @@ void CModChassis::UpdateHandler_(){
             reset_hip = 0;      ///< 清空标志位
     }
 
-    if(crawler_on){
+    constexpr float CRAWLER_TORQUE_LPF_ALPHA = 0.2f;
+    static bool crawlerTorqueFilterInited = false;
+    static float crawlerTorqueFiltered[2] = {0.0f, 0.0f};
+
+    float rawCrawlerTorque[2] = {
+        static_cast<float>(comCrawler_.motor[CComCrawler::L]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
+        static_cast<float>(comCrawler_.motor[CComCrawler::R]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A
+    };
+
+    if (!crawlerTorqueFilterInited) {
+        crawlerTorqueFiltered[0] = rawCrawlerTorque[0];
+        crawlerTorqueFiltered[1] = rawCrawlerTorque[1];
+        crawlerTorqueFilterInited = true;
+    } else {
+        for (int i = 0; i < 2; i++) {
+            crawlerTorqueFiltered[i] += CRAWLER_TORQUE_LPF_ALPHA * (rawCrawlerTorque[i] - crawlerTorqueFiltered[i]);
+        }
+    }
+
+    crawler_torque_l = crawlerTorqueFiltered[0];
+    crawler_torque_r = crawlerTorqueFiltered[1];
+
+    if(chassisInfo.crawler_on){
         comCrawler_.CrawlerCmd.speed_crawler = 60.f * 30.f;
     }
     else{
@@ -265,12 +329,48 @@ void CModChassis::UpdateHandler_(){
         comCrawler_.mtrOutputBuffer.fill(0);    ///< 卸力
     }
 
+    if(comHip_.MovMode_ == EmovMode::CLIMBING){
+        if(fabs(crawler_torque_l) > 3.f || fabs(crawler_torque_r) > 3.f){
+        is_climbing = true;     ///< 正在上台阶
+        // 这个标志位在这里只能被置1
+        }
+    }
+
+    left_is_on = (wheel_torque_lf - wheel_torque_lb > 0.4f);
+    right_is_on = (fabs(wheel_torque_rf) - fabs(wheel_torque_rb) > 0.4f);   
+    if(comHip_.MovMode_ == EmovMode::CLIMBING && is_climbing){
+    // if(chassisInfo.crawler_on){             // 目前暂且简化判断条件为开履带，后面是只有在自动任务中才判断is_climbed
+        // if(wheel_torque_lf - wheel_torque_lb > 0.4f //1.35f
+        // ||(fabs(wheel_torque_rf) - fabs(wheel_torque_rb) > 0.4f))
+        // if(fabs(crawler_torque_l) < 0.3f && fabs(crawler_torque_r) < 0.3f)
+        if(left_is_on && right_is_on && chassisCmd.L_length > 7.f)
+        {
+            // proc_waitMs(200);
+            is_climbed = true;  ///< 已经上了台阶
+            // reset_hip = true;            // 用于测试
+            // is_climbing = false;
+        }
+    // }
+    }
+
+    if(comHip_.MovMode_ == EmovMode::DOWNSTAIR){    // 只有自动任务能置这个标志位
+        if(wheel_torque_lf - wheel_torque_lb > 1.35f
+        &&(fabs(wheel_torque_rf) - fabs(wheel_torque_rb) > 1.35f)
+        &&chassisInfo.roll_Measure[0] < -10.f){      // 车身倾斜超过15°
+            Leg_is_soar = true;  ///< 后腿腾空
+            reset_hip = true;            // 用于测试
+        }
+    }
+
     // 更新底盘轮组
     comWheelset_.UpdateComponent();
    // 更新髋关节
    if(HalfTickRate){comHip_.UpdateComponent();} ///< 降为500Hz
     // 更新履带组件
     comCrawler_.UpdateComponent();
+
+    is_climbing_debug = is_climbing;
+    is_climbed_debug = is_climbed;
 
     // 功率分配
     float dynamicTargetPower[4] = {0.0f};
@@ -310,19 +410,6 @@ void CModChassis::UpdateHandler_(){
     wheel_power_rf = powerCtrlRF_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::RF]->motorData[CDevMtr::DATA_SPEED]), limitedTorque[1]);
     wheel_power_lb = powerCtrlLB_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_SPEED]), limitedTorque[2]);
     wheel_power_rb = powerCtrlRB_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_SPEED]), limitedTorque[3]);
-
-    // 定义转换系数0000000000
-    const float FEEDBACK_TO_AMP_RATIO = 20.0f / 16384.0f; // 反馈电流值到安培的转换系数
-    const float TORQUE_CONSTANT_NM_PER_A = 0.3f;          // 电机扭矩常数 (N·m/A)
-
-    // 计算每个电机轴上的实际物理扭矩 (N·m)
-    wheel_torque_lf = static_cast<float>(comWheelset_.motor[CComWheelset::LF]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A;
-    wheel_torque_rf = static_cast<float>(comWheelset_.motor[CComWheelset::RF]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A;
-    wheel_torque_lb = static_cast<float>(comWheelset_.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A;
-    wheel_torque_rb = static_cast<float>(comWheelset_.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A;
-    
-    crawler_torque_l = static_cast<float>(comCrawler_.motor[CComCrawler::L]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A;
-    crawler_torque_r = static_cast<float>(comCrawler_.motor[CComCrawler::R]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A;
 
     // 应用全局缩放，得到最终发送转矩
     int16_t finalTorque[4] = {
@@ -426,11 +513,18 @@ EAppStatus CModChassis::RestrictChassisCommand_() {
     chassisCmd.speed_X = std::clamp(chassisCmd.speed_X, -100.0f, 100.0f);
     chassisCmd.speed_Y = std::clamp(chassisCmd.speed_Y, -100.0f, 100.0f);
     chassisCmd.speed_W = std::clamp(chassisCmd.speed_W, -100.0f, 100.0f);
-    chassisCmd.L_length = std::clamp(chassisCmd.L_length, 0.f, 1680.f);
     chassisCmd.speed_crawler = std::clamp(chassisCmd.speed_crawler, -100.f, 100.f);
 
     // 自动控制启用，则不继续做限制
-    if (chassisCmd.isAutoCtrl) return APP_OK;
+    if (chassisCmd.isAutoCtrl){
+        // 自动任务中不限制腿长 只应在上台阶任务中将底盘自控标志位置1
+        // chassisCmd.L_length = std::clamp(chassisCmd.L_length, 2.3f, 9.5f);
+        // 默认抬一点腿
+        return APP_OK;
+    }
+    // else{
+        chassisCmd.L_length = std::clamp(chassisCmd.L_length, 0.f, 9.4f);
+    // } 
 
     return APP_OK;
 }

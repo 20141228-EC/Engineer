@@ -260,13 +260,21 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
 //            return APP_OK;
 //        }
 
-//        case EAutoCtrlProcess::CLIMBING: {
-//            currentAutoCtrlProcess_ = EAutoCtrlProcess::CLIMBING;
-//            xTaskCreate(StartClimbingTask, "Climbing Task",
-//                        512, this, proc_ModuleTaskPriority,
-//                        &autoCtrlTaskHandle_);
-//            return APP_OK;
-//        }
+       case EAutoCtrlProcess::CLIMBING: {
+           currentAutoCtrlProcess_ = EAutoCtrlProcess::CLIMBING;
+           xTaskCreate(StartClimbingTask, "Climbing Task",
+                       512, this, proc_ModuleTaskPriority,
+                       &autoCtrlTaskHandle_);
+           return APP_OK;
+       }
+
+       case EAutoCtrlProcess::DOWN_STAIR: {
+           currentAutoCtrlProcess_ = EAutoCtrlProcess::DOWN_STAIR;
+           xTaskCreate(StartDownStairTask, "DownStairs Task",
+                       512, this, proc_ModuleTaskPriority,
+                       &autoCtrlTaskHandle_);
+           return APP_OK;
+       }
 
 //        case EAutoCtrlProcess::ENERGY_UNIT: {
 //            currentAutoCtrlProcess_ = EAutoCtrlProcess::ENERGY_UNIT;
@@ -284,8 +292,8 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
 //            return APP_OK;
 //        }
 
-//        case EAutoCtrlProcess::SAVE_ORE: {
-//            currentAutoCtrlProcess_ = EAutoCtrlProcess::SAVE_ORE;
+//        case EAutoCtrlProcess::STORE_ORE: {
+//            currentAutoCtrlProcess_ = EAutoCtrlProcess::STORE_ORE;
 //            xTaskCreate(StartSaveOreTask, "Save Ore Task",
 //                        512, this, proc_ModuleTaskPriority,
 //                        &autoCtrlTaskHandle_);
@@ -299,15 +307,6 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
 //                        &autoCtrlTaskHandle_);
 //            return APP_OK;
 //        }
-
-        // 下面这些是待删的，为了编译通过才加上
-        case EAutoCtrlProcess::RETURN_DRIVE:return APP_ERROR;
-        case EAutoCtrlProcess::DOGHOLE:return APP_ERROR;
-        case EAutoCtrlProcess::SILVER_ORE:return APP_ERROR;
-        case EAutoCtrlProcess::GOLD_ORE:return APP_ERROR;
-        case EAutoCtrlProcess::EXCHANGE:return APP_ERROR;
-        case EAutoCtrlProcess::PUSH_ORE:return APP_ERROR;
-        case EAutoCtrlProcess::POP_ORE:return APP_ERROR;
 
         default: return APP_ERROR;
     }

@@ -33,7 +33,19 @@
 #define CLIMBING_END_PITCH_ANGLE  ARM_END_PITCH_INIT_ANGLE
 #define CLIMBING_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
 #define CLIMBING_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
-#define CLIMBING_SPEED            80.f      ///< 全速的80%
+#define CLIMBING_SPEED            23.f      ///< 全速的80%
+#define CLIMBING_HIP_ANGLE        2.5f      ///< 抬一点腿
+
+/* -----------------------下台阶--------------------*/
+#define DOWNSTAIR_YAW_ANGLE        ARM_YAW_INIT_ANGLE
+#define DOWNSTAIR_PITCH1_ANGLE     ARM_PITCH1_INIT_ANGLE
+#define DOWNSTAIR_PITCH2_ANGLE     ARM_PITCH2_INIT_ANGLE
+#define DOWNSTAIR_ROLL_ANGLE       ARM_ROLL_INIT_ANGLE
+#define DOWNSTAIR_END_PITCH_ANGLE  ARM_END_PITCH_INIT_ANGLE
+#define DOWNSTAIR_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
+#define DOWNSTAIR_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
+#define DOWNSTAIR_SPEED            -100.f      ///< 全速
+#define DOWNSTAIR_HIP_ANGLE        4.3f      ///< 抬一点腿
 
 /* --------------------抓能量单元------------------- */
 #define GRAB_ENERGY_UNIT_YAW_ANGLE        1.0f
@@ -108,19 +120,11 @@ public:
         NONE,
         RETURN_ORIGIN,      ///< 所有模块复位
         CLIMBING,           ///< 上台阶
+        DOWN_STAIR,         ///< 下台阶
         ENERGY_UNIT,        ///< 抓取能量单元
         EXCHANGE_ORE,       ///< 兑矿
-        SAVE_ORE,           ///< 存矿
+        STORE_ORE,           ///< 存矿
         GROUND_ORE,         ///< 地矿
-
-        // 下面这些是待删的，由于和别的模块比如视觉耦合所以暂时不删
-        RETURN_DRIVE,
-        DOGHOLE,
-        SILVER_ORE,
-        GOLD_ORE,
-        EXCHANGE,
-        PUSH_ORE,
-        POP_ORE,
 
     } currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
@@ -137,6 +141,7 @@ public:
         NONE,
         NORMAL,             ///< 普通
         CLIMBING,           ///< 上台阶
+        DOWNSTAIR,          ///< 下台阶
         // ...to be updated...
     } movemode_ = EMoveMode::NONE;
 
@@ -188,6 +193,7 @@ private:
 
     // 声明自动操作的任务函数
     static void StartClimbingTask(void *arg);
+    static void StartDownStairTask(void *arg);
     static void StartSaveOreTask(void *arg);
     static void StartGroundOreTask(void *arg);
     static void StartExchangeOreTask(void *arg);

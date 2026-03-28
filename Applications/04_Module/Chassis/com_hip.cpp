@@ -11,10 +11,20 @@
  ******************************************************************************/
 
  #include "mod_chassis.hpp"
+ #include "algo_other.hpp"
+
  float_t debug_output_L = 0.f;
  float_t debug_output_buffer_L = 0.f;
  float_t debug_actual_speed_LL = 0.f;
  float_t debug_raw_speed_LL = 0.f;
+
+ float_t debug_kp = 3.1f;
+ float_t debug_accel_filter_alpha = 0.8f;
+
+ float_t debug_forward_L = 0.f;
+ float_t debug_forward_R = 0.f;
+ float_t debug_hip_accel_filtered_torque_L = 0.0f;
+ float_t debug_hip_accel_filtered_torque_R = 0.0f;
 
  namespace my_engineer{
 
@@ -71,13 +81,6 @@ EAppStatus CModChassis::CComHip::InitComponent(SModInitParam_Base &param){
 	return APP_OK;
 }
 
-// /**
-//  * @brief 根据整车roll角度计算出持平需要的腿长
-//  * 
-//  * @retval roll环pid输出值
-//  */
-// float Roll_Pid(float target, float measure){}
-
 /**
  * @brief 更新髋关节关节组件
  * 
@@ -94,9 +97,19 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 	// 更新组件信息
 	HipInfo.pos_L_L = rad2deg(pMtr[LL]->motorPhyAngle);
 	HipInfo.pos_L_R = rad2deg(pMtr[LR]->motorPhyAngle); 
-	
-	// HipInfo.pos_L_L = pMtr[LL]->motorData[CDevMtr::DATA_POSIT] * 10;
-	// HipInfo.pos_L_R = pMtr[LR]->motorData[CDevMtr::DATA_POSIT] * 10;
+	HipInfo.is_arrived = (fabs(HipCmd.L_Set_Angle - HipInfo.pos_L_L) < 0.3f && fabs(HipCmd.R_Set_Angle - HipInfo.pos_L_R) < 0.3f);
+
+	// 在这里更新模块腿长，归一化到0~100之间
+	parent->chassisInfo.L_Length = ((fabs(HipInfo.pos_L_L) + fabs(HipInfo.pos_L_R)) / 2.f) / 9.3f * 100.f;
+
+
+	float_t accel_y;		///< 整车加速度
+	if(parent->chassisCmd.speed_Y){
+		accel_y = parent->chassisInfo.accel_y;
+	}
+	else{
+		accel_y = 0;
+	}
 
     // 缓慢移动控制逻辑
 	static float_t next_angle[2] = {0.0f};
@@ -166,13 +179,24 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 
 		case FSM_CTRL: {
 
-			if(parent->reset_hip){		///< 复位时候用滤波后的角度值，防止猛肘限位
-				pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(next_angle[LL]), 0.0f, 0.0f);
-				pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(next_angle[LR]), 0.0f, 0.0f);
+			if(parent->reset_hip && !HipInfo.is_arrived){		///< 复位时候用滤波后的角度值，防止猛肘限位
+				pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.0f, 0.0f);
+				pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.0f, 0.0f);
 			}
 			else{
-				pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.0f, mitCtrl[LL].tau);
-				pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.0f, mitCtrl[LR].tau);
+				float_t raw_torque_L = debug_kp * accel_y * 1;
+				float_t raw_torque_R = debug_kp * accel_y * -1;
+
+				debug_hip_accel_filtered_torque_L = LowPassFilter(debug_hip_accel_filtered_torque_L, raw_torque_L, debug_accel_filter_alpha);
+				debug_hip_accel_filtered_torque_R = LowPassFilter(debug_hip_accel_filtered_torque_R, raw_torque_R, debug_accel_filter_alpha);
+
+				// pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.0f, mitCtrl[LL].tau + debug_hip_accel_filtered_torque_L);
+				// pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.0f, mitCtrl[LR].tau + debug_hip_accel_filtered_torque_R);
+				pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.0f, 0.f);
+				pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.0f, 0.f);
+				debug_forward_L = mitCtrl[LL].tau + debug_hip_accel_filtered_torque_L;
+				debug_forward_R = mitCtrl[LR].tau + debug_hip_accel_filtered_torque_R;
+				// 用前馈扭矩做加速度补偿
 			}
 			return APP_OK;
 			// _UpdateOutput(HipCmd.L_Set_Angle, HipCmd.R_Set_Angle);
@@ -190,6 +214,11 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 	return APP_OK;
 }
 
+/**
+ * @brief 更新输出
+ * @note  如果要用编码器来控，而不用纯MIT控的话用这个
+ * 
+ */
 EAppStatus CModChassis::CComHip::_UpdateOutput(float_t posit_L, float_t posit_R){
 
 	// 用于无符号类型的转化

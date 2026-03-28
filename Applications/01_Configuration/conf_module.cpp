@@ -159,7 +159,7 @@ EAppStatus InitAllModule() {
 
     // 髋关节组件pid
     chassisInitParam.rollCorrectionPidParam.kp = 0.03f;
-    chassisInitParam.rollCorrectionPidParam.ki = 0.005f;
+    chassisInitParam.rollCorrectionPidParam.ki = 0.00f;
     chassisInitParam.rollCorrectionPidParam.kd = 0.0f;
     chassisInitParam.rollCorrectionPidParam.Input_deadband = 1.0f;
     chassisInitParam.rollCorrectionPidParam.maxIntegral = 50.0f;

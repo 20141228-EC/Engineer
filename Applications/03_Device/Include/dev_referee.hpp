@@ -54,12 +54,12 @@ public:
 
 	enum class EMessageID:uint16_t {
 		ID_NULL = 0,
-		ID_UI_DEL_LAYER = 0x0100,
-		ID_UI_DRAW_SINGLE = 0x0101,
-		ID_UI_DRAW_DOUBLE = 0x0102,
-		ID_UI_DRAW_PENTA = 0x0103,
-		ID_UI_DRAW_HEPTA = 0x0104,
-		ID_UI_DRAW_TEXT = 0x0110,
+		ID_UI_DEL_LAYER = 0x0100,		// 删除图层
+		ID_UI_DRAW_SINGLE = 0x0101,		// 绘制一个图形
+		ID_UI_DRAW_DOUBLE = 0x0102,		// 绘制两个图形
+		ID_UI_DRAW_PENTA = 0x0103,		// 绘制五个图形
+		ID_UI_DRAW_HEPTA = 0x0104,		// 绘制七个图形
+		ID_UI_DRAW_TEXT = 0x0110,		// 绘制字符图形
 		ID_RADAR_MSG = 0x0201,
 	};
 

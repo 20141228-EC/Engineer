@@ -38,6 +38,12 @@ public:
         float_t imu_ave_roll = 0.0f;                  ///< roll轴
         float_t imu_ave_pitch = 0.0f;                 ///< pitch轴
         float_t imu_ave_yaw = 0.0f;                   ///< yaw轴
+        float_t acc_x_filter = 0.f;                 ///< x轴加速度滤波值
+        float_t acc_y_filter = 0.f;                 ///< y轴加速度滤波值
+        float_t acc_z_filter = 0.f;                 ///< z轴加速度滤波值
+        float_t accel_y = 0.f;                      ///< y轴平动加速度
+        float_t accel_x = 0.f;                      ///< x轴平动加速度
+        float_t accel_z = 0.f;                      ///< z轴平动加速度
     } Imu_Ave_Info;
 
     // 传感器实例指针
