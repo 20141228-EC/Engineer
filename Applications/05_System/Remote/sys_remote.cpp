@@ -144,6 +144,8 @@ EAppStatus CSystemRemote::UpdateKeyboard_() {
     remoteInfo.keyboard.key_Ctrl    = (pRemoteDev_->remoteData[CRcDR16::CH_KEY_CTRL].chValue == 1);
     remoteInfo.keyboard.key_Shift   = (pRemoteDev_->remoteData[CRcDR16::CH_KEY_SHIFT].chValue == 1);
 
+    UpdateKeyboard_Edge_();
+
     return APP_OK;
 }
 
@@ -181,6 +183,34 @@ EAppStatus CSystemRemote::UpdateRemote_Edge_(){
     remoteInfo.remote_edge.switch_L    = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_SW1].chEdge);
     remoteInfo.remote_edge.switch_R    = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_SW2].chEdge);
     // 从设备层更新边沿
+
+    return APP_OK;
+}
+
+/**
+ * @brief 更新键盘边沿状态
+ * 
+ */
+EAppStatus CSystemRemote::UpdateKeyboard_Edge_(){
+    // 类型转换
+    remoteInfo.keyboard_edge.mouse_L     = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_MOUSE_L].chEdge);
+    remoteInfo.keyboard_edge.mouse_R     = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_MOUSE_R].chEdge);
+    remoteInfo.keyboard_edge.key_W       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_W].chEdge);
+    remoteInfo.keyboard_edge.key_A       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_A].chEdge);
+    remoteInfo.keyboard_edge.key_S       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_S].chEdge);
+    remoteInfo.keyboard_edge.key_D       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_D].chEdge);
+    remoteInfo.keyboard_edge.key_Q       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_Q].chEdge);
+    remoteInfo.keyboard_edge.key_E       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_E].chEdge);
+    remoteInfo.keyboard_edge.key_R       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_R].chEdge);
+    remoteInfo.keyboard_edge.key_F       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_F].chEdge);
+    remoteInfo.keyboard_edge.key_G       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_G].chEdge);
+    remoteInfo.keyboard_edge.key_Z       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_Z].chEdge);
+    remoteInfo.keyboard_edge.key_X       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_X].chEdge);
+    remoteInfo.keyboard_edge.key_C       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_C].chEdge);
+    remoteInfo.keyboard_edge.key_V       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_V].chEdge);
+    remoteInfo.keyboard_edge.key_B       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_B].chEdge);
+    remoteInfo.keyboard_edge.key_Ctrl    = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_CTRL].chEdge);
+    remoteInfo.keyboard_edge.key_Shift   = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_SHIFT].chEdge);
 
     return APP_OK;
 }

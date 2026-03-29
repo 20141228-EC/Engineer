@@ -99,8 +99,9 @@ public:
         float_t speed_Y = 0.0f; ///< 底盘Y轴速度
         float_t speed_W = 0.0f; ///< 底盘角速度
         float_t L_Length = 0.0f; ///< 后腿腿长
-        int16_t laser_distance_L = 0; ///< 激光传感器左距离
-        int16_t laser_distance_R = 0; ///< 激光传感器右距离
+        EVarStatus crawler_on = false;  ///< 启动履带的标志位
+        DataBuffer<float_t> roll_Measure;   // 整车roll轴角度
+        float_t accel_y = 0.f;  ///< 陀螺仪测到的y轴平动加速度
     } chassisInfo;
 
     // 定义底盘控制命令结构体并实例化
@@ -116,14 +117,12 @@ public:
     // 互补滤波算法实例指针
     CAlgo_IMU_Ave *filter = nullptr;
 
-    // 整车roll轴角度
-    DataBuffer<float_t> roll_Measure;
-
     // 运动模式
     enum class EmovMode 
     {
         NORMAL = 0, ///< 普通模式(拨轮控腿长)
         CLIMBING,   ///< 上台阶模式(陀螺仪控腿长)
+        DOWNSTAIR,  ///< 下台阶模式(后腿腾空时收腿)
     };
 
     CModChassis() = default;
@@ -143,8 +142,14 @@ public:
     // 复位腿的标志位
     EVarStatus reset_hip = false;
 
-    // 启动履带的标志位
-    EVarStatus crawler_on = false;
+    // 正在上台阶标志位(由履带电机扭矩判断)
+    EVarStatus is_climbing = false;
+
+    // 已上台阶标志位(由前轮扭矩比后轮扭矩大判断)
+    EVarStatus is_climbed = false;
+
+    // 下台阶时后腿腾空标志位
+    EVarStatus Leg_is_soar = false;
 
 private:
 
@@ -212,6 +217,7 @@ private:
         struct SHipInfo {                                   
             float_t pos_L_L = 0.0f; ///< 定义了组件用于底层驱动
             float_t pos_L_R = 0.0f; ///< 后腿电机编码器值
+            EVarStatus is_arrived = false;  ///< 是否到达
         } HipInfo;
 
         // 定义底盘髋关节控制命令结构体并实例化

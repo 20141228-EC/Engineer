@@ -123,7 +123,7 @@ void CSystemCore::ControlFromRemote_() {
                 pchassis_->reset_hip = !pchassis_->reset_hip;   ///< 要求复位腿
                 }
             if(remote_edge.thumbWheel == CSystemRemote::ERemoteEdge::Rising){
-                pchassis_->crawler_on = !pchassis_->crawler_on; ///< 启动履带电机
+                pchassis_->chassisInfo.crawler_on = !pchassis_->chassisInfo.crawler_on; ///< 启动履带电机
                 }
             // if(pchassis_->filter->Imu_Ave_Info.imu_ave_pitch >= 23.f){
             //     parm_->armCmd.set_angle_Pitch1 = 4.f;
@@ -205,7 +205,7 @@ void CSystemCore::ControlFromRemote_() {
                 pchassis_->reset_hip = !pchassis_->reset_hip;   ///< 要求复位腿
             }
             if(remote_edge.thumbWheel == CSystemRemote::ERemoteEdge::Rising){
-                pchassis_->crawler_on = !pchassis_->crawler_on; ///< 启动履带电机
+                pchassis_->chassisInfo.crawler_on = !pchassis_->chassisInfo.crawler_on; ///< 启动履带电机
             }
 
             ///< 右摇杆y控云台pitch，逻辑在副板
@@ -231,6 +231,8 @@ void CSystemCore::ControlFromKeyboard_() {
     const auto freq = 1000.f; // 系统核心频率
 
     auto &keyboard = SysRemote.remoteInfo.keyboard;
+    auto &keyboard_edge = SysRemote.remoteInfo.keyboard_edge;
+
 
     static bool lastMouseStatus_L = false, lastMouseStatus_R = false;
 
@@ -271,14 +273,18 @@ void CSystemCore::ControlFromKeyboard_() {
                 std::clamp(pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
             }
             if(keyboard.key_B){
-                pchassis_->chassisCmd.L_length += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 0.3f;
+                pchassis_->chassisCmd.L_length += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 0.01f;
             }
             if(keyboard.key_Ctrl
                 && keyboard.key_B
                 && keyboard.key_Shift
                 && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
                 pchassis_->reset_hip = !pchassis_->reset_hip;
-        }
+            }
+            if(keyboard_edge.key_F == CSystemRemote::ERemoteEdge::Rising
+             &&keyboard_edge.key_G == CSystemRemote::ERemoteEdge::Rising) {
+                pchassis_->chassisInfo.crawler_on = !pchassis_->chassisInfo.crawler_on;
+            }
     }
 
     /******************* 云台手动控制 *******************/
@@ -286,7 +292,6 @@ void CSystemCore::ControlFromKeyboard_() {
     // 通过鼠标y轴速度控pitch
 
     /******************* 机械臂手动控制 *******************/
-    // 按下ctrl时控副臂，否则控主臂
     if (parm_) {
         if (!parm_->armCmd.isAutoCtrl) {
             // !SysBoardLink.pArm_Cmd->isAutoCtrl) {
@@ -317,7 +322,7 @@ void CSystemCore::ControlFromKeyboard_() {
 
     /******************* 自动控制 *******************/
     if (parm_ && pchassis_) {
-        if (keyboard.key_Ctrl && parm_->armInfo.isModuleAvailable)
+        if (keyboard.key_Ctrl && pchassis_->chassisInfo.isModuleAvailable)
         {
             // Ctrl + V: 停止所有自动任务
             if(keyboard.key_V)
@@ -331,6 +336,11 @@ void CSystemCore::ControlFromKeyboard_() {
                 StartAutoCtrlTask_(EAutoCtrlProcess::CLIMBING);
             }
 
+            // Ctrl + F: 启动下台阶任务
+            if(keyboard.key_F){
+                StartAutoCtrlTask_(EAutoCtrlProcess::DOWN_STAIR);
+            }
+
             /* --- 其他旧的自动任务快捷键已被移除 ---
             if(keyboard.key_G) { StartAutoCtrlTask_(EAutoCtrlProcess::GOLD_ORE); }
             if(keyboard.key_X) { StartAutoCtrlTask_(EAutoCtrlProcess::SILVER_ORE); }
@@ -339,12 +349,10 @@ void CSystemCore::ControlFromKeyboard_() {
             if(keyboard.key_Q) { StartAutoCtrlTask_(EAutoCtrlProcess::POP_ORE); }
             */
         }
-        /* --- 其他旧的自动任务快捷键已被移除 ---
         if(keyboard.key_Shift && parm_->armInfo.isModuleAvailable){
-            if(keyboard.key_Z) { StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE); }
-            if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE); }
+            if(keyboard.key_Z) { StartAutoCtrlTask_(EAutoCtrlProcess::ENERGY_UNIT); }   // Shift + Z 能量单元任务 
+            // if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE); }
         }
-        */
     }
     }
 }

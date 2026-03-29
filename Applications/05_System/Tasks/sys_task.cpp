@@ -26,9 +26,9 @@ void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠
     while (true) {
 
         for (const auto &item : SystemIDMap) {
-            // if(item.second->systemID != ESystemID::SYS_BOARD_LINK) {
-            //     item.second->UpdateHandler_();
-            // }
+            if(item.second->systemID != ESystemID::SYS_BOARD_LINK) {
+                item.second->UpdateHandler_();
+            }
             item.second->UpdateHandler_();
         }
 
@@ -76,7 +76,7 @@ void StartUpdateTask(void *argument) {
         // 执行can发送
         TxNode_Can3_200.Transmit(); ///< 履带电机
 		if(HalfTickRate) {              ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载                  
-		    TxNode_Can3_280.Transmit(); ///< 机械臂后三轴电机 500Hz
+		    // TxNode_Can3_280.Transmit(); ///< 机械臂后三轴电机 500Hz
         }
             
         TxNode_Can1_200.Transmit(); ///< 底盘轮毂电机

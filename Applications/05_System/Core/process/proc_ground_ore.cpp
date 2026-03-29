@@ -52,7 +52,6 @@ void CSystemCore::StartGroundOreTask(void *arg) {
             /*Set Gimbal*/
     
             // 云台应当抬升到最高点 同时 pitch俯角下降
-
             // 以上逻辑是为了先确保机器人动到固定的起始位置，后面再根据矿具体位置进行微调
 
 			proc_waitMs(250);		///< 等待各电机到位

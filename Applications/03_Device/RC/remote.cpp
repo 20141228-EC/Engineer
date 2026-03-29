@@ -81,7 +81,15 @@ EAppStatus CRcBase::UpdateChannels_(){
         switch (channel.chType)
         {
             case ERcChannelType::BUTTON:
-                if (channel == 1) channel.chStatus = ERcChannelStatus::PRESS;
+                if (channel == 1) 
+                {
+                    channel.chStatus = ERcChannelStatus::PRESS;
+                    channel.chEdge = ERcChannelEdge::Rising;
+                }
+                else
+                {
+                    channel.chEdge = ERcChannelEdge::Falling;
+                }
                 break;
             case ERcChannelType::LEVER:
                 // 摇杆类型的通道，绝对值大于一定值时，通道状态有效

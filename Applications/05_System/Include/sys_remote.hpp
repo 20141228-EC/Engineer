@@ -87,11 +87,34 @@ public:
         bool key_Shift = false; ///< shift键
     };
 
+    // Keyboard边沿信息结构体
+    struct SKeyboardEdge {
+        ERemoteEdge mouse_L = ERemoteEdge::RESET;   ///< 鼠标左键
+        ERemoteEdge mouse_R = ERemoteEdge::RESET;   ///< 鼠标右键
+        ERemoteEdge key_W = ERemoteEdge::RESET;     ///< W键
+        ERemoteEdge key_A = ERemoteEdge::RESET;     ///< A键
+        ERemoteEdge key_S = ERemoteEdge::RESET;     ///< S键
+        ERemoteEdge key_D = ERemoteEdge::RESET;     ///< D键
+        ERemoteEdge key_Q = ERemoteEdge::RESET;     ///< Q键
+        ERemoteEdge key_E = ERemoteEdge::RESET;     ///< E键
+        ERemoteEdge key_R = ERemoteEdge::RESET;     ///< R键
+        ERemoteEdge key_F = ERemoteEdge::RESET;     ///< F键
+        ERemoteEdge key_G = ERemoteEdge::RESET;     ///< G键
+        ERemoteEdge key_Z = ERemoteEdge::RESET;     ///< Z键
+        ERemoteEdge key_X = ERemoteEdge::RESET;     ///< X键
+        ERemoteEdge key_C = ERemoteEdge::RESET;     ///< C键
+        ERemoteEdge key_V = ERemoteEdge::RESET;     ///< V键
+        ERemoteEdge key_B = ERemoteEdge::RESET;     ///< B键
+        ERemoteEdge key_Ctrl = ERemoteEdge::RESET;  ///< ctrl键
+        ERemoteEdge key_Shift = ERemoteEdge::RESET; ///< shift键
+    };
+
     // 定义遥控器信息包结构体并实例化
     struct SremoteInfoPackage {
         SRemoteInfo remote;
         SRemoteEdge remote_edge;
         SKeyboardInfo keyboard;
+        SKeyboardEdge keyboard_edge;
     } remoteInfo;
 
     // 初始化系统
@@ -132,6 +155,8 @@ private:
     EAppStatus UpdateRemote_with_deadzone_();
 
     EAppStatus UpdateRemote_Edge_();
+
+    EAppStatus UpdateKeyboard_Edge_();
 
 };
 

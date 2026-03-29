@@ -2,11 +2,12 @@
  * @brief        
  * 
  * @file         referee_ui.cpp
- * @author       Fish_Joe (2328339747@qq.com)
+ * @author       sllllr (2997708711@qq.com)
  * @version      V1.0
- * @date         2025-04-17
+ * @date         2026-03-16
+ * @note         Start...为前缀的是静态ui，Update...为前缀的是动态ui
  * 
- * @copyright    Copyright (c) 2025
+ * @copyright    Copyright (c) 2026
  * 
  ******************************************************************************/
 
@@ -17,29 +18,32 @@ namespace my_engineer {
 // 初始化UI
 void CSystemReferee::UI_InitDrawing() {
 
-  /* Text - Pump Config */
-  pumpTextMsg.header = CDevReferee::SPkgHeader();
-  pumpTextMsg.header.len = sizeof(pumpTextMsg) - 9;
-  pumpTextMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
-  pumpTextMsg.header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&pumpTextMsg.header), 4);
-  pumpTextMsg.transmitterID = (refereeInfo.robot.robotCamp == 2) ? 100 : 0;
-  pumpTextMsg.transmitterID += (refereeInfo.robot.robotID);
-  pumpTextMsg.receiverID = (refereeInfo.robot.robotCamp == 2) ? 0x164 : 0x100;
-  pumpTextMsg.receiverID += (refereeInfo.robot.robotID);
-  pumpTextMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_TEXT;
-  pumpTextMsg.message.figureConfig.figureName[0] = 0;    // Frame ID
-  pumpTextMsg.message.figureConfig.figureName[1] = 0;    // Layer ID
-  pumpTextMsg.message.figureConfig.figureName[2] = 0;    // Figure ID
-  pumpTextMsg.message.figureConfig.operate = 1;
-  pumpTextMsg.message.figureConfig.figureType = 7;
-  pumpTextMsg.message.figureConfig.layerID = 0;
-  pumpTextMsg.message.figureConfig.details_1 = 20;       // Font Size
-  pumpTextMsg.message.figureConfig.posit_X = 920;
-  pumpTextMsg.message.figureConfig.posit_Y = 270,
-  pumpTextMsg.message.figureConfig.color = 4;
-  pumpTextMsg.message.figureConfig.details_2 = 4;        // String Length
-  pumpTextMsg.message.figureConfig.width = 2;            // Line Width
-  strcpy(reinterpret_cast<char *>(pumpTextMsg.message.text), "PUMP");
+  // 底盘信息初始化
+  chassis = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->chassisInfo;
+
+  /* Text - Hip Config */
+  hipTextMsg.header = CDevReferee::SPkgHeader();
+  hipTextMsg.header.len = sizeof(hipTextMsg) - 9;
+  hipTextMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
+  hipTextMsg.header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&hipTextMsg.header), 4);
+  hipTextMsg.transmitterID = (refereeInfo.robot.robotCamp == 2) ? 100 : 0;
+  hipTextMsg.transmitterID += (refereeInfo.robot.robotID);
+  hipTextMsg.receiverID = (refereeInfo.robot.robotCamp == 2) ? 0x164 : 0x100;
+  hipTextMsg.receiverID += (refereeInfo.robot.robotID);
+  hipTextMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_TEXT;
+  hipTextMsg.message.figureConfig.figureName[0] = 0;    // Frame ID
+  hipTextMsg.message.figureConfig.figureName[1] = 0;    // Layer ID
+  hipTextMsg.message.figureConfig.figureName[2] = 0;    // Figure ID
+  hipTextMsg.message.figureConfig.operate = 1;
+  hipTextMsg.message.figureConfig.figureType = 7;
+  hipTextMsg.message.figureConfig.layerID = 0;
+  hipTextMsg.message.figureConfig.details_1 = 20;       // Font Size
+  hipTextMsg.message.figureConfig.posit_X = 1400; //1400
+  hipTextMsg.message.figureConfig.posit_Y = 790,
+  hipTextMsg.message.figureConfig.color = 4;
+  hipTextMsg.message.figureConfig.details_2 = 11;        // String Length
+  hipTextMsg.message.figureConfig.width = 2;            // Line Width
+  strcpy(reinterpret_cast<char *>(hipTextMsg.message.text), "Hip_Length:");
 
   /* Text - Mode Config */
   modeTextMsg.header = CDevReferee::SPkgHeader();
@@ -101,7 +105,7 @@ void CSystemReferee::UI_InitDrawing() {
   RadarTextMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_TEXT;
   RadarTextMsg.message.figureConfig.figureName[0] = 0;    // Frame ID
   RadarTextMsg.message.figureConfig.figureName[1] = 0;    // Layer
-  RadarTextMsg.message.figureConfig.figureName[2] = 3;    // Figure ID     ???为啥是3
+  RadarTextMsg.message.figureConfig.figureName[2] = 3;    // Figure ID
   RadarTextMsg.message.figureConfig.operate = 1;
   RadarTextMsg.message.figureConfig.figureType = 7;
   RadarTextMsg.message.figureConfig.layerID = 1;
@@ -112,6 +116,102 @@ void CSystemReferee::UI_InitDrawing() {
   RadarTextMsg.message.figureConfig.details_2 = 0;        // String Length
   RadarTextMsg.message.figureConfig.width = 4;            // Line Width
   strcpy(reinterpret_cast<char *>(RadarTextMsg.message.text), "");
+
+  /* Text - Crawler Config */
+  crawlerTextMsg.header = CDevReferee::SPkgHeader();
+  crawlerTextMsg.header.len = sizeof(crawlerTextMsg) - 9;
+  crawlerTextMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
+  crawlerTextMsg.header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&crawlerTextMsg.header), 4);
+  crawlerTextMsg.transmitterID = (refereeInfo.robot.robotCamp == 2) ? 100 : 0;
+  crawlerTextMsg.transmitterID += (refereeInfo.robot.robotID);
+  crawlerTextMsg.receiverID = (refereeInfo.robot.robotCamp == 2) ? 0x164 : 0x100;
+  crawlerTextMsg.receiverID += (refereeInfo.robot.robotID);
+  crawlerTextMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_TEXT;
+  crawlerTextMsg.message.figureConfig.figureName[0] = 0;    // Frame ID
+  crawlerTextMsg.message.figureConfig.figureName[1] = 0;    // Layer ID
+  crawlerTextMsg.message.figureConfig.figureName[2] = 7;    // Figure ID
+  crawlerTextMsg.message.figureConfig.operate = 1;
+  crawlerTextMsg.message.figureConfig.figureType = 7;
+  crawlerTextMsg.message.figureConfig.layerID = 0;
+  crawlerTextMsg.message.figureConfig.details_1 = 20;       // Font Size
+  crawlerTextMsg.message.figureConfig.posit_X = 1400;
+  crawlerTextMsg.message.figureConfig.posit_Y = 840,
+  crawlerTextMsg.message.figureConfig.color = 4;
+  crawlerTextMsg.message.figureConfig.details_2 = 11;        // String Length
+  crawlerTextMsg.message.figureConfig.width = 2;            // Line Width
+  strcpy(reinterpret_cast<char *>(crawlerTextMsg.message.text), "Crawler_On:");  
+
+  /* Text - hipInfo Config */
+  hipInfoTextMsg.header = CDevReferee::SPkgHeader();
+  hipInfoTextMsg.header.len = sizeof(hipInfoTextMsg) - 9;
+  hipInfoTextMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
+  hipInfoTextMsg.header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&hipInfoTextMsg.header), 4);
+  hipInfoTextMsg.transmitterID = (refereeInfo.robot.robotCamp == 2) ? 100 : 0;
+  hipInfoTextMsg.transmitterID += (refereeInfo.robot.robotID);
+  hipInfoTextMsg.receiverID = (refereeInfo.robot.robotCamp == 2) ? 0x164 : 0x100;
+  hipInfoTextMsg.receiverID += (refereeInfo.robot.robotID);
+  hipInfoTextMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_TEXT;
+  hipInfoTextMsg.message.figureConfig.figureName[0] = 0;    // Frame ID
+  hipInfoTextMsg.message.figureConfig.figureName[1] = 0;    // Layer ID
+  hipInfoTextMsg.message.figureConfig.figureName[2] = 4;    // Figure ID
+  hipInfoTextMsg.message.figureConfig.operate = 1;
+  hipInfoTextMsg.message.figureConfig.figureType = 5;
+  hipInfoTextMsg.message.figureConfig.layerID = 0;
+  hipInfoTextMsg.message.figureConfig.details_1 = 20;       // Font Size
+  hipInfoTextMsg.message.figureConfig.posit_X = 1620;
+  hipInfoTextMsg.message.figureConfig.posit_Y = 790,
+  hipInfoTextMsg.message.figureConfig.color = 4;
+  // hipInfoTextMsg.message.figureConfig.details_3 = chassis.L_Length * 1000.f;
+  hipInfoTextMsg.message.figureConfig.width = 2;            // Line Width
+  // sprintf(reinterpret_cast<char *>(hipInfoTextMsg.message.text), "%.2f", chassis.L_Length * 1000);
+
+  /* Text - Pitch Config */
+  pitchTextMsg.header = CDevReferee::SPkgHeader();
+  pitchTextMsg.header.len = sizeof(pitchTextMsg) - 9;
+  pitchTextMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
+  pitchTextMsg.header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&pitchTextMsg.header), 4);
+  pitchTextMsg.transmitterID = (refereeInfo.robot.robotCamp == 2) ? 100 : 0;
+  pitchTextMsg.transmitterID += (refereeInfo.robot.robotID);
+  pitchTextMsg.receiverID = (refereeInfo.robot.robotCamp == 2) ? 0x164 : 0x100;
+  pitchTextMsg.receiverID += (refereeInfo.robot.robotID);
+  pitchTextMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_TEXT;
+  pitchTextMsg.message.figureConfig.figureName[0] = 0;    // Frame ID
+  pitchTextMsg.message.figureConfig.figureName[1] = 0;    // Layer ID
+  pitchTextMsg.message.figureConfig.figureName[2] = 5;    // Figure ID
+  pitchTextMsg.message.figureConfig.operate = 1;
+  pitchTextMsg.message.figureConfig.figureType = 5;
+  pitchTextMsg.message.figureConfig.layerID = 0;
+  pitchTextMsg.message.figureConfig.details_1 = 20;       // Font Size
+  pitchTextMsg.message.figureConfig.details_3 = chassis.roll_Measure[0] * 1000.f;
+  pitchTextMsg.message.figureConfig.posit_X = 1520;
+  pitchTextMsg.message.figureConfig.posit_Y = 750,
+  pitchTextMsg.message.figureConfig.color = 4;
+  pitchTextMsg.message.figureConfig.width = 2;            // Line Width
+  // sprintf(reinterpret_cast<char *>(pitchTextMsg.message.text), "%.2f", chassis.roll_Measure[0] * 1000);
+
+  /* Text - Mode Config */
+  pitchStaticTextMsg.header = CDevReferee::SPkgHeader();
+  pitchStaticTextMsg.header.len = sizeof(pitchStaticTextMsg) - 9;
+  pitchStaticTextMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
+  pitchStaticTextMsg.header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&pitchStaticTextMsg.header), 4);
+  pitchStaticTextMsg.transmitterID = (refereeInfo.robot.robotCamp == 2) ? 100 : 0;
+  pitchStaticTextMsg.transmitterID += (refereeInfo.robot.robotID);
+  pitchStaticTextMsg.receiverID = (refereeInfo.robot.robotCamp == 2) ? 0x164 : 0x100;
+  pitchStaticTextMsg.receiverID += (refereeInfo.robot.robotID);
+  pitchStaticTextMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_TEXT;
+  pitchStaticTextMsg.message.figureConfig.figureName[0] = 0;    // Frame ID
+  pitchStaticTextMsg.message.figureConfig.figureName[1] = 0;    // Layer ID
+  pitchStaticTextMsg.message.figureConfig.figureName[2] = 6;    // Figure ID
+  pitchStaticTextMsg.message.figureConfig.operate = 1;
+  pitchStaticTextMsg.message.figureConfig.figureType = 7;
+  pitchStaticTextMsg.message.figureConfig.layerID = 0;
+  pitchStaticTextMsg.message.figureConfig.details_1 = 20;       // Font Size
+  pitchStaticTextMsg.message.figureConfig.posit_X = 1400;
+  pitchStaticTextMsg.message.figureConfig.posit_Y = 750,
+  pitchStaticTextMsg.message.figureConfig.color = 4;
+  pitchStaticTextMsg.message.figureConfig.details_2 = 4;        // String Length
+  pitchStaticTextMsg.message.figureConfig.width = 2;            // Line Width
+  strcpy(reinterpret_cast<char *>(pitchStaticTextMsg.message.text), "PITCH:");
 
   /* Figure - State Config */
   stateFigureMsg.header = CDevReferee::SPkgHeader();
@@ -124,41 +224,45 @@ void CSystemReferee::UI_InitDrawing() {
   stateFigureMsg.receiverID += (refereeInfo.robot.robotID);
   stateFigureMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_HEPTA;
 
+  // 履带状态
   stateFigureMsg.message.figureConfig[0].figureName[0] = 0;    // Frame ID
   stateFigureMsg.message.figureConfig[0].figureName[1] = 1;    // Layer ID
   stateFigureMsg.message.figureConfig[0].figureName[2] = 3;    // Figure ID
   stateFigureMsg.message.figureConfig[0].operate = 1;
   stateFigureMsg.message.figureConfig[0].figureType = 2;
   stateFigureMsg.message.figureConfig[0].layerID = 1;
-  stateFigureMsg.message.figureConfig[0].posit_X = 960 - 5;
-  stateFigureMsg.message.figureConfig[0].posit_Y = 300,
+  stateFigureMsg.message.figureConfig[0].posit_X = 1640;
+  stateFigureMsg.message.figureConfig[0].posit_Y = 830,
   stateFigureMsg.message.figureConfig[0].color = 7;
   stateFigureMsg.message.figureConfig[0].details_3 = 10;       // Radius
   stateFigureMsg.message.figureConfig[0].width = 14;           // Line Width
 
+  // 取矿六边形（逆时针）
   stateFigureMsg.message.figureConfig[1].figureName[0] = 0;    // Frame ID
   stateFigureMsg.message.figureConfig[1].figureName[1] = 1;    // Layer ID
   stateFigureMsg.message.figureConfig[1].figureName[2] = 4;    // Figure ID
   stateFigureMsg.message.figureConfig[1].operate = 1;
-  stateFigureMsg.message.figureConfig[1].figureType = 2;
+  stateFigureMsg.message.figureConfig[1].figureType = 0;
   stateFigureMsg.message.figureConfig[1].layerID = 1;
-  stateFigureMsg.message.figureConfig[1].posit_X = 920 - 5;
-  stateFigureMsg.message.figureConfig[1].posit_Y = 300,
-  stateFigureMsg.message.figureConfig[1].color = 7;
-  stateFigureMsg.message.figureConfig[1].details_3 = 10;       // Radius
-  stateFigureMsg.message.figureConfig[1].width = 14;           // Line Width
-
+  stateFigureMsg.message.figureConfig[1].posit_X = 960 + 60;
+  stateFigureMsg.message.figureConfig[1].posit_Y = 540 + 104,
+  stateFigureMsg.message.figureConfig[1].color = 8;
+  stateFigureMsg.message.figureConfig[1].details_4 = 960 - 60;      // End Posit X
+  stateFigureMsg.message.figureConfig[1].details_5 = 540 + 104;      // End Posit Y
+  stateFigureMsg.message.figureConfig[1].width = 2;            // Line Width
+  
   stateFigureMsg.message.figureConfig[2].figureName[0] = 0;    // Frame ID
   stateFigureMsg.message.figureConfig[2].figureName[1] = 1;    // Layer ID
   stateFigureMsg.message.figureConfig[2].figureName[2] = 5;    // Figure ID
   stateFigureMsg.message.figureConfig[2].operate = 1;
-  stateFigureMsg.message.figureConfig[2].figureType = 2;
+  stateFigureMsg.message.figureConfig[2].figureType = 0;
   stateFigureMsg.message.figureConfig[2].layerID = 1;
-  stateFigureMsg.message.figureConfig[2].posit_X = 1000 - 5;
-  stateFigureMsg.message.figureConfig[2].posit_Y = 300,
-  stateFigureMsg.message.figureConfig[2].color = 7;
-  stateFigureMsg.message.figureConfig[2].details_3 = 10;       // Radius
-  stateFigureMsg.message.figureConfig[2].width = 14;           // Line Width
+  stateFigureMsg.message.figureConfig[2].posit_X = 960 - 60;
+  stateFigureMsg.message.figureConfig[2].posit_Y = 540 + 104,
+  stateFigureMsg.message.figureConfig[2].color = 8;
+  stateFigureMsg.message.figureConfig[2].details_4 = 960 - 120;      // End Posit X
+  stateFigureMsg.message.figureConfig[2].details_5 = 540;      // End Posit Y
+  stateFigureMsg.message.figureConfig[2].width = 2;            // Line Width
 
   stateFigureMsg.message.figureConfig[3].figureName[0] = 0;    // Frame ID
   stateFigureMsg.message.figureConfig[3].figureName[1] = 1;    // Layer ID
@@ -166,11 +270,11 @@ void CSystemReferee::UI_InitDrawing() {
   stateFigureMsg.message.figureConfig[3].operate = 1;
   stateFigureMsg.message.figureConfig[3].figureType = 0;
   stateFigureMsg.message.figureConfig[3].layerID = 1;
-  stateFigureMsg.message.figureConfig[3].posit_X = 960 - 420;
-  stateFigureMsg.message.figureConfig[3].posit_Y = 0,
+  stateFigureMsg.message.figureConfig[3].posit_X = 960 - 120;
+  stateFigureMsg.message.figureConfig[3].posit_Y = 540,
   stateFigureMsg.message.figureConfig[3].color = 8;
-  stateFigureMsg.message.figureConfig[3].details_4 = 960 - 200;      // End Posit X
-  stateFigureMsg.message.figureConfig[3].details_5 = 360;      // End Posit Y
+  stateFigureMsg.message.figureConfig[3].details_4 = 960 - 60;      // End Posit X
+  stateFigureMsg.message.figureConfig[3].details_5 = 540 - 104;      // End Posit Y
   stateFigureMsg.message.figureConfig[3].width = 2;            // Line Width
 
   stateFigureMsg.message.figureConfig[4].figureName[0] = 0;    // Frame ID
@@ -179,11 +283,11 @@ void CSystemReferee::UI_InitDrawing() {
   stateFigureMsg.message.figureConfig[4].operate = 1;
   stateFigureMsg.message.figureConfig[4].figureType = 0;
   stateFigureMsg.message.figureConfig[4].layerID = 1;
-  stateFigureMsg.message.figureConfig[4].posit_X = 960 + 420;
-  stateFigureMsg.message.figureConfig[4].posit_Y = 0,
-  stateFigureMsg.message.figureConfig[4].color = 8;
-  stateFigureMsg.message.figureConfig[4].details_4 = 960 + 200;      // End Posit X
-  stateFigureMsg.message.figureConfig[4].details_5 = 360;      // End Posit Y
+  stateFigureMsg.message.figureConfig[4].posit_X = 960 - 300;
+  stateFigureMsg.message.figureConfig[4].posit_Y = 540 - 104,
+  stateFigureMsg.message.figureConfig[4].color = 0;
+  stateFigureMsg.message.figureConfig[4].details_4 = 960 + 300;      // End Posit X
+  stateFigureMsg.message.figureConfig[4].details_5 = 540 - 104;      // End Posit Y
   stateFigureMsg.message.figureConfig[4].width = 2;            // Line Width
 
   stateFigureMsg.message.figureConfig[5].figureName[0] = 0;    // Frame ID
@@ -192,12 +296,12 @@ void CSystemReferee::UI_InitDrawing() {
   stateFigureMsg.message.figureConfig[5].operate = 1;
   stateFigureMsg.message.figureConfig[5].figureType = 0;
   stateFigureMsg.message.figureConfig[5].layerID = 1;
-  stateFigureMsg.message.figureConfig[5].posit_X = 960 + 200;
-  stateFigureMsg.message.figureConfig[5].posit_Y = 360 + 40,
+  stateFigureMsg.message.figureConfig[5].posit_X = 960 + 60;
+  stateFigureMsg.message.figureConfig[5].posit_Y = 540 - 104,
   stateFigureMsg.message.figureConfig[5].color = 8;
-  stateFigureMsg.message.figureConfig[5].details_4 = 960 + 200;      // End Posit X
-  stateFigureMsg.message.figureConfig[5].details_5 = 360 - 40;      // End Posit Y
-  stateFigureMsg.message.figureConfig[5].width = 3;            // Line Width
+  stateFigureMsg.message.figureConfig[5].details_4 = 960 + 120;      // End Posit X
+  stateFigureMsg.message.figureConfig[5].details_5 = 540;      // End Posit Y
+  stateFigureMsg.message.figureConfig[5].width = 2;            // Line Width
 
   stateFigureMsg.message.figureConfig[6].figureName[0] = 0;    // Frame ID
   stateFigureMsg.message.figureConfig[6].figureName[1] = 1;    // Layer ID
@@ -205,12 +309,50 @@ void CSystemReferee::UI_InitDrawing() {
   stateFigureMsg.message.figureConfig[6].operate = 1;
   stateFigureMsg.message.figureConfig[6].figureType = 0;
   stateFigureMsg.message.figureConfig[6].layerID = 1;
-  stateFigureMsg.message.figureConfig[6].posit_X = 960 - 200;
-  stateFigureMsg.message.figureConfig[6].posit_Y = 360 + 40,
+  stateFigureMsg.message.figureConfig[6].posit_X = 960 + 120;
+  stateFigureMsg.message.figureConfig[6].posit_Y = 540;
   stateFigureMsg.message.figureConfig[6].color = 8;
-  stateFigureMsg.message.figureConfig[6].details_4 = 960 - 200;      // End Posit X
-  stateFigureMsg.message.figureConfig[6].details_5 = 360 - 40;      // End Posit Y
-  stateFigureMsg.message.figureConfig[6].width = 3;            // Line Width
+  stateFigureMsg.message.figureConfig[6].details_4 = 960 + 60;      // End Posit X
+  stateFigureMsg.message.figureConfig[6].details_5 = 540 + 104;      // End Posit Y
+  stateFigureMsg.message.figureConfig[6].width = 2;            // Line Width
+
+  /* Figure - Position Config */
+  positionFigureMsg.header = CDevReferee::SPkgHeader();
+  positionFigureMsg.header.len = sizeof(positionFigureMsg) - 9;
+  positionFigureMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
+  positionFigureMsg.header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&positionFigureMsg.header), 4);
+  positionFigureMsg.transmitterID = (refereeInfo.robot.robotCamp == 2) ? 100 : 0;
+  positionFigureMsg.transmitterID += (refereeInfo.robot.robotID);
+  positionFigureMsg.receiverID = (refereeInfo.robot.robotCamp == 2) ? 0x164 : 0x100;
+  positionFigureMsg.receiverID += (refereeInfo.robot.robotID);
+  positionFigureMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_DOUBLE;
+
+  // 车身姿态示意图圆形边框
+  positionFigureMsg.message.figureConfig[0].figureName[0] = 0;  // Frame ID
+  positionFigureMsg.message.figureConfig[0].figureName[1] = 2;  // Layer ID
+  positionFigureMsg.message.figureConfig[0].figureName[2] = 0;  // Figure ID
+  positionFigureMsg.message.figureConfig[0].operate = 1;
+  positionFigureMsg.message.figureConfig[0].figureType = 2;
+  positionFigureMsg.message.figureConfig[0].layerID = 2;
+  positionFigureMsg.message.figureConfig[0].posit_X = 960;
+  positionFigureMsg.message.figureConfig[0].posit_Y = 200;
+  positionFigureMsg.message.figureConfig[0].color = 8;
+  positionFigureMsg.message.figureConfig[0].details_3 = 80;      // Radius
+  positionFigureMsg.message.figureConfig[0].width = 2;            // Line Width
+
+  // 车身姿态示意图直线
+  positionFigureMsg.message.figureConfig[1].figureName[0] = 0;    // Frame ID
+  positionFigureMsg.message.figureConfig[1].figureName[1] = 2;    // Layer ID
+  positionFigureMsg.message.figureConfig[1].figureName[2] = 1;    // Figure ID
+  positionFigureMsg.message.figureConfig[1].operate = 1;
+  positionFigureMsg.message.figureConfig[1].figureType = 0;
+  positionFigureMsg.message.figureConfig[1].layerID = 1;
+  positionFigureMsg.message.figureConfig[1].posit_X = 880;
+  positionFigureMsg.message.figureConfig[1].posit_Y = 200;
+  positionFigureMsg.message.figureConfig[1].color = 8;
+  positionFigureMsg.message.figureConfig[1].details_4 = 1040;      // End Posit X
+  positionFigureMsg.message.figureConfig[1].details_5 = 200;      // End Posit Y
+  positionFigureMsg.message.figureConfig[1].width = 2;            // Line Width
 
   // /* Figure - Vision Config */ 
   // visionFigureMsg.header = CDevReferee::SPkgHeader();
@@ -286,9 +428,9 @@ void CSystemReferee::UI_InitDrawing() {
 }
 
 void CSystemReferee::UI_StartStaticTextDrawing_() {
-	pumpTextMsg.message.figureConfig.operate = 1;
-	pumpTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&pumpTextMsg), sizeof(pumpTextMsg) - 2);
-	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&pumpTextMsg), sizeof(pumpTextMsg));
+	hipTextMsg.message.figureConfig.operate = 1;
+	hipTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&hipTextMsg), sizeof(hipTextMsg) - 2);
+	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&hipTextMsg), sizeof(hipTextMsg));
 
 	proc_waitMs(200);
 
@@ -296,6 +438,31 @@ void CSystemReferee::UI_StartStaticTextDrawing_() {
 	modeTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&modeTextMsg), sizeof(modeTextMsg) - 2);
 	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&modeTextMsg), sizeof(modeTextMsg));
 
+  proc_waitMs(200);
+
+  crawlerTextMsg.message.figureConfig.operate = 1;
+  crawlerTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&crawlerTextMsg), sizeof(crawlerTextMsg) - 2);
+	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&crawlerTextMsg), sizeof(crawlerTextMsg));
+
+  proc_waitMs(200);
+
+  hipInfoTextMsg.message.figureConfig.operate = 1;
+  hipInfoTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg) - 2);
+	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg));
+
+  proc_waitMs(200);
+
+  pitchStaticTextMsg.message.figureConfig.operate = 1;
+  pitchStaticTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&pitchStaticTextMsg), sizeof(pitchStaticTextMsg) - 2);
+	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&pitchStaticTextMsg), sizeof(pitchStaticTextMsg));
+
+  proc_waitMs(200);
+
+  pitchTextMsg.message.figureConfig.operate = 1;
+  pitchTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&pitchTextMsg), sizeof(pitchTextMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&pitchTextMsg), sizeof(pitchTextMsg));
+
+  proc_waitMs(200);
 }
 
 void CSystemReferee::UI_StartCurModeTextDrawing_() {
@@ -336,6 +503,26 @@ void CSystemReferee::UI_StartVisionFigureDrawing_() {
 	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&visionFigureMsg), sizeof(visionFigureMsg));
 }
 
+void CSystemReferee::UI_StartHipTextDrawing_() {
+  hipInfoTextMsg.message.figureConfig.operate = 1;
+  hipInfoTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg));
+}
+
+void CSystemReferee::UI_StartPitchTextDrawing_() {
+  pitchTextMsg.message.figureConfig.operate = 1;
+  pitchTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&pitchTextMsg), sizeof(pitchTextMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&pitchTextMsg), sizeof(pitchTextMsg));
+}
+
+void CSystemReferee::UI_StartPositionFigureDrawing_() {
+  positionFigureMsg.message.figureConfig[0].operate = 1;
+  positionFigureMsg.message.figureConfig[1].operate = 1;
+  positionFigureMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&positionFigureMsg), sizeof(positionFigureMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&positionFigureMsg), sizeof(positionFigureMsg));
+}
+
+// 更新当前状态
 void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
 
 	std::fill(&curModeTextMsg.message.text[0], &curModeTextMsg.message.text[29], 0);
@@ -364,11 +551,11 @@ void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
         break;
       }
 
-      case CSystemCore::EAutoCtrlProcess::RETURN_DRIVE: {
-        curModeTextMsg.message.figureConfig.details_2 = 5;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2.5);
+      case CSystemCore::EAutoCtrlProcess::CLIMBING: {
+        curModeTextMsg.message.figureConfig.details_2 = 8;
+        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3.5);
         curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "DRIVE");
+        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CLIMBING");
         break;
       }
 
@@ -380,16 +567,15 @@ void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
         break;
       }
 
-
-      case CSystemCore::EAutoCtrlProcess::GOLD_ORE: {
-        curModeTextMsg.message.figureConfig.details_2 = 4;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2);
+      case CSystemCore::EAutoCtrlProcess::STORE_ORE: {
+        curModeTextMsg.message.figureConfig.details_2 = 5;
+        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2.5);
         curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "GOLD");
+        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "STORE");
         break;
       }
 
-      case CSystemCore::EAutoCtrlProcess::EXCHANGE: {
+      case CSystemCore::EAutoCtrlProcess::EXCHANGE_ORE: {
         curModeTextMsg.message.figureConfig.details_2 = 8;
         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 5.5);
         curModeTextMsg.message.figureConfig.posit_Y = 780;
@@ -397,36 +583,19 @@ void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
         break;
       }
 
-
-      case CSystemCore::EAutoCtrlProcess::DOGHOLE: {
+      case CSystemCore::EAutoCtrlProcess::ENERGY_UNIT: {
         curModeTextMsg.message.figureConfig.details_2 = 7;
         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3.5);
         curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "DOGHOLE");
+        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "GET ORE");
         break;
       }
 
-      case CSystemCore::EAutoCtrlProcess::PUSH_ORE: {
-        curModeTextMsg.message.figureConfig.details_2 = 4;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2);
+      case CSystemCore::EAutoCtrlProcess::DOWN_STAIR: {
+        curModeTextMsg.message.figureConfig.details_2 = 7;
+        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3.5);
         curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "PUSH");
-        break;
-      }
-
-      case CSystemCore::EAutoCtrlProcess::POP_ORE: {
-        curModeTextMsg.message.figureConfig.details_2 = 3;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 1.5);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "POP");
-        break;
-      }
-
-      case CSystemCore::EAutoCtrlProcess::SILVER_ORE: {
-        curModeTextMsg.message.figureConfig.details_2 = 6;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "SILVER");
+        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "DOWNSTAIR");
         break;
       }
     }
@@ -439,14 +608,9 @@ void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
 
 void CSystemReferee::UI_UpdateStateFigureDrawing_() {
 
-	// 删除子龙门气泵状态显示代码
-	// static auto &subgantry = reinterpret_cast<CModSubGantry *>(ModuleIDMap.at(EModuleID::MOD_SUBGANTRY))->subGantryInfo;
-	// stateFigureMsg.message.figureConfig[0].operate = 2;
-	// stateFigureMsg.message.figureConfig[0].color = (subgantry.isPumpOn_Arm) ? 2 : 7;
-	// stateFigureMsg.message.figureConfig[1].operate = 2;
-	// stateFigureMsg.message.figureConfig[1].color = (subgantry.isPumpOn_Left) ? 2 : 7;
-	// stateFigureMsg.message.figureConfig[2].operate = 2;
-	// stateFigureMsg.message.figureConfig[2].color = (subgantry.isPumpOn_Right) ? 2 : 7;
+	static auto &chassis = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->chassisInfo;
+	stateFigureMsg.message.figureConfig[0].operate = 2;
+	stateFigureMsg.message.figureConfig[0].color = (chassis.crawler_on) ? 3 : 7;
 
 	stateFigureMsg.message.figureConfig[0].operate = 2;
 	stateFigureMsg.message.figureConfig[1].operate = 2;
@@ -498,6 +662,52 @@ void CSystemReferee::UI_UpdateVisionFigureDrawing_() {
 	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&visionFigureMsg), sizeof(visionFigureMsg));
 }
 
+void CSystemReferee::UI_UpdateHipTextDrawing_() {
+  static auto &chassis_info = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->chassisInfo;
+  std::fill(&hipInfoTextMsg.message.text[0], &hipInfoTextMsg.message.text[29], 0);
+  hipInfoTextMsg.message.figureConfig.operate = 2;
+  int32_t int_val = (int32_t)(chassis_info.L_Length * 1000.f);
+  hipInfoTextMsg.message.figureConfig.details_3 = int_val & 0x3FF;
+  hipInfoTextMsg.message.figureConfig.details_4 = (int_val >> 10) & 0x7FF;
+  hipInfoTextMsg.message.figureConfig.details_5 = (int_val >> 21) & 0x7FF;
+  // hipInfoTextMsg.message.figureConfig.details_3 = chassis_info.L_Length * 1000.f;
+  // hipInfoTextMsg.message.figureConfig.details_4 = chassis.L_Length * 1000;
+  // hipInfoTextMsg.message.figureConfig.details_5 = chassis.L_Length * 1000;
+  hipInfoTextMsg.message.figureConfig.posit_X = 1620;
+  hipInfoTextMsg.message.figureConfig.posit_Y = 790;
+  // sprintf(reinterpret_cast<char *>(hipInfoTextMsg.message.text), "%.2f", chassis.L_Length * 1000);
+  hipInfoTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg));
+}
+
+void CSystemReferee::UI_UpdatePitchTextDrawing_() {
+  static auto &chassis_info = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->chassisInfo;
+  std::fill(&pitchTextMsg.message.text[0], &pitchTextMsg.message.text[29], 0);
+  pitchTextMsg.message.figureConfig.operate = 2;
+  int32_t int_val = (int32_t)(chassis_info.roll_Measure[0] * 1000.f);
+  pitchTextMsg.message.figureConfig.details_3 = int_val & 0x3FF;
+  pitchTextMsg.message.figureConfig.details_4 = (int_val >> 10) & 0x7FF;
+  pitchTextMsg.message.figureConfig.details_5 = (int_val >> 21) & 0x7FF;  ///< 分为高中低11 11 10位发送
+  // pitchTextMsg.message.figureConfig.details_3 = chassis_info.roll_Measure[0] * 1000.f;
+  pitchTextMsg.message.figureConfig.posit_X = 1520;
+  pitchTextMsg.message.figureConfig.posit_Y = 750;
+  // sprintf(reinterpret_cast<char *>(pitchTextMsg.message.text), "%.2f", chassis.roll_Measure[0] * 1000);
+  pitchTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&pitchTextMsg), sizeof(pitchTextMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&pitchTextMsg), sizeof(pitchTextMsg));
+}
+
+void CSystemReferee::UI_UpdatePositionFigureDrawing_() {
+  static auto &chassis_info = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->chassisInfo;
+  positionFigureMsg.message.figureConfig[0].operate = 2;
+  positionFigureMsg.message.figureConfig[1].operate = 2;
+  positionFigureMsg.message.figureConfig[1].posit_X = 960 - (uint32_t)(80 * cos(fabs(chassis_info.roll_Measure[0]) * 2 * PI / 180.f));
+  positionFigureMsg.message.figureConfig[1].posit_Y = 200 + (uint32_t)(80 * sin(fabs(chassis_info.roll_Measure[0]) * 2 * PI / 180.f));
+  positionFigureMsg.message.figureConfig[1].details_4 = 960 + (uint32_t)(80 * cos(fabs(chassis_info.roll_Measure[0]) * 2 * PI / 180.f));
+  positionFigureMsg.message.figureConfig[1].details_5 = 200 - (uint32_t)(80 * sin(fabs(chassis_info.roll_Measure[0]) * 2 * PI / 180.f));
+  positionFigureMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&positionFigureMsg), sizeof(positionFigureMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&positionFigureMsg), sizeof(positionFigureMsg));
+}
+
 void CSystemReferee::UI_RADAR_WARNING_TextDrawing_() {
   std::fill(&RadarTextMsg.message.text[0], &RadarTextMsg.message.text[29], 0);
   RadarTextMsg.message.figureConfig.operate = 2;
@@ -526,6 +736,7 @@ void CSystemReferee::StartSysRefereeUiTask(void *arg) {
 	// 初始化UI
 	SysReferee.UI_InitDrawing();
 
+  // 静态UI
 	SysReferee.UI_StartStaticTextDrawing_();
 	proc_waitMs(100);
 	SysReferee.UI_StartCurModeTextDrawing_();
@@ -537,18 +748,31 @@ void CSystemReferee::StartSysRefereeUiTask(void *arg) {
 
   SysReferee.UI_StartRadarTextDrawing_();
   proc_waitMs(100);
-  
+
+  SysReferee.UI_StartPositionFigureDrawing_();  
+  proc_waitMs(100);
+
 	// 进入UI绘制循环
 	while (true) {
 
+    // 在这里面更新动态UI
 		SysReferee.UI_UpdateCurModeTextDrawing_();
-		proc_waitMs(100);
+		proc_waitMs(50);
 
 		// SysReferee.UI_UpdateVisionFigureDrawing_();
 		// proc_waitMs(100);
 
 		SysReferee.UI_UpdateStateFigureDrawing_();
-		proc_waitMs(100);
+		proc_waitMs(50);
+
+    SysReferee.UI_UpdateHipTextDrawing_();
+    proc_waitMs(50);
+
+    SysReferee.UI_UpdatePitchTextDrawing_();
+    proc_waitMs(50);
+
+    SysReferee.UI_UpdatePositionFigureDrawing_();
+    proc_waitMs(50);
 
 		// SysReferee.UI_UpdateVisionFigureDrawing_();
 
@@ -556,10 +780,10 @@ void CSystemReferee::StartSysRefereeUiTask(void *arg) {
 
     if (SysReferee.refereeInfo.radar.if_dart_comming == 1) {
       SysReferee.UI_RADAR_WARNING_TextDrawing_();
-      proc_waitMs(100);
+      proc_waitMs(50);
     } else {
       SysReferee.UI_RADAR_WARNING_TextClearing_();
-      proc_waitMs(100);
+      proc_waitMs(50);
     }
 	}
 
