@@ -17,7 +17,7 @@
 //According to your need to modify the constants.
 #define TICKS_INTERVAL    2	//ms
 #define DEBOUNCE_TICKS    3	//MAX 7 (0 ~ 7)
-#define SHORT_TICKS       (300 /TICKS_INTERVAL)
+#define SHORT_TICKS       (600 /TICKS_INTERVAL)  // 双击窗口 ~300ms
 #define LONG_TICKS        (1000 /TICKS_INTERVAL)
 
 namespace my_engineer {
@@ -36,9 +36,9 @@ protected:
 
 public:
 
-  typedef void (*BtnCallback)(void*);
+  typedef void (*BtnCallback)(void*);///<定义一个任意指针类型的函数指针的框架
 
-  enum PressEvent{
+  enum PressEvent{///<按键的触发事件
     PRESS_DOWN = 0,
     PRESS_UP,
     PRESS_REPEAT,
@@ -51,17 +51,19 @@ public:
   };
 
   typedef struct Button {
-  uint16_t ticks;
-  uint8_t  repeat : 4;
-  uint8_t  event : 4;
-  uint8_t  state : 3;
-  uint8_t  debounce_cnt : 3;
-  uint8_t  active_level : 1;
-  uint8_t  button_level : 1;
-  uint8_t  button_id;
-  uint8_t  (*hal_button_Level)(uint8_t button_id_);
-  BtnCallback  cb[number_of_event];
-  struct Button* next;
+  /*-----状态机与计数模块-----*/
+  uint16_t ticks;         ///<记录按下的时间特征
+  uint8_t  repeat : 4;    ///<连击次数
+  uint8_t  event : 4;     ///<按键事件
+  uint8_t  state : 3;     ///<按键状态机状态
+  uint8_t  debounce_cnt : 3;    ///<消抖计数器
+  /*-------硬件抽象层-----*/
+  uint8_t  active_level : 1;    ///<按键有效电平
+  uint8_t  button_level : 1;    ///<按键当前电平
+  uint8_t  button_id;           ///<按键ID
+  uint8_t  (*hal_button_Level)(uint8_t button_id_);     ///<硬件读取函数的指针
+  BtnCallback  cb[number_of_event];                     ///<事件回调函数指针数组
+  struct Button* next;                                  ///<单链表指针
   } Button;
 
   void UpdateHandler_() override {}

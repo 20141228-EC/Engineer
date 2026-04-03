@@ -1,10 +1,12 @@
 /**
  * @file Configuration.hpp
- * @author Zoe
+ * @author Zoe, Ciallo
  * @brief My Engineer Robot 应用程序的总配置头文件。
- * @email 2328339747@qq.com
+ * @version 1.1
  * @date 2024-10-30
- * 
+ * @LastEditors Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-15
+ *
  * @details
  * 在此文件中定义应用于各个配置的枚举类型。
  */
@@ -53,19 +55,19 @@ enum class EDeviceID{
     DEV_RM_REFEREE,         ///< RoboMaster裁判系统设备
     DEV_RP_VISION,          ///< RoboPilots视觉系统设备
     DEV_BOARD_LINK,         ///< 板间通信设备
-    DEV_CONTROLLER_LINK,   ///< 控制器通信设备
-    DEV_ROCKER,             ///< 摇杆设备
+    DEV_CONTROLLER_LINK,    ///< 控制器通信设备
+    DEV_ROCKER,             ///< 摇杆设备（双轴）
     DEV_BUZZER,             ///< 蜂鸣器设备
     DEV_LASER_L,            ///< 激光雷达左
-    DEV_LASER_R,             ///< 激光雷达右
+    DEV_LASER_R,            ///< 激光雷达右
     DEV_MEMS_BMI088,        ///< 6轴MEMS（BMI-088）
-    DEV_MULTI_BUTTON,        ///< 多按键设备
-    DEV_CONTROLLER_MTR_YAW,         ///< 控制器横移电机（M6020）
-    DEV_CONTROLLER_MTR_PITCH1,      ///< 控制器前伸电机（DM4310）
-    DEV_CONTROLLER_MTR_PITCH2,      ///< 控制器Yaw电机（DM4310）
-    DEV_CONTROLLER_MTR_ROLL,        ///< 控制器滚轴电机（M3508）
-    DEV_CONTROLLER_MTR_ROLL_END,    ///< 控制器末端滚轴电机（M3508）
-    DEV_CONTROLLER_MTR_PITCH_END ,  ///< 控制器末端Pitch电机（M3508）
+    DEV_MULTI_BUTTON,       ///< 多按键设备
+    /*----------- 单臂电机 -----------*/
+    DEV_MTR_YAW,            ///< Yaw电机（M6020, CAN1 ID5）
+    DEV_MTR_PITCH1,         ///< Pitch1电机（DM4310, CAN3 0x30）
+    DEV_MTR_PITCH2,         ///< Pitch2电机（DM4310, CAN3 0x32）
+    DEV_MTR_ROLL,           ///< Roll电机（DM3510, CAN2 0x34）
+    DEV_MTR_PITCH_END,      ///< 末端Pitch电机（DM3510, CAN2 0x36）
 };
 
 /**

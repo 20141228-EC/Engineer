@@ -1,13 +1,14 @@
 /******************************************************************************
- * @brief        
- * 
  * @file         proc_controller.cpp
- * @author       Fish_Joe (2328339747@qq.com)
- * @version      V1.0
+ * @author       Fish_Joe (2328339747@qq.com), Ciallo
+ * @brief        控制器模块任务处理
+ * @version      V1.1
  * @date         2025-04-01
- * 
+ * @LastEditors  Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-15
+ *
  * @copyright    Copyright (c) 2025
- * 
+ *
  ******************************************************************************/
 
 #include "mod_controller.hpp"
@@ -48,14 +49,14 @@ void CModController::StartControllerModuleTask(void *argument) {
 
 				proc_waitMs(250); // 等待系统稳定
 
-				// controller.comRocker_.StartComponent();
+				controller.comRocker_.StartComponent();
 				controller.comBuzzer_.StartComponent();
 				controller.comPitch1_.StartComponent();
 				controller.comPitch2_.StartComponent();
 				proc_waitUntil(controller.comPitch1_.componentStatus == APP_OK
 					&& controller.comPitch2_.componentStatus == APP_OK);
-				controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] = 30.0f;
-				controller.comPitch2_.pitch2Cmd.setParam[EMotorParam::POSIT] = 35.0f;
+				controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] = 4.0f;
+				controller.comPitch2_.pitch2Cmd.setParam[EMotorParam::POSIT] = 11.0f;
 				proc_waitUntil(controller.comPitch1_.pitch1Info.isPositArrived
 					&& controller.comPitch2_.pitch2Info.isPositArrived);
 
@@ -73,7 +74,7 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comRoll_.rollCmd.isFree = true; ///< 允许自由控制
 				controller.comPitchEnd_.pitchEndCmd.isFree = true; ///< 允许自由控制
 
-				controller.comBuzzer_.buzzerCmd.musicType = CDevBuzzer::MusicType::STARTUP;
+				// controller.comBuzzer_.buzzerCmd.musicType = CDevBuzzer::MusicType::STARTUP;  // 暂时关闭启动音乐
 
 				controller.ControllerCmd = SControllerCmd();
 				controller.ControllerCmd.isFree = true;
@@ -89,43 +90,29 @@ void CModController::StartControllerModuleTask(void *argument) {
 				// 限制控制量
 				controller.RestrictControllerCommand_();
 
-				static bool last_StartControl = false;
-
-				// // 开始进行控制
-				// if (controller.ControllerCmd.StartControl &&
-				// 	!last_StartControl)
-				// {
-				// 	controller.ControllerInfo.isReturnSuccess = false;
-				// 	controller.ControllerCmd.isFree = false;
-				// }
-				// last_StartControl = controller.ControllerCmd.StartControl;
-
-				// 将控制量传递给组件
+				// isFree 由 Core 层根据机器人端 controlled_by_controller 设置。true时控制器示教，false时控制器跟随机器人位置
 				controller.comYaw_.yawCmd.isFree = controller.ControllerCmd.isFree;
 				controller.comPitch1_.pitch1Cmd.isFree = controller.ControllerCmd.isFree;
 				controller.comPitch2_.pitch2Cmd.isFree = controller.ControllerCmd.isFree;
 				controller.comRoll_.rollCmd.isFree = controller.ControllerCmd.isFree;
 				controller.comPitchEnd_.pitchEndCmd.isFree = controller.ControllerCmd.isFree;
 
-				
+				// 联动控制模式：将机器人回传的位置作为目标，驱动控制器电机跟随
 				if(!controller.ControllerCmd.isFree) {
 					controller.comYaw_.yawCmd.setPosit = CModController::CComYaw::PhyPositToMtrPosit(controller.ControllerCmd.cmd_yaw);
 					controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch1;
 					controller.comPitch2_.pitch2Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch2;
-					controller.comRoll_.rollCmd.setPosit =   CModController::CComRoll::PhyPositToMtrPosit(controller.ControllerCmd.cmd_roll);
-					controller.comPitchEnd_.pitchEndCmd.setPosit = CModController::CComPitchEnd::PhyPositToMtrPosit(controller.ControllerCmd.cmd_pitch_end);
+					controller.comRoll_.rollCmd.setParam[EMotorParam::POSIT] = controller.ControllerCmd.cmd_roll;
+					controller.comPitchEnd_.pitchEndCmd.setParam[EMotorParam::POSIT] = controller.ControllerCmd.cmd_pitch_end;
 				}
 
-				// 检查是否归位完成
-				if (controller.comPitch1_.pitch1Info.isPositArrived &&
-						controller.comPitch2_.pitch2Info.isPositArrived &&
-						controller.comYaw_.yawInfo.isPositArrived &&
-						controller.comRoll_.rollInfo.isPositArrived &&
-						controller.comPitchEnd_.pitchEndInfo.isPositArrived){
-
-						controller.ControllerInfo.isReturnSuccess = true;
-						controller.ControllerCmd.isFree = true;
-				}
+				// 是否到达固定的位置
+				controller.ControllerInfo.isReturnSuccess =
+					controller.comPitch1_.pitch1Info.isPositArrived &&
+					controller.comPitch2_.pitch2Info.isPositArrived &&
+					controller.comYaw_.yawInfo.isPositArrived &&
+					controller.comRoll_.rollInfo.isPositArrived &&
+					controller.comPitchEnd_.pitchEndInfo.isPositArrived;
 
 				proc_waitMs(1);
 

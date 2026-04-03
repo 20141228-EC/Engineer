@@ -1,3 +1,17 @@
+/******************************************************************************
+ * @brief
+ *
+ * @file         com_pitch2.cpp
+ * @author       Fish_Joe (2328339747@qq.com)
+ * @version      V1.0
+ * @date         2025-03-30
+ * @LastEditors  Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-22
+ *
+ * @copyright    Copyright (c) 2025
+ *
+ ******************************************************************************/
+
 #include "mod_controller.hpp"
 
 namespace my_engineer {
@@ -37,8 +51,8 @@ EAppStatus CModController::CComPitch2::UpdateComponent() {
     if (componentStatus == APP_RESET) return APP_ERROR;
 
     // 更新电机信息
-    pitch2Info.posit = MotortruePositToOffsetPosit_test(
-            CDevMtrDM::uint_to_float(motor[0]->motorData[CDevMtr::DATA_ANGLE], Pos_MIN, Pos_MAX, 16));
+    pitch2Info.posit = MotortruePositToOffsetPosit_test(    ///<注意是在这里更新的示教器控制信息传给机器人，下面的状态机是用来控制自定义控制器的重力补偿的
+            CDevMtrDM::uint_to_float(motor[0]->motorData[CDevMtr::DATA_ANGLE], -motor[0]->mitLimit_.Q_MAX, motor[0]->mitLimit_.Q_MAX, 16));
     pitch2Info.isPositArrived = (fabs(pitch2Cmd.setParam[EMotorParam::POSIT] - pitch2Info.posit) < 5.0f);
 
     switch (Component_FSMFlag_){
@@ -56,7 +70,7 @@ EAppStatus CModController::CComPitch2::UpdateComponent() {
 
         case FSM_INIT: {
             if (pitch2Info.isPositArrived) {
-                pitch2Cmd.setParam[static_cast<int>(EMotorParam::POSIT)] = 0.0f;
+                pitch2Cmd.setParam[static_cast<int>(EMotorParam::POSIT)] = 11.0f;
                 Component_FSMFlag_ = FSM_CTRL;
                 componentStatus = APP_OK;
                 return APP_OK;
@@ -68,9 +82,17 @@ EAppStatus CModController::CComPitch2::UpdateComponent() {
 
         case FSM_CTRL: {
             if (pitch2Cmd.isFree) {
+                // 示教模式：使用低阻尼参数\重力补偿前馈
+                float_t savedTF = pitch2Cmd.setParam[EMotorParam::TF];
                 std::fill(std::begin(pitch2Cmd.setParam), std::end(pitch2Cmd.setParam), 0.0f);
+                pitch2Cmd.setParam[EMotorParam::KP] = 0.0f;    // 示教模式位置刚度
+                pitch2Cmd.setParam[EMotorParam::KD] = 0.03f;    // 示教模式低阻尼
+                pitch2Cmd.setParam[EMotorParam::TF] = savedTF; // 保留重力补偿
                 return _UpdateOutput(pitch2Cmd.setParam);
             }
+            // 联动模式：恢复位控参数，跟随机器人回传位置
+            pitch2Cmd.setParam[EMotorParam::KP] = motor[0]->Kp;
+            pitch2Cmd.setParam[EMotorParam::KD] = motor[0]->Kd;
             return _UpdateOutput(pitch2Cmd.setParam);
         }
 
@@ -85,43 +107,41 @@ EAppStatus CModController::CComPitch2::UpdateComponent() {
 
 /******************************************************************************
  * @brief    物理位置转换为电机位置
- * 
- * @param    offsetPosit 
- * @return   float_t 
+ *
+ * @param    offsetPosit
+ * @return   float_t
  ******************************************************************************/
 float_t CModController::CComPitch2::OffsetPositToMotortruePosit_test(float_t offsetPosit) {
-    const float_t zeroOffset = 4.1f; 
-    const float_t scale = 180.0f / PI; 
-    return (static_cast<float_t>(offsetPosit - zeroOffset) / scale);
+    const float_t scale = 180.0f / PI;
+    return CONTROLLER_PITCH2_MOTOR_DIR * (static_cast<float_t>(offsetPosit) / scale);
 }
 
 /******************************************************************************
  * @brief    电机位置转换为物理位置
- * 
- * @param    motortruePosit 
- * @return   float_t 
+ *
+ * @param    motortruePosit
+ * @return   float_t
  ******************************************************************************/
 float_t CModController::CComPitch2::MotortruePositToOffsetPosit_test(float_t motortruePosit) {
-    const float_t zeroOffset = 4.1f;
     const float_t scale = 180.0f / PI;
-    
-    return (static_cast<float_t>(motortruePosit * scale) + zeroOffset);
+    return (static_cast<float_t>(CONTROLLER_PITCH2_MOTOR_DIR * motortruePosit * scale));
 }
 
 /******************************************************************************
  * @brief    输出更新函数
  ******************************************************************************/
 EAppStatus CModController::CComPitch2::_UpdateOutput(float_t* setParam){
-  float_t posit = OffsetPositToMotortruePosit_test(setParam[static_cast<int>(EMotorParam::POSIT)]);    ///< turn offset posit to motor true posit
-  float_t torq = setParam[static_cast<int>(EMotorParam::TF)];       
+  float_t posit = OffsetPositToMotortruePosit_test(setParam[static_cast<int>(EMotorParam::POSIT)]);
+  float_t torq = setParam[static_cast<int>(EMotorParam::TF)];
 
-  CDevMtrDM::FillCanTxBuffer_MIT(motor[0], mtrCanTxNode_[0]->dataBuffer, 
-                              posit, setParam[static_cast<int>(EMotorParam::SPEED)], 
-                              torq, setParam[static_cast<int>(EMotorParam::KP)], 
-                              setParam[static_cast<int>(EMotorParam::KD)]);   
-                              
-  /*!!!!!!!!!!!Here Can had been sent!!!!!!!!!!!!!!!!!!!*/
- MitTxNode_Can2_32.Transmit();
+  /* 使用电机内部 TxNode 发送 (CAN重分配后Pitch2独占CAN3，无需降频) */
+  motor[0]->Control_MIT(
+      setParam[static_cast<int>(EMotorParam::KP)],
+      setParam[static_cast<int>(EMotorParam::KD)],
+      posit,
+      setParam[static_cast<int>(EMotorParam::SPEED)],
+      torq);
+
   return APP_OK;
 }
 

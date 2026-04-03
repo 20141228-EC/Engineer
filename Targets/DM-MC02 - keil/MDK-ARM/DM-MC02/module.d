@@ -120,4 +120,5 @@ dm-mc02/module.o: ..\..\..\Applications\Module\Module.cpp \
   ..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp \
   ..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp \
   ..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp \
-  ..\..\..\Applications\Module\Include\mod_controller.hpp
+  ..\..\..\Applications\Module\Include\mod_controller.hpp \
+  ..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp

@@ -32,14 +32,12 @@ public:
     // 定义自动操作的任务类型并实例化表示当前任务类型
     enum class EAutoCtrlProcess {
         NONE,
-        RETURN_ORIGIN,
-        RETURN_DRIVE,
-        GROUND_ORE,
-        SILVER_ORE,
-        GOLD_ORE,
-        EXCHANGE,
-        PUSH_ORE,
-        POP_ORE,
+        RETURN_ORIGIN,      ///< 归零位
+        RETURN_DRIVE,       ///< 行驶归位
+        EXCHANGE_FIRST,     ///< 一级兑换
+        EXCHANGE_SECOND,    ///< 二级兑换
+        EXCHANGE_THIRD,     ///< 三级兑换
+        EXCHANGE_FOURTH,    ///< 四级兑换
     } currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
     // 初始化系统核心
@@ -52,14 +50,8 @@ private:
     // 定义系统核心响应频率
     const float_t freq = 1000.f; //??为什么是float_t
 
-    // 模块指针
-    // CModChassis *pchassis_ = nullptr;
-    // // CModGimbal *pgimbal_ = nullptr;
-    // // CModGantry *pgantry_ = nullptr;
-    // // CModSubGantry *psubgantry_ = nullptr;
-    // CModMantis *pmantis_ = nullptr;
+    // 单臂控制器模块指针
     CModController *pcontroller_ = nullptr;
-    CDevFourButton *pfourButton_ = nullptr;
 
     // 定义系统核心的更新处理
     void UpdateHandler_();
@@ -81,17 +73,13 @@ private:
 
     static void StartReturnDriveTask(void *arg);
 
-    static void StartGroundOreTask(void *arg);
+    static void StartExchangeFirstTask(void *arg);
 
-    static void StartSilverOreTask(void *arg);
+    static void StartExchangeSecondTask(void *arg);
 
-    static void StartGoldOreTask(void *arg);
+    static void StartExchangeThirdTask(void *arg);
 
-    static void StartExchangeTask(void *arg);
-
-    static void StartPopOreTask(void *arg);
-
-    static void StartPushOreTask(void *arg);
+    static void StartExchangeFourthTask(void *arg);
     */
     
 };

@@ -1,20 +1,13 @@
-/*
- * @Description: 
- * @Author: Sassinak
- * @version: 
- * @Date: 2025-02-14 15:10:36
- * @LastEditors: Sassinak
- * @LastEditTime: 2025-07-13 10:48:49
- */
 /**
  * @file conf_CanTxNode.hpp
- * @author Fish_Joe (2328339747@qq.com)
- * @brief 
- * @version 1.0
+ * @author Sassinak, Fish_Joe, Ciallo
+ * @brief CAN发送节点配置
+ * @version 1.1
  * @date 2024-11-21
- * 
- * @copyright Copyright (c) 2024
- * 
+ * @LastEditors Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-15
+ *
+ * @details
  */
 
 #ifndef CONF_CANTXNODE_HPP
@@ -44,6 +37,11 @@ extern CInfCAN::CCanTxNode MitTxNode_Can2_30;
 extern CInfCAN::CCanTxNode MitTxNode_Can2_32;
 extern CInfCAN::CCanTxNode MitTxNode_Can3_30;
 extern CInfCAN::CCanTxNode MitTxNode_Can3_32;
+/*----------- Roll和PitchEnd的MIT发送节点（DM3510） -----------*/
+extern CInfCAN::CCanTxNode MitTxNode_Can2_34;
+extern CInfCAN::CCanTxNode MitTxNode_Can2_36;
+extern CInfCAN::CCanTxNode MitTxNode_Can3_34;
+extern CInfCAN::CCanTxNode MitTxNode_Can3_36;
 
 EAppStatus InitAllCanTxNode();
 

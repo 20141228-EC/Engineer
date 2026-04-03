@@ -54,27 +54,29 @@ void CDevRocker::UpdateHandler_(){
 	if (deviceStatus == APP_RESET) return;
 
 	// 获取ADC值
-	rockerValues.X = static_cast<int32_t>(adcInterface_->Read(X_channel_));
-	rockerValues.Y = static_cast<int32_t>(adcInterface_->Read(Y_channel_));
+	if (X_channel_ != CInfADC::EAdcChannel::CHANNEL_NULL) {
+		rockerValues.X = static_cast<int32_t>(adcInterface_->Read(X_channel_));
+	} else {
+		rockerValues.X = 0;
+	}
 
-	// if (HAL_GPIO_ReadPin(halGpioPort_, halGpioPin_) == GPIO_PIN_RESET) {
-	// 	rockerValues.key = 1;
-	// }
-	// else {
-	// 	rockerValues.key = 0;
-	// }
+	if (Y_channel_ != CInfADC::EAdcChannel::CHANNEL_NULL) {
+		rockerValues.Y = static_cast<int32_t>(adcInterface_->Read(Y_channel_));
+	} else {
+		rockerValues.Y = 0;
+	}
 
 	// 若按键值有变化，更新时间戳
-	if (HAL_GPIO_ReadPin(halGpioPort_, halGpioPin_) != key_new_value_) {
-		key_new_value_ = HAL_GPIO_ReadPin(halGpioPort_, halGpioPin_);
-		key_udapte_time_ = HAL_GetTick();
+	if (halGpioPort_ != nullptr) {
+		if (HAL_GPIO_ReadPin(halGpioPort_, halGpioPin_) != key_new_value_) {
+			key_new_value_ = HAL_GPIO_ReadPin(halGpioPort_, halGpioPin_);
+			key_udapte_time_ = HAL_GetTick();
+		}
+		// 若按键值在一定时间内没有变化，更新按键值
+		if (HAL_GetTick() - key_udapte_time_ > 10) {
+			rockerValues.key = key_new_value_ == GPIO_PIN_RESET ? 1 : 0;
+		}
 	}
-	// 若按键值在一定时间内没有变化，更新按键值
-	if (HAL_GetTick() - key_udapte_time_ > 10) {
-		rockerValues.key = key_new_value_ == GPIO_PIN_RESET ? 1 : 0;
-	}
-
-	
 }
 
 /******************************************************************************

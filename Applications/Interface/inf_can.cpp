@@ -131,7 +131,7 @@ EAppStatus CInfCAN::Transmit(CCanNode &node){
     };
 
 
-    //清理D-Cache(还不清楚为什么要这样做)
+    //清理D-Cache 如果使用了D-Cache，必须在发送数据前清理D-Cache，以确保数据一致性。这是因为DMA直接访问内存，如果D-Cache中有未写回的数据，DMA可能会读取到过时的数据。清理D-Cache可以将所有修改过的数据写回内存，确保DMA读取到最新的数据。
     #ifdef rp_USE_DCACHE
         SCB_CleanDCache();
     #endif

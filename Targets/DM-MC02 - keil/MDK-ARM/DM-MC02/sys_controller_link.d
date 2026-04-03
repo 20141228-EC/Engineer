@@ -110,4 +110,17 @@ dm-mc02/sys_controller_link.o: \
   ..\..\..\Applications\Interface\Include\inf_uart.hpp \
   ..\..\..\Applications\Algorithm\Include\algo_crc.hpp \
   ..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp \
-  ..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp
+  ..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp \
+  ..\..\..\Applications\Module\Include\mod_controller.hpp \
+  ..\..\..\Applications\Module\Include\mod_common.hpp \
+  ..\..\..\Applications\Interface\Include\Interface.hpp \
+  ..\..\..\Applications\Interface\Include\inf_usb_cdc.hpp \
+  ..\USB_DEVICE\App\usb_device.h \
+  ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_def.h \
+  ..\USB_DEVICE\Target\usbd_conf.h ..\USB_DEVICE\App\usbd_cdc_if.h \
+  ..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h \
+  ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h \
+  ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h \
+  ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h \
+  ..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp \
+  ..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp

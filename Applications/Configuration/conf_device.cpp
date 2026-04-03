@@ -1,10 +1,12 @@
 /**
- * @file conf_interface.cpp
- * @author Zoe
+ * @file conf_device.cpp
+ * @author Zoe, Ciallo
  * @brief 完成所有设备的配置
- * @email 2328339747@qq.com
+ * @version 1.1
  * @date 2024-11-01
- * 
+ * @LastEditors Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-15
+ *
  * @details
  */
 
@@ -43,37 +45,39 @@ EAppStatus InitAllDevice(){
     bmi088_initparam.tempPidParam.maxOutput = 100;
     bmi088.InitDevice(&bmi088_initparam);
 
-    /*four button config*/
+    /*four button config - 4按钮配置（连续索引，下拉输入高电平有效）*/
     static CDevFourButton fourButton;
     CDevFourButton::SDevInitParam_FourButton fourButton_initparam;
     fourButton_initparam.deviceID = EDeviceID::DEV_MULTI_BUTTON;
-    fourButton_initparam.buttons_[0].buttonID = CDevFourButton::EButtonID::RESET_BUTTON;
-    fourButton_initparam.buttons_[0].activeLevel = 1;
-    fourButton_initparam.buttons_[0].halGpioPort = RESET_BUTTON_GPIO_Port;
-    fourButton_initparam.buttons_[0].halGpioPin = RESET_BUTTON_Pin;
-    fourButton_initparam.buttons_[1].buttonID = CDevFourButton::EButtonID::LEVEL_4_BUTTON;
-    fourButton_initparam.buttons_[1].activeLevel = 1;
-    fourButton_initparam.buttons_[1].halGpioPort = LEVEL4_BUTTON_GPIO_Port;
-    fourButton_initparam.buttons_[1].halGpioPin = LEVEL4_BUTTON_Pin;
-    fourButton_initparam.buttons_[2].buttonID = CDevFourButton::EButtonID::LEVEL_3_BUTTON;
-    fourButton_initparam.buttons_[2].activeLevel = 1;
-    fourButton_initparam.buttons_[2].halGpioPort = LEVEL3_BUTTON_GPIO_Port;
-    fourButton_initparam.buttons_[2].halGpioPin = LEVEL3_BUTTON_Pin;
-    fourButton_initparam.buttons_[3].buttonID = CDevFourButton::EButtonID::SELF_BUTTON;
-    fourButton_initparam.buttons_[3].activeLevel = 1;
-    fourButton_initparam.buttons_[3].halGpioPort = SELF_BUTTON_GPIO_Port;
-    fourButton_initparam.buttons_[3].halGpioPin = SELF_BUTTON_Pin;
+    // 槽位0: 拨杆右档 - 底盘模式 (PE13)
+    fourButton_initparam.buttons_[0].buttonID = CDevFourButton::EButtonID::SWITCH_CHASSIS;
+    fourButton_initparam.buttons_[0].activeLevel = 1;  // 高电平有效（下拉输入）
+    fourButton_initparam.buttons_[0].halGpioPort = SWITCH_CHASSIS_GPIO_Port;
+    fourButton_initparam.buttons_[0].halGpioPin = SWITCH_CHASSIS_Pin;
+    // 槽位1: 拨杆左档 - 臂Roll末端模式 (PE9)
+    fourButton_initparam.buttons_[1].buttonID = CDevFourButton::EButtonID::SWITCH_ARM_ROLL_END;
+    fourButton_initparam.buttons_[1].activeLevel = 1;  // 高电平有效（下拉输入）
+    fourButton_initparam.buttons_[1].halGpioPort = SWITCH_ARM_ROLL_END_GPIO_Port;
+    fourButton_initparam.buttons_[1].halGpioPin = SWITCH_ARM_ROLL_END_Pin;
+    // 槽位2: 保留按钮 (PB8, 原左手夹爪，未使用)
+    fourButton_initparam.buttons_[2].buttonID = CDevFourButton::EButtonID::BUTTON_RESERVED;
+    fourButton_initparam.buttons_[2].activeLevel = 0;  // 低电平有效（上拉输入，按下接GND）
+    fourButton_initparam.buttons_[2].halGpioPort = GRIPPER_LEFT_GPIO_Port;
+    fourButton_initparam.buttons_[2].halGpioPin = GRIPPER_LEFT_Pin;
+    // 槽位3: 夹爪 (PB9)
+    fourButton_initparam.buttons_[3].buttonID = CDevFourButton::EButtonID::GRIPPER;
+    fourButton_initparam.buttons_[3].activeLevel = 0;  // 低电平有效（上拉输入，按下接GND）
+    fourButton_initparam.buttons_[3].halGpioPort = GRIPPER_RIGHT_GPIO_Port;
+    fourButton_initparam.buttons_[3].halGpioPin = GRIPPER_RIGHT_Pin;
     fourButton.InitDevice(&fourButton_initparam);
 
-    // 摇杆
+    // 摇杆（双轴模式）- PA2 = CHANNEL_14, PA5 = CHANNEL_19
     static CDevRocker rocker;
     CDevRocker::SDevInitParam_Rocker rocker_initparam;
     rocker_initparam.deviceID = EDeviceID::DEV_ROCKER;
     rocker_initparam.interfaceID = EInterfaceID::INF_ADC1;
-    rocker_initparam.X_channel = CInfADC::EAdcChannel::CHANNEL_14;
-    rocker_initparam.Y_channel = CInfADC::EAdcChannel::CHANNEL_16;
-    // rocker_initparam.halGpioPort = rocker_KEY_GPIO_Port;
-    // rocker_initparam.halGpioPin = rocker_KEY_Pin;
+    rocker_initparam.X_channel = CInfADC::EAdcChannel::CHANNEL_14;  // PA2
+    rocker_initparam.Y_channel = CInfADC::EAdcChannel::CHANNEL_19;  // PA5
     rocker.InitDevice(&rocker_initparam);
 
     // 蜂鸣器
@@ -92,74 +96,77 @@ EAppStatus InitAllDevice(){
     controllerLink_initparam.interfaceID = EInterfaceID::INF_UART7;
     controllerLink.InitDevice(&controllerLink_initparam);
 
-    // 自定义控制器电机
-    // yaw
-    static CDevMtrM6020 controllerMotor_Yaw;
-    CDevMtrM6020::SMtrInitParam_M6020 controllerMotor_Yaw_initparam;
-    controllerMotor_Yaw_initparam.deviceID = EDeviceID::DEV_CONTROLLER_MTR_YAW;
-    controllerMotor_Yaw_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    controllerMotor_Yaw_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
-    controllerMotor_Yaw_initparam.useAngleToPosit = true;
-    controllerMotor_Yaw_initparam.useStallMonit = true;
-    controllerMotor_Yaw_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
-    controllerMotor_Yaw.InitDevice(&controllerMotor_Yaw_initparam);
+    /*----------- 单臂电机 -----------*/
+    // Yaw (M6020, CAN1 ID5)
+    static CDevMtrM6020 mtr_Yaw;
+    CDevMtrM6020::SMtrInitParam_M6020 mtr_Yaw_initparam;
+    mtr_Yaw_initparam.deviceID = EDeviceID::DEV_MTR_YAW;
+    mtr_Yaw_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    mtr_Yaw_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
+    mtr_Yaw_initparam.useAngleToPosit = true;
+    mtr_Yaw_initparam.useStallMonit = true;
+    mtr_Yaw_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
+    mtr_Yaw.InitDevice(&mtr_Yaw_initparam);
 
-    // Pitch1
-    static CDevMtrDM controllerMotor_Pitch1;
-    CDevMtrDM::SMtrInitParam_DM controllerMotor_Pitch1_initparam;
-    controllerMotor_Pitch1_initparam.deviceID = EDeviceID::DEV_CONTROLLER_MTR_PITCH1;
-    controllerMotor_Pitch1_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    controllerMotor_Pitch1_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
-    controllerMotor_Pitch1_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
-    controllerMotor_Pitch1_initparam.useAngleToPosit = false;
-    /*--------pleasue confige thie param,only when you use MIT mode--------*/
-    controllerMotor_Pitch1_initparam.Kp = 10.0f;                                         ///<Proportional gain for MIT mode
-    controllerMotor_Pitch1_initparam.Kd = 2.0f;                                         ///<Derivative gain for
-    controllerMotor_Pitch1_initparam.MIT_RxCANID = 0x31;                              
-    controllerMotor_Pitch1_initparam.MIT_TxCANID = 0x30;
-    /*--------------------------------------------------------------------*/
-    controllerMotor_Pitch1.InitDevice(&controllerMotor_Pitch1_initparam);
+    // Pitch1 (DM4310, CAN3, CAN_ID=0x31, Master_ID=0x30)
+    static CDevMtrDM mtr_Pitch1;
+    CDevMtrDM::SMtrInitParam_DM mtr_Pitch1_initparam;
+    mtr_Pitch1_initparam.deviceID = EDeviceID::DEV_MTR_PITCH1;
+    mtr_Pitch1_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    mtr_Pitch1_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
+    mtr_Pitch1_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
+    mtr_Pitch1_initparam.useAngleToPosit = false;
+    mtr_Pitch1_initparam.Kp = 10.0f;
+    mtr_Pitch1_initparam.Kd = 2.0f;
+    mtr_Pitch1_initparam.MIT_TxCANID = 0x31;  // 发送到电机的CAN_ID
+    mtr_Pitch1_initparam.MIT_RxCANID = 0x30;  // 接收电机反馈的Master_ID
+    mtr_Pitch1.InitDevice(&mtr_Pitch1_initparam);
 
-    // Pitch2
-    static CDevMtrDM controllerMotor_Pitch2;
-    CDevMtrDM::SMtrInitParam_DM controllerMotor_Pitch2_initparam;
-    controllerMotor_Pitch2_initparam.deviceID = EDeviceID::DEV_CONTROLLER_MTR_PITCH2;
-    controllerMotor_Pitch2_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    controllerMotor_Pitch2_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
-    controllerMotor_Pitch2_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
-    controllerMotor_Pitch2_initparam.useAngleToPosit = false;
-    /*--------pleasue confige thie param,only when you use MIT mode--------*/
-    controllerMotor_Pitch2_initparam.Kp = 10.0f;                                         ///<Proportional gain for MIT mode
-    controllerMotor_Pitch2_initparam.Kd = 2.0f;                                         ///<Derivative gain for
-    controllerMotor_Pitch2_initparam.MIT_RxCANID = 0x33;                              
-    controllerMotor_Pitch2_initparam.MIT_TxCANID = 0x32;
-    /*--------------------------------------------------------------------*/    
-    controllerMotor_Pitch2.InitDevice(&controllerMotor_Pitch2_initparam);
+    // Pitch2 (DM4310, CAN3, CAN_ID=0x33, Master_ID=0x32)
+    static CDevMtrDM mtr_Pitch2;
+    CDevMtrDM::SMtrInitParam_DM mtr_Pitch2_initparam;
+    mtr_Pitch2_initparam.deviceID = EDeviceID::DEV_MTR_PITCH2;
+    mtr_Pitch2_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    mtr_Pitch2_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
+    mtr_Pitch2_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
+    mtr_Pitch2_initparam.useAngleToPosit = false;
+    mtr_Pitch2_initparam.Kp = 10.0f;
+    mtr_Pitch2_initparam.Kd = 2.0f;
+    mtr_Pitch2_initparam.MIT_TxCANID = 0x33;  // 发送到电机的CAN_ID
+    mtr_Pitch2_initparam.MIT_RxCANID = 0x32;  // 接收电机反馈的Master_ID
+    mtr_Pitch2.InitDevice(&mtr_Pitch2_initparam);
 
-    // Roll
-    static CDevMtrM3508 controllerMotor_Roll;
-    CDevMtrM3508::SMtrInitParam_M3508 controllerMotor_Roll_initparam;
-    controllerMotor_Roll_initparam.deviceID = EDeviceID::DEV_CONTROLLER_MTR_ROLL;
-    controllerMotor_Roll_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    controllerMotor_Roll_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_1;
-    controllerMotor_Roll_initparam.useAngleToPosit = true;
-    controllerMotor_Roll_initparam.useStallMonit = true;
-    controllerMotor_Roll_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
-    controllerMotor_Roll_initparam.stallThreshold = 2000;
-    controllerMotor_Roll.InitDevice(&controllerMotor_Roll_initparam);
+    // Roll (DM3510, CAN2, CAN_ID=0x35, Master_ID=0x34)
+    static CDevMtrDM mtr_Roll;
+    CDevMtrDM::SMtrInitParam_DM mtr_Roll_initparam;
+    mtr_Roll_initparam.deviceID = EDeviceID::DEV_MTR_ROLL;
+    mtr_Roll_initparam.interfaceID = EInterfaceID::INF_CAN2; 
+    mtr_Roll_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
+    mtr_Roll_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
+    mtr_Roll_initparam.useAngleToPosit = false;
+    mtr_Roll_initparam.Kp = 0.123f;
+    mtr_Roll_initparam.Kd = 0.015f;
+    mtr_Roll_initparam.MIT_TxCANID = 0x35;  // 发送到电机的CAN_ID
+    mtr_Roll_initparam.MIT_RxCANID = 0x34;  // 接收电机反馈的Master_ID
+    mtr_Roll_initparam.TAU_MAX = 1.0f;      // DM3510 力矩范围 ±1 N·m
+    mtr_Roll_initparam.DQ_MAX = 280.0f;     // DM3510 速度范围 ±280 rad/s
+    mtr_Roll.InitDevice(&mtr_Roll_initparam);
 
-    // pitch end
-    static CDevMtrM3508 controllerMotor_PitchEnd;
-    CDevMtrM3508::SMtrInitParam_M3508 controllerMotor_PitchEnd_initparam;
-    controllerMotor_PitchEnd_initparam.deviceID = EDeviceID::DEV_CONTROLLER_MTR_PITCH_END;
-    controllerMotor_PitchEnd_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    controllerMotor_PitchEnd_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_2;
-    controllerMotor_PitchEnd_initparam.useAngleToPosit = true;
-    controllerMotor_PitchEnd_initparam.useStallMonit = true;
-    controllerMotor_PitchEnd_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
-    controllerMotor_PitchEnd_initparam.stallThreshold = 2000;
-    controllerMotor_PitchEnd.InitDevice(&controllerMotor_PitchEnd_initparam);
-
+    // PitchEnd (DM3510, CAN2, CAN_ID=0x37, Master_ID=0x36)
+    static CDevMtrDM mtr_PitchEnd;
+    CDevMtrDM::SMtrInitParam_DM mtr_PitchEnd_initparam;
+    mtr_PitchEnd_initparam.deviceID = EDeviceID::DEV_MTR_PITCH_END;
+    mtr_PitchEnd_initparam.interfaceID = EInterfaceID::INF_CAN2; 
+    mtr_PitchEnd_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
+    mtr_PitchEnd_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
+    mtr_PitchEnd_initparam.useAngleToPosit = false;
+    mtr_PitchEnd_initparam.Kp = 0.123f;
+    mtr_PitchEnd_initparam.Kd = 0.015f;
+    mtr_PitchEnd_initparam.MIT_TxCANID = 0x37;  // 发送到电机的CAN_ID
+    mtr_PitchEnd_initparam.MIT_RxCANID = 0x36;  // 接收电机反馈的Master_ID
+    mtr_PitchEnd_initparam.TAU_MAX = 1.0f;      // DM3510 力矩范围 ±1 N·m
+    mtr_PitchEnd_initparam.DQ_MAX = 280.0f;     // DM3510 速度范围 ±280 rad/s
+    mtr_PitchEnd.InitDevice(&mtr_PitchEnd_initparam);
 
     return APP_OK;
 }

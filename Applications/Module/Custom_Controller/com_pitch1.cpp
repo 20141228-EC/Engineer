@@ -1,13 +1,15 @@
 /******************************************************************************
- * @brief        
- * 
+ * @brief
+ *
  * @file         com_pitch1.cpp
  * @author       Fish_Joe (2328339747@qq.com)
  * @version      V1.0
  * @date         2025-03-30
- * 
+ * @LastEditors  Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-22
+ *
  * @copyright    Copyright (c) 2025
- * 
+ *
  ******************************************************************************/
 
 #include "mod_controller.hpp"
@@ -49,8 +51,8 @@ EAppStatus CModController::CComPitch1::UpdateComponent() {
 	if (componentStatus == APP_RESET) return APP_ERROR;
 
 	// 更新电机信息
-	pitch1Info.posit = MotortruePositToOffsetPosit_test(
-			CDevMtrDM::uint_to_float(motor[0]->motorData[CDevMtr::DATA_ANGLE], Pos_MIN, Pos_MAX, 16));
+	pitch1Info.posit = MotortruePositToOffsetPosit_test(     ///<注意是在这里更新的示教器控制信息传给机器人，下面的状态机是用来控制示教器的重力补偿的
+			CDevMtrDM::uint_to_float(motor[0]->motorData[CDevMtr::DATA_ANGLE], -motor[0]->mitLimit_.Q_MAX, motor[0]->mitLimit_.Q_MAX, 16));
 	pitch1Info.isPositArrived = (fabs(pitch1Cmd.setParam[EMotorParam::POSIT] - pitch1Info.posit) < 5.0f);
 
 	switch (Component_FSMFlag_){
@@ -80,9 +82,17 @@ EAppStatus CModController::CComPitch1::UpdateComponent() {
 
 		case FSM_CTRL: {
 			if (pitch1Cmd.isFree) {
+				// 示教模式：使用低阻尼参数 + 重力补偿前馈
+				float_t savedTF = pitch1Cmd.setParam[EMotorParam::TF];
 				std::fill(std::begin(pitch1Cmd.setParam), std::end(pitch1Cmd.setParam), 0.0f);
+				pitch1Cmd.setParam[EMotorParam::KP] = 0.0f;    // 示教模式位置刚度
+				pitch1Cmd.setParam[EMotorParam::KD] = 0.03f;    // 示教模式低阻尼
+				pitch1Cmd.setParam[EMotorParam::TF] = savedTF; // 保留重力补偿
 				return _UpdateOutput(pitch1Cmd.setParam);
 			}
+			// 联动模式：恢复位控参数，跟随机器人回传位置
+			pitch1Cmd.setParam[EMotorParam::KP] = motor[0]->Kp;
+			pitch1Cmd.setParam[EMotorParam::KD] = motor[0]->Kd;
 			return _UpdateOutput(pitch1Cmd.setParam);
 		}
 
@@ -97,43 +107,41 @@ EAppStatus CModController::CComPitch1::UpdateComponent() {
 
 /******************************************************************************
  * @brief    物理位置转换为电机位置
- * 
- * @param    offsetPosit 
- * @return   float_t 
+ *
+ * @param    offsetPosit
+ * @return   float_t
  ******************************************************************************/
 float_t CModController::CComPitch1::OffsetPositToMotortruePosit_test(float_t offsetPosit) {
-	const float_t zeroOffset = 5.0f; 
-	const float_t scale = 180.0f / PI; 
-	return (static_cast<float_t>(offsetPosit - zeroOffset) / scale);
+	const float_t scale = 180.0f / PI;
+	return (static_cast<float_t>(offsetPosit) / scale);
 }
 
 /******************************************************************************
  * @brief    电机位置转换为物理位置
- * 
- * @param    motortruePosit 
- * @return   float_t 
+ *
+ * @param    motortruePosit
+ * @return   float_t
  ******************************************************************************/
 float_t CModController::CComPitch1::MotortruePositToOffsetPosit_test(float_t motortruePosit) {
-	const float_t zeroOffset = 5.0f;
 	const float_t scale = 180.0f / PI;
-	
-	return (static_cast<float_t>(motortruePosit * scale) + zeroOffset);
+	return (static_cast<float_t>(motortruePosit * scale));
 }
 
 /******************************************************************************
  * @brief    输出更新函数
  ******************************************************************************/
 EAppStatus CModController::CComPitch1::_UpdateOutput(float_t* Setparam){
-  float_t posit = OffsetPositToMotortruePosit_test(Setparam[static_cast<int>(EMotorParam::POSIT)]);    ///< turn offset posit to motor true posit
-  float_t torq = Setparam[static_cast<int>(EMotorParam::TF)];       
+  float_t posit = OffsetPositToMotortruePosit_test(Setparam[static_cast<int>(EMotorParam::POSIT)]);
+  float_t torq = Setparam[static_cast<int>(EMotorParam::TF)];
 
-  CDevMtrDM::FillCanTxBuffer_MIT(motor[0], mtrCanTxNode_[0]->dataBuffer, 
-                              posit, Setparam[static_cast<int>(EMotorParam::SPEED)], 
-                              torq, Setparam[static_cast<int>(EMotorParam::KP)], 
-                              Setparam[static_cast<int>(EMotorParam::KD)]);   
-                              
-  /*!!!!!!!!!!!Here Can had been sent!!!!!!!!!!!!!!!!!!!*/
- MitTxNode_Can2_30.Transmit();
+  /* 使用电机内部 TxNode 发送 (CAN重分配后Pitch1独占CAN3，无需降频) */
+  motor[0]->Control_MIT(
+      Setparam[static_cast<int>(EMotorParam::KP)],
+      Setparam[static_cast<int>(EMotorParam::KD)],
+      posit,
+      Setparam[static_cast<int>(EMotorParam::SPEED)],
+      torq);
+
   return APP_OK;
 }
 

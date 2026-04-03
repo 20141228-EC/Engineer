@@ -57,7 +57,7 @@ EAppStatus CModController::CComYaw::UpdateComponent() {
 	yawInfo.posit = motor[0]->motorData[CDevMtr::DATA_POSIT];
 	yawInfo.isPositArrived = (abs(yawCmd.setPosit - yawInfo.posit) < 8192 * 0.02);
 
-	switch (Component_FSMFlag_) {
+	switch (Component_FSMFlag_) {    ///<这个轴不需要重补
 		case FSM_RESET: {
 			StopComponent();
 			mtrOutputBuffer.fill(0);
@@ -91,7 +91,7 @@ EAppStatus CModController::CComYaw::UpdateComponent() {
 		}
 
 		case FSM_CTRL: {
-			yawCmd.setPosit = std::clamp(yawCmd.setPosit, static_cast<int32_t>(0), rangeLimit);
+			yawCmd.setPosit = std::clamp(yawCmd.setPosit, -(rangeLimit / 2), rangeLimit / 2);
 			if (yawCmd.isFree) {
 				mtrOutputBuffer.fill(0);
 				return APP_OK;
@@ -149,7 +149,7 @@ EAppStatus CModController::CComYaw::_UpdateOutput(float_t posit) {
 		static_cast<float_t>(motor[0]->motorData[CDevMtr::DATA_POSIT]),
 	};
 
-	auto yawSpd = 
+	auto yawSpd =
 		pidPosCtrl.UpdatePidController(yawPos, yawPosMeasure);
 
 	// 速度环
@@ -157,7 +157,7 @@ EAppStatus CModController::CComYaw::_UpdateOutput(float_t posit) {
 		static_cast<float_t>(motor[0]->motorData[CDevMtr::DATA_SPEED]),
 	};
 
-	auto output = 
+	auto output =
 		pidSpdCtrl.UpdatePidController(yawSpd, yawSpdMeasure);
 
 	mtrOutputBuffer = {

@@ -3,10 +3,10 @@
 namespace my_engineer {
 
 #define EVENT_CB(ev)   if(handle->cb[ev])handle->cb[ev]((void*)handle)
-#define PRESS_REPEAT_MAX_NUM  15 /*!< The maximum value of the repeat counter */
+#define PRESS_REPEAT_MAX_NUM  15 /*!< The maximum value of the repeat counter */ ///<最大按键连击次数
 
   //button handle list head.
-static CDevMultiButton::Button* head_handle = NULL;
+static CDevMultiButton::Button* head_handle = NULL;///<按键链表头指针
 
 static void button_handler(CDevMultiButton::Button* handle);
 
@@ -60,23 +60,23 @@ static void button_handler(CDevMultiButton::Button* handle)
     uint8_t read_gpio_level = handle->hal_button_Level(handle->button_id);
 
     //ticks counter working..
-    if((handle->state) > 0) handle->ticks++;
+    if((handle->state) > 0) handle->ticks++;///<只要状态>0 就开始计时
 
     /*------------button debounce handle---------------*/
-    if(read_gpio_level != handle->button_level) { //not equal to prev one
+    if(read_gpio_level != handle->button_level) { //not equal to prev one ///<出现下降沿或上升沿
         //continue read 3 times same new level change
-        if(++(handle->debounce_cnt) >= DEBOUNCE_TICKS) {
-            handle->button_level = read_gpio_level;
-            handle->debounce_cnt = 0;
+        if(++(handle->debounce_cnt) >= DEBOUNCE_TICKS) {    ///<消抖计数到达阈值
+            handle->button_level = read_gpio_level;         ///<通过延时更新当前电平
+            handle->debounce_cnt = 0;                       ///<消抖计数器清零
         }
     } else { //level not change ,counter reset.
-        handle->debounce_cnt = 0;
+        handle->debounce_cnt = 0;                           ///<电平未变化，消抖计数器清零
     }
 
     /*-----------------State machine-------------------*/
     switch (handle->state) {
     case 0:
-        if(handle->button_level == handle->active_level) {	//start press down
+        if(handle->button_level == handle->active_level) {	//start press down ///<状态0：按键按下
             handle->event = (uint8_t)CDevMultiButton::PressEvent::PRESS_DOWN;
             EVENT_CB(CDevMultiButton::PressEvent::PRESS_DOWN);
             handle->ticks = 0;
@@ -101,7 +101,7 @@ static void button_handler(CDevMultiButton::Button* handle)
         break;
 
     case 2:
-        if(handle->button_level == handle->active_level) { //press down again
+        if(handle->button_level == handle->active_level) { //press down again ///<状态2：按键再次按下
             handle->event = (uint8_t)CDevMultiButton::PressEvent::PRESS_DOWN;
             EVENT_CB(CDevMultiButton::PressEvent::PRESS_DOWN);
             if(handle->repeat != PRESS_REPEAT_MAX_NUM) {

@@ -16,13 +16,13 @@ namespace my_engineer {
 class CDevFourButton : public CDevMultiButton {
 
 public:
-  enum  EButtonID {
-    BUTTON_NULL = -1,
-    RESET_BUTTON = 0,
-    LEVEL_4_BUTTON,
-    LEVEL_3_BUTTON,
-    SELF_BUTTON,
-    BUTTON_MAX,
+  enum EButtonID : uint8_t {
+    BUTTON_NULL = 255,          // 空按钮标记
+    SWITCH_CHASSIS = 0,         // PE13: 拨杆右档（底盘模式）
+    SWITCH_ARM_ROLL_END = 1,    // PE9: 拨杆左档（臂Roll末端模式）
+    BUTTON_RESERVED = 2,        // PB8: 保留按钮（原左手夹爪，未使用）
+    GRIPPER = 3,                // PB9: 夹爪按钮
+    BUTTON_MAX = 4              // 数组大小
   };
 private:
   typedef struct singlebutton{
@@ -48,13 +48,19 @@ public:
   static void ButtonPressDownCallback(void *btn);
   static void ButtonPressUpCallback(void *btn);
   static void ButtonLongPressCallback(void *btn);
+  static void ButtonDoubleClickCallback(void *btn);  // 双击回调
+  static void ButtonSingleClickCallback(void *btn); // 单击回调（二次夹紧）
 
   EAppStatus InitDevice(const SDevInitParam_Base *pStructInitParam) override;
 
-  static bool isReset;
-  static bool isLevel4;
-  static bool isLevel3;
-  static bool isSelf; ///< 是否启用对应按键
+  // 拨杆状态（直接电平检测，不使用按钮库）
+  static bool isSwitchChassis;      // PE13 高电平 = 底盘模式
+  static bool isSwitchArmRollEnd;   // PE9 高电平 = 臂Roll末端模式
+
+  // 夹爪按钮状态（按钮库事件驱动，单夹爪，使用PB9）
+  static bool isGripperPressed;       // 夹爪按下状态
+  static bool isGripperClose;         // 夹爪闭合状态（长按闭合/双击张开）
+  static bool isGripperReGrip;        // 夹爪二次夹紧请求
 };
 
 }

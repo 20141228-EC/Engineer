@@ -1,10 +1,13 @@
-/*
- * @Description: 
- * @Author: Sassinak
- * @version: 
- * @Date: 2025-05-14 01:05:00
- * @LastEditors: Sassinak
- * @LastEditTime: 2025-07-15 20:19:03
+/**
+ * @file conf_module.cpp
+ * @author Sassinak, Ciallo
+ * @brief 模块初始化配置
+ * @version 1.1
+ * @date 2025-05-14
+ * @LastEditors Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-15
+ *
+ * @details
  */
 
 #include "conf_module.hpp"
@@ -14,61 +17,52 @@ extern TIM_HandleTypeDef htim2;
 
 namespace my_engineer {
 
+// 控制器模块实例
+CModController controllerModule;
+
 EAppStatus InitAllModule() {
 
-    // /******初始化自定义控制器模块******/
-    CModController::SModInitParam_Controller controllerInitParam;
-    controllerInitParam.moduleID = EModuleID::MOD_CONTROLLER;
-    controllerInitParam.rocker_id = EDeviceID::DEV_ROCKER;
-    controllerInitParam.buzzer_id = EDeviceID::DEV_BUZZER;
-    controllerInitParam.yaw_id = EDeviceID::DEV_CONTROLLER_MTR_YAW;
-    controllerInitParam.pitch1_id = EDeviceID::DEV_CONTROLLER_MTR_PITCH1;
-    controllerInitParam.pitch2_id = EDeviceID::DEV_CONTROLLER_MTR_PITCH2;
-    controllerInitParam.roll_id = EDeviceID::DEV_CONTROLLER_MTR_ROLL;
-    // controllerInitParam.roll_end_id = EDeviceID::DEV_CONTROLLER_MTR_ROLL_END;
-    controllerInitParam.pitch_end_id = EDeviceID::DEV_CONTROLLER_MTR_PITCH_END;
-    // 设置can发送节点
-    controllerInitParam.pitch1TxNode = &MitTxNode_Can2_30;
-    controllerInitParam.pitch2TxNode = &MitTxNode_Can2_32;
-    controllerInitParam.yawTxNode = &TxNode_Can1_1FF;
-    controllerInitParam.rollTxNode = &TxNode_Can1_200;
-    controllerInitParam.pitchEndTxNode = &TxNode_Can1_200;
-    // 设置PID参数
-    /*--------------------yaw---------------------------*/
-    controllerInitParam.yawPosPidParam.kp = 3.0f;
-    controllerInitParam.yawPosPidParam.ki = 0.0f;
-    controllerInitParam.yawPosPidParam.kd = 0.0f;
-    controllerInitParam.yawPosPidParam.maxIntegral = 20;
-    controllerInitParam.yawPosPidParam.maxOutput = 5000;
-    controllerInitParam.yawSpdPidParam.kp = 1.0f;
-    controllerInitParam.yawSpdPidParam.ki = 0.1f;
-    controllerInitParam.yawSpdPidParam.kd = 0.0f;
-    controllerInitParam.yawSpdPidParam.maxIntegral = 200;
-    controllerInitParam.yawSpdPidParam.maxOutput = 20000;
-    /*--------------------roll----------------------------------*/
-    controllerInitParam.rollPosPidParam.kp = 1.0f;
-    controllerInitParam.rollPosPidParam.ki = 0.0f;
-    controllerInitParam.rollPosPidParam.kd = 0.0f;
-    controllerInitParam.rollPosPidParam.maxIntegral = 20;
-    controllerInitParam.rollPosPidParam.maxOutput = 5000;
-    controllerInitParam.rollSpdPidParam.kp = 0.5f;
-    controllerInitParam.rollSpdPidParam.ki = 0.0f;
-    controllerInitParam.rollSpdPidParam.kd = 0.0f;
-    controllerInitParam.rollSpdPidParam.maxIntegral = 200;
-    controllerInitParam.rollSpdPidParam.maxOutput = 8000;
-    /*--------------------pitch end--------------------------------*/
-    controllerInitParam.pitchEndPosPidParam.kp = 1.0f;
-    controllerInitParam.pitchEndPosPidParam.ki = 0.0f;
-    controllerInitParam.pitchEndPosPidParam.kd = 0.0f;
-    controllerInitParam.pitchEndPosPidParam.maxIntegral = 20;
-    controllerInitParam.pitchEndPosPidParam.maxOutput = 5000;
-    controllerInitParam.pitchEndSpdPidParam.kp = 0.5f;
-    controllerInitParam.pitchEndSpdPidParam.ki = 0.0f;
-    controllerInitParam.pitchEndSpdPidParam.kd = 0.0f;
-    controllerInitParam.pitchEndSpdPidParam.maxIntegral = 50;
-    controllerInitParam.pitchEndSpdPidParam.maxOutput = 8000;
-    // 使用初始化后的参数创建 controllerModule 实例
-    static auto controllerModule = CModController(controllerInitParam);
+    /*----------- 单臂控制器模块 -----------*/
+    // CAN分配：CAN1=DJI(Yaw), CAN2=MIT(Roll+PitchEnd), CAN3=MIT(Pitch1/2)
+    CModController::SModInitParam_Controller initParam;
+    initParam.moduleID = EModuleID::MOD_CONTROLLER;
+    initParam.rocker_id = EDeviceID::DEV_ROCKER;  // 摇杆（双轴）
+    initParam.buzzer_id = EDeviceID::DEV_BUZZER;
+    // 摇杆X轴校准 (PA2/CH14, 3.3V供电, 实测: 9255 ~ 61000, 中心 33450)
+    initParam.rocker_x_center    = 33450;
+    initParam.rocker_x_range_pos = 27550;  // 61000 - 33450
+    initParam.rocker_x_range_neg = 24195;  // 33450 - 9255
+    initParam.rocker_x_dir       = 1;
+    // 摇杆Y轴校准 (PA5/CH19, 3.3V供电, 实测: 7400 ~ 58800, 中心 33450)
+    initParam.rocker_y_center    = 33450;
+    initParam.rocker_y_range_pos = 25350;  // 58800 - 33450
+    initParam.rocker_y_range_neg = 26050;  // 33450 - 7400
+    initParam.rocker_y_dir       = 1;
+    // 电机设备ID
+    initParam.yaw_id = EDeviceID::DEV_MTR_YAW;
+    initParam.pitch1_id = EDeviceID::DEV_MTR_PITCH1;
+    initParam.pitch2_id = EDeviceID::DEV_MTR_PITCH2;
+    initParam.roll_id = EDeviceID::DEV_MTR_ROLL;
+    initParam.pitch_end_id = EDeviceID::DEV_MTR_PITCH_END;
+    // CAN发送节点（Pitch1/2->CAN3, Roll/PitchEnd->CAN2, Yaw->CAN1）
+    initParam.yawTxNode = &TxNode_Can1_1FF;           // CAN1 DJI (ID5-8用0x1FF)
+    initParam.pitch1TxNode = &MitTxNode_Can3_30;      // CAN3 MIT 0x30
+    initParam.pitch2TxNode = &MitTxNode_Can3_32;      // CAN3 MIT 0x32
+    initParam.rollTxNode = &MitTxNode_Can2_34;         // CAN2 MIT 0x34
+    initParam.pitchEndTxNode = &MitTxNode_Can2_36;     // CAN2 MIT 0x36 
+    // PID参数 - Yaw (M6020)
+    initParam.yawPosPidParam.kp = 3.0f;
+    initParam.yawPosPidParam.ki = 0.0f;
+    initParam.yawPosPidParam.kd = 0.0f;
+    initParam.yawPosPidParam.maxIntegral = 20;
+    initParam.yawPosPidParam.maxOutput = 5000;
+    initParam.yawSpdPidParam.kp = 1.0f;
+    initParam.yawSpdPidParam.ki = 0.1f;
+    initParam.yawSpdPidParam.kd = 0.0f;
+    initParam.yawSpdPidParam.maxIntegral = 200;
+    initParam.yawSpdPidParam.maxOutput = 20000;
+    // 初始化控制器模块
+    controllerModule.InitModule(initParam);
 
     return APP_OK;
 }
