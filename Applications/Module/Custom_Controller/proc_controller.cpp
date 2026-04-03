@@ -98,7 +98,7 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comPitchEnd_.pitchEndCmd.isFree = controller.ControllerCmd.isFree;
 
 				// 联动控制模式：将机器人回传的位置作为目标，驱动控制器电机跟随
-				if(!controller.ControllerCmd.isFree) {
+				if(!controller.ControllerCmd.isFree && controller.ControllerCmd.isfirstChange) {
 					controller.comYaw_.yawCmd.setPosit = CModController::CComYaw::PhyPositToMtrPosit(controller.ControllerCmd.cmd_yaw);
 					controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch1;
 					controller.comPitch2_.pitch2Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch2;

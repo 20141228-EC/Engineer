@@ -119,10 +119,6 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
-          <Key>DLGUARM</Key>
-        </SetRegEntry>
-        <SetRegEntry>
-          <Number>0</Number>
           <Key>JL2CM3</Key>
           <Name>-U20090928 -O78 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(6BA02477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO7 -FD20000000 -FC8000 -FN1 -FF0STM32H72x-73x_1024.FLM -FS08000000 -FL0100000 -FP0($$Device:STM32H723VGTx$CMSIS\Flash\STM32H72x-73x_1024.FLM)</Name>
         </SetRegEntry>
@@ -139,6 +135,11 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>ARMDBGFLAGS</Key>
+          <Name></Name>
+        </SetRegEntry>
+        <SetRegEntry>
+          <Number>0</Number>
+          <Key>DLGUARM</Key>
           <Name></Name>
         </SetRegEntry>
         <SetRegEntry>
@@ -192,124 +193,54 @@
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>my_engineer::controllerModule.ControllerCmd.isFree</ItemText>
-        </Ww>
-        <Ww>
-          <count>8</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>my_engineer::MotorIDMap</ItemText>
-        </Ww>
-        <Ww>
-          <count>9</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>*my_engineer::controllerModule.comYaw_.motor[0]</ItemText>
-        </Ww>
-        <Ww>
-          <count>10</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>*my_engineer::dbg_yaw_pid_pos</ItemText>
-        </Ww>
-        <Ww>
-          <count>11</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>*my_engineer::dbg_yaw_pid_spd</ItemText>
-        </Ww>
-        <Ww>
-          <count>12</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>*my_engineer::dbg_mtr_yaw </ItemText>
-        </Ww>
-        <Ww>
-          <count>13</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>dbg_fbTF_pitch1</ItemText>
-        </Ww>
-        <Ww>
-          <count>14</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>dbg_fbTF_pitch2</ItemText>
-        </Ww>
-        <Ww>
-          <count>15</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>dbg_fbTF_roll</ItemText>
+          <ItemText>_ZN11my_engineer16pDev_button_testE-&gt;isGripperLeft</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>
           <count>0</count>
           <WinNumber>2</WinNumber>
-          <ItemText>CModController</ItemText>
+          <ItemText>subGantry.comLift_.liftCmd.setPosit_L,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>2</WinNumber>
-          <ItemText>controllerModuleLeft</ItemText>
+          <ItemText>TxNode_Can1_200.CCanNode.dataBuffer.data()[0]</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>2</WinNumber>
-          <ItemText>my_engineer::controllerModuleLeft</ItemText>
+          <ItemText>gx</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>2</WinNumber>
-          <ItemText>my_engineer::dbg_fb_yaw</ItemText>
+          <ItemText>q0</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>2</WinNumber>
-          <ItemText>my_engineer::dbg_fb_pitch1</ItemText>
+          <ItemText>q1</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>2</WinNumber>
-          <ItemText>my_engineer::dbg_fb_pitch2</ItemText>
+          <ItemText>gx</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>2</WinNumber>
-          <ItemText>my_engineer::dbg_fb_roll</ItemText>
+          <ItemText>gy</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>2</WinNumber>
-          <ItemText>my_engineer::dbg_raw_yaw</ItemText>
+          <ItemText>gz</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>2</WinNumber>
-          <ItemText>my_engineer::dbg_raw_pitch1</ItemText>
-        </Ww>
-        <Ww>
-          <count>9</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>my_engineer::dbg_raw_pitch2</ItemText>
-        </Ww>
-        <Ww>
-          <count>10</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>dbg_raw_roll</ItemText>
-        </Ww>
-        <Ww>
-          <count>11</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>dbg_fb_pitch2</ItemText>
-        </Ww>
-        <Ww>
-          <count>12</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>dbg_fbTF_pitch1</ItemText>
-        </Ww>
-        <Ww>
-          <count>13</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>dbg_fbTF_pitch2</ItemText>
-        </Ww>
-        <Ww>
-          <count>14</count>
-          <WinNumber>2</WinNumber>
-          <ItemText>dbg_fbTF_roll</ItemText>
+          <ItemText>R_Data</ItemText>
         </Ww>
       </WatchWindow2>
       <MemoryWindow1>

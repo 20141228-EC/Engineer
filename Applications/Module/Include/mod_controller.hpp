@@ -147,6 +147,7 @@ public:
 	struct SControllerInfo{
 		EVarStatus isModuleAvailable = false; ///< 模块是否可用
 		EVarStatus isReturnSuccess = false; ///< 归位是否成功
+		EVarStatus isRobotInit = false; ///< 机器人初始化
 		bool isRest = false; ///< 是否归位
 		bool isLevel4 = false; ///< 是否处于四级状态
 		bool isLevel3 = false; ///< 是否处于三级状态
@@ -165,6 +166,7 @@ public:
 	struct SControllerCmd{
 		EVarStatus StartControl = false; ///< 控制器开始控制信号
 		EVarStatus isFree = false; ///< 控制器是否可自由控制
+		EVarStatus isfirstChange = false; ///<第一次切换之后才能够进入反向的控制
 		float_t cmd_yaw = 0; ///< 横移电机命令
 		float_t cmd_pitch1 = 0; ///< 大pitch电机命令
 		float_t cmd_pitch2 = 0; ///< 小pitch电机命令
@@ -203,7 +205,7 @@ public:
 		float yaw    = 0.01f;   ///< Yaw轴力反馈增益 (KT i8v3)
 		float pitch1 = 0.02f;   ///< Pitch1轴力反馈增益 (KT i36v3, 减速比36)
 		float pitch2 = 0.02f;   ///< Pitch2轴力反馈增益 (KT i36v3, 减速比36)
-		float roll   = -0.017f;   ///< Roll轴力反馈增益 (DM4310)
+		float roll   = -0.00017f;   ///< Roll轴力反馈增益 (DM4310)
 	};
 	void SetForceFeedbackEnabled(bool enabled) { forceFeedbackEnabled_ = enabled; }
 	bool IsForceFeedbackEnabled() const { return forceFeedbackEnabled_; }

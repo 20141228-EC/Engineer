@@ -1,6 +1,6 @@
 Dependencies for Project 'DM-MC02', Target 'DM-MC02': (DO NOT MODIFY !)
 CompilerVersion: 6240000::V6.24::ARMCLANG
-F (..\..\..\Applications\Configuration\conf_device.cpp)(0x69BBF88A)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/conf_device.o -MMD)
+F (..\..\..\Applications\Configuration\conf_device.cpp)(0x69C35D9F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/conf_device.o -MMD)
 I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
@@ -79,13 +79,13 @@ I (..\..\..\Middlewares\FreeRTOS-Kernel\include\list.h)(0x6929E7F8)
 I (..\..\..\Middlewares\FreeRTOS-Kernel\include\queue.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_process.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_interface.hpp)(0x696F73C4)
 I (..\..\..\Applications\Configuration\Include\conf_module.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Interface\Include\inf_can.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
@@ -98,7 +98,7 @@ I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_spi.hpp)(0x6945747D)
 I (..\..\..\Applications\Algorithm\Include\algo_pid.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
@@ -106,10 +106,10 @@ I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Interface\Include\inf_adc.hpp)(0x696B519F)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Interface\Include\inf_uart.hpp)(0x6945747D)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 F (..\..\..\Applications\Configuration\conf_interface.cpp)(0x696A58D9)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/conf_interface.o -MMD)
 I (..\..\..\Applications\Configuration\Include\conf_interface.hpp)(0x696F73C4)
@@ -190,7 +190,7 @@ I (..\..\..\Middlewares\FreeRTOS-Kernel\include\list.h)(0x6929E7F8)
 I (..\..\..\Middlewares\FreeRTOS-Kernel\include\queue.h)(0x6929E7F8)
 I (..\..\..\Applications\Interface\Include\Interface.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_process.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_module.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
@@ -208,7 +208,7 @@ I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h)(0x693C159E)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h)(0x693C159E)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h)(0x693C159E)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-F (..\..\..\Applications\Configuration\conf_module.cpp)(0x69BFEB88)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/conf_module.o -MMD)
+F (..\..\..\Applications\Configuration\conf_module.cpp)(0x69C35D9F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/conf_module.o -MMD)
 I (..\..\..\Applications\Configuration\Include\conf_module.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
@@ -287,7 +287,7 @@ I (..\..\..\Middlewares\FreeRTOS-Kernel\include\list.h)(0x6929E7F8)
 I (..\..\..\Middlewares\FreeRTOS-Kernel\include\queue.h)(0x6929E7F8)
 I (..\..\..\Applications\Module\Include\Module.hpp)(0x6945747E)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_process.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_interface.hpp)(0x696F73C4)
 I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
@@ -311,7 +311,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m2006.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m3508.hpp)(0x6945747D)
@@ -320,20 +320,20 @@ I (..\..\..\Applications\Device\Include\mtr\mtr_kt.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
 F (..\..\..\Applications\Configuration\conf_process.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/conf_process.o -MMD)
 I (..\..\..\Applications\Configuration\Include\conf_process.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
@@ -412,7 +412,7 @@ I (..\..\..\Middlewares\FreeRTOS-Kernel\include\task.h)(0x6929E7F8)
 I (..\..\..\Middlewares\FreeRTOS-Kernel\include\list.h)(0x6929E7F8)
 I (..\..\..\Middlewares\FreeRTOS-Kernel\include\queue.h)(0x6929E7F8)
 F (..\..\..\Applications\Configuration\Configuration.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/configuration.o -MMD)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -496,7 +496,7 @@ F (..\..\..\Applications\Configuration\conf_CanTxNode.cpp)(0x69686BE6)(-xc++ -st
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
 I (..\..\..\Applications\Interface\Include\Interface.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -589,11 +589,11 @@ I (..\Middlewares\ST\STM32_USB_Device_Library\Class\CDC\Inc\usbd_cdc.h)(0x693C15
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h)(0x693C159E)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h)(0x693C159E)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h)(0x693C159E)
-F (..\..\..\Applications\System\Tasks\sys_task.cpp)(0x69BBBD4F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/sys_task.o -MMD)
-I (..\..\..\Applications\System\Include\Core.hpp)(0x69BBBC8B)
+F (..\..\..\Applications\System\Tasks\sys_task.cpp)(0x69C35D9F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/sys_task.o -MMD)
+I (..\..\..\Applications\System\Include\Core.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Interface\Include\Interface.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -690,7 +690,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m2006.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m3508.hpp)(0x6945747D)
@@ -700,30 +700,30 @@ I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
 I (..\..\..\Applications\Algorithm\Include\algo_pid.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Module\Include\Module.hpp)(0x6945747E)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
 I (..\..\..\Applications\System\Include\System.hpp)(0x6945747E)
 I (..\..\..\Applications\System\Include\sys_common.hpp)(0x6945747E)
-I (..\..\..\Applications\System\Include\sys_controller_link.hpp)(0x69BC0F7C)
-F (..\..\..\Applications\System\Core\Core.cpp)(0x69C0A29F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/core.o -MMD)
-I (..\..\..\Applications\System\Include\Core.hpp)(0x69BBBC8B)
+I (..\..\..\Applications\System\Include\sys_controller_link.hpp)(0x69C35D9F)
+F (..\..\..\Applications\System\Core\Core.cpp)(0x69CB3F24)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/core.o -MMD)
+I (..\..\..\Applications\System\Include\Core.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Interface\Include\Interface.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -820,7 +820,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m2006.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m3508.hpp)(0x6945747D)
@@ -830,29 +830,29 @@ I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
 I (..\..\..\Applications\Algorithm\Include\algo_pid.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Module\Include\Module.hpp)(0x6945747E)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
 I (..\..\..\Applications\System\Include\System.hpp)(0x6945747E)
 I (..\..\..\Applications\System\Include\sys_common.hpp)(0x6945747E)
-I (..\..\..\Applications\System\Include\sys_controller_link.hpp)(0x69BC0F7C)
+I (..\..\..\Applications\System\Include\sys_controller_link.hpp)(0x69C35D9F)
 F (..\..\..\Applications\System\System.cpp)(0x6945747E)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/system.o -MMD)
 I (..\..\..\Applications\System\Include\System.hpp)(0x6945747E)
 I (..\..\..\Applications\System\Include\sys_common.hpp)(0x6945747E)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -932,12 +932,12 @@ I (..\..\..\Applications\Configuration\Include\conf_process.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_interface.hpp)(0x696F73C4)
 I (..\..\..\Applications\Configuration\Include\conf_module.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
-I (..\..\..\Applications\System\Include\sys_controller_link.hpp)(0x69BC0F7C)
+I (..\..\..\Applications\System\Include\sys_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Interface\Include\inf_can.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
@@ -950,7 +950,7 @@ I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_spi.hpp)(0x6945747D)
 I (..\..\..\Applications\Algorithm\Include\algo_pid.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
@@ -958,10 +958,10 @@ I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Interface\Include\inf_adc.hpp)(0x696B519F)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Interface\Include\inf_uart.hpp)(0x6945747D)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Module\Include\Module.hpp)(0x6945747E)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
@@ -976,12 +976,12 @@ I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h)(0x693C159E)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h)(0x693C159E)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h)(0x693C159E)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
-F (..\..\..\Applications\System\Controller_Link\sys_controller_link.cpp)(0x69BE1518)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/sys_controller_link.o -MMD)
-I (..\..\..\Applications\System\Include\sys_controller_link.hpp)(0x69BC0F7C)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
+F (..\..\..\Applications\System\Controller_Link\sys_controller_link.cpp)(0x69C35D9F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/sys_controller_link.o -MMD)
+I (..\..\..\Applications\System\Include\sys_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\System\Include\sys_common.hpp)(0x6945747E)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -1065,7 +1065,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Interface\Include\inf_can.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
@@ -1078,7 +1078,7 @@ I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_spi.hpp)(0x6945747D)
 I (..\..\..\Applications\Algorithm\Include\algo_pid.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
@@ -1086,12 +1086,12 @@ I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Interface\Include\inf_adc.hpp)(0x696B519F)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Interface\Include\inf_uart.hpp)(0x6945747D)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
 I (..\..\..\Applications\Interface\Include\Interface.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_usb_cdc.hpp)(0x6945747D)
@@ -1104,11 +1104,11 @@ I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h)(0x693C159E)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h)(0x693C159E)
 I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h)(0x693C159E)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
 F (..\..\..\Applications\Module\Module.cpp)(0x6945747E)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/module.o -MMD)
 I (..\..\..\Applications\Module\Include\Module.hpp)(0x6945747E)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -1208,7 +1208,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m2006.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m3508.hpp)(0x6945747D)
@@ -1217,24 +1217,24 @@ I (..\..\..\Applications\Device\Include\mtr\mtr_kt.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
 F (..\..\..\Applications\Module\Custom_Controller\com_buzzer.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_buzzer.o -MMD)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -1334,7 +1334,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m2006.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m3508.hpp)(0x6945747D)
@@ -1343,23 +1343,23 @@ I (..\..\..\Applications\Device\Include\mtr\mtr_kt.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
-F (..\..\..\Applications\Module\Custom_Controller\com_rocker.cpp)(0x69A10459)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_rocker.o -MMD)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
+F (..\..\..\Applications\Module\Custom_Controller\com_rocker.cpp)(0x69C35D9F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_rocker.o -MMD)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -1459,7 +1459,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m2006.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m3508.hpp)(0x6945747D)
@@ -1468,23 +1468,23 @@ I (..\..\..\Applications\Device\Include\mtr\mtr_kt.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
-F (..\..\..\Applications\Module\Custom_Controller\com_roll.cpp)(0x69AA413D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_roll.o -MMD)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
+F (..\..\..\Applications\Module\Custom_Controller\com_roll.cpp)(0x69CB3750)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_roll.o -MMD)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -1584,7 +1584,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m2006.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m3508.hpp)(0x6945747D)
@@ -1593,23 +1593,23 @@ I (..\..\..\Applications\Device\Include\mtr\mtr_kt.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
-F (..\..\..\Applications\Module\Custom_Controller\com_yaw.cpp)(0x69BFEF76)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_yaw.o -MMD)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
+F (..\..\..\Applications\Module\Custom_Controller\com_yaw.cpp)(0x69C35D9F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_yaw.o -MMD)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -1709,7 +1709,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m2006.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m3508.hpp)(0x6945747D)
@@ -1718,23 +1718,23 @@ I (..\..\..\Applications\Device\Include\mtr\mtr_kt.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
-F (..\..\..\Applications\Module\Custom_Controller\mod_controller.cpp)(0x69C0A25C)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/mod_controller.o -MMD)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
+F (..\..\..\Applications\Module\Custom_Controller\mod_controller.cpp)(0x69CB3E65)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/mod_controller.o -MMD)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -1834,7 +1834,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m2006.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m3508.hpp)(0x6945747D)
@@ -1843,23 +1843,23 @@ I (..\..\..\Applications\Device\Include\mtr\mtr_kt.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
-F (..\..\..\Applications\Module\Custom_Controller\proc_controller.cpp)(0x69BBE7AB)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/proc_controller.o -MMD)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
+F (..\..\..\Applications\Module\Custom_Controller\proc_controller.cpp)(0x69C752B7)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/proc_controller.o -MMD)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -1959,7 +1959,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m2006.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m3508.hpp)(0x6945747D)
@@ -1968,23 +1968,23 @@ I (..\..\..\Applications\Device\Include\mtr\mtr_kt.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
-F (..\..\..\Applications\Module\Custom_Controller\com_pitch1.cpp)(0x69BFD758)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_pitch1.o -MMD)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
+F (..\..\..\Applications\Module\Custom_Controller\com_pitch1.cpp)(0x69C35D9F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_pitch1.o -MMD)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -2084,7 +2084,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m2006.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m3508.hpp)(0x6945747D)
@@ -2093,23 +2093,23 @@ I (..\..\..\Applications\Device\Include\mtr\mtr_kt.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
-F (..\..\..\Applications\Module\Custom_Controller\com_pitch2.cpp)(0x69BFE786)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_pitch2.o -MMD)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
+F (..\..\..\Applications\Module\Custom_Controller\com_pitch2.cpp)(0x69C35D9F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_pitch2.o -MMD)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -2209,7 +2209,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m2006.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m3508.hpp)(0x6945747D)
@@ -2218,23 +2218,23 @@ I (..\..\..\Applications\Device\Include\mtr\mtr_kt.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
-F (..\..\..\Applications\Module\Custom_Controller\com_pitch_end.cpp)(0x698405A1)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_pitch_end.o -MMD)
-I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69C09FCC)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
+F (..\..\..\Applications\Module\Custom_Controller\com_pitch_end.cpp)(0x69C35D9F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/com_pitch_end.o -MMD)
+I (..\..\..\Applications\Module\Include\mod_controller.hpp)(0x69CB3FC4)
 I (..\..\..\Applications\Module\Include\mod_common.hpp)(0x6945747E)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -2334,7 +2334,7 @@ I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m2006.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_m3508.hpp)(0x6945747D)
@@ -2343,22 +2343,22 @@ I (..\..\..\Applications\Device\Include\mtr\mtr_kt.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Configuration\Include\conf_CanTxNode.hpp)(0x69686B49)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
 F (..\..\..\Applications\Algorithm\algo_crc.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/algo_crc.o -MMD)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -2440,7 +2440,7 @@ I (..\..\..\Applications\Configuration\Include\conf_module.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
 F (..\..\..\Applications\Algorithm\algo_pid.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/algo_pid.o -MMD)
 I (..\..\..\Applications\Algorithm\Include\algo_pid.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -2521,8 +2521,8 @@ I (..\..\..\Applications\Configuration\Include\conf_interface.hpp)(0x696F73C4)
 I (..\..\..\Applications\Configuration\Include\conf_module.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
 F (..\..\..\Applications\Algorithm\algo_other.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/algo_other.o -MMD)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -2602,9 +2602,9 @@ I (..\..\..\Applications\Configuration\Include\conf_process.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_interface.hpp)(0x696F73C4)
 I (..\..\..\Applications\Configuration\Include\conf_module.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
-F (..\..\..\Applications\Algorithm\algo_gravity_comp.cpp)(0x6988926D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/algo_gravity_comp.o -MMD)
-I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x698B45F8)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+F (..\..\..\Applications\Algorithm\algo_gravity_comp.cpp)(0x69C35D9F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/algo_gravity_comp.o -MMD)
+I (..\..\..\Applications\Algorithm\Include\algo_gravity_comp.hpp)(0x69C35D9F)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -2687,7 +2687,7 @@ I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
 F (..\..\..\Applications\Device\Device.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/device.o -MMD)
 I (..\..\..\Applications\Device\Include\Device.hpp)(0x69460B63)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -2769,7 +2769,7 @@ I (..\..\..\Applications\Configuration\Include\conf_module.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Interface\Include\inf_can.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
@@ -2782,7 +2782,7 @@ I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_spi.hpp)(0x6945747D)
 I (..\..\..\Applications\Algorithm\Include\algo_pid.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
@@ -2790,16 +2790,16 @@ I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Interface\Include\inf_adc.hpp)(0x696B519F)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Interface\Include\inf_uart.hpp)(0x6945747D)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 F (..\..\..\Applications\Device\MTR\motor.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/motor.o -MMD)
 I (..\..\..\Applications\Device\Include\mtr\motor.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -2879,7 +2879,7 @@ I (..\..\..\Applications\Configuration\Include\conf_process.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_interface.hpp)(0x696F73C4)
 I (..\..\..\Applications\Configuration\Include\conf_module.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Interface\Include\inf_can.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
@@ -2891,7 +2891,7 @@ F (..\..\..\Applications\Device\MTR\mtr_dji.cpp)(0x6945747D)(-xc++ -std=gnu++17 
 I (..\..\..\Applications\Device\Include\mtr\mtr_dji.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -2973,11 +2973,11 @@ I (..\..\..\Applications\Configuration\Include\conf_module.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_can.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
-F (..\..\..\Applications\Device\MTR\mtr_dm.cpp)(0x698405B0)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/mtr_dm.o -MMD)
-I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69884052)
+F (..\..\..\Applications\Device\MTR\mtr_dm.cpp)(0x69C35B76)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/mtr_dm.o -MMD)
+I (..\..\..\Applications\Device\Include\mtr\mtr_dm.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -3077,7 +3077,7 @@ F (..\..\..\Applications\Device\MEMS\mems.cpp)(0x6945747D)(-xc++ -std=gnu++17 --
 I (..\..\..\Applications\Device\Include\mems\mems.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -3161,7 +3161,7 @@ I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_spi.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Algorithm\Include\algo_pid.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
@@ -3169,7 +3169,7 @@ F (..\..\..\Applications\Device\MEMS\mems_bmi088.cpp)(0x6945747D)(-xc++ -std=gnu
 I (..\..\..\Applications\Device\Include\mems\mems_bmi088.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mems\mems_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -3252,7 +3252,7 @@ I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_spi.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Algorithm\Include\algo_pid.hpp)(0x6945747D)
-I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C09D16)
+I (..\..\..\Applications\Algorithm\Include\algo_other.hpp)(0x69C35D9F)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h)(0x6929E7F8)
 I (..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h)(0x6929E7F8)
@@ -3260,7 +3260,7 @@ F (..\..\..\Applications\Device\MTR\mtr_kt.cpp)(0x6945747D)(-xc++ -std=gnu++17 -
 I (..\..\..\Applications\Device\Include\mtr\mtr_kt.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\mtr\mtr_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -3345,7 +3345,7 @@ I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
 F (..\..\..\Applications\Device\dev_rocker.cpp)(0x696B556A)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/dev_rocker.o -MMD)
 I (..\..\..\Applications\Device\Include\dev_rocker.hpp)(0x696B0BEF)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -3430,7 +3430,7 @@ I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
 F (..\..\..\Applications\Device\BUZZER\dev_buzzer.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/dev_buzzer.o -MMD)
 I (..\..\..\Applications\Device\Include\buzzer\dev_buzzer.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -3514,7 +3514,7 @@ I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
 F (..\..\..\Applications\Device\BUZZER\music_lib.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/music_lib.o -MMD)
 I (..\..\..\Applications\Device\Include\buzzer\music_lib.hpp)(0x6945747D)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -3594,10 +3594,10 @@ I (..\..\..\Applications\Configuration\Include\conf_process.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_interface.hpp)(0x696F73C4)
 I (..\..\..\Applications\Configuration\Include\conf_module.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
-F (..\..\..\Applications\Device\dev_controller_link.cpp)(0x698B4068)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/dev_controller_link.o -MMD)
-I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69BC0F5D)
+F (..\..\..\Applications\Device\dev_controller_link.cpp)(0x69C35D9F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/dev_controller_link.o -MMD)
+I (..\..\..\Applications\Device\Include\dev_controller_link.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -3680,11 +3680,11 @@ I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_uart.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
 I (..\..\..\Applications\Algorithm\Include\algo_crc.hpp)(0x6945747D)
-F (..\..\..\Applications\Device\MULTI_BUTTON\dev_FourButton.cpp)(0x69BBEC16)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/dev_fourbutton.o -MMD)
-I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69BBF575)
+F (..\..\..\Applications\Device\MULTI_BUTTON\dev_FourButton.cpp)(0x69C35D9F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/dev_fourbutton.o -MMD)
+I (..\..\..\Applications\Device\Include\multi_button\dev_FourButton.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -3767,7 +3767,7 @@ I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
 F (..\..\..\Applications\Device\MULTI_BUTTON\dev_multi_button.cpp)(0x696B4482)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/dev_multi_button.o -MMD)
 I (..\..\..\Applications\Device\Include\multi_button\dev_multi_button.hpp)(0x696DB146)
 I (..\..\..\Applications\Device\Include\dev_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -3847,10 +3847,10 @@ I (..\..\..\Applications\Configuration\Include\conf_process.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_interface.hpp)(0x696F73C4)
 I (..\..\..\Applications\Configuration\Include\conf_module.hpp)(0x6945747D)
 I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
-F (..\..\..\Applications\Interface\inf_can.cpp)(0x69A103AA)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/inf_can.o -MMD)
+F (..\..\..\Applications\Interface\inf_can.cpp)(0x69C35D9F)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/inf_can.o -MMD)
 I (..\..\..\Applications\Interface\Include\inf_can.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -3933,7 +3933,7 @@ I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
 F (..\..\..\Applications\Interface\inf_spi.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/inf_spi.o -MMD)
 I (..\..\..\Applications\Interface\Include\inf_spi.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -4016,7 +4016,7 @@ I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
 F (..\..\..\Applications\Interface\inf_uart.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/inf_uart.o -MMD)
 I (..\..\..\Applications\Interface\Include\inf_uart.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -4099,7 +4099,7 @@ I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
 F (..\..\..\Applications\Interface\Interface.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/interface.o -MMD)
 I (..\..\..\Applications\Interface\Include\Interface.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -4195,7 +4195,7 @@ I (..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h)(0x693C159E
 F (..\..\..\Applications\Interface\inf_adc.cpp)(0x696AF7A4)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/inf_adc.o -MMD)
 I (..\..\..\Applications\Interface\Include\inf_adc.hpp)(0x696B519F)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -4278,7 +4278,7 @@ I (..\..\..\Applications\Configuration\Include\conf_device.hpp)(0x6945747D)
 F (..\..\..\Applications\Interface\inf_usb_cdc.cpp)(0x6945747D)(-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/inf_usb_cdc.o -MMD)
 I (..\..\..\Applications\Interface\Include\inf_usb_cdc.hpp)(0x6945747D)
 I (..\..\..\Applications\Interface\Include\inf_common.hpp)(0x6945747D)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -4764,7 +4764,7 @@ I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h)(0x693C1633)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pcd.h)(0x693C1633)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_ll_usb.h)(0x693C1633)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pcd_ex.h)(0x693C1633)
-F (../Core/Src/usart.c)(0x698AF700)(-xc -std=gnu11 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/usart.o -MMD)
+F (../Core/Src/usart.c)(0x69C35D9F)(-xc -std=gnu11 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/usart.o -MMD)
 I (..\Core\Inc\usart.h)(0x6945747E)
 I (..\Core\Inc\main.h)(0x696A4DB8)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal.h)(0x693C1633)
@@ -4933,7 +4933,7 @@ I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h)(0x693C1633)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pcd.h)(0x693C1633)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_ll_usb.h)(0x693C1633)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pcd_ex.h)(0x693C1633)
-F (.\startup_stm32h723xx.s)(0x69880B35)(--target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -masm=auto  -Wa,armasm,--diag_suppress=A1950W -c-gdwarf-4-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-Wa,armasm,--pd,"__UVISION_VERSION SETA 543" -Wa,armasm,--pd,"STM32H723xx SETA 1" -Wa,armasm,--pd,"_RTE_ SETA 1"-o dm-mc02/startup_stm32h723xx.o)
+F (.\startup_stm32h723xx.s)(0x69C35D9F)(--target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -masm=auto  -Wa,armasm,--diag_suppress=A1950W -c-gdwarf-4-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-Wa,armasm,--pd,"__UVISION_VERSION SETA 543" -Wa,armasm,--pd,"STM32H723xx SETA 1" -Wa,armasm,--pd,"_RTE_ SETA 1"-o dm-mc02/startup_stm32h723xx.o)
 F (../Core/Src/system_stm32h7xx.c)(0x6945747E)(-xc -std=gnu11 --target=arm-arm-none-eabi -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-gdwarf-4 -O0 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../Core/Inc -I ../../../Applications/Algorithm/Include -I ../../../Applications/Configuration/Include -I ../../../Applications/Device/Include -I ../../../Applications/Interface/Include -I ../../../Applications/Module/Include -I ../../../Applications/System/Include -I ../../../Middlewares/FreeRTOS-Kernel/include -I ../../../Drivers/CMSIS/DSP/Include -I ../../../Drivers/CMSIS/DSP/PrivateInclude -I ../BSP -I ../../../Middlewares/FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1 -I ../../../Drivers/BMI08x_SensorAPI -I ../Drivers/STM32H7xx_HAL_Driver/Inc -I ../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I ../Drivers/CMSIS/Include -I ../USB_DEVICE/App -I ../USB_DEVICE/Target -I ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc-I./RTE/_DM-MC02-IF:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include-D__UVISION_VERSION="543" -DSTM32H723xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32H723xx -DUSE_PWR_LDO_SUPPLY-o dm-mc02/system_stm32h7xx.o -MMD)
 I (..\Drivers\CMSIS\Device\ST\STM32H7xx\Include\stm32h7xx.h)(0x693C1633)
 I (..\Drivers\CMSIS\Device\ST\STM32H7xx\Include\stm32h723xx.h)(0x693C1633)
@@ -6129,7 +6129,7 @@ I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_uart_ex.h)(0x693C1633)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pcd.h)(0x693C1633)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_ll_usb.h)(0x693C1633)
 I (..\Drivers\STM32H7xx_HAL_Driver\Inc\stm32h7xx_hal_pcd_ex.h)(0x693C1633)
-I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69BBBAF3)
+I (..\..\..\Applications\Configuration\Include\Configuration.hpp)(0x69C35D9F)
 I (..\..\..\Applications\Configuration\Include\conf_common.hpp)(0x69464CF0)
 I (..\..\..\Drivers\CMSIS\DSP\Include\arm_math.h)(0x6929E7F8)
 I (..\..\..\Drivers\CMSIS\DSP\Include\arm_math_types.h)(0x6929E7F8)

@@ -283,9 +283,9 @@ void CModController::UpdateGravityComp_() {
  * 力反馈增益 fbGain_ 各轴独立控制反馈强度，需根据实际的情况调整参数。
  ******************************************************************************/
 void CModController::UpdateForceFeedback_() {
-	if (!forceFeedbackEnabled_) return;
-	if (!ControllerCmd.isFree) return;  // 联动模式不叠加力反馈
+	if (!forceFeedbackEnabled_ || !ControllerCmd.isFree) return; //联动模式并且力反馈没有初始化
 
+	if(ControllerInfo.isRobotInit == true){
 	// 死区：过滤静态重力补偿力矩，只反馈碰撞外力
 	constexpr float DEADZONE_P1 = 5.0f;   // Pitch1 死区 (N·m)
 	constexpr float DEADZONE_P2 = 15.0f;   // Pitch2 死区 (N·m)
@@ -313,6 +313,7 @@ void CModController::UpdateForceFeedback_() {
 	comPitch1_.pitch1Cmd.setParam[EMotorParam::TF] += dbg_fbTF_pitch1;
 	comPitch2_.pitch2Cmd.setParam[EMotorParam::TF] += dbg_fbTF_pitch2;
 	comRoll_.rollCmd.setParam[EMotorParam::TF]     += dbg_fbTF_roll;
+	}
 
 	// PitchEnd: 暂不处理（末端差速）
 }
