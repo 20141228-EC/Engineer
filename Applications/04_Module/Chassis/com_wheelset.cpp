@@ -147,6 +147,11 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
         speed_W,
     };
 
+    // 在此更新模块层的数据
+    parent->chassisInfo.speed_X = (wheelSpdMeasure[LF] + wheelSpdMeasure[RF] - wheelSpdMeasure[LB] - wheelSpdMeasure[RB]) / 4.f;
+    parent->chassisInfo.speed_Y = (wheelSpdMeasure[LF] - wheelSpdMeasure[RF] + wheelSpdMeasure[LB] - wheelSpdMeasure[RB]) / 4.f;
+    parent->chassisInfo.speed_W = (wheelSpdMeasure[LF] + wheelSpdMeasure[RF] + wheelSpdMeasure[LB] + wheelSpdMeasure[RB]) / 4.f;
+
     DataBuffer<float_t> current_speed = {
         (wheelSpdMeasure[LF] + wheelSpdMeasure[RF] - wheelSpdMeasure[LB] - wheelSpdMeasure[RB]) / 4,
         (wheelSpdMeasure[LF] - wheelSpdMeasure[RF] + wheelSpdMeasure[LB] - wheelSpdMeasure[RB]) / 4,
@@ -175,6 +180,12 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
         DataBuffer<float_t> wheelSpdMeasure_i = {wheelSpdMeasure[i]};
         output[i] = pidSpdCtrl[i].UpdatePidController(wheelSpd_i, wheelSpdMeasure_i)[0];
     }
+
+    /** debug用 **/
+    // if(speed_Y < -50.f && parent->chassisInfo.speed_Y > 0.f){   // 如果当前速度是正向的且目标速度是反向的那么就前轮卸力
+    //     output[LF] = 0.f;
+    //     output[RF] = 0.f;   // 直接置零
+    // }
 
     // 将输出值存入电机数据输出缓冲区
     mtrOutputBuffer = {

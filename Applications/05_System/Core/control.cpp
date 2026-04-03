@@ -11,8 +11,6 @@
 
 #include "Core.hpp"
 
-// int16_t 
-
 namespace my_engineer {
 
 void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) {
@@ -95,23 +93,6 @@ void CSystemCore::ControlFromRemote_() {
         parm_->should_limit_yaw = 0;
     }
 
-    // 仅在非自动任务时根据拨杆更新运动模式(或键位 键位待设)
-    if (currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE)
-    {
-        if (remote.switch_L == HIG && remote.switch_R == MID) {
-            movemode_ = EMoveMode::CLIMBING;
-            pchassis_->MovMode = CModChassis::EmovMode::CLIMBING;
-        }
-        else {
-            movemode_ = EMoveMode::NORMAL;
-            pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
-        }
-    }
-    else
-    {
-        // 如果在自动任务里面，则运动模式由对应任务决定
-    }
-
     // LOW + MID 底盘控制(轮毂+髋)
     if (remote.switch_L == LOW && remote.switch_R == MID) {
         SysRemote.SetRemoteDeadZone(10.f);
@@ -141,7 +122,7 @@ void CSystemCore::ControlFromRemote_() {
         }
     }
 
-    // MID + HIG 主臂关节四轴 + 夹爪
+    // MID + HIG 臂关节四轴 + 夹爪
     else if (remote.switch_L == MID && remote.switch_R == HIG) {
         SysRemote.SetRemoteDeadZone(10.f);
         if (parm_) {
@@ -201,6 +182,7 @@ void CSystemCore::ControlFromRemote_() {
             } 
         }
     }
+<<<<<<< Updated upstream
 
     // HIG + MID 自动上台阶 利用陀螺仪数据控腿长
     else if(remote.switch_L == HIG && remote.switch_R == MID)
@@ -242,6 +224,8 @@ void CSystemCore::ControlFromRemote_() {
         }
         ///< 云台控制逻辑均在副板
     }
+=======
+>>>>>>> Stashed changes
 }
 
 /**

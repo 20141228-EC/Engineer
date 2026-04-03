@@ -28,6 +28,7 @@ float_t crawler_torque_l = 0.f;
 float_t crawler_torque_r = 0.f;
 bool is_climbing_debug = false;
 bool is_climbed_debug = false;
+bool is_slip = false;   // 打滑标志位
 
 
 namespace my_engineer {
@@ -56,6 +57,7 @@ EAppStatus CModChassis::InitModule(SModInitParam_Base &param){
 
     // 初始化底盘轮组
     comWheelset_.InitComponent(param);
+    comWheelset_.parent = this;
     comHip_.InitComponent(param);
     comHip_.parent = this;  ///< 初始化父类指针
     comCrawler_.InitComponent(param);
@@ -212,13 +214,6 @@ void CModChassis::UpdateHandler_(){
     // 检查模块状态
     if (moduleStatus == APP_RESET) return;
 
-    // 定义3508转换系数
-    const float FEEDBACK_TO_AMP_RATIO = 20.0f / 16384.0f; // 反馈电流值到安培的转换系数
-    const float TORQUE_CONSTANT_NM_PER_A = 0.3f;          // 电机扭矩常数 (N·m/A)
-
-    static EVarStatus left_is_on = false;
-    static EVarStatus right_is_on = false;
-
     // 用于无符号类型的转化
     static auto uint_to_float = [](uint16_t x_uint, float xmin, float xmax, uint8_t bits) -> float {
         float span = xmax - xmin;
@@ -330,14 +325,20 @@ void CModChassis::UpdateHandler_(){
     }
 
     if(comHip_.MovMode_ == EmovMode::CLIMBING){
-        if(fabs(crawler_torque_l) > 3.f || fabs(crawler_torque_r) > 3.f){
+        if(fabs(crawler_torque_l) > IS_CLIMBING_TORQUE || fabs(crawler_torque_r) > IS_CLIMBING_TORQUE){
         is_climbing = true;     ///< 正在上台阶
         // 这个标志位在这里只能被置1
         }
     }
 
-    left_is_on = (wheel_torque_lf - wheel_torque_lb > 0.4f);
-    right_is_on = (fabs(wheel_torque_rf) - fabs(wheel_torque_rb) > 0.4f);   
+    
+    // if(fabs(fabs(fabs(wheel_torque_lf) + fabs(wheel_torque_rf)) -
+    //    fabs(fabs(wheel_torque_lb) - fabs(wheel_torque_rb))) > 0.2){    // 判断有轮子碾到弹丸
+    //     is_slip = true;
+    // }
+
+    left_is_on = (wheel_torque_lf - wheel_torque_lb > IS_CLIMBED_TOR_DIFF);
+    right_is_on = (fabs(wheel_torque_rf) - fabs(wheel_torque_rb) > IS_CLIMBED_TOR_DIFF);   
     if(comHip_.MovMode_ == EmovMode::CLIMBING && is_climbing){
     // if(chassisInfo.crawler_on){             // 目前暂且简化判断条件为开履带，后面是只有在自动任务中才判断is_climbed
         // if(wheel_torque_lf - wheel_torque_lb > 0.4f //1.35f

@@ -18,7 +18,7 @@
  float_t debug_actual_speed_LL = 0.f;
  float_t debug_raw_speed_LL = 0.f;
 
- float_t debug_kp = 3.1f;
+ float_t debug_kp = 4.f;
  float_t debug_accel_filter_alpha = 0.8f;
 
  float_t debug_forward_L = 0.f;
@@ -190,10 +190,14 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 				debug_hip_accel_filtered_torque_L = LowPassFilter(debug_hip_accel_filtered_torque_L, raw_torque_L, debug_accel_filter_alpha);
 				debug_hip_accel_filtered_torque_R = LowPassFilter(debug_hip_accel_filtered_torque_R, raw_torque_R, debug_accel_filter_alpha);
 
-				// pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.0f, mitCtrl[LL].tau + debug_hip_accel_filtered_torque_L);
-				// pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.0f, mitCtrl[LR].tau + debug_hip_accel_filtered_torque_R);
-				pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.0f, 0.f);
-				pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.0f, 0.f);
+				// if(fabs(accel_y) > 1.f){
+				// 	pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.0f, mitCtrl[LL].tau + debug_hip_accel_filtered_torque_L);
+				// 	pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.0f, mitCtrl[LR].tau + debug_hip_accel_filtered_torque_R);
+				// }
+				// else{
+					pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.f, mitCtrl[LL].tau);
+					pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.f, mitCtrl[LR].tau);
+				// }
 				debug_forward_L = mitCtrl[LL].tau + debug_hip_accel_filtered_torque_L;
 				debug_forward_R = mitCtrl[LR].tau + debug_hip_accel_filtered_torque_R;
 				// 用前馈扭矩做加速度补偿

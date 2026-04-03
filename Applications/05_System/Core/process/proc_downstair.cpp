@@ -57,8 +57,7 @@ void CSystemCore::StartDownStairTask(void *arg) {
     {
 		core.pchassis_->chassisCmd.speed_Y = DOWNSTAIR_SPEED;	// 保持底盘速度
 		if(core.pchassis_->Leg_is_soar){    // 等待后腿腾空
-			proc_waitMs(600);	// 等待600ms
-			core.pchassis_->reset_hip = true;   // 收腿
+			core.pchassis_->chassisCmd.L_length -= 120.f / 1000.f;	// 收腿
 		}
         proc_waitMs(20);
     }

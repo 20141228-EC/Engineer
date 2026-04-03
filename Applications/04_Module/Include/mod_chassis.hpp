@@ -38,6 +38,14 @@
 #define DM8009P_CURRENT_TO_TORQUE_L 1 //0.1946174202  ///< 1.5 * 9 * 21 * 0.0006864812
 #define DM8009P_CURRENT_TO_TORQUE_R 1 //1.1798274915  ///< 1.5 * 9 * 21 * 0.004161649
 
+// 定义3508转换系数
+#define FEEDBACK_TO_AMP_RATIO 20.0f / 16384.0f // 反馈电流值到安培的转换系数
+#define TORQUE_CONSTANT_NM_PER_A 0.3f          // 电机扭矩常数 (N·m/A)
+
+// 一些阈值
+#define IS_CLIMBING_TORQUE 3.f  // 履带正在爬升的扭矩判断阈值
+#define IS_CLIMBED_TOR_DIFF 0.4f    // 已经上了台阶的前后轮组扭矩差判断阈值
+
 /* public定义用户层方便调试和获取信息，private定义了底层用于直接驱动电机，而不会因为外界的干扰影响了输出的值 */
 
 namespace my_engineer {
@@ -93,8 +101,6 @@ public:
     // 定义底盘信息结构体并实例化
     struct SChassisInfo{
         EVarStatus isModuleAvailable  = false; ///< 模块是否可用                         ///<这里定义了info用于接收用户指令
-
-        // 下面这三个变量由于没有传感器可以直接读取，所以并不会更新
         float_t speed_X = 0.0f; ///< 底盘X轴速度
         float_t speed_Y = 0.0f; ///< 底盘Y轴速度
         float_t speed_W = 0.0f; ///< 底盘角速度
@@ -148,6 +154,10 @@ public:
     // 已上台阶标志位(由前轮扭矩比后轮扭矩大判断)
     EVarStatus is_climbed = false;
 
+    // 左右轮组各自是否上台阶
+    EVarStatus left_is_on = false;
+    EVarStatus right_is_on = false;
+
     // 下台阶时后腿腾空标志位
     EVarStatus Leg_is_soar = false;
 
@@ -185,6 +195,9 @@ private:
 
         // 电机实例指针数组
         CDevMtr *motor[4] = {nullptr};
+
+        // 父类指针，用于更新底盘速度
+        CModChassis *parent = nullptr;
 
         // 定义底盘PID控制器
         CAlgoPid pidYawCtrl;                    ///<控制底盘角速度（Yaw旋转）
