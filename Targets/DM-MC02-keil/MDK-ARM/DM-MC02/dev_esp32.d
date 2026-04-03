@@ -81,6 +81,7 @@ dm-mc02/dev_esp32.o: ..\..\..\Applications\03_Device\dev_esp32.cpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_uart.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_common.hpp

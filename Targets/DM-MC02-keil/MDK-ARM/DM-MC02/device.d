@@ -81,6 +81,7 @@ dm-mc02/device.o: ..\..\..\Applications\03_Device\Device.cpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\motor.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_common.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_dm.hpp \
@@ -108,6 +109,7 @@ dm-mc02/device.o: ..\..\..\Applications\03_Device\Device.cpp \
   ..\..\..\Applications\03_Device\Include\dev_controller_link.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp \
   ..\..\..\Applications\03_Device\Include\dev_esp32.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_board_link.hpp \
   ..\..\..\Applications\03_Device\Include\dev_vision.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_usb_cdc.hpp \
   ..\USB_DEVICE\App\usb_device.h \

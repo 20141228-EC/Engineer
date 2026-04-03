@@ -44,7 +44,7 @@ uint32_t sys_test_n = 0;
  */
 void StartUpdateTask(void *argument) {
 	
-	static uint8_t HalfTickRate = 1;
+	static uint8_t TickRate = 4;
     
     // 初始化系统核心
     SystemCore.InitSystemCore();                ///<等所有模块初始化完成之后再初始化系统核心，并且是在任务创建的时候初始化
@@ -52,7 +52,7 @@ void StartUpdateTask(void *argument) {
     while (true) {
 
         sys_test_n++;
-		HalfTickRate = 1 - HalfTickRate;        
+		//HalfTickRate = 1 - HalfTickRate;        
         
         // 更新所有设备
         for (const auto &item : DeviceIDMap) {
@@ -75,8 +75,9 @@ void StartUpdateTask(void *argument) {
 
         // 执行can发送
         TxNode_Can3_200.Transmit(); ///< 履带电机
-		if(HalfTickRate) {              ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载                  
-		    // TxNode_Can3_280.Transmit(); ///< 机械臂后三轴电机 500Hz
+		if(--TickRate == 0) {              ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载                  
+		    TxNode_Can3_280.Transmit(); ///< 机械臂后四轴电机 250Hz
+            TickRate = 4;
         }
             
         TxNode_Can1_200.Transmit(); ///< 底盘轮毂电机

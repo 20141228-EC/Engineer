@@ -79,4 +79,5 @@ dm-mc02/algo_other.o: ..\..\..\Applications\00_Algorithm\algo_other.cpp \
   ..\..\..\Applications\01_Configuration\Include\conf_process.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
-  ..\..\..\Applications\01_Configuration\Include\conf_device.hpp
+  ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp

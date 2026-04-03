@@ -10,7 +10,8 @@
         "name": "Debug with OpenOCD",
         "request": "launch",
         "type": "cortex-debug",
-        "servertype": "openocd",
+        "device": "STM32H723VG",
+        "servertype": "jlink",
         "configFiles": [
           "interface/cmsis-dap.cfg",
           "target/stm32h7x.cfg"
@@ -26,16 +27,16 @@
           "enabled": true,
           "address": "auto",
           "decoders": [
-            {
-              "label": "RTT Debug",
-              "port": 0,
-              "type": "console"
-            },
-            {
-              "label": "RTT Data",
-              "port": 1,
-              "type": "console"
-            }
+            // {
+            //   "label": "RTT Debug",
+            //   "port": 0,
+            //   "type": "console"
+            // },
+            // {
+            //   "label": "RTT Data",
+            //   "port": 1,
+            //   "type": "console"
+            // }
           ]
         },
         //"preLaunchCommands": ["Build"]

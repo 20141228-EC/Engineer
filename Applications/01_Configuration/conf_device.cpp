@@ -219,7 +219,7 @@ EAppStatus InitAllDevice(){
     CDevMtrM2006::SMtrInitParam_M2006 armMotor_Grip_initparam;
     armMotor_Grip_initparam.deviceID = EDeviceID::DEV_ARM_MTR_GRIP;
     armMotor_Grip_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    armMotor_Grip_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_8;//暂时使用can2的ID8
+    armMotor_Grip_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_8;
     armMotor_Grip_initparam.useAngleToPosit = true;
     armMotor_Grip_initparam.useStallMonit = true;
     armMotor_Grip_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
@@ -265,6 +265,19 @@ EAppStatus InitAllDevice(){
     armMotor_Pitch2_initparam.stallTime = 200;
     armMotor_Pitch2.InitDevice(&armMotor_Pitch2_initparam);
 
+    static CDevMtrKT armMotor_Pitch3;
+    CDevMtrKT::SMtrInitParam_KT armMotor_Pitch3_initparam;
+    armMotor_Pitch3_initparam.deviceID = EDeviceID::DEV_ARM_MTR_PITCH3;
+    armMotor_Pitch3_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    armMotor_Pitch3_initparam.ktMtrID = CDevMtrKT::EKtMtrID::ID_4;
+    armMotor_Pitch3_initparam.encoderResolution = 65535;
+    armMotor_Pitch3_initparam.useAngleToPosit = true;
+    armMotor_Pitch3_initparam.useStallMonit = true;
+    armMotor_Pitch3_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
+    armMotor_Pitch3_initparam.stallThreshold = 200;
+    armMotor_Pitch3_initparam.stallTime = 200;
+    armMotor_Pitch3.InitDevice(&armMotor_Pitch3_initparam);
+
     static CDevMtrDM_MIT armMotor_Roll;
     CDevMtrDM_MIT::SMtrInitParam_DM_MIT armMotor_Roll_initparam;
     armMotor_Roll_initparam.deviceID = EDeviceID::DEV_ARM_MTR_ROLL;
@@ -276,6 +289,21 @@ EAppStatus InitAllDevice(){
     armMotor_Roll_initparam.TAU_MAX = 10.0f;
     armMotor_Roll_initparam.useAngleToPosit = true;
     armMotor_Roll.InitDevice(&armMotor_Roll_initparam);
+
+    /******************************************
+     * 云台电机
+     *****************************************/
+    static CDevMtrDM_MIT gimbalMotor_Visualyaw;
+    CDevMtrDM_MIT::SMtrInitParam_DM_MIT gimbalMotor_Visualyaw_initparam;
+    gimbalMotor_Visualyaw_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_VISUAL_YAW;
+    gimbalMotor_Visualyaw_initparam.interfaceID = EInterfaceID::INF_CAN2;
+    gimbalMotor_Visualyaw_initparam.MasterID = 0x36;
+    gimbalMotor_Visualyaw_initparam.SlaveID = 0x37;
+    gimbalMotor_Visualyaw_initparam.Q_MAX = 12.5;
+    gimbalMotor_Visualyaw_initparam.DQ_MAX = 280.0f;
+    gimbalMotor_Visualyaw_initparam.TAU_MAX = 1.0f;
+    gimbalMotor_Visualyaw_initparam.useAngleToPosit = true;
+    gimbalMotor_Visualyaw.InitDevice(& gimbalMotor_Visualyaw_initparam);
 
     return APP_OK;
 }

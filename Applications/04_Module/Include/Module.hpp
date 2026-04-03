@@ -15,7 +15,7 @@
 #include "mod_common.hpp"
 #include "mod_chassis.hpp"
 #include "mod_arm.hpp"
-
+#include "mod_gimbal.hpp"
 namespace my_engineer {
 
 } // namespace my_engineer

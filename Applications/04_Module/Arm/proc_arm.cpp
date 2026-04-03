@@ -39,6 +39,7 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 				arm.comjoint_.StopComponent();
 				arm.comRoll_.StopComponent();
 				arm.comEnd_.StopComponent();
+				arm.comGrip_.StopComponent();
 
 				proc_waitMs(20);
 				continue; // 跳过下面的代码，直接进入下一次循环
@@ -52,14 +53,20 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 				proc_waitUntil(arm.comjoint_.componentStatus == APP_OK);					///< 此处先挂起10ms之后，一直等待关节电机任务初始化结束否则就一直10ms的等
 				
 				arm.comEnd_.StartComponent();
+				proc_waitUntil(arm.comEnd_.componentStatus == APP_OK);
+					
+				arm.comGrip_.StartComponent();  ///< 等待末端初始化完成
+				
 				arm.comRoll_.StartComponent();												///< 当关节电机初始化完成之后，启动末端夹爪和夹爪roll电机任务
 				proc_waitUntil(arm.comEnd_.componentStatus == APP_OK &&
-							   arm.comRoll_.componentStatus == APP_OK);						///< 等待末端初始化完成
+							   arm.comRoll_.componentStatus == APP_OK);	
+							   
 
 				arm.armCmd = SArmCmd();
 				arm.armCmd.set_angle_Yaw = ARM_YAW_INIT_ANGLE;
 				arm.armCmd.set_angle_Pitch1 = ARM_PITCH1_INIT_ANGLE;
 				arm.armCmd.set_angle_Pitch2 = ARM_PITCH2_INIT_ANGLE;
+				arm.armCmd.set_angle_Pitch3 = ARM_PITCH3_INIT_ANGLE;
 				arm.armCmd.set_angle_Roll = ARM_ROLL_INIT_ANGLE;
 				arm.armCmd.set_angle_end_pitch = ARM_END_PITCH_INIT_ANGLE;
 				arm.armCmd.set_length_grip = ARM_GRIP_INIT_LENGTH;
@@ -80,14 +87,22 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 					CComJoint::PhyPositToMtrPosit_pitch1(arm.armCmd.set_angle_Pitch1);
 				arm.comjoint_.jointCmd.setPosit_pitch2 =
 					CComJoint::PhyPositToMtrPosit_pitch2(arm.armCmd.set_angle_Pitch2);
+				arm.comjoint_.jointCmd.setPosit_pitch3 =
+					CComJoint::PhyPositToMtrPosit_pitch3(arm.armCmd.set_angle_Pitch3);
 				arm.comRoll_.rollCmd.setAngle =
 					CComRoll::PhyAngleToMtrAngle(arm.armCmd.set_angle_Roll);
 				arm.comEnd_.endCmd.setPosit_Pitch =
 					CComEnd::PhyPositToMtrPosit_Pitch(arm.armCmd.set_angle_end_pitch);
 				arm.comEnd_.endCmd.setPosit_Roll =
 					CComEnd::PhyPositToMtrPosit_Roll(arm.armCmd.set_angle_end_roll);
-				arm.comEnd_.endCmd.setPosit_grip = 									///< 夹爪的外部接口是距离，内部接口是编码器的数值
-					CComEnd::PhyPositToMtrPosit_Grip(arm.armCmd.set_length_grip);
+				arm.comGrip_.gripCmd.setPosit_grip = 									///< 夹爪的外部接口是距离，内部接口是编码器的数值
+					CComGrip::PhyPositToMtrPosit(arm.armCmd.set_length_grip);
+
+				// 二次夹紧指令传递到组件层
+				if (arm.armCmd.reGripCmd) {
+					arm.comGrip_.gripCmd.cmdReGrip = true;
+					arm.armCmd.reGripCmd = false;  
+				}
 
 				proc_waitMs(1); // 1000Hz
 				break;

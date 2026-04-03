@@ -162,6 +162,7 @@ private:
     // 模块指针
     CModChassis *pchassis_ = nullptr;
     CModArm *parm_ = nullptr;
+    CModGimbal *pgimbal_ = nullptr;
 
     // 自动任务句柄
     TaskHandle_t autoCtrlTaskHandle_ = nullptr;

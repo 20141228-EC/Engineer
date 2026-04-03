@@ -18,7 +18,7 @@
                 "_UNICODE",
                 "STM32H7"
             ],
-            "compilerPath": "F:\\mingw64\\bin\\gcc.exe",
+            "compilerPath": "D:\\Tool\\gun_tool\\bin\\arm-none-eabi-gcc.exe",
             "intelliSenseMode": "windows-gcc-x64"
         }
     ],
