@@ -37,39 +37,42 @@ namespace my_engineer {
 #define STATUS_ROBOT_INIT_OK      (1 << 4)  // bit4: 机器人初始化完成
 
 /**
- * @brief 臂部角度结构体（5轴，浮点直传，用于 ControllerDataPkg）
- * 总大小: 5 × 4 = 20 bytes
+ * @brief 臂部角度结构体（6轴，浮点直传，用于 ControllerDataPkg）
+ * 总大小: 6 × 4 = 24 bytes
  */
 struct SArmAnglesPkg {
 	float yaw = 0.f;        ///< Yaw角度 (deg)
 	float pitch1 = 0.f;     ///< Pitch1角度 (deg)
 	float pitch2 = 0.f;     ///< Pitch2角度 (deg)
+	float pitch3 = 0.f;	 	///< Pitch3角度 (deg)
 	float roll = 0.f;       ///< Roll角度 (deg)
 	float pitch_end = 0.f;  ///< PitchEnd角度 (deg)
 } __packed;
 
 /**
- * @brief 压缩角度结构体（5轴，用于 RobotDataPkg）
+ * @brief 压缩角度结构体（6轴，用于 RobotDataPkg）
  * int16存储，精度0.01°，范围±327.67°
- * 总大小: 5 × 2 = 10 bytes
+ * 总大小: 6 × 2 = 12 bytes
  */
 struct SArmAnglesCompressed {
 	int16_t yaw = 0;        ///< Yaw角度 (×100)
 	int16_t pitch1 = 0;     ///< Pitch1角度 (×100)
 	int16_t pitch2 = 0;     ///< Pitch2角度 (×100)
+	int16_t pitch3 = 0;     ///< Pitch3角度 (×100)
 	int16_t roll = 0;       ///< Roll角度 (×100)
 	int16_t pitch_end = 0;  ///< PitchEnd角度 (×100)
 } __packed;
 
 /**
- * @brief 力矩/电流反馈结构体（5轴，用于 RobotDataPkg）
+ * @brief 力矩/电流反馈结构体（6轴，用于 RobotDataPkg）
  * int16存储，直接使用电机反馈原始值
- * 总大小: 5 × 2 = 10 bytes
+ * 总大小: 6 × 2 = 12 bytes
  */
 struct SArmTorqueCompressed {
 	int16_t yaw = 0;        ///< Yaw电流 (原始值)
 	int16_t pitch1 = 0;     ///< Pitch1力矩 (原始值)
 	int16_t pitch2 = 0;     ///< Pitch2力矩 (原始值)
+	int16_t pitch3 = 0;     ///< Pitch3力矩 (原始值)
 	int16_t roll = 0;       ///< Roll电流 (原始值)
 	int16_t pitch_end = 0;  ///< PitchEnd电流 (原始值)
 } __packed;
@@ -114,10 +117,10 @@ public:
 	struct SControllerDataPkg {
 		SPkgHeader header;
 		uint8_t status_flags = 0;           ///< 状态标志位 (bit-packed)      1B
-		SArmAnglesPkg arm;                  ///< 单臂5轴角度 (float)          20B
+		SArmAnglesPkg arm;                  ///< 单臂6轴角度 (float)          24B
 		int8_t rocker_X = 0;                ///< 摇杆X (-100~100)             1B
 		int8_t rocker_Y = 0;                ///< 摇杆Y (-100~100)             1B
-		uint8_t reserved[7] = {0};          ///< 保留字段                      7B
+		uint8_t reserved[3] = {0};          ///< 保留字段                      3B
 		uint16_t CRC16 = 0x0000;            ///< CRC16校验
 	} __packed controllerData_info_pkg = { };
 
@@ -129,9 +132,9 @@ public:
 	struct SRobotDataPkg {
 		SPkgHeader header;
 		uint8_t status_flags = 0;              ///< 状态标志位           1B
-		SArmAnglesCompressed arm;              ///< 臂部角度 (int16)    10B
-		SArmTorqueCompressed torque;           ///< 臂部力矩/电流       10B
-		int8_t reserved[9] = {0};              ///< 保留字段             9B
+		SArmAnglesCompressed arm;              ///< 臂部角度 (int16)    12B
+		SArmTorqueCompressed torque;           ///< 臂部力矩/电流       12B
+		int8_t reserved[5] = {0};              ///< 保留字段             5B
 		uint16_t CRC16 = 0x0000;               ///< CRC16校验
 	} __packed robotData_info_pkg = { };
 

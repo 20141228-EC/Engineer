@@ -37,6 +37,7 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comYaw_.StopComponent();
 				controller.comPitch1_.StopComponent();
 				controller.comPitch2_.StopComponent();
+				controller.comPitch3_.StopComponent();
 				controller.comRoll_.StopComponent();
 				controller.comPitchEnd_.StopComponent();
 				controller.comBuzzer_.StopComponent();
@@ -53,8 +54,10 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comBuzzer_.StartComponent();
 				controller.comPitch1_.StartComponent();
 				controller.comPitch2_.StartComponent();
+				controller.comPitch3_.StartComponent();
 				proc_waitUntil(controller.comPitch1_.componentStatus == APP_OK
-					&& controller.comPitch2_.componentStatus == APP_OK);
+					&& controller.comPitch2_.componentStatus == APP_OK
+					&& controller.comPitch3_.componentStatus == APP_OK);
 				controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] = 4.0f;
 				controller.comPitch2_.pitch2Cmd.setParam[EMotorParam::POSIT] = 11.0f;
 				proc_waitUntil(controller.comPitch1_.pitch1Info.isPositArrived
@@ -73,6 +76,7 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comPitch2_.pitch2Cmd.isFree = true; ///< 允许自由控制
 				controller.comRoll_.rollCmd.isFree = true; ///< 允许自由控制
 				controller.comPitchEnd_.pitchEndCmd.isFree = true; ///< 允许自由控制
+				controller.comPitch3_.pitch3Cmd.isFree = true; ///< 允许自由控制
 
 				// controller.comBuzzer_.buzzerCmd.musicType = CDevBuzzer::MusicType::STARTUP;  // 暂时关闭启动音乐
 
@@ -94,14 +98,16 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comYaw_.yawCmd.isFree = controller.ControllerCmd.isFree;
 				controller.comPitch1_.pitch1Cmd.isFree = controller.ControllerCmd.isFree;
 				controller.comPitch2_.pitch2Cmd.isFree = controller.ControllerCmd.isFree;
+				controller.comPitch3_.pitch3Cmd.isFree = controller.ControllerCmd.isFree;
 				controller.comRoll_.rollCmd.isFree = controller.ControllerCmd.isFree;
 				controller.comPitchEnd_.pitchEndCmd.isFree = controller.ControllerCmd.isFree;
 
 				// 联动控制模式：将机器人回传的位置作为目标，驱动控制器电机跟随
-				if(!controller.ControllerCmd.isFree) {
+				if(!controller.ControllerCmd.isFree && controller.ControllerCmd.isfirstChange) {
 					controller.comYaw_.yawCmd.setPosit = CModController::CComYaw::PhyPositToMtrPosit(controller.ControllerCmd.cmd_yaw);
 					controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch1;
 					controller.comPitch2_.pitch2Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch2;
+					controller.comPitch3_.pitch3Cmd.setPosit =  controller.ControllerCmd.cmd_pitch3;
 					controller.comRoll_.rollCmd.setParam[EMotorParam::POSIT] = controller.ControllerCmd.cmd_roll;
 					controller.comPitchEnd_.pitchEndCmd.setParam[EMotorParam::POSIT] = controller.ControllerCmd.cmd_pitch_end;
 				}
@@ -110,6 +116,7 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.ControllerInfo.isReturnSuccess =
 					controller.comPitch1_.pitch1Info.isPositArrived &&
 					controller.comPitch2_.pitch2Info.isPositArrived &&
+					controller.comPitch3_.pitch3Info.isPositArrived &&
 					controller.comYaw_.yawInfo.isPositArrived &&
 					controller.comRoll_.rollInfo.isPositArrived &&
 					controller.comPitchEnd_.pitchEndInfo.isPositArrived;

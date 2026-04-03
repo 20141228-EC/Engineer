@@ -40,6 +40,7 @@ EAppStatus CModController::InitModule(SModInitParam_Base &param) {
 	comYaw_.InitComponent(param);
 	comPitch1_.InitComponent(param);
 	comPitch2_.InitComponent(param);
+	comPitch3_.InitComponent(param);
 	comRoll_.InitComponent(param);
 	comRocker_.InitComponent(param);
 	comBuzzer_.InitComponent(param);
@@ -77,6 +78,7 @@ void CModController::UpdateHandler_() {
 	// 更新组件
 	comPitch1_.UpdateComponent();
 	comPitch2_.UpdateComponent();
+	comPitch3_.UpdateComponent();
 	comYaw_.UpdateComponent();
 	comRocker_.UpdateComponent();  // 先更新摇杆，再更新Roll
 	comRoll_.UpdateComponent();
@@ -112,14 +114,19 @@ void CModController::UpdateHandler_() {
 	ControllerInfo.posit_yaw = CModController::CComYaw::MtrPositToPhyPosit(comYaw_.yawInfo.posit);
 	ControllerInfo.posit_pitch1 = comPitch1_.pitch1Info.posit;
 	ControllerInfo.posit_pitch2 = comPitch2_.pitch2Info.posit;
+	ControllerInfo.posit_pitch3 = CModController::CComPitch3::MtrPositToPhyPosit(comPitch3_.pitch3Info.posit);
 	ControllerInfo.posit_roll = comRoll_.rollInfo.posit;         // MIT模式直接使用float位置
 	ControllerInfo.posit_pitch_end = comPitchEnd_.pitchEndInfo.posit;  // 已在组件层转换为物理方向
 
-	/*----------- Yaw电机（DJI M6020）CAN发送 -----------*/
+	/*----------- Yaw电机（DJI M6020）/pitch3 3508 CAN发送 -----------*/
 	// Roll/PitchEnd改为MIT模式后在各自组件内发送，Pitch1/Pitch2也在组件内发送
 	CDevMtrDJI::FillCanTxBuffer(comYaw_.motor[0],
 							   comYaw_.mtrCanTxNode_[0]->dataBuffer,
 							   comYaw_.mtrOutputBuffer[0]);
+	CDevMtrDJI::FillCanTxBuffer(comPitch3_.motor[0],
+							   comPitch3_.mtrCanTxNode_[0]->dataBuffer,
+							   comPitch3_.mtrOutputBuffer[0]);
+
 
 }
 
@@ -164,6 +171,8 @@ EAppStatus CModController::RestrictControllerCommand_() {
 		std::clamp(ControllerCmd.cmd_pitch1, CONTROLLER_PITCH1_PHYSICAL_RANGE_MIN, CONTROLLER_PITCH1_PHYSICAL_RANGE_MAX);
 	ControllerCmd.cmd_pitch2 =
 		std::clamp(ControllerCmd.cmd_pitch2, CONTROLLER_PITCH2_PHYSICAL_RANGE_MIN, CONTROLLER_PITCH2_PHYSICAL_RANGE_MAX);
+	ControllerCmd.cmd_pitch3 =
+		std::clamp(ControllerCmd.cmd_pitch3, CONTROLLER_PITCH3_PHYSICAL_RANGE_MIN, CONTROLLER_PITCH3_PHYSICAL_RANGE_MAX);
 	ControllerCmd.cmd_roll =
 		std::clamp(ControllerCmd.cmd_roll, CONTROLLER_ROLL_PHYSICAL_RANGE_MIN, CONTROLLER_ROLL_PHYSICAL_RANGE_MAX);
 	ControllerCmd.cmd_pitch_end =
@@ -283,9 +292,9 @@ void CModController::UpdateGravityComp_() {
  * 力反馈增益 fbGain_ 各轴独立控制反馈强度，需根据实际的情况调整参数。
  ******************************************************************************/
 void CModController::UpdateForceFeedback_() {
-	if (!forceFeedbackEnabled_) return;
-	if (!ControllerCmd.isFree) return;  // 联动模式不叠加力反馈
+	if (!forceFeedbackEnabled_ || !ControllerCmd.isFree) return; //联动模式并且力反馈没有初始化
 
+	if(ControllerInfo.isRobotInit == true){
 	// 死区：过滤静态重力补偿力矩，只反馈碰撞外力
 	constexpr float DEADZONE_P1 = 5.0f;   // Pitch1 死区 (N·m)
 	constexpr float DEADZONE_P2 = 15.0f;   // Pitch2 死区 (N·m)
@@ -313,6 +322,7 @@ void CModController::UpdateForceFeedback_() {
 	comPitch1_.pitch1Cmd.setParam[EMotorParam::TF] += dbg_fbTF_pitch1;
 	comPitch2_.pitch2Cmd.setParam[EMotorParam::TF] += dbg_fbTF_pitch2;
 	comRoll_.rollCmd.setParam[EMotorParam::TF]     += dbg_fbTF_roll;
+	}
 
 	// PitchEnd: 暂不处理（末端差速）
 }
