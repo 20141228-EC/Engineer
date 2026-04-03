@@ -44,6 +44,7 @@ public:
 		float_t yaw = 0.0f;
 		float_t pitch1 = 0.0f;
 		float_t pitch2 = 0.0f;
+		float_t pitch3 = 0.0f;
 		float_t roll = 0.0f;
 		float_t pitch_end = 0.0f;
 	};
@@ -53,23 +54,28 @@ public:
 		bool controller_OK = false;          ///< 控制器状态OK
 		bool return_success = false;         ///< 归位成功标志
 		EToggleSwitch toggle_switch = TOGGLE_MIDDLE;  ///< 拨杆档位
-		bool gripper_left_close = false;     ///< 左夹爪闭合
-		bool gripper_right_close = false;    ///< 右夹爪闭合
-		SArmAngles left_arm;                 ///< 左臂5轴角度
-		SArmAngles right_arm;                ///< 右臂5轴角度
-		int8_t rocker_LX = 0;                ///< 左臂roll_end增量 (-100~100)
-		int8_t rocker_RX = 0;                ///< 右臂roll_end增量 (-100~100)
-		int8_t rocker_RY = 0;                ///< 底盘前进
+		bool gripper_close = false;          ///< 夹爪闭合
+		bool gripper_regrip = false;         ///< 夹爪二次夹紧请求（脉冲信号）
+		SArmAngles arm;                      ///< 单臂5轴角度
+		int8_t rocker_X = 0;                 ///< 摇杆X: roll_end / 底盘左右移动 (-100~100)
+		int8_t rocker_Y = 0;                 ///< 摇杆Y: 底盘前进 (-100~100)
 	} controllerInfo;
 
 	// 机器人信息结构体(Robot -> Controller)
 	struct SRobotInfo {
 		bool ask_reset_flag = false;         ///< 是否要求复位
 		bool controlled_by_controller = false; ///< 是否被控制器控制
-		bool ask_return_flag = false;        ///< 是否要求归位
-		SArmAngles left_arm;                 ///< 左臂5轴角度
-		SArmAngles right_arm;                ///< 右臂5轴角度
+		bool robot_init_ok = false;          ///< 机器人初始化完成
+		SArmAngles arm;                      ///< 单臂6轴角度
+		SArmAngles torque;                   ///< 臂部力矩/电流反馈（原始值转float）
 	} robotInfo;
+
+	// 控制器是否在线（设备层心跳/数据层标志位）
+	bool IsControllerOnline() const {
+		return pcontrollerLink_
+			&& pcontrollerLink_->controllerLinkStatus == CDevControllerLink::EControllerLinkStatus::ONLINE
+			&& controllerInfo.controller_OK;
+	}
 
 	// 初始化系统
 	EAppStatus InitSystem(SSystemInitParam_Base *pStruct) final;

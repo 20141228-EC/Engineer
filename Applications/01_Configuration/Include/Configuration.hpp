@@ -67,6 +67,7 @@ enum class EDeviceID{
     DEV_ARM_MTR_YAW,            ///< 机械臂YAW轴电机(KT)
     DEV_ARM_MTR_PITCH1,        ///< 机械臂Pitch1轴电机(KT)
     DEV_ARM_MTR_PITCH2,        ///< 机械臂Pitch2轴电机(KT)
+    DEV_ARM_MTR_PITCH3,        ///< 机械臂Pitch3轴电机(KT)
     DEV_ARM_MTR_ROLL,          ///< 机械臂Roll轴电机(DM-MIT mode)
     DEV_ARM_MTR_END_L,   ///< 机械臂末端左轴电机(M2006)
     DEV_ARM_MTR_END_R,   ///< 机械臂末端右轴电机(M2006)
@@ -75,6 +76,7 @@ enum class EDeviceID{
     DEV_ARM_MTR_GRIP,        ///< 机械臂夹爪电机(M2006)
     DEV_CHAS_CRAWLER_L,     ///< 履带电机左（M3508）
     DEV_CHAS_CRAWLER_R,     ///< 履带电机右（M3508）
+    DEV_GIMBAL_MTR_VISUAL_YAW,///<云台电机
 };
 
 /**
@@ -86,7 +88,7 @@ enum class EModuleID{
     MOD_TEST = 0,           ///< 测试模块
     MOD_CHASSIS,            ///< 底盘模块
     MOD_CLIMBER,           ///< 上台阶模块
-    // MOD_GIMBAL,             ///< 云台模块
+    MOD_GIMBAL,             ///< 云台模块
     MOD_GANTRY,             ///< 龙门模块
     // MOD_SUBGANTRY,          ///< 子龙门模块 - 已删除
     MOD_ARM,                ///< 机械臂模块

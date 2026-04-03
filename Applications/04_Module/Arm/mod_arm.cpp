@@ -42,6 +42,7 @@ EAppStatus CModArm::InitModule(SModInitParam_Base &param) {
 	comjoint_.InitComponent(param);
 	comRoll_.InitComponent(param);
 	comEnd_.InitComponent(param);
+	comGrip_.InitComponent(param);
 
 	// 创建任务并注册模块
 	CreateModuleTask_();
@@ -70,24 +71,30 @@ void CModArm::UpdateHandler_() {
 	// 更新组件
 	comjoint_.UpdateComponent();
 	comEnd_.UpdateComponent();	///<更新电机数据
+	comGrip_.UpdateComponent();
 
 	// 更新模块信息
 	armInfo.angle_Yaw = comjoint_.MtrPositToPhyPosit_yaw(comjoint_.jointInfo.posit_yaw);
 	armInfo.angle_Pitch1 = comjoint_.MtrPositToPhyPosit_pitch1(comjoint_.jointInfo.posit_pitch1);
-	armInfo.angle_Pitch2 = comjoint_.MtrPositToPhyPosit_pitch2(comjoint_.jointInfo.posit_pitch2);	///<这里是将底层的关节信息转换为用户层的arm信息
+	armInfo.angle_Pitch2 = comjoint_.MtrPositToPhyPosit_pitch2(comjoint_.jointInfo.posit_pitch2);
+	armInfo.angle_Pitch3 = comjoint_.MtrPositToPhyPosit_pitch3(comjoint_.jointInfo.posit_pitch3);	///<这里是将底层的关节信息转换为用户层的arm信息
 	armInfo.angle_Roll = comRoll_.MtrAngleToPhyAngle(comRoll_.rollInfo.angle);
 	armInfo.angle_end_pitch =
 		comEnd_.MtrPositToPhyPosit_Pitch(comEnd_.endInfo.posit_Pitch);
 	armInfo.angle_end_roll =
 		comEnd_.MtrPositToPhyPosit_Roll(comEnd_.endInfo.posit_Roll);								///<将电机的机械角度转换为物理角度
-	armInfo.length_grip = comEnd_.MtrPositToPhyPosit_Grip(comEnd_.endInfo.posit_grip);
+	armInfo.length_grip = CComGrip::MtrPositToPhyPosit(static_cast<float_t>(comGrip_.gripInfo.posit_grip));
 	armInfo.isAngleArrived_Yaw = comjoint_.jointInfo.isPositArrived_yaw;
 	armInfo.isAngleArrived_Pitch1 = comjoint_.jointInfo.isPositArrived_pitch1;
 	armInfo.isAngleArrived_Pitch2 = comjoint_.jointInfo.isPositArrived_pitch2;
+	armInfo.isAngleArrived_Pitch3 = comjoint_.jointInfo.isPositArrived_pitch3;
 	armInfo.isAngleArrived_Roll = comRoll_.rollInfo.isAngleArrived;
 	armInfo.isAngleArrived_End_Pitch = comEnd_.endInfo.isPositArrived_Pitch;
 	armInfo.isAngleArrived_End_Roll = comEnd_.endInfo.isPositArrived_Roll;
-	armInfo.isAngleArrived_Grip = comEnd_.endInfo.isPositArrived_Grip;
+	armInfo.isAngleArrived_Grip = comGrip_.gripInfo.isGripped;
+	armInfo.isGripped = comGrip_.gripInfo.isGripped;
+	armInfo.holdLength_grip = CComGrip::MtrPositToPhyPosit(
+		static_cast<float_t>(comGrip_.gripInfo.holdPosit_Grip));
 
 	if(Need_Grav_Compensation) ///< 启用重力补偿
 	{
@@ -103,6 +110,9 @@ void CModArm::UpdateHandler_() {
 	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P2],
 								comjoint_.mtrCanTxNode[CComJoint::P2]->dataBuffer,
 								comjoint_.mtrOutputBuffer[CComJoint::P2]);
+	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P3],
+								comjoint_.mtrCanTxNode[CComJoint::P3]->dataBuffer,
+								comjoint_.mtrOutputBuffer[CComJoint::P3]);	
 	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::Y],
 								comjoint_.mtrCanTxNode[CComJoint::Y]->dataBuffer,
 								comjoint_.mtrOutputBuffer[CComJoint::Y]);
@@ -112,9 +122,9 @@ void CModArm::UpdateHandler_() {
 	CDevMtrDJI::FillCanTxBuffer(comEnd_.motor[CComEnd::R],
 								comEnd_.mtrCanTxNode[CComEnd::R]->dataBuffer,
 								comEnd_.mtrOutputBuffer[CComEnd::R]);
-	CDevMtrDJI::FillCanTxBuffer(comEnd_.motor[CComEnd::GRIP],
-								comEnd_.mtrCanTxNode[CComEnd::GRIP]->dataBuffer,
-								comEnd_.mtrOutputBuffer[CComEnd::GRIP]);
+	CDevMtrDJI::FillCanTxBuffer(comGrip_.motor,
+								comGrip_.mtrCanTxNode->dataBuffer,
+								comGrip_.mtrOutputBuffer);
 
 }
 
@@ -162,6 +172,9 @@ EAppStatus CModArm::RestrictArmCommand_() {
     armCmd.set_angle_Pitch2 =
         std::clamp(armCmd.set_angle_Pitch2,
                    ARM_PITCH2_PHYSICAL_RANGE_MIN, ARM_PITCH2_PHYSICAL_RANGE_MAX);
+	armCmd.set_angle_Pitch3 =
+        std::clamp(armCmd.set_angle_Pitch3,
+                   ARM_PITCH3_PHYSICAL_RANGE_MIN, ARM_PITCH3_PHYSICAL_RANGE_MAX);
     armCmd.set_angle_Roll =
         std::clamp(armCmd.set_angle_Roll,
                    ARM_ROLL_PHYSICAL_RANGE_MIN, ARM_ROLL_PHYSICAL_RANGE_MAX);

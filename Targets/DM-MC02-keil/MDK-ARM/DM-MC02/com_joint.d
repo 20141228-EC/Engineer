@@ -81,7 +81,9 @@ dm-mc02/com_joint.o: ..\..\..\Applications\04_Module\Arm\com_joint.cpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_pid.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_power_control.hpp \
   ..\..\..\Applications\02_Interface\Include\Interface.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_common.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_uart.hpp \
@@ -119,6 +121,7 @@ dm-mc02/com_joint.o: ..\..\..\Applications\04_Module\Arm\com_joint.cpp \
   ..\..\..\Applications\03_Device\Include\dev_controller_link.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp \
   ..\..\..\Applications\03_Device\Include\dev_esp32.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_board_link.hpp \
   ..\..\..\Applications\03_Device\Include\dev_vision.hpp \
   ..\..\..\Applications\03_Device\Include\dev_referee.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp

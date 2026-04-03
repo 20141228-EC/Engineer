@@ -414,6 +414,11 @@
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\01_Configuration\Configuration.cpp</FilePath>
             </File>
+            <File>
+              <FileName>conf_algo.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\01_Configuration\conf_algo.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -469,10 +474,57 @@
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\05_System\Referee\sys_referee.cpp</FilePath>
             </File>
+            <File>
+              <FileName>sys_board_link.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\05_System\Board_Link\sys_board_link.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>Application/System/Process</GroupName>
+          <Files>
+            <File>
+              <FileName>proc_climbing.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\05_System\Core\process\proc_climbing.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>proc_downstair.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\05_System\Core\process\proc_downstair.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>proc_energy_unit.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\05_System\Core\process\proc_energy_unit.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>proc_exchange_ore.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\05_System\Core\process\proc_exchange_ore.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>proc_ground_ore.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\05_System\Core\process\proc_ground_ore.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>proc_return_origin.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\05_System\Core\process\proc_return_origin.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>proc_save_ore.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\05_System\Core\process\proc_save_ore.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>wait.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\Applications\05_System\Core\process\wait.txt</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>Application/Module</GroupName>
@@ -517,6 +569,11 @@
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\04_Module\Arm\com_grip.cpp</FilePath>
             </File>
+            <File>
+              <FileName>dev_board_link.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\03_Device\dev_board_link.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -537,16 +594,21 @@
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\04_Module\Chassis\proc_chassis.cpp</FilePath>
             </File>
+            <File>
+              <FileName>com_crawler.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\04_Module\Chassis\com_crawler.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>com_hip.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\04_Module\Chassis\com_hip.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>Application/Module/Gimbal</GroupName>
           <Files>
-            <File>
-              <FileName>com_lift_gimbal.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\Applications\04_Module\Gimbal\com_lift_gimbal.cpp</FilePath>
-            </File>
             <File>
               <FileName>mod_gimbal.cpp</FileName>
               <FileType>8</FileType>
@@ -556,6 +618,11 @@
               <FileName>proc_gimbal.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\04_Module\Gimbal\proc_gimbal.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>com_visual_yaw.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\04_Module\Gimbal\com_visual_yaw.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -579,6 +646,26 @@
               <FileName>algo_pid.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\00_Algorithm\algo_pid.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>algo_ave_filter.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\00_Algorithm\algo_ave_filter.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>algo_kf_filter.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\00_Algorithm\algo_kf_filter.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>algo_power_control.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\00_Algorithm\algo_power_control.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>Algorithm.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\00_Algorithm\Algorithm.cpp</FilePath>
             </File>
           </Files>
         </Group>
