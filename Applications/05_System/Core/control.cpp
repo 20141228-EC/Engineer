@@ -182,50 +182,6 @@ void CSystemCore::ControlFromRemote_() {
             } 
         }
     }
-<<<<<<< Updated upstream
-
-    // HIG + MID 自动上台阶 利用陀螺仪数据控腿长
-    else if(remote.switch_L == HIG && remote.switch_R == MID)
-    {
-        SysRemote.SetRemoteDeadZone(10.f);
-        // 底盘控制
-        if (pchassis_) {
-            if(!pchassis_->chassisCmd.isAutoCtrl){
-                pchassis_->chassisCmd.speed_X = remote.joystick_LX / 2;             ///<摇杆的x方向控制车的左右移动，为了保证操作手的手感减小左右方向的速度
-                pchassis_->chassisCmd.speed_Y = remote.joystick_LY;
-                pchassis_->chassisCmd.speed_W = remote.joystick_RX;
-                pchassis_->MovMode = CModChassis::EmovMode::CLIMBING;               ///< 更新模块运动模式标志位
-            }
-
-            static uint8_t thumbwheel_count = 0;
-
-            if(remote_edge.thumbWheel == CSystemRemote::ERemoteEdge::Falling){
-                pchassis_->reset_hip = !pchassis_->reset_hip;   ///< 要求复位腿
-            }
-            if(remote_edge.thumbWheel == CSystemRemote::ERemoteEdge::Rising){
-                pchassis_->chassisInfo.crawler_on = !pchassis_->chassisInfo.crawler_on; ///< 启动履带电机
-            }
-
-            ///< 右摇杆y控云台pitch，逻辑在副板
-        }
-                //云台抬升
-        if (pgimbal_) {
-            pgimbal_->gimbalCmd.set_visualyaw +=
-                (remote.joystick_RY / 100.f) * 300.f / freq;
-        }
-    }
-    // HIG + LOW 云台全控制
-    else if(remote.switch_L == HIG && remote.switch_R == LOW)
-    {
-        if(pchassis_){
-            if(!pchassis_->chassisCmd.isAutoCtrl){
-                pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
-            } 
-        }
-        ///< 云台控制逻辑均在副板
-    }
-=======
->>>>>>> Stashed changes
 }
 
 /**

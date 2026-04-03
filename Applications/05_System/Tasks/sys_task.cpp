@@ -75,14 +75,9 @@ void StartUpdateTask(void *argument) {
 
         // 执行can发送
         TxNode_Can3_200.Transmit(); ///< 履带电机
-<<<<<<< Updated upstream
 		if(--TickRate == 0) {              ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载                  
 		    TxNode_Can3_280.Transmit(); ///< 机械臂后四轴电机 250Hz
             TickRate = 4;
-=======
-		if(HalfTickRate) {              ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载                  
-		    TxNode_Can3_280.Transmit(); ///< 机械臂后三轴电机 500Hz
->>>>>>> Stashed changes
         }
         
         // TxNode_Can2_280.Transmit(test_data);
