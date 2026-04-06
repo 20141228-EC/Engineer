@@ -1,12 +1,13 @@
 /******************************************************************************
  * @brief        
  * 
- * @file         sys_referee.hpp
- * @author       Fish_Joe (2328339747@qq.com)
+ * @file         sllllr.hpp
+ * @author       sllllr (2997708711@qq.com)
  * @version      V1.0
- * @date         2025-04-17
+ * @date         2025-03-16
+ * @note		 后缀为TextMsg的为动态ui，后缀为FigureMsg的为静态ui
  * 
- * @copyright    Copyright (c) 2025
+ * @copyright    Copyright (c) 2026
  * 
  ******************************************************************************/
 
@@ -14,7 +15,7 @@
 #define SYS_REFEREE_HPP
 
 #include "sys_common.hpp"
-
+#include "Module.hpp"
 #include "Device.hpp"
 
 namespace my_engineer {
@@ -39,6 +40,7 @@ public:
 	struct SRobotInfo {
 		int16_t robotCamp;   ///< Robot Clamp (0 - Unknown, 1 - Red, 2 - Blue)
 		int16_t robotID;     ///< Robot ID (0 - Unknown, 1 - 6)
+		int16_t robotMaxPower; ///< Referee Robot Power Limit (W)
 	};
 
 	struct SRadarInfo {
@@ -55,27 +57,29 @@ public:
 	// 初始化系统
 	EAppStatus InitSystem(SSystemInitParam_Base *pStruct) final;
 
+	CModChassis::SChassisInfo chassis;
+
 private:
 	enum EUiConfigID {
 		TEXT_PUMP = 0,
 		TEXT_MODE,
 		TEXT_CURRENT_MODE,
-		CIRCLE_PUMP_C,
-		CIRCLE_PUMP_L,
-		CIRCLE_PUMP_R,
-		LINE_L,
-		LINE_R,
+		CRAWLER_STATUS,
 	};
 
-	std::array<CDevReferee::SUiFigureConfig, 8> uiConfig;
+	std::array<CDevReferee::SUiFigureConfig, 13> uiConfig;
 
-	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> pumpTextMsg, modeTextMsg, curModeTextMsg;
+	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> hipTextMsg, spinTextMsg, modeTextMsg, curModeTextMsg, hipInfoTextMsg;
 
 	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawPentaMsg> visionFigureMsg;
 
 	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> RadarTextMsg;
 
 	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawHeptaMsg> stateFigureMsg;
+
+	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> yawTextMsg, yawStaticTextMsg, speedTextMsg;
+
+	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawHeptaMsg> positionFigureMsg;
 
 	CDevReferee *pRefereeDev_ = nullptr;
 
@@ -105,12 +109,26 @@ private:
 
 	void UI_StartVisionFigureDrawing_();
 
+	void UI_StartHipTextDrawing_();
+
+	void UI_StartYawTextDrawing_();
+
 	void UI_UpdateCurModeTextDrawing_();
 
 	void UI_UpdateStateFigureDrawing_();
 
 	void UI_UpdateVisionFigureDrawing_();
 
+	void UI_UpdateHipTextDrawing_();
+
+	void UI_UpdateYawTextDrawing_();
+
+	void UI_StartPositionFigureDrawing_();
+
+	void UI_UpdatePositionFigureDrawing_();
+
+	void UI_UpdateSpeedTextDrawing_();
+	
 	void UI_RADAR_WARNING_TextDrawing_();
 	void UI_RADAR_WARNING_TextClearing_();
 

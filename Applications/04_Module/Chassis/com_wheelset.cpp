@@ -214,9 +214,12 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     constexpr float RAD_TO_DJI_ECD = (static_cast<float>(ECD_CYCLE) / kTwoPi);
     constexpr float RADPS_TO_RPM = 9.5492965855f;
     constexpr float STEER_SPD_CMD_GAIN = 3.5f;
-    constexpr float STEER_SPD_TGT_FILTER_ALPHA = 0.98f;
+    constexpr float STEER_SPD_TGT_FILTER_ALPHA = 0.35f;
     constexpr float STEER_SPD_TGT_LIMIT = 12000.0f;
     constexpr float STEER_CMD_LIMIT = 16000.0f;
+    constexpr int32_t ECD_FLIP_HYST = 96;
+    constexpr float ALIGN_FACTOR_MIN = 0.20f;
+    constexpr float STEER_CMD_DEADBAND = 80.0f;
 
     int32_t steerErrDbg[4] = {0, 0, 0, 0};
     float steerRawOutDbg[4] = {0, 0, 0, 0};
@@ -297,7 +300,8 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
             ecdErr += ECD_CYCLE;
         }
 
-        if (!isStopCmd && std::abs(ecdErr) > ECD_QUARTER) {
+        // 增加翻转迟滞，避免舵角误差在90度附近反复跨阈值导致抖动。
+        if (!isStopCmd && std::abs(ecdErr) > (ECD_QUARTER + ECD_FLIP_HYST)) {
             targetSteerEcd -= ECD_HALF;
             if (targetSteerEcd < 0) {
                 targetSteerEcd += ECD_CYCLE;
@@ -315,7 +319,7 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
 
         const float delta = static_cast<float>(ecdErr) * DJI_ECD_TO_RAD;
         steerErrRad[i] = std::fabs(delta);
-        const float alignFactor = std::pow(std::cos(delta), 3.0f);
+        const float alignFactor = std::clamp(std::pow(std::cos(delta), 3.0f), ALIGN_FACTOR_MIN, 1.0f);
         targetDriveSpeed *= alignFactor;
 
         float currentSteerAngle = static_cast<float>(currentSteerEcd) * DJI_ECD_TO_RAD;
@@ -327,6 +331,15 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
             targetSteerAngle -= kTwoPi;
         }
         targetSteerAngle = normAngle(targetSteerAngle);
+
+        const float currentSteerDeg = rad2deg(currentSteerAngle);
+        switch (i) {
+            case LF: steer_angle_lf_deg = currentSteerDeg; break;
+            case RF: steer_angle_rf_deg = currentSteerDeg; break;
+            case LB: steer_angle_lb_deg = currentSteerDeg; break;
+            case RB: steer_angle_rb_deg = currentSteerDeg; break;
+            default: break;
+        }
 
         DataBuffer<float_t> driveTarget = {targetDriveSpeed};
         DataBuffer<float_t> driveMeasure = {wheelSpdMeasure[i]};
@@ -350,6 +363,9 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
         float steerOutput = pidSteerSpdCtrl[i].UpdatePidController(steerSpdTarget, steerSpdMea)[0];
         steerRawOutDbg[i] = steerOutput;
         steerOutput *= STEER_DIR[i];
+        if (std::fabs(steerOutput) < STEER_CMD_DEADBAND) {
+            steerOutput = 0.0f;
+        }
         steerOutput = std::clamp(steerOutput, -STEER_CMD_LIMIT, STEER_CMD_LIMIT);
 
         mtrOutputBuffer[i] = static_cast<int16_t>(driveOutput);

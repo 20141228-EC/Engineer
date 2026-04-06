@@ -48,7 +48,7 @@ namespace my_engineer {
  */
 class CModChassis final: public CModBase{
 public:
-    static constexpr uint16_t kDefaultChassisMaxPower = 115;
+    static constexpr uint16_t kDefaultChassisMaxPower = 120;
 
     // 定义底盘模块初始化参数结构体
     struct SModInitParam_Chassis: public SModInitParam_Base{
@@ -165,11 +165,14 @@ public:
     // 启动履带的标志位
     EVarStatus crawler_on = false;
 
+    // 小陀螺开关标志位
+    EVarStatus spin_on = false;
+
 private:
 
-    static constexpr float kSoftLimitRatio_ = 0.84f;
-    static constexpr float kWarnBudgetRatio_ = 95.0f / static_cast<float>(kDefaultChassisMaxPower); // 功率预算警告阈值占比，超过这个占比时会触发警告，但不强制限制输出
-    static constexpr float kFloorBudgetRatio_ = 70.0f / static_cast<float>(kDefaultChassisMaxPower);
+    static constexpr float kSoftLimitRatio_ = 0.86f;
+    static constexpr float kWarnBudgetRatio_ = 100.0f / static_cast<float>(kDefaultChassisMaxPower); // 功率预算警告阈值占比，超过这个占比时会触发警告，但不强制限制输出
+    static constexpr float kFloorBudgetRatio_ = 85.0f / static_cast<float>(kDefaultChassisMaxPower);
     static constexpr uint32_t kPowerMeterOfflineTimeoutMs_ = 50U;
 
     uint16_t chassisMaxPower_ = kDefaultChassisMaxPower; // 底盘总功率限制
@@ -396,5 +399,9 @@ extern float power_demand_total;
 extern float power_cmd_total;
 extern float power_budget;
 extern float power_buffer_est;
+extern float steer_angle_lf_deg;
+extern float steer_angle_rf_deg;
+extern float steer_angle_lb_deg;
+extern float steer_angle_rb_deg;
 
 #endif // MOD_CHASSIS_HPP   

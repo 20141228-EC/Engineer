@@ -12,8 +12,201 @@
 #include "Core.hpp"
 
 // int16_t 
-
 namespace my_engineer {
+
+
+namespace {
+
+struct SPlanarVector {
+    float x;
+    float y;
+};
+
+enum class ESpinState {
+    OFF = 0,
+    SPIN,
+};
+
+struct SGyroSpinRuntimeState {
+    float gyroFollowWFiltered = 0.0f;        // 陀螺仪跟随角速度滤波值
+    ESpinState spinState = ESpinState::OFF;  // 小陀螺状态
+    bool lastSpinHotkeyPressed = false;      // 上次小陀螺热键状态
+    bool lastModeActive = false;             // 上次小陀螺模式状态（用于检测模式切换）
+    float virtualGimbalAbsYawDeg = 0.0f;     // 虚拟云台绝对偏航角（度）
+    float spinTranslationCompDeg = 0.0f;     // 小陀螺运动补偿角（度）
+    float spinYawRateDegFiltered = 0.0f;     // 小陀螺yaw角速度滤波值（度/s）
+};
+
+inline SPlanarVector RotateVectorRad(float x, float y, float angleRad) {
+    return {
+        x * cosf(angleRad) - y * sinf(angleRad),
+        x * sinf(angleRad) + y * cosf(angleRad)
+    };
+}
+
+// 旋转向量，angleDeg为正时逆时针旋转，为负时顺时针旋转
+inline SPlanarVector RotateVectorDeg(float x, float y, float angleDeg) {
+    constexpr float kDegToRad = 3.14159265f / 180.0f;
+    return RotateVectorRad(x, y, angleDeg * kDegToRad);
+}
+
+inline float WrapDeg180(float deg) {
+    while (deg > 180.f) deg -= 360.f;
+    while (deg < -180.f) deg += 360.f;
+    return deg;
+}
+
+inline float kGyroFollowLimited(float speed){
+    if(speed <= 80.0f)return 1.0f;
+    else {
+        float scale = 1.0f - (speed - 80.0f) / 20.0f * (1.0 - 0.7f);
+        return (scale > 0.0f) ? scale : 0.0f;
+    }
+}
+// 小陀螺模式下根据陀螺仪角速度对遥控器输入进行补偿，减少旋转时的控制死区
+inline SPlanarVector ApplySpinMoveBias(const SPlanarVector &gimbalVec, ESpinState spinState,
+                                       float spinMoveBiasDeg, float spinSpeedW) {
+    if (spinState != ESpinState::SPIN) {
+        return gimbalVec;
+    }
+
+    const float spinBiasDeg = spinMoveBiasDeg * (spinSpeedW >= 0.0f ? 1.0f : -1.0f);
+    return RotateVectorDeg(gimbalVec.x, gimbalVec.y, spinBiasDeg);
+}
+
+// 获取小陀螺模式下的陀螺仪yaw角速度，若IMU不可用则使用后备值
+inline float GetSpinYawRateDeg(CAlgo_IMU_Ave *filter, float fallbackYawRateDeg) {
+    if (filter && filter->mems && filter->mems->memsStatus == CMemsBase::EMemsStatus::NORMAL) {
+        constexpr float kRadToDeg = 57.2957795f; // 180 / pi
+        return filter->mems->memsData[CMemsBase::DATA_GYRO_Z] * kRadToDeg;
+    }
+    return fallbackYawRateDeg;
+}
+
+inline float UpdateSpinMoveCompDeg(float spinTranslationCompDeg, float &spinYawRateDegFiltered,
+                                   bool useVirtualGimbal, ESpinState spinState,
+                                   CAlgo_IMU_Ave *filter, float fallbackYawRateDeg, float freq) {
+    if (!(useVirtualGimbal && spinState == ESpinState::SPIN)) {
+        spinTranslationCompDeg = 0.0f;
+        spinYawRateDegFiltered = 0.0f;
+        return spinTranslationCompDeg;
+    }
+
+    const float spinYawRateDeg = GetSpinYawRateDeg(filter, fallbackYawRateDeg);
+    spinYawRateDegFiltered = 0.35f * spinYawRateDeg + 0.65f * spinYawRateDegFiltered;
+    return WrapDeg180(spinTranslationCompDeg - spinYawRateDegFiltered / freq);
+}
+
+inline void ResetGyroSpinRuntimeState(SGyroSpinRuntimeState &state, bool resetModeFlag) {
+    state.gyroFollowWFiltered = 0.0f;
+    state.spinState = ESpinState::OFF;
+    state.lastSpinHotkeyPressed = false;
+    state.spinTranslationCompDeg = 0.0f;
+    state.spinYawRateDegFiltered = 0.0f;
+    if (resetModeFlag) {
+        state.lastModeActive = false;
+    }
+}
+
+inline void ApplyGyroSpinChassisControl(CModChassis *chassis,
+                                        const SPlanarVector &gimbalVec,
+                                        float yawCmd,
+                                        bool gyroModeActive,
+                                        bool spinToggleEvent,
+                                        bool spinHotkeyPressed,
+                                        SGyroSpinRuntimeState &state,
+                                        float freq) {
+    if (!chassis) {
+        return;
+    }
+
+    float kGyroFollowKp = 5.0f; // 跟随kp
+    constexpr float kDeadZoneDeg = 1.0f;  // yaw死区，避免陀螺仪数据不稳定时小幅度抖动
+    constexpr float kWAlpha = 0.20f;      // 陀螺跟随角速度滤波系数，越大响应越快但抖动越明显
+    constexpr float kSpinSpeedW = 80.0f;  // 小陀螺旋转角速度（度/s）
+    constexpr float kSpinMoveBiasDeg = 10.0f;// 小陀螺运动补偿角度（度），用于抵消旋转时的控制死区，提升小陀螺状态下的操控性
+
+    const bool imuYawValid = (chassis->filter && chassis->filter->Imu_Ave_Info.is_initialized);
+    if (!gyroModeActive) {
+        ResetGyroSpinRuntimeState(state, true);
+        chassis->spin_on = false;
+        return;
+    }
+
+    if (!state.lastModeActive && imuYawValid) {
+        state.virtualGimbalAbsYawDeg = chassis->filter->Imu_Ave_Info.imu_ave_yaw;
+    }
+
+    const bool gimbalDataValid = (SysBoardLink.gimbalInfo.pack_id == 3 && SysBoardLink.gimbalInfo.data_valid == 1);
+    const bool shouldUseVirtualGimbal = (!gimbalDataValid && imuYawValid);
+
+    float gimbalYawDeg = 0.0f;
+    bool gimbalYawUsable = false;
+
+    if (gimbalDataValid) {
+        gimbalYawDeg = static_cast<float>(SysBoardLink.gimbalInfo.yaw) * 0.01f;
+        gimbalYawUsable = true;
+    } else if (shouldUseVirtualGimbal) {
+        const float chassisYawDeg = chassis->filter->Imu_Ave_Info.imu_ave_yaw;
+        state.virtualGimbalAbsYawDeg = WrapDeg180(state.virtualGimbalAbsYawDeg + yawCmd / freq);
+        gimbalYawDeg = WrapDeg180(state.virtualGimbalAbsYawDeg - chassisYawDeg);
+        gimbalYawUsable = true;
+    }
+
+    if (spinToggleEvent || (spinHotkeyPressed && !state.lastSpinHotkeyPressed)) {
+        state.spinState = (state.spinState == ESpinState::SPIN) ? ESpinState::OFF : ESpinState::SPIN;
+        state.gyroFollowWFiltered = 0.0f;
+        if (state.spinState != ESpinState::SPIN) {
+            state.spinTranslationCompDeg = 0.0f;
+            state.spinYawRateDegFiltered = 0.0f;
+        }
+    }
+    state.lastSpinHotkeyPressed = spinHotkeyPressed;
+    chassis->spin_on = (state.spinState == ESpinState::SPIN);
+
+    const auto biasedGimbalVec = ApplySpinMoveBias(gimbalVec, state.spinState, kSpinMoveBiasDeg, kSpinSpeedW);
+
+    if (gimbalYawUsable) {
+        state.spinTranslationCompDeg = UpdateSpinMoveCompDeg(state.spinTranslationCompDeg,
+                                                             state.spinYawRateDegFiltered,
+                                                             shouldUseVirtualGimbal,
+                                                             state.spinState,
+                                                             chassis->filter,
+                                                             kSpinSpeedW,
+                                                             freq);
+
+        const float moveYawDeg = WrapDeg180(gimbalYawDeg + state.spinTranslationCompDeg);
+        const auto chassisVec = RotateVectorDeg(biasedGimbalVec.x, biasedGimbalVec.y, moveYawDeg);
+        chassis->chassisCmd.speed_X = chassisVec.x;
+        chassis->chassisCmd.speed_Y = chassisVec.y;
+    } else {
+        chassis->chassisCmd.speed_X = biasedGimbalVec.x;
+        chassis->chassisCmd.speed_Y = biasedGimbalVec.y;
+    }
+
+    if (state.spinState == ESpinState::SPIN) {
+        chassis->chassisCmd.speed_W = kSpinSpeedW;
+    } else if (gimbalYawUsable) {
+        float yawErrorDeg = WrapDeg180(-gimbalYawDeg);
+
+        if (fabsf(yawErrorDeg) < kDeadZoneDeg) {
+            yawErrorDeg = 0.0f;
+        }
+        kGyroFollowKp *= kGyroFollowLimited(sqrtf(chassis->chassisCmd.speed_X * chassis->chassisCmd.speed_X + chassis->chassisCmd.speed_Y * chassis->chassisCmd.speed_Y));
+        float gyroFollowW = kGyroFollowKp * yawErrorDeg;
+        gyroFollowW = std::clamp(gyroFollowW, -100.f, 100.f);
+        state.gyroFollowWFiltered = kWAlpha * gyroFollowW + (1 - kWAlpha) * state.gyroFollowWFiltered;
+        chassis->chassisCmd.speed_W = state.gyroFollowWFiltered;
+    } else {
+        state.gyroFollowWFiltered = 0.0f;
+        chassis->chassisCmd.speed_W = yawCmd;
+    }
+
+    chassis->MovMode = CModChassis::EmovMode::NORMAL;
+    state.lastModeActive = true;
+}
+
+} // namespace
 
 void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) {
 
@@ -75,9 +268,38 @@ void CSystemCore::ControlFromRemote_() {
     enum { HIG = 1, LOW = 2, MID = 3 };
     auto &remote = SysRemote.remoteInfo.remote;
     auto &remote_edge = SysRemote.remoteInfo.remote_edge;
+    auto &keyboard = SysRemote.remoteInfo.keyboard;
+    auto getRemoteYawCmd = [&remote]() -> float {
+        constexpr float kYawCmdDeadZone = 6.0f;
+        const float yawCmd = remote.joystick_RX;
+        return (fabsf(yawCmd) < kYawCmdDeadZone) ? 0.0f : yawCmd;
+    };
+    static SGyroSpinRuntimeState gyroSpinState;
+    const bool remoteOnline = (SysRemote.systemStatus == APP_OK);
+    const bool isGyroSpinMode = (remote.switch_L == HIG && remote.switch_R == LOW);
+    static bool lastRemoteOnline = false;
 
+    // 遥控恢复在线时，强制退出小陀螺（spin），回到陀螺仪跟随状态。
+    if (!lastRemoteOnline && remoteOnline) {
+        ResetGyroSpinRuntimeState(gyroSpinState, true);
+    }
+    lastRemoteOnline = remoteOnline;
+
+    if (!remoteOnline) {
+        ResetGyroSpinRuntimeState(gyroSpinState, true);
+        return;
+    }
+
+    if (remoteWasOffline_) {
+        remoteWasOffline_ = false;
+        ResetGyroSpinRuntimeState(gyroSpinState, true);
+    }
+
+    if (!isGyroSpinMode) {
+        ResetGyroSpinRuntimeState(gyroSpinState, true);
+    }
     //将模块启动
-    if (SysRemote.systemStatus == APP_OK) {
+    if (remoteOnline) {
         StartRobot(true);                   ///<因为键盘的默认参数是false
     }
 
@@ -113,12 +335,10 @@ void CSystemCore::ControlFromRemote_() {
             if(!pchassis_->chassisCmd.isAutoCtrl){
                 pchassis_->chassisCmd.speed_X = remote.joystick_LX / 2;             ///<摇杆的x方向控制车的左右移动，为了保证操作手的手感减小左右方向的速度
                 pchassis_->chassisCmd.speed_Y = remote.joystick_LY;
-                pchassis_->chassisCmd.speed_W = remote.joystick_RX;
+                pchassis_->chassisCmd.speed_W = getRemoteYawCmd();
                 pchassis_->chassisCmd.L_length += (remote.joystick_RY / 250.f) * 90.f / freq; ///< 腿长采用增量式控制
                 pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
                 
-            static uint8_t thumbwheel_count = 0;
-
             if(remote_edge.thumbWheel == CSystemRemote::ERemoteEdge::Falling){
                 pchassis_->reset_hip = !pchassis_->reset_hip;   ///< 要求复位腿
                 }
@@ -195,7 +415,7 @@ void CSystemCore::ControlFromRemote_() {
             if(!pchassis_->chassisCmd.isAutoCtrl){
                 pchassis_->chassisCmd.speed_X = remote.joystick_LX / 2;             ///<摇杆的x方向控制车的左右移动，为了保证操作手的手感减小左右方向的速度
                 pchassis_->chassisCmd.speed_Y = remote.joystick_LY;
-                pchassis_->chassisCmd.speed_W = remote.joystick_RX;
+                pchassis_->chassisCmd.speed_W = getRemoteYawCmd();
                 pchassis_->MovMode = CModChassis::EmovMode::CLIMBING;               ///< 更新模块运动模式标志位
             }
 
@@ -216,7 +436,15 @@ void CSystemCore::ControlFromRemote_() {
     {
         if(pchassis_){
             if(!pchassis_->chassisCmd.isAutoCtrl){
-                pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
+                const float remoteYawCmd = -getRemoteYawCmd();
+                ApplyGyroSpinChassisControl(pchassis_,
+                                            {remote.joystick_LX / 2, remote.joystick_LY},
+                                            remoteYawCmd,
+                                            true,
+                                            remote_edge.thumbWheel == CSystemRemote::ERemoteEdge::Rising,
+                                            keyboard.key_Ctrl && keyboard.key_F,
+                                            gyroSpinState,
+                                            freq);
             } 
         }
         ///< 云台控制逻辑均在副板
@@ -231,8 +459,22 @@ void CSystemCore::ControlFromKeyboard_() {
     const auto freq = 1000.f; // 系统核心频率
 
     auto &keyboard = SysRemote.remoteInfo.keyboard;
+    static SGyroSpinRuntimeState keyboardGyroSpinState;
+    static float keyboardGimbalSpeedX = 0.0f;
+    static float keyboardGimbalSpeedY = 0.0f;
+    static float keyboardYawCmdFiltered = 0.0f;
+    static uint8_t lastMouseStatus_L = 0;
+    static uint8_t lastMouseStatus_R = 0;
+    static uint32_t lastKeyboardCtrlTick = 0U;
 
-    static bool lastMouseStatus_L = false, lastMouseStatus_R = false;
+    const uint32_t now = HAL_GetTick();
+    if (lastKeyboardCtrlTick != 0U && (now - lastKeyboardCtrlTick) > 50U) {
+        ResetGyroSpinRuntimeState(keyboardGyroSpinState, true);
+        keyboardGimbalSpeedX = 0.0f;
+        keyboardGimbalSpeedY = 0.0f;
+        keyboardYawCmdFiltered = 0.0f;
+    }
+    lastKeyboardCtrlTick = now;
 
     // 将模块启动
     if (SysRemote.systemStatus == APP_OK) {
@@ -245,31 +487,37 @@ void CSystemCore::ControlFromKeyboard_() {
 
     // 平滑更新角速度
     if (pchassis_) {
-        pchassis_->chassisCmd.speed_W = pchassis_->chassisCmd.speed_W +
-            0.03f*(keyboard.mouse_X - pchassis_->chassisCmd.speed_W);
+        keyboardYawCmdFiltered = keyboardYawCmdFiltered +
+            0.03f * (keyboard.mouse_X - keyboardYawCmdFiltered);
 
         if (!pchassis_->chassisCmd.isAutoCtrl)
         {
-            pchassis_->chassisCmd.speed_X *= 0.97f;
-            pchassis_->chassisCmd.speed_Y *= 0.98f;
-            if (abs(pchassis_->chassisCmd.speed_X) < 0.5f) pchassis_->chassisCmd.speed_X = 0.0f;
-            if (abs(pchassis_->chassisCmd.speed_Y) < 0.5f) pchassis_->chassisCmd.speed_Y = 0.0f;
+            keyboardGimbalSpeedX *= 0.97f;
+            keyboardGimbalSpeedY *= 0.98f;
+            if (abs(keyboardGimbalSpeedX) < 0.5f) keyboardGimbalSpeedX = 0.0f;
+            if (abs(keyboardGimbalSpeedY) < 0.5f) keyboardGimbalSpeedY = 0.0f;
 
             if (keyboard.key_Shift) {
-                pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 5.0f;   ///<通过差值来实现一行代码实现左右转弯
-                pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 5.0f;
-                pchassis_->chassisCmd.speed_X =
-                std::clamp(pchassis_->chassisCmd.speed_X, -50.0f, 50.0f);
-                pchassis_->chassisCmd.speed_Y =
-                std::clamp(pchassis_->chassisCmd.speed_Y, -100.0f, 100.0f);
+                keyboardGimbalSpeedX += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 5.0f;   ///<通过差值来实现一行代码实现左右转弯
+                keyboardGimbalSpeedY += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 5.0f;
+                keyboardGimbalSpeedX = std::clamp(keyboardGimbalSpeedX, -50.0f, 50.0f);
+                keyboardGimbalSpeedY = std::clamp(keyboardGimbalSpeedY, -100.0f, 100.0f);
             } else {
-                pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 1.0f;
-                pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 1.0f;
-                pchassis_->chassisCmd.speed_X =
-                std::clamp(pchassis_->chassisCmd.speed_X, -20.0f, 20.0f);
-                pchassis_->chassisCmd.speed_Y =
-                std::clamp(pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
+                keyboardGimbalSpeedX += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 1.0f;
+                keyboardGimbalSpeedY += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 1.0f;
+                keyboardGimbalSpeedX = std::clamp(keyboardGimbalSpeedX, -20.0f, 20.0f);
+                keyboardGimbalSpeedY = std::clamp(keyboardGimbalSpeedY, -30.0f, 30.0f);
             }
+
+            ApplyGyroSpinChassisControl(pchassis_,
+                                        {keyboardGimbalSpeedX, keyboardGimbalSpeedY},
+                                        -keyboardYawCmdFiltered,
+                                        true,
+                                        false,
+                                        keyboard.key_F,
+                                        keyboardGyroSpinState,
+                                        freq);
+
             if(keyboard.key_B){
                 pchassis_->chassisCmd.L_length += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 0.3f;
             }

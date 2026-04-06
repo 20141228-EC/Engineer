@@ -11,6 +11,7 @@
 
 #include "mod_chassis.hpp"
 #include "RTT_DEBUG.h"
+#include "sys_referee.hpp"
 #include <cmath>
 #include <cstring>
 
@@ -35,6 +36,10 @@ float power_buffer_est = 0.0f;
 float power_feedback_est = 0.0f;
 float power_measure_used = 0.0f;
 float power_guard_budget = 0.0f;
+float steer_angle_lf_deg = 0.0f;
+float steer_angle_rf_deg = 0.0f;
+float steer_angle_lb_deg = 0.0f;
+float steer_angle_rb_deg = 0.0f;
 float_t crawler_torque_l = 0.0f;
 float_t crawler_torque_r = 0.0f;
 float raw_torque_LL = 0.0f;
@@ -42,7 +47,7 @@ float raw_torque_LR = 0.0f;
 float actual_torque_LL = 0.0f;
 float actual_torque_LR = 0.0f;
 float_t raw_speed_LL = 0.0f;
-
+int16_t max_power = 0.0f;
 namespace my_engineer {
 
 CModChassis *pChassis_test = nullptr;
@@ -232,6 +237,40 @@ void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetWh
     targetWheelPower[CComWheelset::RF] = wheelDemand[CComWheelset::RF] * wheelLimitCoe;
     targetWheelPower[CComWheelset::LB] = wheelDemand[CComWheelset::LB] * wheelLimitCoe;
     targetWheelPower[CComWheelset::RB] = wheelDemand[CComWheelset::RB] * wheelLimitCoe;
+    
+    const bool highPowerMode = std::max(measuredPowerNow, totalDemand) > 80.0f;
+    const float wheelSpeedAbs[4] = {
+        std::fabs(static_cast<float>(wheelset.motor[CComWheelset::LF]->motorData[CDevMtr::DATA_SPEED])),
+        std::fabs(static_cast<float>(wheelset.motor[CComWheelset::RF]->motorData[CDevMtr::DATA_SPEED])),
+        std::fabs(static_cast<float>(wheelset.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_SPEED])),
+        std::fabs(static_cast<float>(wheelset.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_SPEED]))
+    };
+    bool flag = 0;
+    for(int i = 0; i < 4; i++)if (highPowerMode && wheelSpeedAbs[i] < 60.0f) {flag = 1; break;}
+            
+    if (flag && wheelDemandTotal > eps) {
+        constexpr float kSlowSpeedRef = 60.0f; // 慢速参考速度
+        constexpr float kSlowPriorityBlend = 0.70f;
+        constexpr float kSlowPriorityBase = 0.30f; // 基础占比，防止在高速时完全不考虑慢速优先级，导致功率分配过于极端
+
+
+
+        float slowPriority[4] = {0.0f};     // 慢速优先级
+        float slowPrioritySum = 0.0f;
+        for (int i = 0; i < 4; i++) {
+            const float slowScore = std::clamp(1.0f - wheelSpeedAbs[i] / kSlowSpeedRef, 0.0f, 1.0f);
+            slowPriority[i] = kSlowPriorityBase + slowScore;
+            slowPrioritySum += slowPriority[i];
+        }
+
+        if (slowPrioritySum > eps) {
+            float priorityWheelPower[4] = {0.0f};
+            for (int i = 0; i < 4; i++) {
+                priorityWheelPower[i] = wheelDemandTotal * slowPriority[i] / slowPrioritySum;
+                targetWheelPower[i] = (1.0f - kSlowPriorityBlend) * targetWheelPower[i] + kSlowPriorityBlend * priorityWheelPower[i];
+            }
+        }
+    }
 
     targetSteerPower[CComWheelset::LF] = steerDemand[CComWheelset::LF] * steerLimitCoe;
     targetSteerPower[CComWheelset::RF] = steerDemand[CComWheelset::RF] * steerLimitCoe;
@@ -239,7 +278,7 @@ void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetWh
     targetSteerPower[CComWheelset::RB] = steerDemand[CComWheelset::RB] * steerLimitCoe;
 
     // 舵向功率保底：避免总功率受限时舵轮因预算过低而无法回正
-    constexpr float kSteerMinPowerPerWheel = 2.5f;
+    constexpr float kSteerMinPowerPerWheel = 4.0f;
     constexpr float kSteerDemandEnableTh = 0.5f;
     float steerBoostPower = 0.0f;
     for (int i = 0; i < 4; i++) {
@@ -280,6 +319,11 @@ void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetWh
 }
 
 void CModChassis::UpdatePowerBudget_() {
+    if (SysReferee.refereeInfo.robot.robotMaxPower > 0) {
+        chassisMaxPower_ = static_cast<uint16_t>(SysReferee.refereeInfo.robot.robotMaxPower);
+        max_power = chassisMaxPower_;
+    }
+
     constexpr float kPowerLpfAlpha = 0.12f;                 // 功率测量低通滤波系数
     constexpr float kFeedbackGain = 2.8f;                   // 基于功率反馈的限制增益
     constexpr float kEmergencyOverGain = 4.5f;              // 紧急过载限制增益
@@ -295,9 +339,7 @@ void CModChassis::UpdatePowerBudget_() {
     const uint32_t now = HAL_GetTick();
     const bool powerMeterOnline = (powerMeterLastTimestamp_ != 0U)
         && ((now - powerMeterLastTimestamp_) <= kPowerMeterOfflineTimeoutMs_);
-    const float measuredPower = powerMeterOnline
-        ? std::max(0.0f, powermeter)
-        : std::max(0.0f, feedbackMeasuredPower_);
+    const float measuredPower = powerMeterOnline ? std::max(0.0f, powermeter) : std::max(0.0f, feedbackMeasuredPower_);
     const float measuredPowerPeak = std::max(measuredPower, feedbackMeasuredPowerRaw_); // 当前功率峰值：取测量功率和基于反馈估算的瞬时功率中的较大值，作为当前的功率峰值，用于更敏感地捕捉可能的过载情况
     power_measure_used = measuredPower;
 
