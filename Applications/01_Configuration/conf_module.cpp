@@ -66,20 +66,20 @@ EAppStatus InitAllModule() {
    armInitParam.Pitch2PosPidParam.maxIntegral = 3000.0f;
    armInitParam.Pitch2PosPidParam.maxOutput = 3000.0f;
    // 初始化 Pitch2SpdPidParam 的成员
-   armInitParam.Pitch2SpdPidParam.kp = 0.1f;
+   armInitParam.Pitch2SpdPidParam.kp = 0.22f;
    armInitParam.Pitch2SpdPidParam.ki = 0.05f;
    armInitParam.Pitch2SpdPidParam.kd = 0.0f;
    armInitParam.Pitch2SpdPidParam.maxIntegral = 2000.0f;
    armInitParam.Pitch2SpdPidParam.maxOutput = 2000.0f;
-      // 初始化 Pitch3PosPidParam 的成员
-   armInitParam.Pitch3PosPidParam.kp = 0.f;
-   armInitParam.Pitch3PosPidParam.ki = 0.0f;
+   // 初始化 Pitch3PosPidParam 的成员
+   armInitParam.Pitch3PosPidParam.kp = 2.5f;
+   armInitParam.Pitch3PosPidParam.ki = 0.05f;
    armInitParam.Pitch3PosPidParam.kd = 0.0f;
    armInitParam.Pitch3PosPidParam.maxIntegral = 3000.0f;
    armInitParam.Pitch3PosPidParam.maxOutput = 3000.0f;
    // 初始化 Pitch3SpdPidParam 的成员
-   armInitParam.Pitch3SpdPidParam.kp = 0.f;
-   armInitParam.Pitch3SpdPidParam.ki = 0.0f;
+   armInitParam.Pitch3SpdPidParam.kp = 0.3f;
+   armInitParam.Pitch3SpdPidParam.ki = 0.05f;
    armInitParam.Pitch3SpdPidParam.kd = 0.0f;
    armInitParam.Pitch3SpdPidParam.maxIntegral = 2000.0f;
    armInitParam.Pitch3SpdPidParam.maxOutput = 2000.0f;

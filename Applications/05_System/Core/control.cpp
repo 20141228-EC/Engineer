@@ -134,7 +134,7 @@ void CSystemCore::ControlFromRemote_() {
                 parm_->armCmd.set_angle_Pitch2 +=
                     (remote.joystick_RY / 100.f) * 90.f / freq;
                 parm_->armCmd.set_angle_Pitch3 +=
-                    (remote.joystick_RY / 100.f) * 90.f / freq;
+                    (remote.joystick_RX / 100.f) * 90.f / freq;
                 parm_->armCmd.set_length_grip +=
                     (remote.thumbWheel / 100.f) * 60.f / freq; ///< 拨轮控夹爪
             }

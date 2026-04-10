@@ -132,7 +132,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				while(motor[P3]->motorData[CDevMtr::DATA_POSIT] < -32767)
 					motor[P3]->motorData[CDevMtr::DATA_POSIT] += 65535;
 				motor[P3]->motorData[CDevMtr::DATA_POSIT]  += ARM_PITCH3_MOTOR_DIR * POSIT_JOINT4_PITCH3_MACH_PHY * 182.04f;
-				jointCmd.setPosit_pitch3 = static_cast<int32_t>(30.f * 182.04f);	// 初始化角度暂且设为30度
+				jointCmd.setPosit_pitch3 = static_cast<int32_t>(-11.f * 182.04f);	// 初始化角度暂且设为30度
 				alreadySetYaw = false;
 				isreset_flag = true;  // 重置标志
 			}	
@@ -205,7 +205,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 		}
 
 		case FSM_CTRL: {
-			jointCmd.setPosit_yaw = std::clamp(jointCmd.setPosit_yaw, static_cast<int32_t>(-rangeLimit_yaw/2),  static_cast<int32_t>(rangeLimit_yaw/2));///<对Yaw进行机械限位
+			//jointCmd.setPosit_yaw = std::clamp(jointCmd.setPosit_yaw, static_cast<int32_t>(-rangeLimit_yaw/2),  static_cast<int32_t>(rangeLimit_yaw/2));///<对Yaw进行机械限位
 			
 			is_record = true; ///< 臂初始化完之后开始记录数据
 			// Need_Grav_Compensation = true; //臂初始化完之后启用重力补偿

@@ -43,6 +43,8 @@ EAppStatus CModArm::InitModule(SModInitParam_Base &param) {
 	comRoll_.InitComponent(param);
 	comEnd_.InitComponent(param);
 	comGrip_.InitComponent(param);
+	comGrip_.parentModule = this;  ///< 设置父模块指针，用于Roll耦合补偿
+
 
 	// 创建任务并注册模块
 	CreateModuleTask_();
@@ -163,18 +165,28 @@ EAppStatus CModArm::RestrictArmCommand_() {
 		return APP_ERROR;
 	}
 
+	static float_t prevPitch1 = ARM_PITCH1_INIT_ANGLE;
     // 物理限位
     armCmd.set_angle_Yaw =
         std::clamp(armCmd.set_angle_Yaw, ARM_YAW_PHYSICAL_RANGE_MIN, ARM_YAW_PHYSICAL_RANGE_MAX);
     armCmd.set_angle_Pitch1 =
         std::clamp(armCmd.set_angle_Pitch1,
                    ARM_PITCH1_PHYSICAL_RANGE_MIN, ARM_PITCH1_PHYSICAL_RANGE_MAX);
-    armCmd.set_angle_Pitch2 =
-        std::clamp(armCmd.set_angle_Pitch2,
-                   ARM_PITCH2_PHYSICAL_RANGE_MIN, ARM_PITCH2_PHYSICAL_RANGE_MAX);
+	
+	armCmd.set_angle_Pitch2 += (armCmd.set_angle_Pitch1 - prevPitch1) * 1;
+	prevPitch1 = armCmd.set_angle_Pitch1;
+	
+	float_t p2UpperLimit = std::min(ARM_P2_MAX_WHEN_P1_MIN + armCmd.set_angle_Pitch1,
+	                               					 ARM_PITCH2_PHYSICAL_RANGE_MAX);//p2的动态限位受到p1的影响
+    
+	armCmd.set_angle_Pitch2 =
+        std::clamp(armCmd.set_angle_Pitch2, ARM_PITCH2_PHYSICAL_RANGE_MIN, p2UpperLimit);
+
+	float_t p3LowerLimit = std::max(-(armCmd.set_angle_Pitch2 + armCmd.set_angle_Pitch1), ARM_PITCH3_PHYSICAL_RANGE_MIN);//p3动态限位受到p1和p2的影响，因为p3的角度是朝下的所以是负的
+
 	armCmd.set_angle_Pitch3 =
         std::clamp(armCmd.set_angle_Pitch3,
-                   ARM_PITCH3_PHYSICAL_RANGE_MIN, ARM_PITCH3_PHYSICAL_RANGE_MAX);
+                  		 p3LowerLimit, ARM_PITCH3_PHYSICAL_RANGE_MAX);
     armCmd.set_angle_Roll =
         std::clamp(armCmd.set_angle_Roll,
                    ARM_ROLL_PHYSICAL_RANGE_MIN, ARM_ROLL_PHYSICAL_RANGE_MAX);
@@ -197,23 +209,23 @@ EAppStatus CModArm::RestrictArmCommand_() {
         return APP_OK;
     }
 
-    // 动态关联限位
-    // Pitch1 和 Pitch2 的关联
-    float_t pitch2_min_limit = 0.f;
-	float_t pitch2_max_limit = 23.f + armCmd.set_angle_Pitch1;
-    if (armCmd.set_angle_Pitch1 >= 36.f) {
-        pitch2_min_limit = 23.f;
-    }
-	if (armCmd.set_angle_Pitch1 >= 65.f) {
-        pitch2_min_limit = 25.f;
-    }
-    armCmd.set_angle_Pitch2 = std::clamp(armCmd.set_angle_Pitch2, pitch2_min_limit, pitch2_max_limit);
+    // // 动态关联限位
+    // // Pitch1 和 Pitch2 的关联
+    // float_t pitch2_min_limit = 0.f;
+	// float_t pitch2_max_limit = 23.f + armCmd.set_angle_Pitch1;
+    // if (armCmd.set_angle_Pitch1 >= 36.f) {
+    //     pitch2_min_limit = 23.f;
+    // }
+	// if (armCmd.set_angle_Pitch1 >= 65.f) {
+    //     pitch2_min_limit = 25.f;
+    // }
+    // armCmd.set_angle_Pitch2 = std::clamp(armCmd.set_angle_Pitch2, pitch2_min_limit, pitch2_max_limit);
 
-    // Pitch2 和 Roll 的关联
-    if (armCmd.set_angle_Pitch2 < 20.0f) {
-        armCmd.set_angle_Roll = std::clamp(armCmd.set_angle_Roll,
-            ARM_ROLL_PHYSICAL_RANGE_MIN, 18.f);
-    }
+    // Pitch2 和 Roll 的关联,转换了方向之后没有干涉的影响
+    // if (armCmd.set_angle_Pitch2 < 20.0f) {
+    //     armCmd.set_angle_Roll = std::clamp(armCmd.set_angle_Roll,
+    //         ARM_ROLL_PHYSICAL_RANGE_MIN, 18.f);
+    // }
 
     // Pitch1 和 Yaw 的关联
     if (armCmd.set_angle_Pitch1 < 25.f) {
