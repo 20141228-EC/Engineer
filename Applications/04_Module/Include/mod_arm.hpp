@@ -16,23 +16,23 @@
 #define ARM_YAW_PHYSICAL_RANGE_MIN -97.5f
 #define ARM_YAW_PHYSICAL_RANGE_MAX 53.f
 #define ARM_PITCH1_PHYSICAL_RANGE_MIN 0.0f
-#define ARM_PITCH1_PHYSICAL_RANGE_MAX 95.f  ///< 118.0f
+#define ARM_PITCH1_PHYSICAL_RANGE_MAX 92.f  
 #define ARM_PITCH2_PHYSICAL_RANGE_MIN 0.f
 #define ARM_PITCH2_PHYSICAL_RANGE_MAX 119.f
-#define ARM_PITCH3_PHYSICAL_RANGE_MIN 0.f
-#define ARM_PITCH3_PHYSICAL_RANGE_MAX 119.f //test
-#define ARM_ROLL_PHYSICAL_RANGE_MIN -169.0f
-#define ARM_ROLL_PHYSICAL_RANGE_MAX 180.0f
+#define ARM_PITCH3_PHYSICAL_RANGE_MIN -76.f
+#define ARM_PITCH3_PHYSICAL_RANGE_MAX 0.f //test
+#define ARM_ROLL_PHYSICAL_RANGE_MIN -178.0f
+#define ARM_ROLL_PHYSICAL_RANGE_MAX 158.0f
 #define ARM_END_PITCH_PHYSICAL_RANGE_MIN -145.0f
 #define ARM_END_PITCH_PHYSICAL_RANGE_MAX 60.0f
-#define ARM_END_GRIP_PHYSICAL_RANGE_MIN 40.f
-#define ARM_END_GRIP_PHYSICAL_RANGE_MAX 103.f
+#define ARM_END_GRIP_PHYSICAL_RANGE_MIN 0.0f
+#define ARM_END_GRIP_PHYSICAL_RANGE_MAX 65.f
 #define ARM_END_GRIP_PHYSICAL_RANGE 65.f		
 
 /*-------------------------------------电机限位----------------------------------------------------*/
 //原始限位编码器器范围
 #define ARM_YAW_MOTOR_RANGE 65535
-#define ARM_PITCH1_MOTOR_RANGE 20755
+#define ARM_PITCH1_MOTOR_RANGE 17098
 #define ARM_PITCH2_MOTOR_RANGE 65535
 #define ARM_END_PITCH_MOTOR_RANGE 325993
 #define ARM_END_GRIP_MOTOR_RANGE 110400     ///(8192*22+10240+11000)
@@ -55,8 +55,8 @@
 
 /*-------------------------------------方向设定---------------------------------------------------------*/
 #define ARM_YAW_MOTOR_DIR 1
-#define ARM_PITCH1_MOTOR_DIR 1
-#define ARM_PITCH2_MOTOR_DIR -1
+#define ARM_PITCH1_MOTOR_DIR -1//减小
+#define ARM_PITCH2_MOTOR_DIR 1
 #define ARM_ROLL_MOTOR_DIR 1
 #define ARM_END_PITCH_MOTOR_L_DIR -1
 #define ARM_END_PITCH_MOTOR_R_DIR 1
@@ -68,6 +68,9 @@
 #define ARM_ROLL_GRIP_COUPLING_RATIO 0.25f     ///< 传动链: EndRoll -> 差速器(1:2) -> 锥齿轮(1:2) -> 夹爪电机,总耦合比例 = 0.5 * 0.5 = 0.25
 #define ARM_END_ROLL_ONE_TURN    static_cast<int32_t>(360.0f * ARM_END_ROLL_MOTOR_RATIO)     ///< 一圈对应的编码器值,用于增量补偿的跨圈检测
 #define ARM_END_ROLL_HALF_TURN   (ARM_END_ROLL_ONE_TURN / 2)
+
+//动态限位
+#define ARM_P2_MAX_WHEN_P1_MIN 24.6f  ///< P1处于最小角度时，P2的最大可达角度
 
 /*-------------------------------------初始化数据--------------------------------------------------------*/
 #define ARM_YAW_INIT_ANGLE 1.2f
@@ -81,21 +84,21 @@
 #define POSIT_JOINT1_YAW_MACH 20000
 #define ARM_YAW_MOTOR_RANGE_LHK 54750
 
-#define POSIT_JOINT2_PITCH1_MACH 57338
+#define POSIT_JOINT2_PITCH1_MACH 53021
 #define POSIT_JOINT2_PITCH1_MACH_PHY 0.f
 #define POSIT_JOINT2_PITCH1_INIT_PHY 4.0f
 
-#define POSIT_JOINT3_PITCH2_MACH 44889 //12837
+#define POSIT_JOINT3_PITCH2_MACH 50415 //12837
 #define POSIT_JOINT3_PITCH2_MACH_PHY 0.f
 #define POSIT_JOINT3_PITCH2_INIT_PHY 11.0f
 
 /*-------------------------------------Pitch3 参数 (KT电机)------------------------------------------*/
-#define ARM_PITCH3_MOTOR_DIR 1
-#define ARM_PITCH3_MOTOR_RANGE 21823   ///< TODO: 需要实际标定, 暂用与 Pitch2 相同值
-#define ARM_PITCH3_INIT_ANGLE 30.0f
-#define POSIT_JOINT4_PITCH3_MACH 0     ///< TODO: 需要实际标定机械零点
+#define ARM_PITCH3_MOTOR_DIR -1
+#define ARM_PITCH3_MOTOR_RANGE 10942   
+#define ARM_PITCH3_INIT_ANGLE -11.0f
+#define POSIT_JOINT4_PITCH3_MACH 10942    
 #define POSIT_JOINT4_PITCH3_MACH_PHY 0.f
-#define POSIT_JOINT4_PITCH3_INIT_PHY 30.0f
+#define POSIT_JOINT4_PITCH3_INIT_PHY -11.0f
 
 #define POSIT_JOINT4_ROLL_OFFSET 0
 
