@@ -51,6 +51,12 @@ public:
 
     float_t ALPHA = 0.0f;                           ///< 陀螺仪信任系数
     float_t DT = 0.0f;                              ///< 调度周期
+
+    // Mahony滤波参数及变量
+    float_t twoKp = 2.5f;                           ///< 2 * proportional gain (Kp)
+    float_t twoKi = 0.0015f;                           ///< 2 * integral gain (Ki)
+    float_t q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f; ///< 四元数
+    float_t exInt = 0.0f, eyInt = 0.0f, ezInt = 0.0f;   ///< 积分误差
     
     CAlgo_IMU_Ave() = default;  ///< 默认构造函数
 

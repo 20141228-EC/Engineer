@@ -55,7 +55,7 @@ EAppStatus CAlgo_IMU_Ave::InitAlgo_(SFilterInitParam_Base &param){
 }
 
 /**
- * @brief 更新互补滤波数据
+ * @brief 更新Mahony滤波数据
  * @retval EAppStatus
  */
 EAppStatus CAlgo_IMU_Ave::UpdateHandler_()
@@ -74,7 +74,7 @@ EAppStatus CAlgo_IMU_Ave::UpdateHandler_()
         float_t gy_raw = mems->memsData[CMemsBase::DATA_GYRO_Y];
         float_t gz_raw = mems->memsData[CMemsBase::DATA_GYRO_Z];
 
-        // 如果未初始化，先用加速度计计算初始姿态
+        // 如果未初始化，先用加速度计计算初始状态
         if (!Imu_Ave_Info.is_initialized)
         {
             // 确保az不为0以避免atan2分母为0的问题，且加速度测量值有效
@@ -83,6 +83,19 @@ EAppStatus CAlgo_IMU_Ave::UpdateHandler_()
                 Imu_Ave_Info.imu_ave_pitch = rad2deg(atan2f(ax_raw, sqrtf(ay_raw * ay_raw + az_raw * az_raw)));
                 Imu_Ave_Info.imu_ave_roll = rad2deg(atan2f(-ay_raw, az_raw) );
                 Imu_Ave_Info.imu_ave_yaw = 0.0f;    ///< yaw初始化为0
+                
+                // 根据初始欧拉角计算四元数
+                float_t cy = cosf(0.0f);
+                float_t sy = sinf(0.0f);
+                float_t cp = cosf(Imu_Ave_Info.imu_ave_pitch * 0.5f * PI / 180.0f);
+                float_t sp = sinf(Imu_Ave_Info.imu_ave_pitch * 0.5f * PI / 180.0f);
+                float_t cr = cosf(Imu_Ave_Info.imu_ave_roll * 0.5f * PI / 180.0f);
+                float_t sr = sinf(Imu_Ave_Info.imu_ave_roll * 0.5f * PI / 180.0f);
+
+                q0 = cr * cp * cy + sr * sp * sy;
+                q1 = sr * cp * cy - cr * sp * sy;
+                q2 = cr * sp * cy + sr * cp * sy;
+                q3 = cr * cp * sy - sr * sp * cy;
                 
                 // 初始化加速度滤波值
                 Imu_Ave_Info.acc_x_filter = ax_raw;
@@ -93,40 +106,92 @@ EAppStatus CAlgo_IMU_Ave::UpdateHandler_()
             }
             return APP_OK; // 第一次仅计算初始值，下一次再开始滤波
         }
-        // 初始化三轴姿态
 
-        // 陀螺仪积分更新姿态（短期预测）
-        Imu_Ave_Info.imu_ave_roll += rad2deg(gx_raw * DT);
-        Imu_Ave_Info.imu_ave_pitch += rad2deg(gy_raw * DT);
-        Imu_Ave_Info.imu_ave_yaw += rad2deg(gz_raw * DT);
+        // --- Mahony AHRS Algorithm ---
+        // 陀螺仪单位已经是 rad/s ！！
+        // 根据旧算法体系兼容的IMU坐标轴系适配：(使得陀螺仪和加速度计在滤波器内部不要互相打架，并满足右手系)
+        // 补偿陀螺仪Z轴零偏 (如果你发现一个正向恒定的零漂速度)
+        float z_gyro_bias_rad = 0.003f * PI / 180.0f; // 例如: 将你测得的 0.003 度/秒 转化成 弧度/秒
 
-        // yaw限位在-pi~pi之间
-        if(Imu_Ave_Info.imu_ave_yaw > 180.f){
-            Imu_Ave_Info.imu_ave_yaw -= 360.f;
+        float gx = -gx_raw; 
+        float gy = -gy_raw;
+        float gz = gz_raw - z_gyro_bias_rad;
+        float ax = -ax_raw;
+        float ay = -ay_raw;
+        float az = az_raw;
+        float recipNorm;
+        float halfvx, halfvy, halfvz;
+        float halfex, halfey, halfez;
+        float qa, qb, qc;
+
+        if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
+            recipNorm = 1.0f / sqrtf(ax * ax + ay * ay + az * az);
+            ax *= recipNorm;
+            ay *= recipNorm;
+            az *= recipNorm;        
+
+            halfvx = q1 * q3 - q0 * q2;
+            halfvy = q0 * q1 + q2 * q3;
+            halfvz = q0 * q0 - 0.5f + q3 * q3;
+        
+            halfex = (ay * halfvz - az * halfvy);
+            halfey = (az * halfvx - ax * halfvz);
+            halfez = (ax * halfvy - ay * halfvx);
+
+            if(twoKi > 0.0f) {
+                exInt += twoKi * halfex * DT;
+                eyInt += twoKi * halfey * DT;
+                ezInt += twoKi * halfez * DT;
+                gx += exInt; 
+                gy += eyInt;
+                gz += ezInt;
+            } else {
+                exInt = 0.0f;
+                eyInt = 0.0f;
+                ezInt = 0.0f;
+            }
+
+            gx += twoKp * halfex;
+            gy += twoKp * halfey;
+            gz += twoKp * halfez;
         }
-        if(Imu_Ave_Info.imu_ave_yaw < -180.f){
-            Imu_Ave_Info.imu_ave_yaw += 360.f;
-        }
+        
+        gx *= (0.5f * DT);
+        gy *= (0.5f * DT);
+        gz *= (0.5f * DT);
+        qa = q0;
+        qb = q1;
+        qc = q2;
+        q0 += (-qb * gx - qc * gy - q3 * gz);
+        q1 += (qa * gx + qc * gz - q3 * gy);
+        q2 += (qa * gy - qb * gz + q3 * gx);
+        q3 += (qa * gz + qb * gy - qc * gx); 
+        
+        recipNorm = 1.0f / sqrtf(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
+        q0 *= recipNorm;
+        q1 *= recipNorm;
+        q2 *= recipNorm;
+        q3 *= recipNorm;
+        
+        // --- End of Mahony algorithm ---
 
+        // 计算姿态角 (单位变为度)
+        // 从适配后的右手系Mahony四元数提取角度，并通过取反适配回原工程的欧拉角定义
+        Imu_Ave_Info.imu_ave_pitch = asinf(2.0f * (q1 * q3 - q0 * q2)) * 180.0f / PI; // 提取出来的其实是 -Pitch_mahony
+        Imu_Ave_Info.imu_ave_roll = -atan2f(2.0f * (q0 * q1 + q2 * q3), q0 * q0 - q1 * q1 - q2 * q2 + q3 * q3) * 180.0f / PI; // 提取 -Roll_mahony
+        Imu_Ave_Info.imu_ave_yaw = atan2f(2.0f * (q1 * q2 + q0 * q3), q0 * q0 + q1 * q1 - q2 * q2 - q3 * q3) * 180.0f / PI; // Yaw 保持不变
+
+        /******************************** 获取加速度 ******************************/
         // 加速度计低通滤波
         const float_t acc_filter_kp = 0.1f;
         Imu_Ave_Info.acc_x_filter += (ax_raw - Imu_Ave_Info.acc_x_filter) * acc_filter_kp;
         Imu_Ave_Info.acc_y_filter += (ay_raw - Imu_Ave_Info.acc_y_filter) * acc_filter_kp;
         Imu_Ave_Info.acc_z_filter += (az_raw - Imu_Ave_Info.acc_z_filter) * acc_filter_kp;
 
-        // 加速度计计算姿态（长期参考，消除漂移）
-        float pitch_acc = rad2deg(atan2f(Imu_Ave_Info.acc_x_filter, sqrtf(Imu_Ave_Info.acc_y_filter * Imu_Ave_Info.acc_y_filter + Imu_Ave_Info.acc_z_filter * Imu_Ave_Info.acc_z_filter)));
-        float roll_acc = rad2deg(atan2f(-Imu_Ave_Info.acc_y_filter, Imu_Ave_Info.acc_z_filter));
-
-        // 互补融合
-        Imu_Ave_Info.imu_ave_roll = ALPHA * Imu_Ave_Info.imu_ave_roll + (1.0f - ALPHA) * roll_acc;
-        Imu_Ave_Info.imu_ave_pitch = ALPHA * Imu_Ave_Info.imu_ave_pitch + (1.0f - ALPHA) * pitch_acc;
-        Imu_Ave_Info.imu_ave_yaw -= 0.01f * 0.001f;   // 用补偿的方式解决零漂 大概44s偏一度(-) 
-
         // 根据融合的姿态计算平动加速度
-        float_t accel_x_raw = ax_raw - G * sin(Imu_Ave_Info.imu_ave_pitch / 180.f * 2 * PI);
-        float_t accel_y_raw = ay_raw + G * sin(Imu_Ave_Info.imu_ave_roll / 180.f * 2 * PI);
-        float_t accel_z_raw = az_raw - G * cos(Imu_Ave_Info.imu_ave_roll / 180.f * 2 * PI) * cos(Imu_Ave_Info.imu_ave_pitch / 180.f * 2 * PI);
+        float_t accel_x_raw = ax_raw - G * sin(Imu_Ave_Info.imu_ave_pitch / 180.f * PI);
+        float_t accel_y_raw = ay_raw + G * sin(Imu_Ave_Info.imu_ave_roll / 180.f * PI) * cos(Imu_Ave_Info.imu_ave_pitch / 180.f * PI);
+        float_t accel_z_raw = az_raw - G * cos(Imu_Ave_Info.imu_ave_roll / 180.f * PI) * cos(Imu_Ave_Info.imu_ave_pitch / 180.f * PI);
 
         // 一阶低通滤波
         float_t kp = 0.04f;

@@ -178,12 +178,12 @@ EAppStatus InitAllModule() {
     chassisInitParam.rollCorrectionPidParam.Input_deadband = 1.0f;
     chassisInitParam.rollCorrectionPidParam.maxIntegral = 50.0f;
     chassisInitParam.rollCorrectionPidParam.maxOutput = 1000.0f; ///< roll轴pid待调
-    chassisInitParam.MIT_L_kp = 110.f;//15.0f;
-    chassisInitParam.MIT_L_kd = 1.5f;//1.0f; // mit参数待调
+    chassisInitParam.MIT_L_kp = 250.f;//15.0f;
+    chassisInitParam.MIT_L_kd = 2.f;//1.0f; // mit参数待调
     chassisInitParam.MIT_L_tau = 3.f;
-    chassisInitParam.MIT_R_kp = 500.f;
-    chassisInitParam.MIT_R_kd = 1.5f;
-    chassisInitParam.MIT_R_tau = 18.f;
+    chassisInitParam.MIT_R_kp = 300.f;
+    chassisInitParam.MIT_R_kd = 2.f;
+    chassisInitParam.MIT_R_tau = -6.f;
 
     chassisInitParam.HipPosPidParam_L.kp = 0.f;
     chassisInitParam.HipPosPidParam_L.ki = 0.f;

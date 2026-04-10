@@ -140,14 +140,14 @@ EAppStatus InitAllDevice(){
     CDevMtrM3508::SMtrInitParam_M3508 chassisMotor_LB_initparam;
     chassisMotor_LB_initparam.deviceID = EDeviceID::DEV_CHAS_MTR_LB;
     chassisMotor_LB_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    chassisMotor_LB_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_4;
+    chassisMotor_LB_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_3;
     chassisMotor_LB.InitDevice(&chassisMotor_LB_initparam);
 
     static CDevMtrM3508 chassisMotor_RB;
     CDevMtrM3508::SMtrInitParam_M3508 chassisMotor_RB_initparam;
     chassisMotor_RB_initparam.deviceID = EDeviceID::DEV_CHAS_MTR_RB;
     chassisMotor_RB_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    chassisMotor_RB_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_3;
+    chassisMotor_RB_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_4;
     chassisMotor_RB.InitDevice(&chassisMotor_RB_initparam);
 
     static CDevMtrDM_MIT chassisMotor_L_HIP;
