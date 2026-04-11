@@ -29,7 +29,7 @@ void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠
             if(item.second->systemID != ESystemID::SYS_BOARD_LINK) {
                 item.second->UpdateHandler_();
             }
-            item.second->UpdateHandler_();
+            // item.second->UpdateHandler_();
         }
 
         proc_waitMs(1); // 1000Hz
