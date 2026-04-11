@@ -162,7 +162,7 @@ void CSystemCore::ControlFromRemote_() {
         }
         if(pgimbal_){
             pgimbal_->gimbalCmd.set_visualyaw +=
-                    (remote.joystick_LX / 100.f) * 120.f / freq;
+                    (remote.joystick_RX / 100.f) * 200.f / freq;
         } 
         }
     }
@@ -174,7 +174,6 @@ void CSystemCore::ControlFromRemote_() {
             if(!parm_->armCmd.isAutoCtrl){
 
             }
-                // 只写了主臂末端的控制，副臂的目标设置在副板代码中
         }
         if(pchassis_){
             if(!pchassis_->chassisCmd.isAutoCtrl){

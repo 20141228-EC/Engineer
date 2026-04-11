@@ -115,7 +115,12 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				pidPosCtrl_pitch3.ResetPidController();
 				pidSpdCtrl_pitch3.ResetPidController();
 				/*设置每个关节的绝对角度*/
-				motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] * ARM_YAW_MOTOR_DIR;
+				motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT1_YAW_MACH;
+				while(motor[Y]->motorData[CDevMtr::DATA_POSIT] < -32767)
+					motor[Y]->motorData[CDevMtr::DATA_POSIT] += 65535;
+				motor[Y]->motorData[CDevMtr::DATA_POSIT]  += POSIT_JOINT1_YAW_MACH_PHY * 182.04f * POSIT_JOINT1_YAW_MACH;	
+				jointCmd.setPosit_yaw = static_cast<int32_t>(0.0f * 182.04f);		
+
 				motor[P1]->motorData[CDevMtr::DATA_POSIT] = motor[P1]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT2_PITCH1_MACH;		///<刚上电的时候获取初始值.距离机械中值的偏差
 				while(motor[P1]->motorData[CDevMtr::DATA_POSIT] < -32767)
 					motor[P1]->motorData[CDevMtr::DATA_POSIT] += 65535;//归位到-32767~32768范围内
@@ -148,10 +153,10 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 						Component_FSMFlag_ = FSM_INIT;
 						return APP_OK;
 					}
-					else if(motor[Y]->motorStatus == CDevMtr::EMotorStatus::STALL){				///<通过堵转来重新标定零点				
-						motor[Y]->motorData[CDevMtr::DATA_POSIT] = 36484 * ARM_YAW_MOTOR_DIR; ///< 36484是Yaw电机的初始位置
-						jointCmd.setPosit_yaw = 0;
-					}
+					// else if(motor[Y]->motorStatus == CDevMtr::EMotorStatus::STALL){				///<通过堵转来重新标定零点				
+					// 	motor[Y]->motorData[CDevMtr::DATA_POSIT] = 30768 * ARM_YAW_MOTOR_DIR; ///< 30768是Yaw电机的初始位置
+					// 	jointCmd.setPosit_yaw = 0;
+					// }
 					return _UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 						static_cast<float_t>(jointCmd.setPosit_pitch1),
 						static_cast<float_t>(jointCmd.setPosit_pitch2),
@@ -159,7 +164,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				}
 				/*全部到位后才进入初始化*/
 				else if(jointInfo.isPositArrived_pitch3 && jointInfo.isPositArrived_pitch2 && jointInfo.isPositArrived_pitch1 && alreadySetYaw == false){
-					jointCmd.setPosit_yaw = POSIT_JOINT1_YAW_MACH;								///<yaw轴在p1,p2抬升到安全位置之后才动
+					jointCmd.setPosit_yaw = 0;								///<yaw轴在p1,p2抬升到安全位置之后才动
 					alreadySetYaw = true;
 					return _UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 						static_cast<float_t>(jointCmd.setPosit_pitch1),
@@ -240,7 +245,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 // 物理位置转换为电机位置
 int32_t CModArm::CComJoint::PhyPositToMtrPosit_yaw(float_t phyPosit) {
 	const int32_t zeroOffset = 0.0f;//ARM_YAW_MOTOR_OFFSET;
-	const float_t scale = -2*65535/360.0f;//ARM_YAW_MOTOR_RATIO;
+	const float_t scale = -1*65535/360.0f;//ARM_YAW_MOTOR_RATIO;
 
 	return static_cast<int32_t>((phyPosit * scale) + zeroOffset);
 }
@@ -248,7 +253,7 @@ int32_t CModArm::CComJoint::PhyPositToMtrPosit_yaw(float_t phyPosit) {
 // 电机位置转换为物理位置
 float_t CModArm::CComJoint::MtrPositToPhyPosit_yaw(int32_t mtrPosit) {
 	const int32_t zeroOffset = 0.0f;//ARM_YAW_MOTOR_OFFSET;
-	const float_t scale = -2*65535/360.0f;//ARM_YAW_MOTOR_RATIO;
+	const float_t scale = -1*65535/360.0f;//ARM_YAW_MOTOR_RATIO;
 
 	return (static_cast<float_t>(mtrPosit - zeroOffset) / scale);
 }
