@@ -1,7 +1,7 @@
 /**
  * @file algo_ave_filter.cpp
  * @author sllllr (2997708711@qq.com)
- * @brief 互补滤波
+ * @brief 陀螺仪互补 + mahony滤波
  * @version 1.0
  * @date 2026-01-12
  * 
@@ -108,10 +108,7 @@ EAppStatus CAlgo_IMU_Ave::UpdateHandler_()
         }
 
         // --- Mahony AHRS Algorithm ---
-        // 陀螺仪单位已经是 rad/s ！！
-        // 根据旧算法体系兼容的IMU坐标轴系适配：(使得陀螺仪和加速度计在滤波器内部不要互相打架，并满足右手系)
-        // 补偿陀螺仪Z轴零偏 (如果你发现一个正向恒定的零漂速度)
-        float z_gyro_bias_rad = 0.003f * PI / 180.0f; // 例如: 将你测得的 0.003 度/秒 转化成 弧度/秒
+        float z_gyro_bias_rad = 0.003f * PI / 180.0f;
 
         float gx = -gx_raw; 
         float gy = -gy_raw;
