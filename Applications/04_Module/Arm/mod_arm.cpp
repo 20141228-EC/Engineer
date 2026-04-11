@@ -228,10 +228,10 @@ EAppStatus CModArm::RestrictArmCommand_() {
     // }
 
     // Pitch1 和 Yaw 的关联
-    if (armCmd.set_angle_Pitch1 < 25.f) {
-        armCmd.set_angle_Yaw = std::clamp(armCmd.set_angle_Yaw,
-            0.f, 53.f);
-    }
+    // if (armCmd.set_angle_Pitch1 < 25.f) {
+    //     armCmd.set_angle_Yaw = std::clamp(armCmd.set_angle_Yaw,
+    //         0.f, 53.f);
+    // }
 
     // 最高优先级的限位
     if (should_limit_yaw) {

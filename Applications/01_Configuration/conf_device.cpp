@@ -223,7 +223,7 @@ EAppStatus InitAllDevice(){
     armMotor_Grip_initparam.useAngleToPosit = true;
     armMotor_Grip_initparam.useStallMonit = true;
     armMotor_Grip_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
-    armMotor_Grip_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE; //堵转的选项设置为电流
+    armMotor_Grip_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE; 
     armMotor_Grip.InitDevice(&armMotor_Grip_initparam);
 
     static CDevMtrKT armMotor_Yaw;

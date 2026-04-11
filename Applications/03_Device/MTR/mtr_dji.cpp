@@ -193,7 +193,7 @@ void CDevMtrDJI::HeartbeatHandler_(){
 
     const auto tickRate          = 10;     // Unit: Hz
     const auto offlineDelay      = 500;    // Unit: ms
-    const auto stallSpdThreshold = 50;     // Unit: rpm
+    const auto stallSpdThreshold = 200;     // Unit: rpm
 
     // 检查设备状态
     if (motorStatus == EMotorStatus::RESET) return;
@@ -219,8 +219,9 @@ void CDevMtrDJI::HeartbeatHandler_(){
                 }
             }
             else {
-                stallCount_ = 0;
-                motorStatus = EMotorStatus::RUNNING;
+                if(motorStatus == EMotorStatus::RUNNING){
+                    stallCount_ = 0;
+                };
             }
         }
     }

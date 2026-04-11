@@ -13,8 +13,8 @@
 #define MOD_ARM_HPP
 
 /*-------------------------------------物理限位---------------------------------------------------*/
-#define ARM_YAW_PHYSICAL_RANGE_MIN -97.5f
-#define ARM_YAW_PHYSICAL_RANGE_MAX 53.f
+#define ARM_YAW_PHYSICAL_RANGE_MIN -165.f
+#define ARM_YAW_PHYSICAL_RANGE_MAX 173.f
 #define ARM_PITCH1_PHYSICAL_RANGE_MIN 0.0f
 #define ARM_PITCH1_PHYSICAL_RANGE_MAX 92.f  
 #define ARM_PITCH2_PHYSICAL_RANGE_MIN 0.f
@@ -31,7 +31,7 @@
 
 /*-------------------------------------电机限位----------------------------------------------------*/
 //原始限位编码器器范围
-#define ARM_YAW_MOTOR_RANGE 65535
+#define ARM_YAW_MOTOR_RANGE 61551
 #define ARM_PITCH1_MOTOR_RANGE 17098
 #define ARM_PITCH2_MOTOR_RANGE 65535
 #define ARM_END_PITCH_MOTOR_RANGE 325993
@@ -54,7 +54,7 @@
 #define ARM_END_PITCH_MOTOR_OFFSET -ARM_END_PITCH_PHYSICAL_RANGE_MIN * ARM_END_PITCH_MOTOR_RATIO
 
 /*-------------------------------------方向设定---------------------------------------------------------*/
-#define ARM_YAW_MOTOR_DIR 1
+#define ARM_YAW_MOTOR_DIR -1
 #define ARM_PITCH1_MOTOR_DIR -1//减小
 #define ARM_PITCH2_MOTOR_DIR 1
 #define ARM_ROLL_MOTOR_DIR 1
@@ -73,7 +73,7 @@
 #define ARM_P2_MAX_WHEN_P1_MIN 24.6f  ///< P1处于最小角度时，P2的最大可达角度
 
 /*-------------------------------------初始化数据--------------------------------------------------------*/
-#define ARM_YAW_INIT_ANGLE 1.2f
+#define ARM_YAW_INIT_ANGLE 0.0f
 #define ARM_PITCH1_INIT_ANGLE 4.f
 #define ARM_PITCH2_INIT_ANGLE 11.f
 #define ARM_ROLL_INIT_ANGLE 0.0f
@@ -81,8 +81,9 @@
 #define ARM_END_ROLL_INIT_ANGLE 0.0f
 #define ARM_GRIP_INIT_LENGTH 0.0f
 
-#define POSIT_JOINT1_YAW_MACH 20000
-#define ARM_YAW_MOTOR_RANGE_LHK 54750
+#define POSIT_JOINT1_YAW_MACH 30768
+#define POSIT_JOINT1_YAW_MACH_PHY 0.f
+#define ARM_YAW_MOTOR_RANGE_LHK 61551
 
 #define POSIT_JOINT2_PITCH1_MACH 53021
 #define POSIT_JOINT2_PITCH1_MACH_PHY 0.f
