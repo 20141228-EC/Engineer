@@ -84,7 +84,6 @@ EAppStatus InitAllDevice(){
     boardLink_initparam.deviceID = EDeviceID::DEV_BOARD_LINK;
     boardLink_initparam.interfaceID = EInterfaceID::INF_CAN3;
     boardLink_initparam.offlineTimeout = 100;  // 100ms离线超时
-    boardLink_initparam.txNode = &TxNode_Can3_300;  // 板间通信发送节点
     boardLink.InitDevice(&boardLink_initparam);
 
     /******************************************
@@ -149,37 +148,37 @@ EAppStatus InitAllDevice(){
     gimbalMotor_Yaw_initparam.stallTime = 200;
     gimbalMotor_Yaw.InitDevice(&gimbalMotor_Yaw_initparam);
 
-    // 云台存矿电机 - 前
-    static CDevMtrM2006 gimbalMotor_Storage_F;
-    CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Storage_F_initparam;
-    gimbalMotor_Storage_F_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_STORAGE_F;
-    gimbalMotor_Storage_F_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    gimbalMotor_Storage_F_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
-    gimbalMotor_Storage_F_initparam.useAngleToPosit = true;
-    gimbalMotor_Storage_F_initparam.useStallMonit = true;
-    gimbalMotor_Storage_F_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    gimbalMotor_Storage_F.InitDevice(&gimbalMotor_Storage_F_initparam);
+    // // 云台存矿电机 - 前
+    // static CDevMtrM2006 gimbalMotor_Storage_F;
+    // CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Storage_F_initparam;
+    // gimbalMotor_Storage_F_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_STORAGE_F;
+    // gimbalMotor_Storage_F_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    // gimbalMotor_Storage_F_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
+    // gimbalMotor_Storage_F_initparam.useAngleToPosit = true;
+    // gimbalMotor_Storage_F_initparam.useStallMonit = true;
+    // gimbalMotor_Storage_F_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
+    // gimbalMotor_Storage_F.InitDevice(&gimbalMotor_Storage_F_initparam);
 
-    // 云台存矿电机 - 后
-    static CDevMtrM2006 gimbalMotor_Storage_B;
-    CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Storage_B_initparam;
-    gimbalMotor_Storage_B_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_STORAGE_B;
-    gimbalMotor_Storage_B_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    gimbalMotor_Storage_B_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
-    gimbalMotor_Storage_B_initparam.useAngleToPosit = true;
-    gimbalMotor_Storage_B_initparam.useStallMonit = true;
-    gimbalMotor_Storage_B_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    gimbalMotor_Storage_B.InitDevice(&gimbalMotor_Storage_B_initparam);
+    // // 云台存矿电机 - 后
+    // static CDevMtrM2006 gimbalMotor_Storage_B;
+    // CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Storage_B_initparam;
+    // gimbalMotor_Storage_B_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_STORAGE_B;
+    // gimbalMotor_Storage_B_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    // gimbalMotor_Storage_B_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
+    // gimbalMotor_Storage_B_initparam.useAngleToPosit = true;
+    // gimbalMotor_Storage_B_initparam.useStallMonit = true;
+    // gimbalMotor_Storage_B_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
+    // gimbalMotor_Storage_B.InitDevice(&gimbalMotor_Storage_B_initparam);
 
-    static CDevMtrM2006 gimbalMotor_Pitch;
-    CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Pitch_initparam;
-    gimbalMotor_Pitch_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_PITCH;
-    gimbalMotor_Pitch_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    gimbalMotor_Pitch_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_7;
-    gimbalMotor_Pitch_initparam.useAngleToPosit = true;
-    gimbalMotor_Pitch_initparam.useStallMonit = true;
-    gimbalMotor_Pitch_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    gimbalMotor_Pitch.InitDevice(&gimbalMotor_Pitch_initparam);
+    // static CDevMtrM2006 gimbalMotor_Pitch;
+    // CDevMtrM2006::SMtrInitParam_M2006 gimbalMotor_Pitch_initparam;
+    // gimbalMotor_Pitch_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_PITCH;
+    // gimbalMotor_Pitch_initparam.interfaceID = EInterfaceID::INF_CAN1;
+    // gimbalMotor_Pitch_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_7;
+    // gimbalMotor_Pitch_initparam.useAngleToPosit = true;
+    // gimbalMotor_Pitch_initparam.useStallMonit = true;
+    // gimbalMotor_Pitch_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
+    // gimbalMotor_Pitch.InitDevice(&gimbalMotor_Pitch_initparam);
 
     /******************************************
      * 机械臂电机

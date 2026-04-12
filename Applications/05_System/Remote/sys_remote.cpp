@@ -1,11 +1,11 @@
 /**
  * @file sys_remote.cpp
- * @author Fish_Joe (2328339747@qq.com)
+ * @author sllllr (2997708711@qq.com)
  * @brief 遥控器系统源文件
  * @version 1.0
- * @date 2024-11-10
+ * @date 2026-01-11
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2026
  * 
  */
 
@@ -61,72 +61,30 @@ void CSystemRemote::UpdateHandler_() {
 
 /**
  * @brief 心跳处理
- * @note  状态判断由 USE_BOARD_LINK_REMOTE 宏控制:
- *        - 启用(1): 根据板间通信状态判断
- *        - 禁用(0): 根据本地遥控器设备状态判断
+ * 
  */
 void CSystemRemote::HeartbeatHandler_() {
     // 检查系统状态
     if (systemStatus == APP_RESET) return;
-
-#if USE_BOARD_LINK_REMOTE
-    // 板间通信模式：根据板间通信状态判断
-    if (SysBoardLink.IsOnline())
-        systemStatus = APP_OK;
-    else
-        systemStatus = APP_ERROR;
-#else
-    // 本地遥控器模式：根据本地设备状态判断
     if (!pRemoteDev_) return;
 
-    if(pRemoteDev_->rcStatus == ERcStatus::ONLINE)
+    if(pRemoteDev_->rcStatus ==  ERcStatus::ONLINE)
         systemStatus = APP_OK;
     else
         systemStatus = APP_ERROR;
-#endif
 }
 
 /**
  * @brief 更新遥控器
- * @note  数据源由 USE_BOARD_LINK_REMOTE 宏控制:
- *        - 启用(1): 从板间通信获取数据，用于副板
- *        - 禁用(0): 从本地DBUS获取数据，用于主板或单板调试
- *
- * @return EAppStatus
+ * 
+ * @return EAppStatus 
  */
 EAppStatus CSystemRemote::UpdateRemote_() {
 
-#if USE_BOARD_LINK_REMOTE
-    /*
-     * 板间通信模式 - 副板使用
-     * 遥控器数据从主板通过CAN总线传递
-     */
-
-    if (!SysBoardLink.IsOnline()) {
-        // 板间通信离线，保持上一次的数据，等待恢复
-        return APP_ERROR;
-    }
-
-    // 摇杆数据
-    remoteInfo.remote.joystick_RX = SysBoardLink.remoteInfo.joystick_RX;
-    remoteInfo.remote.joystick_RY = SysBoardLink.remoteInfo.joystick_RY;
-    remoteInfo.remote.joystick_LX = SysBoardLink.remoteInfo.joystick_LX;
-    remoteInfo.remote.joystick_LY = SysBoardLink.remoteInfo.joystick_LY;
-    remoteInfo.remote.thumbWheel  = SysBoardLink.remoteInfo.thumbWheel;
-
-    // 拨杆状态
-    remoteInfo.remote.switch_L = SysBoardLink.remoteInfo.switch_L;
-    remoteInfo.remote.switch_R = SysBoardLink.remoteInfo.switch_R;
-
-#else
-    /*
-     * 本地DBUS模式 - 主板或单板调试使用
-     * 遥控器直接连接到本板
-     */
-
     if (!pRemoteDev_) return APP_ERROR;
 
-    // 软件复位
+    /* 软件复位 */
+    // 复位顺序：右边在中间，然后左边在下面，最后右边在下面
     if (remoteInfo.remote.switch_R == 3
         && pRemoteDev_->remoteData[CRcDR16::CH_SW1].chValue == 2
         && pRemoteDev_->remoteData[CRcDR16::CH_SW2].chValue == 2) {
@@ -139,9 +97,9 @@ EAppStatus CSystemRemote::UpdateRemote_() {
     remoteInfo.remote.joystick_LY = pRemoteDev_->remoteData[CRcDR16::CH_3].chValue / 6.6f;
     remoteInfo.remote.thumbWheel  = pRemoteDev_->remoteData[CRcDR16::CH_TW].chValue / 6.6f;
     remoteInfo.remote.switch_L    = pRemoteDev_->remoteData[CRcDR16::CH_SW1].chValue;
-    remoteInfo.remote.switch_R    = pRemoteDev_->remoteData[CRcDR16::CH_SW2].chValue;
+    remoteInfo.remote.switch_R    = pRemoteDev_->remoteData[CRcDR16::CH_SW2].chValue; ///< 将摇杆值归一到-100~100
 
-#endif
+    UpdateRemote_Edge_();
 
     UpdateRemote_with_deadzone_();
 
@@ -186,6 +144,8 @@ EAppStatus CSystemRemote::UpdateKeyboard_() {
     remoteInfo.keyboard.key_Ctrl    = (pRemoteDev_->remoteData[CRcDR16::CH_KEY_CTRL].chValue == 1);
     remoteInfo.keyboard.key_Shift   = (pRemoteDev_->remoteData[CRcDR16::CH_KEY_SHIFT].chValue == 1);
 
+    UpdateKeyboard_Edge_();
+
     return APP_OK;
 }
 
@@ -208,6 +168,53 @@ EAppStatus CSystemRemote::UpdateRemote_with_deadzone_() {
 	return APP_OK;
 }
 
+/**
+ * @brief 更新遥控器边沿状态
+ * 
+ */
+EAppStatus CSystemRemote::UpdateRemote_Edge_(){
+
+    // 类型转换
+    remoteInfo.remote_edge.joystick_RX = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_0].chEdge);
+    remoteInfo.remote_edge.joystick_RY = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_1].chEdge);
+    remoteInfo.remote_edge.joystick_LX = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_2].chEdge);
+    remoteInfo.remote_edge.joystick_LY = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_3].chEdge);
+    remoteInfo.remote_edge.thumbWheel  = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_TW].chEdge);
+    remoteInfo.remote_edge.switch_L    = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_SW1].chEdge);
+    remoteInfo.remote_edge.switch_R    = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_SW2].chEdge);
+    // 从设备层更新边沿
+
+    return APP_OK;
+}
+
+/**
+ * @brief 更新键盘边沿状态
+ * 
+ */
+EAppStatus CSystemRemote::UpdateKeyboard_Edge_(){
+    // 类型转换
+    remoteInfo.keyboard_edge.mouse_L     = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_MOUSE_L].chEdge);
+    remoteInfo.keyboard_edge.mouse_R     = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_MOUSE_R].chEdge);
+    remoteInfo.keyboard_edge.key_W       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_W].chEdge);
+    remoteInfo.keyboard_edge.key_A       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_A].chEdge);
+    remoteInfo.keyboard_edge.key_S       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_S].chEdge);
+    remoteInfo.keyboard_edge.key_D       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_D].chEdge);
+    remoteInfo.keyboard_edge.key_Q       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_Q].chEdge);
+    remoteInfo.keyboard_edge.key_E       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_E].chEdge);
+    remoteInfo.keyboard_edge.key_R       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_R].chEdge);
+    remoteInfo.keyboard_edge.key_F       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_F].chEdge);
+    remoteInfo.keyboard_edge.key_G       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_G].chEdge);
+    remoteInfo.keyboard_edge.key_Z       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_Z].chEdge);
+    remoteInfo.keyboard_edge.key_X       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_X].chEdge);
+    remoteInfo.keyboard_edge.key_C       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_C].chEdge);
+    remoteInfo.keyboard_edge.key_V       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_V].chEdge);
+    remoteInfo.keyboard_edge.key_B       = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_B].chEdge);
+    remoteInfo.keyboard_edge.key_Ctrl    = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_CTRL].chEdge);
+    remoteInfo.keyboard_edge.key_Shift   = static_cast<ERemoteEdge>(pRemoteDev_->remoteData[CRcDR16::CH_KEY_SHIFT].chEdge);
+
+    return APP_OK;
+}
+
 void CSystemRemote::SetRemoteDeadZone(float_t deadZone) {
     
     remoteDeadZone_ = deadZone > 100.f ? 100.f : deadZone;
@@ -215,4 +222,3 @@ void CSystemRemote::SetRemoteDeadZone(float_t deadZone) {
 
 
 }   // namespace my_engineer
-

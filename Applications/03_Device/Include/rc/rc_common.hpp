@@ -1,11 +1,11 @@
 /**
  * @file rc_common.hpp
- * @author Fish_Joe (2328339747@qq.com)
+ * @author sllllr (2997708711@qq.com)
  * @brief 基于Device基类的遥控器基类的定义
  * @version 1.0
- * @date 2024-11-01
+ * @date 2026-01-11
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2026
  * 
  */
 
@@ -63,6 +63,7 @@ public:
     public:
         ERcChannelType chType = ERcChannelType::UNDEF; ///< 通道类型
         ERcChannelStatus chStatus = ERcChannelStatus::RESET; ///< 通道状态
+        ERcChannelEdge chEdge = ERcChannelEdge::RESET;  ///< 通道边沿状态
         int16_t chValue = 0; ///< 通道值
 
         // 将CRcChannel类转换为int16_t类型,返回通道值
@@ -81,6 +82,7 @@ public:
     ERcType rcType = ERcType::RC_UNDEF; ///< 遥控器类型
     ERcStatus rcStatus = ERcStatus::RESET; ///< 遥控器状态
     std::vector<CRcChannel> remoteData; ///< 储存遥控器所有通道的数据
+    std::vector<CRcChannel> last_remoteData;    ///< 遥控器所有通道上次数据
 
     CRcBase() {deviceType = EDevType::DEV_RC;} ///< 构造函数
     ~CRcBase() override { UnregisterDevice_(); } ///< 析构函数

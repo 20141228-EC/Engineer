@@ -1,11 +1,12 @@
+
 /**
  * @file rc_def.hpp
- * @author Zoe
- * @brief 定义各种枚举类型
+ * @author sllllr (2997708711@qq.com)
+ * @brief 定义遥控器各种枚举类型
  * @version 1.0
- * @date 2024-11-01
+ * @date 2026-01-11
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2026
  * @details
  */
 
@@ -53,6 +54,17 @@ enum class ERcChannelStatus{
     DOWN,       ///< 低状态
     HIGH,         ///< 高状态
     PRESS,      ///< 按下状态
+};
+
+/**
+ * @brief 定义通道边沿状态的枚举类型
+ * 
+ */
+enum class ERcChannelEdge{
+    RESET = -1, ///< 重置
+    NONE,       ///< 无边沿
+    Rising,     ///< 上升沿(0-1)
+    Falling,    ///< 下降沿(1-0)
 };
 
 } // namespace my_engineer

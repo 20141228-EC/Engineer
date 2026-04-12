@@ -8,7 +8,7 @@
  * @details 封装板间通信设备，提供统一的遥控器数据接口
  *          当板间通信在线时，其他系统可通过本系统获取主板传来的遥控器数据
  *
- * @copyright Copyright (c) 2025
+ * @copyright Copyright (c) 2026
  *
  */
 
@@ -37,37 +37,17 @@ public:
 
     /**
      * @brief 控制标志信息结构体
-     * @note  由主板根据拨杆状态计算后传递
+     * @note 包含关控等控制底盘的所有信息
      */
     struct SCtrlFlags {
-        // 控制模式
-        bool chassis_ctrl = false;      ///< 底盘控制使能
-        bool gimbal_ctrl = false;       ///< 云台控制使能
-        bool arm_front_ctrl = false;    ///< 机械臂前四轴控制
-        bool arm_rear_ctrl = false;     ///< 机械臂后四轴控制
+        uint8_t remote_is_online;   // 遥控器是否在线
 
-        // 使能标志
-        bool arm_enable = false;        ///< 机械臂使能
-        bool gimbal_enable = false;     ///< 云台使能
-        bool chassis_enable = false;    ///< 底盘使能
+        int16_t speed_x;    // 底盘x轴速度
+        int16_t speed_y;    // 底盘y轴速度
+        int16_t speed_w;    // 底盘旋转速度
 
-        // 状态标志
-        bool rc_online = false;         ///< 遥控器在线
-        bool is_rc_ctrl = false;        ///< 遥控器控制模式
-        bool is_key_ctrl = false;       ///< 键盘控制模式
-        bool climb_stair = false;       ///< 上台阶标志
-    };
-
-    /**
-     * @brief 板间通信的遥控器信息
-     * @note  格式与 SysRemote.remoteInfo.remote 一致，方便直接替换使用
-     */
-    CSystemRemote::SRemoteInfo remoteInfo;
-
-    /**
-     * @brief 控制标志信息
-     */
-    SCtrlFlags ctrlFlags;
+        uint8_t reserved;   // 保留
+    } __packed ctrlInfos = {};
 
     /**
      * @brief 检查板间通信是否在线
@@ -107,17 +87,7 @@ private:
 
     CDevBoardLink *pBoardLinkDev_ = nullptr;  ///< 板间通信设备指针
 
-    /**
-     * @brief 更新遥控器数据
-     * @note  将设备层的原始摇杆值转换为系统层格式
-     */
-    EAppStatus UpdateRemoteData_();
-
-    /**
-     * @brief 更新控制标志
-     * @note  解析设备层的控制标志包
-     */
-    EAppStatus UpdateCtrlFlags_();
+    EAppStatus UpdateCtrlInfos_();
 
 };
 

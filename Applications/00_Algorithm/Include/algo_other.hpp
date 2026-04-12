@@ -26,6 +26,18 @@ float_t LowPassFilter(float_t last_data, float_t current_data, float_t alpha);
 // 四舍五入
 float_t Round(float_t x);
 
+// 半圈处理
+template<typename T>
+T HalfCycle(T source, T range) {
+	if(source > range / static_cast<T>(2)){
+		source -= range;
+	}
+	if(source < -range / static_cast<T>(2)){
+		source += range;
+	}
+	return source;
+}
+
 } // namespace my_engineer
 
 #endif // ALGO_OTHER_HPP

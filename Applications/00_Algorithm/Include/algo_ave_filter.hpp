@@ -38,6 +38,12 @@ public:
         float_t imu_ave_roll = 0.0f;                  ///< roll轴
         float_t imu_ave_pitch = 0.0f;                 ///< pitch轴
         float_t imu_ave_yaw = 0.0f;                   ///< yaw轴
+        float_t acc_x_filter = 0.f;                 ///< x轴加速度滤波值
+        float_t acc_y_filter = 0.f;                 ///< y轴加速度滤波值
+        float_t acc_z_filter = 0.f;                 ///< z轴加速度滤波值
+        float_t accel_y = 0.f;                      ///< y轴平动加速度
+        float_t accel_x = 0.f;                      ///< x轴平动加速度
+        float_t accel_z = 0.f;                      ///< z轴平动加速度
     } Imu_Ave_Info;
 
     // 传感器实例指针
@@ -45,6 +51,12 @@ public:
 
     float_t ALPHA = 0.0f;                           ///< 陀螺仪信任系数
     float_t DT = 0.0f;                              ///< 调度周期
+
+    // Mahony滤波参数及变量
+    float_t twoKp = 2.5f;                           ///< 2 * proportional gain (Kp)
+    float_t twoKi = 0.0015f;                           ///< 2 * integral gain (Ki)
+    float_t q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f; ///< 四元数
+    float_t exInt = 0.0f, eyInt = 0.0f, ezInt = 0.0f;   ///< 积分误差
     
     CAlgo_IMU_Ave() = default;  ///< 默认构造函数
 

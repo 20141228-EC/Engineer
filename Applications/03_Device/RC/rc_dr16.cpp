@@ -1,11 +1,11 @@
 /**
  * @file rc_dr16.cpp
- * @author Fish_Joe (2328339747@qq.com)
+ * @author sllllr (2997708711@qq.com)
  * @brief 大疆DR16遥控器的实现
  * @version 1.0
- * @date 2024-11-01
+ * @date 2026-01-11
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2026
  * 
  */
 
@@ -66,6 +66,7 @@ EAppStatus CRcDR16::InitDevice(const SDevInitParam_Base *pStructInitParam){
 
     // 初始化通道
     remoteData.resize(COUNT_);
+    last_remoteData.resize(COUNT_);
     for(size_t i = 0; i < COUNT_; i++)
     {
         InitChannel_(i, channelTypeList[i]);
@@ -130,6 +131,8 @@ void CRcDR16::UpdateHandler_()
         remoteData[CH_KEY_B].chValue = (key >> 15) & 0x0001;
         lastHeartbeatTime_ = rxTimestamp_;
     }
+
+    CRcBase::UpdateChannels_();     ///< 调用遥控器基类的通道更新函数
 }
 
 

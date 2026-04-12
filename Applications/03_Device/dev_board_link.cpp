@@ -2,11 +2,12 @@
  * @brief   板间通信设备类实现
  *
  * @file    dev_board_link.cpp
- * @author  Ciallo～(∠·ω< )⌒☆(1002046597@qq.com)
- * @version V2.0
- * @date    2025-12-09
+ * @author  sllllr (299708711@qq.com)
+ * @version V1.0
+ * @date    2026-04-11
  *
- * @copyright Copyright (c) 2025
+ *
+ * @copyright Copyright (c) 2026
  *
  ******************************************************************************/
 
@@ -32,7 +33,15 @@ EAppStatus CDevBoardLink::InitDevice(const SDevInitParam_Base *pStructInitParam)
     // 保存配置
     deviceID = param.deviceID;
     timeoutParam_.offlineTimeout = param.offlineTimeout;
-    txNode_ = param.txNode;
+
+    // 初始化CAN接收节点
+    txNode_.InitTxNode(
+        param.interfaceID,
+        0x300,
+        CInfCAN::ECanFrameType::DATA,
+        CInfCAN::ECanFrameDlc::DLC_8
+    );
+
 
     // 初始化CAN接收节点
     rxNode_.InitRxNode(
@@ -82,7 +91,6 @@ void CDevBoardLink::HeartbeatHandler_() {
         // 超时，离线
         deviceStatus = APP_ERROR;
         linkStatus = EBoardLinkStatus::OFFLINE;
-        rxStatus_.Clear();  // 离线时清除接收状态
     }
     else {
         // 在线
@@ -90,6 +98,29 @@ void CDevBoardLink::HeartbeatHandler_() {
         linkStatus = EBoardLinkStatus::ONLINE;
     }
 
+}
+
+/**
+ * @brief 发送信息
+ * 
+ * @details 将从系统层获取，已经存到设备层结构体中的数据填入can发送缓冲区
+ * 
+ * @retval EAppStatus
+ */
+EAppStatus CDevBoardLink::SendPackage(void){
+
+	// 检查设备状态
+	if (deviceStatus == APP_RESET) return APP_ERROR;
+
+	std::array<uint8_t, 8> data_buf{};
+
+    memcpy(data_buf.data(), &ctrlInfo_, sizeof(ctrlInfo_));
+
+    Modify_CanTxData(data_buf.data());
+
+	txNode_.Transmit(); ///< 发送数据
+
+	return APP_OK;
 }
 
 /**
@@ -105,51 +136,11 @@ EAppStatus CDevBoardLink::ParseRxPacket_() {
     // 根据pack_id分发到不同的数据包
     switch (packId) {
 
-        case PKT_REMOTE_1: {
-            ///<直接通过内存的访问方式进行转换，因为数据包是对齐的
-            auto pkg = reinterpret_cast<SRemoteJoystick1 *>(rxNode_.dataBuffer.data());
-            remoteJoystick1 = *pkg;
-            rxStatus_.SetReceived(PKT_REMOTE_1);
-            break;
-        }
-
-        case PKT_REMOTE_2: {
-            auto pkg = reinterpret_cast<SRemoteJoystick2 *>(rxNode_.dataBuffer.data());
-            remoteJoystick2 = *pkg;
-            rxStatus_.SetReceived(PKT_REMOTE_2);
-            break;
-        }
-
-        case PKT_CTRL_FLAGS: {
-            auto pkg = reinterpret_cast<SControlFlags *>(rxNode_.dataBuffer.data());
-            ctrlFlags = *pkg;
-            rxStatus_.SetReceived(PKT_CTRL_FLAGS);
-            break;
-        }
-
         default:
             return APP_ERROR;
     }
 
     return APP_OK;
-}
-
-/**
- * @brief 填充反馈数据到发送缓冲区
- * @note  只填充数据到发送缓冲区，不发送。发送由CAN接口层统一管理,同时这里采用了临时类型转换的方式，避免了冗余的内存拷贝。
- */
-void CDevBoardLink::FillFeedbackBuffer() {
-
-    if (txNode_ == nullptr) return;
-
-    // 直接把发送缓冲区当作结构体来填充
-    auto pkg = reinterpret_cast<SFeedbackPack *>(txNode_->dataBuffer.data());
-    pkg->pack_id = PKT_FEEDBACK;
-    pkg->rx_status = rxStatus_.GetBits();
-    pkg->link_status = static_cast<uint8_t>(linkStatus);
-
-    // 发送反馈后清零接收状态，下一周期重新统计
-    rxStatus_.Clear();
 }
 
 } // namespace my_engineer

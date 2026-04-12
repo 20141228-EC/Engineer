@@ -36,7 +36,6 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 
 				gimbal.gimbalInfo.isModuleAvailable = false;
 				gimbal.comYaw_.StopComponent();
-				gimbal.comStorage_.StopComponent();
 				proc_waitMs(20);
 				continue; // 跳过下面的代码，直接进入下一次循环
 			}
@@ -48,12 +47,9 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 				// 启动组件
 				gimbal.comYaw_.StartComponent();
 				proc_waitUntil(gimbal.comYaw_.componentStatus == APP_OK);
-				gimbal.comStorage_.StartComponent();
-				proc_waitUntil(gimbal.comStorage_.componentStatus == APP_OK);
 				gimbal.gimbalCmd = SGimbalCmd();
 				gimbal.gimbalCmd.set_encoder_yaw = 0;
 				gimbal.gimbalCmd.set_posit_yaw = 0.0f;
-				gimbal.gimbalCmd.set_posit_storage = GIMBAL_STORAGE_PHYSICAL_RANGE;
 				gimbal.gimbalInfo.isModuleAvailable = true;
 				gimbal.Module_FSMFlag_ = FSM_CTRL;
 				break;
@@ -66,14 +62,6 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 
 				// 将控制量转换为电机控制量
 				gimbal.comYaw_.yawCmd.setPosit = gimbal.gimbalCmd.set_posit_yaw;
-
-				// 将控制量转换为电机控制量 - 升降
-				gimbal.comStorage_.storageCmd.setPosit =
-					CComStorage::PhyPositToMtrPosit(gimbal.gimbalCmd.set_posit_storage);
-
-				// 将控制量转换为电机控制量 - 俯仰
-				gimbal.comPitch_.pitchCmd.setPosit =
-					CComPitch::PhyPositToMtrPosit(gimbal.gimbalCmd.set_posit_pitch);
 
 				proc_waitMs(1);
 				break;

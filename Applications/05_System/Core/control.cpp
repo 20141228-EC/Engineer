@@ -1,11 +1,11 @@
 /**
  * @file control.cpp
- * @author Fish_Joe (2328339747@qq.com)
+ * @author sllllr (2997708711@qq.com)
  * @brief 在这里定义遥控器和键盘的操作函数
  * @version 1.0
- * @date 2024-11-10
+ * @date 2026-04-12
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2026
  * 
  */
 
@@ -35,15 +35,6 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
                 parm_->StartModule();
             }
         }
-/* 删除子龙门模块遥控器启动代码
-        if (psubgantry_) {
-            if (!psubgantry_->subGantryInfo.isModuleAvailable
-                && psubgantry_->moduleStatus == APP_OK
-                && remote.switch_L == HIG && last_switch_L != HIG) {
-                psubgantry_->StartModule();         ///<在使用遥控器的时候左侧的拨杆切到高档启动子龙门和机械臂模块
-            }
-        }
-*/
         last_switch_L = remote.switch_L;        ///<记录上一次的拨杆状态
 
     }
@@ -97,6 +88,7 @@ void CSystemCore::ControlFromRemote_() {
 
     enum { HIG = 1, LOW = 2, MID = 3 };
     auto &remote = SysRemote.remoteInfo.remote;
+    auto &remote_edge = SysRemote.remoteInfo.remote_edge;
 
     //将模块启动
     if (SysRemote.systemStatus == APP_OK) {
@@ -104,27 +96,19 @@ void CSystemCore::ControlFromRemote_() {
     }
 
     //用于调试，免去遥控器上电
-     //StartRobot(true, true);
+    StartRobot(true, true);
 
     if (parm_) {
         parm_->should_limit_yaw = 0;
     }
 
-    // LOW + MID 图传抬升（底盘控制在另一个板）
+    // LOW + MID 底盘控制
     if (remote.switch_L == LOW && remote.switch_R == MID) {
         SysRemote.SetRemoteDeadZone(10.f);
-        /* 副板无底盘，注释底盘控制代码
-        if (pchassis_) {
-            pchassis_->chassisCmd.speed_X = remote.joystick_LX / 2;
-            pchassis_->chassisCmd.speed_Y = remote.joystick_LY;
-            pchassis_->chassisCmd.speed_W = remote.joystick_RX;
-        }
-        */
-        // 云台抬升
-        // if (pgimbal_) {
-        //     pgimbal_->gimbalCmd.set_posit_lift +=
-        //         (remote.joystick_RY / 100.f) * 100.f / freq;
-        // }
+            chassisCmd.speed_x = remote.joystick_LX / 2;
+            chassisCmd.speed_y = remote.joystick_LY;
+            chassisCmd.speed_w = remote.joystick_RX;
+        
     }
 
     // MID + HIG 机械臂前四轴
@@ -156,22 +140,12 @@ void CSystemCore::ControlFromRemote_() {
             //     (remote.joystick_RX / 100.f) * 90.f / freq;
         }
     }
-/* 删除 MID + LOW 子龙门控制代码
+
     // MID + LOW 子龙门控制
     if (remote.switch_L == MID && remote.switch_R == LOW) {
         SysRemote.SetRemoteDeadZone(10.f);
-        if (psubgantry_) {
-            psubgantry_->subGantryCmd.setStretchPosit_L +=
-                (remote.joystick_LY / 100.f) * 300.f / freq;
-            psubgantry_->subGantryCmd.setStretchPosit_R +=
-                (remote.joystick_RY / 100.f) * 300.f / freq;
-            psubgantry_->subGantryCmd.setLiftPosit_L +=
-                (remote.joystick_LX / 100.f) * 120.f / freq;
-            psubgantry_->subGantryCmd.setLiftPosit_R +=
-                (remote.joystick_RX / 100.f) * 120.f / freq;
-        }
+
     }
-*/
 
     // MID + LOW 云台 + 夹爪控制
     if (remote.switch_L == MID && remote.switch_R == LOW) {
@@ -197,6 +171,7 @@ void CSystemCore::ControlFromKeyboard_() {
     const auto freq = 1000.f; // 系统核心频率
 
     auto &keyboard = SysRemote.remoteInfo.keyboard;
+    auto &keyboard_edge = SysRemote.remoteInfo.keyboard_edge;
 
     static bool lastMouseStatus_L = false, lastMouseStatus_R = false;
 
@@ -208,47 +183,37 @@ void CSystemCore::ControlFromKeyboard_() {
     // parm_->should_limit_yaw = 1;
 
     /******************* 底盘控制 *******************/
-    /* 副板无底盘，注释底盘控制代码
     // 平滑更新角速度
-    if (pchassis_) {
-        pchassis_->chassisCmd.speed_W = pchassis_->chassisCmd.speed_W +
-            0.03f*(keyboard.mouse_X - pchassis_->chassisCmd.speed_W);
+        chassisCmd.speed_w = chassisCmd.speed_w +
+        0.03f*(keyboard.mouse_X - chassisCmd.speed_w);
 
-        if (!pchassis_->chassisCmd.isAutoCtrl)
-        {
-            pchassis_->chassisCmd.speed_X *= 0.97f;
-            pchassis_->chassisCmd.speed_Y *= 0.98f;
-            if (abs(pchassis_->chassisCmd.speed_X) < 0.5f) pchassis_->chassisCmd.speed_X = 0.0f;
-            if (abs(pchassis_->chassisCmd.speed_Y) < 0.5f) pchassis_->chassisCmd.speed_Y = 0.0f;
+        chassisCmd.speed_x *= 0.97f;
+        chassisCmd.speed_y *= 0.98f;
+        if (abs(chassisCmd.speed_x) < 0.5f) chassisCmd.speed_x = 0.0f;
+        if (abs(chassisCmd.speed_y) < 0.5f) chassisCmd.speed_y = 0.0f;
 
-            if (keyboard.key_Shift) {
-                pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 5.0f;   ///<通过差值来实现一行代码实现左右转弯
-                pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 5.0f;
-                pchassis_->chassisCmd.speed_X =
-                std::clamp(pchassis_->chassisCmd.speed_X, -50.0f, 50.0f);
-                pchassis_->chassisCmd.speed_Y =
-                std::clamp(pchassis_->chassisCmd.speed_Y, -100.0f, 100.0f);
-            } else {
-                pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 1.0f;
-                pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 1.0f;
-                pchassis_->chassisCmd.speed_X =
-                std::clamp(pchassis_->chassisCmd.speed_X, -20.0f, 20.0f);
-                pchassis_->chassisCmd.speed_Y =
-                std::clamp(pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
-            }
-        }
-    }
+        if (keyboard.key_Shift) {
+            chassisCmd.speed_x += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 5.0f;   ///<通过差值来实现一行代码实现左右转弯
+            chassisCmd.speed_y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 5.0f;
+            chassisCmd.speed_x =
+            std::clamp(chassisCmd.speed_x, -50.0f, 50.0f);
+            chassisCmd.speed_y =
+            std::clamp(chassisCmd.speed_y, -100.0f, 100.0f);
+        } else {
+            chassisCmd.speed_x += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 1.0f;
+            chassisCmd.speed_y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 1.0f;
+            chassisCmd.speed_x =
+            std::clamp(chassisCmd.speed_x, -20.0f, 20.0f);
+            chassisCmd.speed_y =
+            std::clamp(chassisCmd.speed_y, -50.0f, 50.0f);
+        }    
 
 
     // 小陀螺  (G键)
-    if (pchassis_) {
-        if (!keyboard.key_Ctrl
-            && keyboard.key_G
+        if (keyboard.key_G
             && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
-            pchassis_->chassisCmd.speed_W = static_cast<float_t>(keyboard.mouse_R - keyboard.mouse_L) * 100.f;
+            chassisCmd.is_spin_on = true;
         }
-    }
-    */
 
     /******************* 云台手动控制 *******************/
     // if (pgimbal_) {
@@ -391,41 +356,37 @@ void CSystemCore::ControlFromController_() {
     }
 
     /******************* 底盘控制 *******************/
-    /* 副板无底盘，注释底盘控制代码
-    if (pchassis_) {
-        if (!pchassis_->chassisCmd.isAutoCtrl)
-        {
-            pchassis_->chassisCmd.speed_X *= 0.97f;
-            pchassis_->chassisCmd.speed_Y *= 0.98f;
-            pchassis_->chassisCmd.speed_W *= 0.98f;
-            if (abs(pchassis_->chassisCmd.speed_X) < 0.5f) pchassis_->chassisCmd.speed_X = 0.0f;
-            if (abs(pchassis_->chassisCmd.speed_Y) < 0.5f) pchassis_->chassisCmd.speed_Y = 0.0f;
-            if (abs(pchassis_->chassisCmd.speed_W) < 0.3f) pchassis_->chassisCmd.speed_W = 0.0f;
+    // 平滑更新角速度
+    chassisCmd.speed_w = chassisCmd.speed_w +
+    0.03f*(keyboard.mouse_X - chassisCmd.speed_w);
 
-            if (keyboard.key_Shift) {
-                pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 5.0f;
-                pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 5.0f;
-                pchassis_->chassisCmd.speed_W += static_cast<float_t>(keyboard.key_E - keyboard.key_Q) * 5.0f;
-                pchassis_->chassisCmd.speed_X =
-                std::clamp(pchassis_->chassisCmd.speed_X, -50.0f, 50.0f);
-                pchassis_->chassisCmd.speed_Y =
-                std::clamp(pchassis_->chassisCmd.speed_Y, -100.0f, 100.0f);
-                pchassis_->chassisCmd.speed_W =
-                std::clamp(pchassis_->chassisCmd.speed_W, -50.0f, 50.0f);
-            } else {
-                pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 0.8f;
-                pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 0.8f;
-                pchassis_->chassisCmd.speed_W += static_cast<float_t>(keyboard.key_E - keyboard.key_Q) * 0.4f;
-                pchassis_->chassisCmd.speed_X =
-                std::clamp(pchassis_->chassisCmd.speed_X, -20.0f, 20.0f);
-                pchassis_->chassisCmd.speed_Y =
-                std::clamp(pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
-                pchassis_->chassisCmd.speed_W =
-                std::clamp(pchassis_->chassisCmd.speed_W, -20.0f, 20.0f);
-            }
-        }
+    chassisCmd.speed_x *= 0.97f;
+    chassisCmd.speed_y *= 0.98f;
+    if (abs(chassisCmd.speed_x) < 0.5f) chassisCmd.speed_x = 0.0f;
+    if (abs(chassisCmd.speed_y) < 0.5f) chassisCmd.speed_y = 0.0f;
+
+    if (keyboard.key_Shift) {
+        chassisCmd.speed_x += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 5.0f;   ///<通过差值来实现一行代码实现左右转弯
+        chassisCmd.speed_y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 5.0f;
+        chassisCmd.speed_x =
+        std::clamp(chassisCmd.speed_x, -50.0f, 50.0f);
+        chassisCmd.speed_y =
+        std::clamp(chassisCmd.speed_y, -100.0f, 100.0f);
+    } else {
+        chassisCmd.speed_x += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 1.0f;
+        chassisCmd.speed_y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 1.0f;
+        chassisCmd.speed_x =
+        std::clamp(chassisCmd.speed_x, -20.0f, 20.0f);
+        chassisCmd.speed_y =
+        std::clamp(chassisCmd.speed_y, -50.0f, 50.0f);
+    }    
+
+    // 开关小陀螺  (G键)
+    if (keyboard.key_G
+        //  && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE        // 在自动任务中也允许开关小陀螺
+    ) {
+        chassisCmd.is_spin_on = !chassisCmd.is_spin_on;
     }
-    */
 
     /******************* 机械臂 *******************/
     //  if (controller.return_success) {

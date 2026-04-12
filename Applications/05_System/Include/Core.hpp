@@ -71,6 +71,15 @@ private:
 
     TaskHandle_t autoCtrlTaskHandle_ = nullptr;
 
+    // 底盘控制指令
+    struct SChassisCmd {
+        float_t speed_x = 0.f;  // 横向速度
+        float_t speed_y = 0.f;  // 前进速度
+        float_t speed_w = 0.f;  // 旋转速度
+
+        EVarStatus is_spin_on = false;  // 开启小陀螺
+    }chassisCmd;
+
     // 定义系统核心的更新处理
     void UpdateHandler_();
 
@@ -87,11 +96,19 @@ private:
     EAppStatus StartAutoCtrlTask_(EAutoCtrlProcess process);
     EAppStatus StopAutoCtrlTask_();
 
-
     void StartRobot(bool if_remote_control, bool I_dont_have_a_remote = false);
 
     // 软件复位
     void RESET_SYSTEM();
+
+    // 获取板通信息
+    void BoardLink_Info_Update_();
+
+    // 底盘指令更新
+    void Chassis_UpdateHandler_();
+
+    // 限制底盘命令
+    void RestrictChassisCmd_();
 
     // 声明自动操作的任务函数
     // 以下任务函数已注释（对应流程文件已删除）

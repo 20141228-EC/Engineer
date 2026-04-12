@@ -57,7 +57,7 @@ int main() {
 
   #ifdef rp_USE_DCACHE
   SCB_EnableDCache();
-  #endif
+  #endif                              
 
   /* HAL Library Initialize */
   HAL_Init();

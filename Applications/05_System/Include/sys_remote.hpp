@@ -1,11 +1,11 @@
 /**
  * @file sys_remote.hpp
- * @author Fish_Joe (2328339747@qq.com)
+ * @author sllllr (2997708711@qq.com)
  * @brief 定义遥控器系统
  * @version 1.0
- * @date 2024-11-10
+ * @date 2026-01-11
  * 
- * @copyright Copyright (c) 2024
+ * @copyright Copyright (c) 2026
  * 
  */
 
@@ -34,13 +34,32 @@ public:
 
     // Remote信息结构体
     struct SRemoteInfo {
-        float_t joystick_LX = 0;
-        float_t joystick_LY = 0;
-        float_t joystick_RX = 0;
-        float_t joystick_RY = 0;
-        float_t thumbWheel = 0;
-        uint8_t switch_L = 0;
-        uint8_t switch_R = 0;
+        float_t joystick_LX = 0;    ///< 左摇杆x轴
+        float_t joystick_LY = 0;    ///< 左摇杆y轴
+        float_t joystick_RX = 0;    ///< 右摇杆x轴
+        float_t joystick_RY = 0;    ///< 右摇杆y轴
+        float_t thumbWheel = 0;     ///< 拨轮（向上负，向下正）
+        uint8_t switch_L = 0;       ///< 左拨杆
+        uint8_t switch_R = 0;       ///< 右拨杆
+    };
+
+    // 边沿信息枚举变量
+    enum class ERemoteEdge{
+        RESET = -1, ///< 重置
+        NONE,       ///< 无边沿
+        Rising,     ///< 上升沿(0-1)
+        Falling,    ///< 下降沿(1-0)
+    };
+    
+    // Remote边沿信息结构体
+    struct SRemoteEdge{
+        ERemoteEdge joystick_LX = ERemoteEdge::RESET;   ///< 左摇杆x轴
+        ERemoteEdge joystick_LY = ERemoteEdge::RESET;   ///< 左摇杆y轴
+        ERemoteEdge joystick_RX = ERemoteEdge::RESET;   ///< 右摇杆x轴
+        ERemoteEdge joystick_RY = ERemoteEdge::RESET;   ///< 右摇杆y轴
+        ERemoteEdge thumbWheel = ERemoteEdge::RESET;    ///< 拨轮
+        ERemoteEdge switch_L = ERemoteEdge::RESET;    ///< 左摇杆
+        ERemoteEdge switch_R = ERemoteEdge::RESET;    ///< 右摇杆
     };
 
     // Keyboard信息结构体
@@ -48,30 +67,54 @@ public:
         int16_t mouse_X = 0;
         int16_t mouse_Y = 0;
         int16_t mouse_Thumb = 0;
-        bool mouse_L = false;
-        bool mouse_R = false;
-        bool key_W = false;
-        bool key_A = false;
-        bool key_S = false;
-        bool key_D = false;
-        bool key_Q = false;
-        bool key_E = false;
-        bool key_R = false;
-        bool key_F = false;
-        bool key_G = false;
-        bool key_Z = false;
-        bool key_X = false;
-        bool key_C = false;
-        bool key_V = false;
-        bool key_B = false;
-        bool key_Ctrl = false;
-        bool key_Shift = false;
+        bool mouse_L = false;   ///< 鼠标左键
+        bool mouse_R = false;   ///< 鼠标右键
+        bool key_W = false;     ///< W键
+        bool key_A = false;     ///< A键
+        bool key_S = false;     ///< S键
+        bool key_D = false;     ///< D键
+        bool key_Q = false;     ///< Q键
+        bool key_E = false;     ///< E键
+        bool key_R = false;     ///< R键
+        bool key_F = false;     ///< F键
+        bool key_G = false;     ///< G键
+        bool key_Z = false;     ///< Z键
+        bool key_X = false;     ///< X键
+        bool key_C = false;     ///< C键
+        bool key_V = false;     ///< V键
+        bool key_B = false;     ///< B键
+        bool key_Ctrl = false;  ///< ctrl键
+        bool key_Shift = false; ///< shift键
+    };
+
+    // Keyboard边沿信息结构体
+    struct SKeyboardEdge {
+        ERemoteEdge mouse_L = ERemoteEdge::RESET;   ///< 鼠标左键
+        ERemoteEdge mouse_R = ERemoteEdge::RESET;   ///< 鼠标右键
+        ERemoteEdge key_W = ERemoteEdge::RESET;     ///< W键
+        ERemoteEdge key_A = ERemoteEdge::RESET;     ///< A键
+        ERemoteEdge key_S = ERemoteEdge::RESET;     ///< S键
+        ERemoteEdge key_D = ERemoteEdge::RESET;     ///< D键
+        ERemoteEdge key_Q = ERemoteEdge::RESET;     ///< Q键
+        ERemoteEdge key_E = ERemoteEdge::RESET;     ///< E键
+        ERemoteEdge key_R = ERemoteEdge::RESET;     ///< R键
+        ERemoteEdge key_F = ERemoteEdge::RESET;     ///< F键
+        ERemoteEdge key_G = ERemoteEdge::RESET;     ///< G键
+        ERemoteEdge key_Z = ERemoteEdge::RESET;     ///< Z键
+        ERemoteEdge key_X = ERemoteEdge::RESET;     ///< X键
+        ERemoteEdge key_C = ERemoteEdge::RESET;     ///< C键
+        ERemoteEdge key_V = ERemoteEdge::RESET;     ///< V键
+        ERemoteEdge key_B = ERemoteEdge::RESET;     ///< B键
+        ERemoteEdge key_Ctrl = ERemoteEdge::RESET;  ///< ctrl键
+        ERemoteEdge key_Shift = ERemoteEdge::RESET; ///< shift键
     };
 
     // 定义遥控器信息包结构体并实例化
     struct SremoteInfoPackage {
         SRemoteInfo remote;
+        SRemoteEdge remote_edge;    // 遥控器边沿
         SKeyboardInfo keyboard;
+        SKeyboardEdge keyboard_edge;    // 键鼠边沿
     } remoteInfo;
 
     // 初始化系统
@@ -110,6 +153,10 @@ private:
     float_t remoteDeadZone_ = 0;
 
     EAppStatus UpdateRemote_with_deadzone_();
+
+    EAppStatus UpdateRemote_Edge_();
+
+    EAppStatus UpdateKeyboard_Edge_();
 
 };
 

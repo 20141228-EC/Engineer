@@ -76,7 +76,7 @@ EAppStatus CModGimbal::CComYaw::UpdateComponent() {
 	static float_t Init_Encoder_Posit_MACH = 0.f;
 
 	yawInfo.posit = filter->Imu_Ave_Info.imu_ave_yaw - Init_Encoder_Posit_MACH;	// 由于每次重新上电yaw的角度都为0，因此这里做一个特殊处理
-	yawInfo.encoder = motor->motorData[CDevMtr::DATA_POSIT] * GIMBAL_YAW_MOTOR_DIR;
+	yawInfo.encoder = HalfCycle(motor->motorData[CDevMtr::DATA_POSIT] - GINBAL_FRONT_MOTOR_ANGLE, static_cast<int32_t>(65535));	// 将encoder归一化在朝前为0
 	yawInfo.isPositArrived = (fabs(yawInfo.posit - yawCmd.setPosit) < 3.0f);
 
 	switch (Component_FSMFlag_) {
@@ -93,12 +93,13 @@ EAppStatus CModGimbal::CComYaw::UpdateComponent() {
 		}
 
 		case FSM_INIT: {
-			if (fabs(yawInfo.encoder - yawCmd.setEncoder) < 500) {		///< 阈值姑且定为500 后续再改
+			// if (fabs(yawInfo.encoder - yawCmd.setEncoder) < 500) {		///< 阈值姑且定为500 后续再改
 				Init_Encoder_Posit_MACH = filter->Imu_Ave_Info.imu_ave_yaw;	///< 初始化完成记录当前yaw角度
 				Component_FSMFlag_ = FSM_CTRL;
-				componentStatus = APP_OK;
-			}
+				componentStatus = APP_OK;	// 用于调试，先把到位条件注释掉，直接进ctrl，等调完pid再搞回来
+			// }
 			_UpdateOutput_Mec(static_cast<float_t>(yawCmd.setEncoder));
+			// yawCmd.setPosit = filter->Imu_Ave_Info.imu_ave_yaw; // 如果上面那个特殊处理不好用，可以用这个
 			return APP_OK;
 		}
 

@@ -31,7 +31,6 @@ EAppStatus CModGimbal::InitModule(SModInitParam_Base &param){
 
 	// 初始化云台
 	comYaw_.InitComponent(param);
-	comStorage_.InitComponent(param);
 
 	// 创建任务并注册模块
 	CreateModuleTask_();
@@ -56,15 +55,11 @@ void CModGimbal::UpdateHandler_(){
 
 	// 更新所有组件
 	comYaw_.UpdateComponent();
-	comStorage_.UpdateComponent();
 
 	// 更新模块信息
 	gimbalInfo.posit_yaw = comYaw_.yawInfo.posit;
 	gimbalInfo.encoder_yaw = comYaw_.yawInfo.encoder;
 	gimbalInfo.isPositArrived_Yaw = comYaw_.yawInfo.isPositArrived;
-	gimbalInfo.isPositArrived_Storage = (comStorage_.storageInfo.isPositArrived_B && comStorage_.storageInfo.isPositArrived_F);
-	// gimbalInfo.isPositArrived_Lift = comLift_.liftInfo.isPositArrived;
-	// gimbalInfo.isPositArrived_Pitch = comPitch_.pitchInfo.isPositArrived;
 
 	// 填充数据发送缓冲区
     if (comYaw_.motor != nullptr && comYaw_.mtrCanTxNode != nullptr) {
@@ -72,27 +67,6 @@ void CModGimbal::UpdateHandler_(){
                                     comYaw_.mtrCanTxNode->dataBuffer,
                                     comYaw_.mtrOutputBuffer);
     }
-	
-	// 填充数据发送缓冲区 - 存矿前电机
-    if (comStorage_.motor[CComStorage::F] != nullptr && comStorage_.mtrCanTxNode[CComStorage::F] != nullptr) {
-        CDevMtrDJI::FillCanTxBuffer(comStorage_.motor[CComStorage::F],
-                                    comStorage_.mtrCanTxNode[CComStorage::F]->dataBuffer,
-                                    comStorage_.mtrOutputBuffer[CComStorage::F]);
-    }
-
-	// 填充数据发送缓冲区 - 存矿后电机
-    if (comStorage_.motor[CComStorage::B] != nullptr && comStorage_.mtrCanTxNode[CComStorage::B] != nullptr) {
-        CDevMtrDJI::FillCanTxBuffer(comStorage_.motor[CComStorage::B],
-                                    comStorage_.mtrCanTxNode[CComStorage::B]->dataBuffer,
-                                    comStorage_.mtrOutputBuffer[CComStorage::B]);
-    }
-
-	// // 填充数据发送缓冲区 - 俯仰电机
-    // if (comPitch_.motor != nullptr && comPitch_.mtrCanTxNode != nullptr) {
-    //     CDevMtrDJI::FillCanTxBuffer(comPitch_.motor,
-    //                                 comPitch_.mtrCanTxNode->dataBuffer,
-    //                                 comPitch_.mtrOutputBuffer[0]);
-    // }
 }
 
 /**
@@ -137,12 +111,8 @@ EAppStatus CModGimbal::RestrictGimbalCommand_(){
 	// gimbalCmd.set_posit_storage =
 	// 	std::clamp(gimbalCmd.set_posit_lift, 0.0f, GIMBAL_STORAGE_PHYSICAL_RANGE);
 
-	// 限制俯仰控制命令
-	gimbalCmd.set_posit_pitch =
-		std::clamp(gimbalCmd.set_posit_pitch, 0.0f, GIMBAL_PITCH_PHYSICAL_RANGE);
-
 	gimbalCmd.set_posit_yaw = 
-		std::clamp(gimbalCmd.set_posit_yaw, -180.f, 180.f);
+		HalfCycle(gimbalCmd.set_posit_yaw, 360.f);
 
 	// 自动控制启用，则不继续做限制
 	if (gimbalCmd.isAutoCtrl) return APP_OK;

@@ -168,13 +168,13 @@ EAppStatus InitAllModule() {
     CModGimbal::SModInitParam_Gimbal gimbalInitParam;
     gimbalInitParam.moduleID = EModuleID::MOD_GIMBAL;
     gimbalInitParam.yawMotorID = EDeviceID::DEV_GIMBAL_MTR_YAW;
-    gimbalInitParam.storageMotorID_B = EDeviceID::DEV_GIMBAL_MTR_STORAGE_B;
-    gimbalInitParam.storageMotorID_F = EDeviceID::DEV_GIMBAL_MTR_STORAGE_F;
-    gimbalInitParam.pitchMotorID = EDeviceID::DEV_GIMBAL_MTR_PITCH;
+    // gimbalInitParam.storageMotorID_B = EDeviceID::DEV_GIMBAL_MTR_STORAGE_B;
+    // gimbalInitParam.storageMotorID_F = EDeviceID::DEV_GIMBAL_MTR_STORAGE_F;
+    // gimbalInitParam.pitchMotorID = EDeviceID::DEV_GIMBAL_MTR_PITCH;
     gimbalInitParam.MotorTxNode_Yaw = &TxNode_Can3_280;
-    gimbalInitParam.storageMotorTxNode_F = &TxNode_Can1_1FF;
-    gimbalInitParam.storageMotorTxNode_B = &TxNode_Can1_1FF;
-    gimbalInitParam.pitchMotorTxNode = &TxNode_Can1_1FF;
+    // gimbalInitParam.storageMotorTxNode_F = &TxNode_Can1_1FF;
+    // gimbalInitParam.storageMotorTxNode_B = &TxNode_Can1_1FF;
+    // gimbalInitParam.pitchMotorTxNode = &TxNode_Can1_1FF;
     gimbalInitParam.FilterID = EAlgoID::ALGO_IMU_AVE;
     gimbalInitParam.memsDevID = EDeviceID::DEV_MEMS_BMI088;
     // 初始化pid参数
@@ -200,28 +200,28 @@ EAppStatus InitAllModule() {
     gimbalInitParam.YawSpdPidParam_Mec.maxIntegral = 2000.0f;
     gimbalInitParam.YawSpdPidParam_Mec.maxOutput = 3000.0f;   ///< pid参数待调
 
-    // 初始化存矿电机参数，双电机用同一套参数
-    gimbalInitParam.storagePosPidParam.kp = 0.f;
-    gimbalInitParam.storagePosPidParam.ki = 0.0f;
-    gimbalInitParam.storagePosPidParam.kd = 0.f;
-    gimbalInitParam.storagePosPidParam.maxOutput = 4500.0f;
+    // // 初始化存矿电机参数，双电机用同一套参数
+    // gimbalInitParam.storagePosPidParam.kp = 0.f;
+    // gimbalInitParam.storagePosPidParam.ki = 0.0f;
+    // gimbalInitParam.storagePosPidParam.kd = 0.f;
+    // gimbalInitParam.storagePosPidParam.maxOutput = 4500.0f;
 
-    gimbalInitParam.storageSpdPidParam.kp = 0.0f;
-    gimbalInitParam.storageSpdPidParam.ki = 0.f;
-    gimbalInitParam.storageSpdPidParam.kd = 0.0f;
-    gimbalInitParam.storageSpdPidParam.maxIntegral = 2000.0f;
-    gimbalInitParam.storageSpdPidParam.maxOutput = 3000.0f;
+    // gimbalInitParam.storageSpdPidParam.kp = 0.0f;
+    // gimbalInitParam.storageSpdPidParam.ki = 0.f;
+    // gimbalInitParam.storageSpdPidParam.kd = 0.0f;
+    // gimbalInitParam.storageSpdPidParam.maxIntegral = 2000.0f;
+    // gimbalInitParam.storageSpdPidParam.maxOutput = 3000.0f;
 
-    // 俯仰参数
-    gimbalInitParam.pitchPosPidParam.kp = 0.f;
-    gimbalInitParam.pitchPosPidParam.ki = 0.0f;
-    gimbalInitParam.pitchPosPidParam.kd = 0.f;
-    gimbalInitParam.pitchPosPidParam.maxOutput = 4500.0f;
-    gimbalInitParam.pitchSpdPidParam.kp = 0.f;
-    gimbalInitParam.pitchSpdPidParam.ki = 0.f;
-    gimbalInitParam.pitchSpdPidParam.kd = 0.0f;
-    gimbalInitParam.pitchSpdPidParam.maxIntegral = 2000.0f;
-    gimbalInitParam.pitchSpdPidParam.maxOutput = 3000.0f;
+    // // 俯仰参数
+    // gimbalInitParam.pitchPosPidParam.kp = 0.f;
+    // gimbalInitParam.pitchPosPidParam.ki = 0.0f;
+    // gimbalInitParam.pitchPosPidParam.kd = 0.f;
+    // gimbalInitParam.pitchPosPidParam.maxOutput = 4500.0f;
+    // gimbalInitParam.pitchSpdPidParam.kp = 0.f;
+    // gimbalInitParam.pitchSpdPidParam.ki = 0.f;
+    // gimbalInitParam.pitchSpdPidParam.kd = 0.0f;
+    // gimbalInitParam.pitchSpdPidParam.maxIntegral = 2000.0f;
+    // gimbalInitParam.pitchSpdPidParam.maxOutput = 3000.0f;
 
     // 使用初始化后的参数创建 gimbalModule 实例
     static auto gimbalModule = CModGimbal(gimbalInitParam);

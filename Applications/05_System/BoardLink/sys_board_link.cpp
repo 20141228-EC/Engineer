@@ -1,13 +1,13 @@
 /**
  * @file sys_board_link.cpp
- * @author Ciallo～(∠·ω< )⌒☆(1002046597@qq.com)
+ * @author sllllr (2997708711@qq.com)
  * @brief 板间通信系统层源文件
  * @version 1.0
- * @date 2025-12-11
+ * @date 2026-04-11
  *
  * @details 封装板间通信设备，提供统一的遥控器数据接口
  *
- * @copyright Copyright (c) 2025
+ * @copyright Copyright (c) 2026
  *
  */
 
@@ -84,12 +84,11 @@ void CSystemBoardLink::UpdateHandler_() {
     // 检查系统状态
     if (systemStatus != APP_OK) return;
 
-    UpdateRemoteData_();
-    UpdateCtrlFlags_();
+    UpdateCtrlInfos_();
 
-    // 发送反馈给主板
+    // 发送信息
     if (pBoardLinkDev_ != nullptr) {
-        pBoardLinkDev_->FillFeedbackBuffer();
+        pBoardLinkDev_->SendPackage();
     }
 }
 
@@ -102,69 +101,33 @@ void CSystemBoardLink::HeartbeatHandler_() {
     if (systemStatus == APP_RESET) return;
     if (pBoardLinkDev_ == nullptr) return;
 
-    // 根据设备通信状态更新系统状态
-    if (pBoardLinkDev_->linkStatus == CDevBoardLink::EBoardLinkStatus::ONLINE) {
+    // // 根据设备通信状态更新系统状态
+    // if (pBoardLinkDev_->linkStatus == CDevBoardLink::EBoardLinkStatus::ONLINE) {
         systemStatus = APP_OK;
-    } else {
-        systemStatus = APP_ERROR;
-    }
+    // } else {
+    //     systemStatus = APP_ERROR;
+    // }
 }
 
 /**
- * @brief 更新遥控器数据
- * @note  将设备层的原始摇杆值转换为系统层格式
- *        主板发送值 × 3 ÷ 100 = 原始摇杆值 (-660 ~ 660)
- *        原始摇杆值 ÷ 6.6 = 百分比值 (-100 ~ 100)
- *        合并计算: 接收值 ÷ 220 = 百分比值
+ * @brief 更新控制信息
+ * @note  填充设备层的控制信息包
  *
  * @return EAppStatus 更新状态
  */
-EAppStatus CSystemBoardLink::UpdateRemoteData_() {
+EAppStatus CSystemBoardLink::UpdateCtrlInfos_() {
 
     if (pBoardLinkDev_ == nullptr) return APP_ERROR;
 
-    // 转换摇杆数据: 接收值 * 3 / 100 / 6.6 = 接收值 / 220
-    constexpr float_t kJoystickScale = 220.0f;
-    remoteInfo.joystick_RX = static_cast<float_t>(pBoardLinkDev_->remoteJoystick1.joystick_RX) / kJoystickScale;
-    remoteInfo.joystick_RY = static_cast<float_t>(pBoardLinkDev_->remoteJoystick1.joystick_RY) / kJoystickScale;
-    remoteInfo.joystick_LX = static_cast<float_t>(pBoardLinkDev_->remoteJoystick1.joystick_LX) / kJoystickScale;
-    remoteInfo.joystick_LY = static_cast<float_t>(pBoardLinkDev_->remoteJoystick2.joystick_LY) / kJoystickScale;
-    remoteInfo.thumbWheel  = static_cast<float_t>(pBoardLinkDev_->remoteJoystick2.thumbWheel) / kJoystickScale;
+    const auto &infos = pBoardLinkDev_->ctrlInfo_;
 
-    // 拨杆状态（直接复制，值为1/2/3）
-    remoteInfo.switch_L = pBoardLinkDev_->remoteJoystick2.switch_L;
-    remoteInfo.switch_R = pBoardLinkDev_->remoteJoystick2.switch_R;
+    // 控制信息
+    pBoardLinkDev_->ctrlInfo_.remote_is_online = ctrlInfos.remote_is_online;
+    pBoardLinkDev_->ctrlInfo_.speed_x = ctrlInfos.speed_x;
+    pBoardLinkDev_->ctrlInfo_.speed_y = ctrlInfos.speed_y;
+    pBoardLinkDev_->ctrlInfo_.speed_w = ctrlInfos.speed_w;
 
-    return APP_OK;
-}
-
-/**
- * @brief 更新控制标志
- * @note  解析设备层的控制标志包
- *
- * @return EAppStatus 更新状态
- */
-EAppStatus CSystemBoardLink::UpdateCtrlFlags_() {
-
-    if (pBoardLinkDev_ == nullptr) return APP_ERROR;
-
-    const auto &flags = pBoardLinkDev_->ctrlFlags;
-
-    // 控制模式
-    ctrlFlags.chassis_ctrl    = flags.chassis_ctrl;
-    ctrlFlags.gimbal_ctrl     = flags.gimbal_ctrl;
-    ctrlFlags.arm_front_ctrl  = flags.arm_front_ctrl;
-    ctrlFlags.arm_rear_ctrl   = flags.arm_rear_ctrl;
-
-    // 使能标志
-    ctrlFlags.arm_enable      = flags.arm_enable;
-    ctrlFlags.gimbal_enable   = flags.gimbal_enable;
-    ctrlFlags.chassis_enable  = flags.chassis_enable;
-
-    // 状态标志
-    ctrlFlags.rc_online       = flags.rc_online;
-    ctrlFlags.is_rc_ctrl      = flags.is_rc_ctrl;
-    ctrlFlags.is_key_ctrl     = flags.is_key_ctrl;
+    pBoardLinkDev_->ctrlInfo_.reserved = 0;
 
     return APP_OK;
 }

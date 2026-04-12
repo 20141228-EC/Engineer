@@ -204,27 +204,19 @@ void CSystemCore::UpdateHandler_() {
         {
             ControlFromRemote_();
         }
+
+        Chassis_UpdateHandler_();
+        RestrictChassisCmd_();
     }
+
+    BoardLink_Info_Update_();
+    
     last_use_Controller = use_Controller_;
     
     if (SysRemote.ResetFlag)
     {
         RESET_SYSTEM();
     }
-
-    // 删除拇指轮控制气泵代码
-    /* if (psubgantry_) {
-         if (SysRemote.remoteInfo.remote.thumbWheel > 50) {
-            psubgantry_->subGantryCmd.setPumpOn_Left = true;
-            psubgantry_->subGantryCmd.setPumpOn_Right = true;
-            psubgantry_->subGantryCmd.setPumpOn_Arm = true;
-        }
-        else if (SysRemote.remoteInfo.remote.thumbWheel < -50) {
-            psubgantry_->subGantryCmd.setPumpOn_Left = false;
-            psubgantry_->subGantryCmd.setPumpOn_Right = false;
-            psubgantry_->subGantryCmd.setPumpOn_Arm = false;
-        }
-     }*/
 
 }
 
@@ -385,5 +377,67 @@ EAppStatus CSystemCore::StopAutoCtrlTask_() {
     return APP_OK;
 }
 
+/**
+ * @brief 更新板通系统层
+ * 
+ * @retval null
+ */
+void CSystemCore::BoardLink_Info_Update_(){
+    // 检查系统核心状态
+    if (coreStatus == APP_RESET) return;
+
+    // 数据更新
+    SysBoardLink.ctrlInfos.remote_is_online = SysRemote.systemStatus;
+    SysBoardLink.ctrlInfos.speed_x = static_cast<int16_t>(CSystemCore::chassisCmd.speed_x * 80);
+    SysBoardLink.ctrlInfos.speed_y = static_cast<int16_t>(CSystemCore::chassisCmd.speed_y * 80);
+    SysBoardLink.ctrlInfos.speed_w = static_cast<int16_t>(CSystemCore::chassisCmd.speed_w * 40);
+
+    SysBoardLink.ctrlInfos.reserved = 0;
+
+}
+
+/**
+ * @brief 更新底盘控制指令
+ * @note 由于只有陀螺仪和小陀螺模式，因此在这个函数里面根据云台角度计算底盘前进方向
+ * 
+ */
+void CSystemCore::Chassis_UpdateHandler_(){
+    if(pgimbal_->gimbalInfo.isModuleAvailable){
+        float_t front = chassisCmd.speed_y;
+        float_t right = chassisCmd.speed_x;
+        float_t cycle = chassisCmd.speed_w;
+
+        float_t yaw_angle = pgimbal_->gimbalInfo.encoder_yaw / 32768.f * 3.1415926;     // 归一到-pi~pi之间
+        if(chassisCmd.is_spin_on){
+            cycle = fabs(sin(HAL_GetTick() * 3.1415926) * 30);
+            cycle = std::clamp(cycle, 0.f, 30.f);     // 变速小陀螺，但是限制最低速度
+        }
+        else{
+            cycle = std::clamp(yaw_angle * 50, 100.f, 100.f);    // magic number,后续需要调整
+        }   // 开小陀螺与否
+        chassisCmd.speed_y = front * cos(yaw_angle) - right * sin(yaw_angle);
+        chassisCmd.speed_x = right * cos(yaw_angle) + front * sin(yaw_angle);   // 根据云台角度计算底盘运动正方向
+        chassisCmd.speed_w = cycle;
+    }
+    else{
+        chassisCmd.speed_x = 0;
+        chassisCmd.speed_y = 0;
+        chassisCmd.speed_w = 0; // 云台没初始化完底盘不给动
+    }
+
+}
+
+/**
+ * @brief 限制底盘控制指令
+ * 
+ */
+void CSystemCore::RestrictChassisCmd_(){
+    CSystemCore::chassisCmd.speed_x = 
+        std::clamp<int16_t>(CSystemCore::chassisCmd.speed_x, -100, 100);
+    CSystemCore::chassisCmd.speed_y = 
+        std::clamp<int16_t>(CSystemCore::chassisCmd.speed_y, -100, 100);
+    CSystemCore::chassisCmd.speed_w = 
+        std::clamp<int16_t>(CSystemCore::chassisCmd.speed_w, -100, 100);
+}
 
 }   // namespace my_engineer
