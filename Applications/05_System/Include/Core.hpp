@@ -71,7 +71,7 @@ private:
 
     TaskHandle_t autoCtrlTaskHandle_ = nullptr;
 
-    // 底盘控制指令
+    // 底盘控制指令(由操作手决定)
     struct SChassisCmd {
         float_t speed_x = 0.f;  // 横向速度
         float_t speed_y = 0.f;  // 前进速度
@@ -79,6 +79,15 @@ private:
 
         EVarStatus is_spin_on = false;  // 开启小陀螺
     }chassisCmd;
+
+    // 底盘控制指令(根据转系处理之后最终发给下板)
+    struct Core
+    {
+        float_t speed_x_ = 0.f;
+        float_t speed_y_ = 0.f;
+        float_t speed_w_ = 0.f;
+    }chassisCmd_;
+    
 
     // 定义系统核心的更新处理
     void UpdateHandler_();

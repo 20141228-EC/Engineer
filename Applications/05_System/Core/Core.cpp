@@ -388,9 +388,9 @@ void CSystemCore::BoardLink_Info_Update_(){
 
     // 数据更新
     SysBoardLink.ctrlInfos.remote_is_online = SysRemote.systemStatus;
-    SysBoardLink.ctrlInfos.speed_x = static_cast<int16_t>(CSystemCore::chassisCmd.speed_x * 80);
-    SysBoardLink.ctrlInfos.speed_y = static_cast<int16_t>(CSystemCore::chassisCmd.speed_y * 80);
-    SysBoardLink.ctrlInfos.speed_w = static_cast<int16_t>(CSystemCore::chassisCmd.speed_w * 40);
+    SysBoardLink.ctrlInfos.speed_x = static_cast<int16_t>(CSystemCore::chassisCmd_.speed_x_ * 80);
+    SysBoardLink.ctrlInfos.speed_y = static_cast<int16_t>(CSystemCore::chassisCmd_.speed_y_ * 80);
+    SysBoardLink.ctrlInfos.speed_w = static_cast<int16_t>(CSystemCore::chassisCmd_.speed_w_ * 40);
 
     SysBoardLink.ctrlInfos.reserved = 0;
 
@@ -409,20 +409,20 @@ void CSystemCore::Chassis_UpdateHandler_(){
 
         float_t yaw_angle = pgimbal_->gimbalInfo.encoder_yaw / 32768.f * 3.1415926;     // 归一到-pi~pi之间
         if(chassisCmd.is_spin_on){
-            cycle = fabs(sin(HAL_GetTick() * 3.1415926) * 30);
+            cycle = fabs(sin(HAL_GetTick() / 1000.f * 3.1415926) * 30);
             cycle = std::clamp(cycle, 0.f, 30.f);     // 变速小陀螺，但是限制最低速度
         }
         else{
-            cycle = std::clamp(yaw_angle * 50, 100.f, 100.f);    // magic number,后续需要调整
+            cycle = std::clamp(yaw_angle * 50, -100.f, 100.f);    // magic number,后续需要调整
         }   // 开小陀螺与否
-        chassisCmd.speed_y = front * cos(yaw_angle) - right * sin(yaw_angle);
-        chassisCmd.speed_x = right * cos(yaw_angle) + front * sin(yaw_angle);   // 根据云台角度计算底盘运动正方向
-        chassisCmd.speed_w = cycle;
+        chassisCmd_.speed_y_ = front * cos(yaw_angle) - right * sin(yaw_angle);
+        chassisCmd_.speed_x_ = right * cos(yaw_angle) + front * sin(yaw_angle);   // 根据云台角度计算底盘运动正方向
+        chassisCmd_.speed_w_ = cycle;
     }
     else{
-        chassisCmd.speed_x = 0;
-        chassisCmd.speed_y = 0;
-        chassisCmd.speed_w = 0; // 云台没初始化完底盘不给动
+        chassisCmd_.speed_x_ = 0;
+        chassisCmd_.speed_y_ = 0;
+        chassisCmd_.speed_w_ = 0; // 云台没初始化完底盘不给动
     }
 
 }
@@ -432,12 +432,23 @@ void CSystemCore::Chassis_UpdateHandler_(){
  * 
  */
 void CSystemCore::RestrictChassisCmd_(){
+
+    // 操作手指令限幅
     CSystemCore::chassisCmd.speed_x = 
-        std::clamp<int16_t>(CSystemCore::chassisCmd.speed_x, -100, 100);
+        std::clamp<float_t >(CSystemCore::chassisCmd.speed_x, -100.f, 100.f);
     CSystemCore::chassisCmd.speed_y = 
-        std::clamp<int16_t>(CSystemCore::chassisCmd.speed_y, -100, 100);
+        std::clamp<float_t >(CSystemCore::chassisCmd.speed_y, -100.f, 100.f);
     CSystemCore::chassisCmd.speed_w = 
-        std::clamp<int16_t>(CSystemCore::chassisCmd.speed_w, -100, 100);
+        std::clamp<float_t >(CSystemCore::chassisCmd.speed_w, -100.f, 100.f);
+
+    // 最终发送指令限幅
+    CSystemCore::chassisCmd_.speed_x_ = 
+        std::clamp<float_t >(CSystemCore::chassisCmd_.speed_x_, -100.f, 100.f);
+    CSystemCore::chassisCmd_.speed_y_ = 
+        std::clamp<float_t >(CSystemCore::chassisCmd_.speed_y_, -100.f, 100.f);
+    CSystemCore::chassisCmd_.speed_w_ = 
+        std::clamp<float_t >(CSystemCore::chassisCmd_.speed_w_, -100.f, 100.f);
+
 }
 
 }   // namespace my_engineer
