@@ -22,19 +22,19 @@
 
 namespace my_engineer {
 
-/*------------------------------ 状态标志位定义 ------------------------------*/
-// ControllerData (控制器 -> 机器人)
-#define STATUS_CONTROLLER_OK      (1 << 0)  // bit0: 控制器状态OK
-#define STATUS_RETURN_SUCCESS     (1 << 1)  // bit1: 归位成功标志
-#define STATUS_TOGGLE_MASK        (0x03 << 2)  // bit2-3: 拨杆档位 (0-3)
-#define STATUS_TOGGLE_SHIFT       2
-#define STATUS_GRIPPER            (1 << 4)  // bit4: 夹爪闭合
-#define STATUS_REGRIP             (1 << 5)  // bit5: 夹爪二次夹紧请求（脉冲）
+// /*------------------------------ 状态标志位定义 ------------------------------*/
+// // ControllerData (控制器 -> 机器人)
+// #define STATUS_CONTROLLER_OK      (1 << 0)  // bit0: 控制器状态OK
+// #define STATUS_RETURN_SUCCESS     (1 << 1)  // bit1: 归位成功标志
+// #define STATUS_TOGGLE_MASK        (0x03 << 2)  // bit2-3: 拨杆档位 (0-3)
+// #define STATUS_TOGGLE_SHIFT       2
+// #define STATUS_GRIPPER            (1 << 4)  // bit4: 夹爪闭合
+// #define STATUS_REGRIP             (1 << 5)  // bit5: 夹爪二次夹紧请求（脉冲）
 
-// RobotData (机器人 -> 控制器)
-#define STATUS_ASK_RESET          (1 << 0)  // bit0: 要求复位
-#define STATUS_CONTROLLED         (1 << 1)  // bit1: 被控制器控制中
-#define STATUS_ROBOT_INIT_OK      (1 << 4)  // bit4: 机器人初始化完成
+// // RobotData (机器人 -> 控制器)
+// #define STATUS_ASK_RESET          (1 << 0)  // bit0: 要求复位
+// #define STATUS_CONTROLLED         (1 << 1)  // bit1: 被控制器控制中
+// #define STATUS_ROBOT_INIT_OK      (1 << 4)  // bit4: 机器人初始化完成
 
 /**
  * @brief 臂部角度结构体（5轴，浮点直传，用于 ControllerDataPkg）
@@ -104,19 +104,29 @@ public:
 	} __packed; //禁止编译器的内存对齐优化
 
 	/**
-	 * @brief 控制器数据包 (Controller -> Robot)
-	 * 数据段大小: 30 bytes (满足30字节限制)
-	 * 完整包大小: 7(header) + 30(data) + 2(CRC16) = 39 bytes
+	 * @brief 机器人状态控制包
+	 * 数据段大小: 1 bytes 
 	 */
-	struct SControllerDataPkg {
-		SPkgHeader header;
-		uint8_t status_flags = 0;           ///< 状态标志位 (bit-packed)      1B
-		SArmAnglesPkg arm;                  ///< 单臂5轴角度 (float)          24B
-		int8_t rocker_X = 0;                ///< 摇杆X (-100~100)             1B
-		int8_t rocker_Y = 0;                ///< 摇杆Y (-100~100)             1B
-		uint8_t reserved[3] = {0};          ///< 保留字段                      7B
-		uint16_t CRC16 = 0x0000;            ///< CRC16校验
-	} __packed controllerData_info_pkg = { };
+	struct SRobotStatusFlags {
+		uint8_t ask_reset : 1;  ///< bit0 - 要求复位
+		uint8_t control_by_controller : 1; ///< bit1 - 被控制器控制中
+		uint8_t robot_init_ok : 1;    ///< bit2-3 - 拨杆档位
+		uint8_t p3_lock : 1;           ///<p3锁定标志
+		uint8_t reserve : 4;
+	} __packed robotStatusFlags_pkt = {};
+
+	/**
+	 * @brief 控制器状态控制包
+	 * 数据段大小: 1 bytes 
+	 */
+	struct SControllerStatusFlags {
+		uint8_t ask_reset : 1;  			///< bit0 - 要求复位
+		uint8_t return_sucess : 1; 			///< bit1 - 归位成功
+		uint8_t controller_init_ok : 1;    		///< bit2 - 控制器初始化完成
+		uint8_t grip : 1;    				///< bit3 - 夹爪夹住
+		uint8_t regrip : 1;    				///< bit4 - 夹爪二次夹紧请求
+		uint8_t reserve : 3;
+	} __packed ControllerStatusFlags_pkt = {};
 
 	/**
 	 * @brief 机器人数据包 (Robot -> Controller)
@@ -125,12 +135,27 @@ public:
 	 */
 	struct SRobotDataPkg {
 		SPkgHeader header;
-		uint8_t status_flags = 0;              ///< 状态标志位           1B
+		SRobotStatusFlags status_flags;        ///< 状态标志位           1B
 		SArmAnglesCompressed arm;              ///< 臂部角度 (int16)    12B
 		SArmTorqueCompressed torque;           ///< 臂部力矩/电流       12B
 		int8_t reserved[5] = {0};              ///< 保留字段             5B
 		uint16_t CRC16 = 0x0000;               ///< CRC16校验
 	} __packed robotData_info_pkg = { };
+
+	/**
+	 * @brief 控制器数据包 (Controller -> Robot)
+	 * 数据段大小: 30 bytes (满足30字节限制)
+	 * 完整包大小: 7(header) + 30(data) + 2(CRC16) = 39 bytes
+	 */
+	struct SControllerDataPkg {
+		SPkgHeader header;
+		SControllerStatusFlags status_flags ;           ///< 状态标志位 (bit-packed)      1B
+		SArmAnglesPkg arm;                  			///< 单臂5轴角度 (float)          24B
+		int8_t rocker_X = 0;               				///< 摇杆X (-100~100)             1B
+		int8_t rocker_Y = 0;                			///< 摇杆Y (-100~100)             1B
+		uint8_t reserved[3] = {0};          			///< 保留字段                      7B
+		uint16_t CRC16 = 0x0000;            			///< CRC16校验
+	} __packed controllerData_info_pkg = {};
 
 	enum class EControllerLinkStatus {
 		RESET,

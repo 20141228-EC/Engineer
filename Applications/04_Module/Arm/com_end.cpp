@@ -11,6 +11,8 @@
 
 
 #include "mod_arm.hpp"
+float_t end_l_test = 0.f;
+float_t end_r_test = 0.f;
 
 namespace my_engineer {
 
@@ -62,13 +64,14 @@ EAppStatus CModArm::CComEnd::UpdateComponent() {
 
 		case FSM_RESET: {
 			mtrOutputBuffer.fill(0);
+			endCmd = SEndCmd{};
 			pidPosCtrl.ResetPidController();
 			pidSpdCtrl.ResetPidController();
 			return APP_OK;
 		}
 
 		case FSM_PREINIT: {
-			endCmd.setPosit_Pitch = 0;
+			endCmd = SEndCmd{};
 			motor[L]->motorData[CDevMtr::DATA_POSIT] = 0;
 			motor[R]->motorData[CDevMtr::DATA_POSIT] = 0;
 			mtrOutputBuffer.fill(0);
@@ -79,7 +82,7 @@ EAppStatus CModArm::CComEnd::UpdateComponent() {
 		}
 
 		case FSM_INIT: {
-			if (motor[L]->motorStatus == CDevMtr::EMotorStatus::STALL || motor[R]->motorStatus == CDevMtr::EMotorStatus::STALL) {
+			if (motor[L]->motorStatus == CDevMtr::EMotorStatus::STALL && motor[R]->motorStatus == CDevMtr::EMotorStatus::STALL) {
 				motor[L]->motorData[CDevMtr::DATA_POSIT] = -(static_cast<int32_t>(0.5 * 8192) + rangeLimit_Pitch);
 				motor[R]->motorData[CDevMtr::DATA_POSIT] = (static_cast<int32_t>(0.5 * 8192) + rangeLimit_Pitch);
 				pidPosCtrl.ResetPidController();
@@ -94,6 +97,8 @@ EAppStatus CModArm::CComEnd::UpdateComponent() {
 		}
 
 		case FSM_CTRL: {
+			end_l_test = motor[L]->motorData[CDevMtr::DATA_TORQUE];
+			end_r_test = motor[R]->motorData[CDevMtr::DATA_TORQUE];
 			// endCmd.setPosit_Pitch = std::clamp(endCmd.setPosit_Pitch, static_cast<int32_t>(0), rangeLimit_Pitch);
 			return _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch), 
 								static_cast<float_t>(endCmd.setPosit_Roll));
