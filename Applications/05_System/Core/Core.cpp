@@ -151,6 +151,7 @@ void CSystemCore::UpdateHandler_() {
             if (parm_) {
                 auto &armCmd = parm_->armCmd;
                 const auto &armInfo = parm_->armInfo;
+                armCmd.isCustomCtrl = true; 
                 armCmd.set_angle_Yaw = armInfo.angle_Yaw;
                 armCmd.set_angle_Pitch1 = armInfo.angle_Pitch1;
                 armCmd.set_angle_Pitch2 = armInfo.angle_Pitch2;

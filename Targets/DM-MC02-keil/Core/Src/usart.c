@@ -610,7 +610,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart10_rx);
 
     /* USART10 interrupt Init */
-    HAL_NVIC_SetPriority(USART10_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(USART10_IRQn, 6, 0);
     HAL_NVIC_EnableIRQ(USART10_IRQn);
   /* USER CODE BEGIN USART10_MspInit 1 */
 

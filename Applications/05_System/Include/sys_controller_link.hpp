@@ -53,7 +53,7 @@ public:
 	struct SControllerLinkInfo {
 		bool controller_OK = false;          ///< 控制器状态OK
 		bool return_success = false;         ///< 归位成功标志
-		EToggleSwitch toggle_switch = TOGGLE_MIDDLE;  ///< 拨杆档位
+		//EToggleSwitch toggle_switch = TOGGLE_MIDDLE;  ///< 拨杆档位
 		bool gripper_close = false;          ///< 夹爪闭合
 		bool gripper_regrip = false;         ///< 夹爪二次夹紧请求（脉冲信号）
 		SArmAngles arm;                      ///< 单臂5轴角度
@@ -66,6 +66,7 @@ public:
 		bool ask_reset_flag = false;         ///< 是否要求复位
 		bool controlled_by_controller = false; ///< 是否被控制器控制
 		bool robot_init_ok = false;          ///< 机器人初始化完成
+		bool p3_lock = false;                ///< P3锁定标志
 		SArmAngles arm;                      ///< 单臂6轴角度
 		SArmAngles torque;                   ///< 臂部力矩/电流反馈（原始值转float）
 	} robotInfo;

@@ -200,7 +200,7 @@ EAppStatus InitAllDevice(){
     armMotor_End_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
     armMotor_End_L_initparam.useAngleToPosit = true;
     armMotor_End_L_initparam.useStallMonit = true;
-    armMotor_End_L_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
+    armMotor_End_L_initparam.stallThreshold = 2600.0f; // 设置堵转阈值
     armMotor_End_L_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
     armMotor_End_L.InitDevice(&armMotor_End_L_initparam);
 
@@ -211,7 +211,7 @@ EAppStatus InitAllDevice(){
     armMotor_End_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_7;
     armMotor_End_R_initparam.useAngleToPosit = true;
     armMotor_End_R_initparam.useStallMonit = true;
-    armMotor_End_R_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
+    armMotor_End_R_initparam.stallThreshold = 2600.0f; // 设置堵转阈值
     armMotor_End_R_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
     armMotor_End_R.InitDevice(&armMotor_End_R_initparam);
 
@@ -284,7 +284,7 @@ EAppStatus InitAllDevice(){
     armMotor_Roll_initparam.interfaceID = EInterfaceID::INF_CAN2;
     armMotor_Roll_initparam.MasterID = 0x30;
     armMotor_Roll_initparam.SlaveID = 0x31;
-    armMotor_Roll_initparam.Q_MAX = 3.1416f;
+    armMotor_Roll_initparam.Q_MAX = 12.5f;
     armMotor_Roll_initparam.DQ_MAX = 30.0f;
     armMotor_Roll_initparam.TAU_MAX = 10.0f;
     armMotor_Roll_initparam.useAngleToPosit = true;

@@ -69,6 +69,10 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
             case FSM_RESET:{
                 // 复位状态，夹爪电机输出为0
                 mtrOutputBuffer = 0;
+                motor->motorData[CDevMtr::DATA_POSIT] = 0;
+                gripInfo.posit_grip = 0;
+                gripInfo.lastEndRollPosit = 0;
+                gripInfo.rollCompAccum = 0.0f;
                 pidPosCtrl.ResetPidController();
                 pidSpdCtrl.ResetPidController();
                 return APP_OK;

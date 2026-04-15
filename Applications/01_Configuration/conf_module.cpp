@@ -48,13 +48,13 @@ EAppStatus InitAllModule() {
    armInitParam.YawSpdPidParam.maxIntegral = 3000.0f;
    armInitParam.YawSpdPidParam.maxOutput = 4000.0f;
     // 初始化 Pitch1PosPidParam 的成员
-   armInitParam.Pitch1PosPidParam.kp = 3.3f;
+   armInitParam.Pitch1PosPidParam.kp = 3.f;
    armInitParam.Pitch1PosPidParam.ki = 0.0f;
    armInitParam.Pitch1PosPidParam.kd = 0.0f;
    armInitParam.Pitch1PosPidParam.maxIntegral = 3000.0f;
    armInitParam.Pitch1PosPidParam.maxOutput = 3000.0f;
    // 初始化 Pitch1SpdPidParam 的成员
-   armInitParam.Pitch1SpdPidParam.kp = 0.1f;
+   armInitParam.Pitch1SpdPidParam.kp = 0.09f;
    armInitParam.Pitch1SpdPidParam.ki = 0.05f;
    armInitParam.Pitch1SpdPidParam.kd = 0.0f;
    armInitParam.Pitch1SpdPidParam.maxIntegral = 2000.0f;
@@ -72,19 +72,19 @@ EAppStatus InitAllModule() {
    armInitParam.Pitch2SpdPidParam.maxIntegral = 2000.0f;
    armInitParam.Pitch2SpdPidParam.maxOutput = 2000.0f;
    // 初始化 Pitch3PosPidParam 的成员
-   armInitParam.Pitch3PosPidParam.kp = 2.5f;
+   armInitParam.Pitch3PosPidParam.kp = 3.f;
    armInitParam.Pitch3PosPidParam.ki = 0.05f;
    armInitParam.Pitch3PosPidParam.kd = 0.0f;
    armInitParam.Pitch3PosPidParam.maxIntegral = 3000.0f;
    armInitParam.Pitch3PosPidParam.maxOutput = 3000.0f;
    // 初始化 Pitch3SpdPidParam 的成员
-   armInitParam.Pitch3SpdPidParam.kp = 0.13f;
+   armInitParam.Pitch3SpdPidParam.kp = 0.07f;
    armInitParam.Pitch3SpdPidParam.ki = 0.05f;
    armInitParam.Pitch3SpdPidParam.kd = 0.0f;
    armInitParam.Pitch3SpdPidParam.maxIntegral = 2000.0f;
    armInitParam.Pitch3SpdPidParam.maxOutput = 2000.0f;
    // 初始化 mitCtrl_Roll 的成员
-   armInitParam.MIT_Roll_kp = 20.0f;
+   armInitParam.MIT_Roll_kp = 15.0f;
    armInitParam.MIT_Roll_kd = 1.0f;
 //    armInitParam.Pitch1PosPidParam.Grav_Load_Mode = CAlgoPid::EGravLoadMode::END_ROLL_G; ///< 末端roll的重补模式
    // 初始化 endPosPidParam 的成员
