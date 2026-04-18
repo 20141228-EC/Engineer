@@ -58,11 +58,12 @@ EAppStatus CModArm::CComRoll::UpdateComponent() {
 	uint8_t test1 = 0;
 	if(test1 == 1) {
 		pMtr->SetZero();			///<测试用，将当前角度设为零点
+		//test1 =0;
 	}
 
 	// 缓慢移动控制逻辑
 	static float_t next_angle = 0.0f;
-	static float_t gradual_kp = 0.005f;
+	static float_t gradual_kp = 0.05f;
 	static float_t gradual_min = 0.03f;
 
 	next_angle += (rollCmd.setAngle - next_angle) * gradual_kp;			///<一阶低通滤波，避免角度突变

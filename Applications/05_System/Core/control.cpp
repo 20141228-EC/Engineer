@@ -251,8 +251,10 @@ void CSystemCore::ControlFromKeyboard_() {
     // (G键)
     if (pgimbal_) {
         if (!pgimbal_->gimbalCmd.isAutoCtrl) {
-            if (keyboard.key_G) 
-            pgimbal_->gimbalCmd.set_visualyaw += ((keyboard.mouse_L - keyboard.mouse_R) / 100.f) * 300.f / freq;
+            if (keyboard.key_G) {
+
+                pgimbal_->gimbalCmd.set_visualyaw += ((keyboard.mouse_L - keyboard.mouse_R) / 100.f) * 100.f / freq;
+            }
         }
     }
 
@@ -343,7 +345,7 @@ void CSystemCore::ControlFromController_() {
     SysControllerLink.robotInfo.controlled_by_controller = true;
 
     // 夹爪控制（按步长渐变，使用控制器右手夹爪按钮）
-    constexpr float grip_speed = 130.0f;  
+    constexpr float grip_speed = 160.0f;  
         // 检测是否正在进行模式切换（Z+X同时按住），切换期间冻结夹爪防止意外松开
     bool mode_switching = SysRemote.remoteInfo.keyboard.key_Z
                            && SysRemote.remoteInfo.keyboard.key_X;
@@ -384,42 +386,44 @@ void CSystemCore::ControlFromController_() {
     if (parm_ && !parm_->armCmd.isAutoCtrl) {  ///< 自动控制期间跳过手动控制
         auto &arm = controller.arm;  // 单臂数据
 
-        float target_yaw = Round(arm.yaw);
-            // float target_p1  = Round(arm.pitch1 * 1.102f);  // 88° 对应 97°
+        // float target_yaw = Round(arm.yaw);
+        // float target_p1  = Round(arm.pitch1 * 1.102f);  // 88° 对应 97°
 
-            // // Yaw 限位：当 P1 在危险区时，限制目标 Yaw
-            // bool in_danger = (parm_->armCmd.set_angle_Pitch1 < 22.0f || target_p1 < 22.0f);
-            // if (in_danger && target_yaw > 0.0f) {
-            //     target_yaw = (target_yaw < 15.0f) ? 0.0f : 33.0f;
-            // }
+        // // Yaw 限位：当 P1 在危险区时，限制目标 Yaw
+        // bool in_danger = (parm_->armCmd.set_angle_Pitch1 < 22.0f || target_p1 < 22.0f);
+        // if (in_danger && target_yaw > 0.0f) {
+        //     target_yaw = (target_yaw < 15.0f) ? 0.0f : 33.0f;
+        // }
 
-            // // P2 动态限位：上限随 P1 增大而增大（与 RestrictArmCommand_ 保持一致）
-            // float target_p2 = Round(arm.pitch2 * 1.36f);  // 0°~90° 映射到 0°~122°
-            // float p2_upper = std::min(24.6f + target_p1, 125.0f);
-            // target_p2 = std::clamp(target_p2, 0.0f, p2_upper);
+        // // P2 动态限位：上限随 P1 增大而增大（与 RestrictArmCommand_ 保持一致）
+        // float target_p2 = Round(arm.pitch2 * 1.36f);  // 0°~90° 映射到 0°~122°
+        // float p2_upper = std::min(24.6f + target_p1, 125.0f);
+        // target_p2 = std::clamp(target_p2, 0.0f, p2_upper);
 
         // 设定各轴插值，并且过滤死区
-        if(fabs(arm.yaw    - last_arm.yaw ) > 0.5f)interp_yaw.setTarget(parm_->armCmd.set_angle_Yaw, Round(arm.yaw));
-        if(fabs(arm.pitch1 - last_arm.pitch1) > 0.5f)interp_p1.setTarget(parm_->armCmd.set_angle_Pitch1, arm.pitch1);
-        if(fabs(arm.pitch2 - last_arm.pitch2) > 0.5f)interp_p2.setTarget(parm_->armCmd.set_angle_Pitch2, arm.pitch2);
-        if(fabs(arm.pitch3 - last_arm.pitch3) > 0.5f)interp_p3.setTarget(parm_->armCmd.set_angle_Pitch3, Round(arm.pitch3));
-        if(fabs(arm.roll   - last_arm.roll   ) > 0.5f)interp_roll.setTarget(parm_->armCmd.set_angle_Roll, Round(-arm.roll));
-        if(fabs(arm.pitch_end - last_arm.pitch_end) > 0.5f)interp_end_pitch.setTarget(parm_->armCmd.set_angle_end_pitch, Round(arm.pitch_end));
-
+        if(fabs(arm.yaw    - last_arm.yaw ) > 0.1f)interp_yaw.setTarget(parm_->armCmd.set_angle_Yaw, Round(arm.yaw));
+        if(fabs(arm.pitch1 - last_arm.pitch1) > 0.1f)interp_p1.setTarget(parm_->armCmd.set_angle_Pitch1, Round(arm.pitch1));
+        if(fabs(arm.pitch2 - last_arm.pitch2) > 0.1f)interp_p2.setTarget(parm_->armCmd.set_angle_Pitch2, Round(arm.pitch2));
+        if(fabs(arm.pitch3 - last_arm.pitch3) > 0.1f)interp_p3.setTarget(parm_->armCmd.set_angle_Pitch3, Round(arm.pitch3));
+        if(fabs(arm.roll   - last_arm.roll   ) > 0.1f)interp_roll.setTarget(parm_->armCmd.set_angle_Roll, Round(-arm.roll));
+        if(fabs(arm.pitch_end - last_arm.pitch_end) > 0.1f)interp_end_pitch.setTarget(parm_->armCmd.set_angle_end_pitch, Round(arm.pitch_end));
         last_arm = arm;
-
         // 每个控制周期执行插值
         parm_->armCmd.set_angle_Yaw    = interp_yaw.update();
         parm_->armCmd.set_angle_Pitch1 = interp_p1.update();
         parm_->armCmd.set_angle_Pitch2 = interp_p2.update();
         parm_->armCmd.set_angle_Pitch3 = interp_p3.update();
         parm_->armCmd.set_angle_Roll   = interp_roll.update();
-
         parm_->armCmd.set_angle_end_pitch = interp_end_pitch.update();
-        // if (arm.pitch1 < 38.0f) {
-        //     parm_->armCmd.set_angle_end_pitch =
-        //         std::clamp(parm_->armCmd.set_angle_end_pitch, 0.0f, 40.0f);
-        // }
+        
+        // const float alpha = 0.98f;  ///< 低通滤波平滑系数（越大越平滑，0.95~0.98 对应约40~80ms过渡）
+        // // 低通滤波平滑控制
+        // parm_->armCmd.set_angle_Yaw       = LowPassFilter(parm_->armCmd.set_angle_Yaw,       arm.yaw,        alpha);
+        // parm_->armCmd.set_angle_Pitch1    = LowPassFilter(parm_->armCmd.set_angle_Pitch1,    arm.pitch1,      alpha);
+        // parm_->armCmd.set_angle_Pitch2    = LowPassFilter(parm_->armCmd.set_angle_Pitch2,    arm.pitch2,      alpha);
+        // parm_->armCmd.set_angle_Pitch3    = LowPassFilter(parm_->armCmd.set_angle_Pitch3,    arm.pitch3,      alpha);
+        // parm_->armCmd.set_angle_Roll      = LowPassFilter(parm_->armCmd.set_angle_Roll,      -arm.roll,       alpha);
+        // parm_->armCmd.set_angle_end_pitch = LowPassFilter(parm_->armCmd.set_angle_end_pitch, arm.pitch_end,   alpha);
 
         // Yaw 最终物理限位
         parm_->armCmd.set_angle_Yaw = std::clamp(parm_->armCmd.set_angle_Yaw,
@@ -436,11 +440,16 @@ void CSystemCore::ControlFromController_() {
         //         parm_->armCmd.set_angle_end_roll -= 30.0f;
         // }
 
-        // 二次夹紧：单击触发，通过 armCmd 传递 re-grip 指令给模块层
-        if (controller.gripper_regrip && parm_->armInfo.isGripped) {
+        // 二次夹紧，通过 armCmd 传递 re-grip 指令给模块层
+        static bool regrip_keyboardcom = false;//键盘手动控制夹爪
+        if(keyboard_edge.key_V == CSystemRemote::ERemoteEdge::Rising){
+            regrip_keyboardcom = true;
+        }
+        if ((controller.gripper_regrip || regrip_keyboardcom) && parm_->armInfo.isGripped) {
             parm_->armCmd.reGripCmd = true;                                  // 传递 re-grip 指令
         }
-        controller.gripper_regrip = false;  // 已处理，清除脉冲
+        controller.gripper_regrip = false;  // 处理之后清除标志位
+        regrip_keyboardcom = false;
 
         // if (controller.gripper_close) {
         //     parm_->armCmd.set_speed_grip = -grip_speed;   // 闭合
@@ -450,7 +459,7 @@ void CSystemCore::ControlFromController_() {
         //     parm_->armCmd.set_speed_grip = 0;             // 模式切换冻结
         // }
         static bool grip_keyboardcom = false;//键盘手动控制夹爪
-        if(keyboard.key_Ctrl  && keyboard_edge.key_C == CSystemRemote::ERemoteEdge::Rising){
+        if(keyboard_edge.key_C == CSystemRemote::ERemoteEdge::Rising){
             grip_keyboardcom = !grip_keyboardcom;
         }
         if (controller.gripper_close || grip_keyboardcom) {
@@ -473,13 +482,17 @@ void CSystemCore::ControlFromController_() {
         //     last_rocker_key_status == CSystemControllerLink::KEY_STATUS::RELEASE) {
         //     psubgantry_->subGantryCmd.setPumpOn_Gantry = !psubgantry_->subGantryCmd.setPumpOn_Gantry;
         // }
-        if(keyboard.key_Ctrl && keyboard_edge.key_Q == CSystemRemote::ERemoteEdge::Rising){
+        if(keyboard_edge.key_Q == CSystemRemote::ERemoteEdge::Rising){
             robotdata.p3_lock = !robotdata.p3_lock;
         }
 
     // 云台抬升
     if (pgimbal_) {
-        pgimbal_->gimbalCmd.set_visualyaw += static_cast<float_t>(keyboard.mouse_X - keyboard.mouse_Y) * 200.0f / freq;
+        if(!pgimbal_->gimbalCmd.isAutoCtrl && !pgimbal_->gimbalInfo.isIntoControll){  // 进入自定义控制器控制时云台自动归位
+            pgimbal_->gimbalCmd.set_visualyaw = 0.0f;  // 进入自定义控制器控制时云台自动归位
+            pgimbal_->gimbalInfo.isIntoControll = true;
+        }
+        pgimbal_->gimbalCmd.set_visualyaw += static_cast<float_t>(keyboard.mouse_Y - keyboard.mouse_X) * 1.0f / freq;
     }
 
 /*删除自定义控制器对应的兑矿操作

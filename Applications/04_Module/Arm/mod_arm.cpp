@@ -169,6 +169,11 @@ EAppStatus CModArm::RestrictArmCommand_() {
     // 物理限位
     armCmd.set_angle_Yaw =
         std::clamp(armCmd.set_angle_Yaw, ARM_YAW_PHYSICAL_RANGE_MIN, ARM_YAW_PHYSICAL_RANGE_MAX);
+
+	if(armCmd.set_angle_Pitch2 < 13.f && armCmd.set_angle_Roll < 90.f ) { 
+		armCmd.set_angle_end_pitch = std::clamp(armCmd.set_angle_end_pitch, 0.f, 90.f);
+	}
+
     armCmd.set_angle_Pitch1 =
         std::clamp(armCmd.set_angle_Pitch1,
                    ARM_PITCH1_PHYSICAL_RANGE_MIN, ARM_PITCH1_PHYSICAL_RANGE_MAX);

@@ -19,14 +19,14 @@
 #define R_LIFT_MOTOR_DIR 1 //1                  ///< 右腿编码器与腿长增加方向是否一致 一致为1 否则为-1
 #define ROLL_LIFT_DIR   -1                   ///< roll轴增大方向是否和抬头方向一致 一致为1 否则为-1
 #define CHASSIS_HIP_INIT_LENGTH 0.0f        ///< 初始化腿长 后续待改
-#define CHASSIS_HIP_INIT_ECD_L  0.f//15.f//
-#define CHASSIS_HIP_INIT_ECD_R  0.f//-38.f//      ///< 这两个是左右电机在初始化腿长时候的编码器值  这个得和陀螺仪数据0对应
+#define CHASSIS_HIP_INIT_ECD_L  -0.1f//15.f//
+#define CHASSIS_HIP_INIT_ECD_R  8.4f//-38.f//      ///< 这两个是左右电机在初始化腿长时候的编码器值  这个得和陀螺仪数据0对应
 #define CHASSIS_HIP_PHY_MAX     100.0f
 #define CHASSIS_HIP_PHY_MIN     0.0f        ///< 这个是最大和最短腿长  这两个目前还用不到
-#define CHASSIS_HIP_ECD_MAX_L   9.5f//1685.f//
+#define CHASSIS_HIP_ECD_MAX_L   9.2f//1685.f//
 #define CHASSIS_HIP_ECD_MIN_L   0.f//0.0f
-#define CHASSIS_HIP_ECD_MAX_R   0.f//0.0f
-#define CHASSIS_HIP_ECD_MIN_R   -9.5f//-1717.f//        ///< 这几个是极限腿长时候两个电机对应的编码值 即软件限位 待改
+#define CHASSIS_HIP_ECD_MAX_R   8.4f//0.0f
+#define CHASSIS_HIP_ECD_MIN_R   -1.f//-1717.f//        ///< 这几个是极限腿长时候两个电机对应的编码值 即软件限位 待改
 #define ECD_LENGTH_RATIO        -1.0f        ///< 这是腿长range和编码器range的线性对应关系，即传动比 这个保持为1就行
 #define ROLL_DEG_ECD_RATIO     50.f        ///< 这是roll动一度的时候编码器的变化值，待改
 #define G 9.7803f    ///< 南山区的g值

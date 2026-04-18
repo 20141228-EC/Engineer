@@ -43,6 +43,7 @@ public:
 	/// 云台状态信息 
 	struct SGimbalInfo{
 		EVarStatus isModuleAvailable = false;       ///< 模块是否可用
+		EVarStatus isIntoControll = false;       ///< 是否进入了自定义控制器控制
 		bool isPositArrived_Visualyaw = false;      ///< 图传yaw是否到达目标角度
 		float_t angle_visualyaw = 0.f;              ///< 图传yaw当前角度 (度)
 	} gimbalInfo;

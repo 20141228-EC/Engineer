@@ -141,6 +141,7 @@ void CSystemCore::UpdateHandler_() {
         zx_count = 0;
         if (!use_Controller_ && !SysControllerLink.IsControllerOnline()) {
             // 自定义控制器不在线同时不是自定义控制器控制的时候无法切换
+            pgimbal_->gimbalInfo.isIntoControll = false;//切换出来清空云台标志位
         } else {
             use_Controller_ = !use_Controller_;
         }
@@ -189,6 +190,9 @@ void CSystemCore::UpdateHandler_() {
                 armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
                 armCmd.set_speed_grip = 0;
             }
+            if (pgimbal_) {
+                pgimbal_->gimbalInfo.isIntoControll = false; ///< 清除云台归位标志，下次进入时重新归位
+            }
         }
     }
     if (parm_) {   //反馈给控制器的数据
@@ -233,6 +237,9 @@ void CSystemCore::UpdateHandler_() {
                 parm_->armCmd.set_angle_end_pitch = parm_->armInfo.angle_end_pitch;
                 parm_->armCmd.set_angle_end_roll = parm_->armInfo.angle_end_roll;
                 parm_->armCmd.set_length_grip = parm_->armInfo.length_grip;  ///< 保存当前夹爪位置
+            }
+            if (pgimbal_) {
+                pgimbal_->gimbalInfo.isIntoControll = false; ///< 控制器掉线也清除云台归位标志
             }
         } else {
             ControlFromController_();
