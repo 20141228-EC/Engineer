@@ -292,10 +292,10 @@ void CSystemCore::ControlFromKeyboard_() {
 
     /******************* 自动控制 *******************/
     if (parm_ && pchassis_) {
-        if (keyboard.key_Ctrl && pchassis_->chassisInfo.isModuleAvailable)
+        if (keyboard.key_Ctrl && !keyboard.key_Shift && pchassis_->chassisInfo.isModuleAvailable)
         {
-            // Ctrl + V: 停止所有自动任务
-            if(keyboard.key_V)
+            // Ctrl + Z: 停止所有自动任务
+            if(keyboard.key_Z)
             {
                 StopAutoCtrlTask_();
             }
@@ -306,8 +306,8 @@ void CSystemCore::ControlFromKeyboard_() {
                 StartAutoCtrlTask_(EAutoCtrlProcess::CLIMBING);
             }
 
-            // Ctrl + F: 启动下台阶任务
-            if(keyboard.key_F){
+            // Ctrl + V: 启动下台阶任务
+            if(keyboard.key_V){
                 StartAutoCtrlTask_(EAutoCtrlProcess::DOWN_STAIR);
             }
 
@@ -320,7 +320,7 @@ void CSystemCore::ControlFromKeyboard_() {
             */
         }
         if(keyboard.key_Shift && parm_->armInfo.isModuleAvailable){
-            if(keyboard.key_Z) { StartAutoCtrlTask_(EAutoCtrlProcess::ENERGY_UNIT); }   // Shift + Z 能量单元任务 
+            if(keyboard.key_Z) { StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN); }   // Shift + Z 能量单元任务 
             // if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE); }
         }
     }
@@ -367,19 +367,39 @@ void CSystemCore::ControlFromController_() {
     }
 
     /******************* 底盘控制 *******************/
-    // if (pchassis_) {
-    //     if (!pchassis_->chassisCmd.isAutoCtrl)
-    //     {
-    //         pchassis_->chassisCmd.speed_X *= 0.97f;
-    //         pchassis_->chassisCmd.speed_Y *= 0.98f;
-    //         pchassis_->chassisCmd.speed_W *= 0.98f;
-    //         if (abs(pchassis_->chassisCmd.speed_X) < 0.5f) pchassis_->chassisCmd.speed_X = 0.0f;
-    //         if (abs(pchassis_->chassisCmd.speed_Y) < 0.5f) pchassis_->chassisCmd.speed_Y = 0.0f;
-    //         if (abs(pchassis_->chassisCmd.speed_W) < 0.3f) pchassis_->chassisCmd.speed_W = 0.0f;
 
-    //         pchassis_->chassisCmd.speed_Y = controller.rocker_RY;     ///< 右拨杆y方向控底盘前进速度
-    //     }
-    // }
+    // 平滑更新角速度
+    if (pchassis_) {
+
+        if (!pchassis_->chassisCmd.isAutoCtrl)
+        {
+            pchassis_->chassisCmd.speed_X *= 0.97f;
+            pchassis_->chassisCmd.speed_Y *= 0.98f;
+            if (abs(pchassis_->chassisCmd.speed_X) < 0.5f) pchassis_->chassisCmd.speed_X = 0.0f;
+            if (abs(pchassis_->chassisCmd.speed_Y) < 0.5f) pchassis_->chassisCmd.speed_Y = 0.0f;
+
+                pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 1.0f;
+                pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 1.0f;
+                pchassis_->chassisCmd.speed_X =
+                std::clamp(pchassis_->chassisCmd.speed_X, -10.0f, 10.0f);
+                pchassis_->chassisCmd.speed_Y =
+                std::clamp(pchassis_->chassisCmd.speed_Y, -15.0f, 15.0f);
+            if(keyboard.key_B){
+                pchassis_->chassisCmd.L_length += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 0.01f;
+            }
+            if(keyboard.key_Ctrl
+                && keyboard.key_B
+                && keyboard.key_Shift
+                && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
+                pchassis_->reset_hip = !pchassis_->reset_hip;
+            }
+            if(keyboard_edge.key_F == CSystemRemote::ERemoteEdge::Rising
+             &&keyboard_edge.key_G == CSystemRemote::ERemoteEdge::Rising) {
+                pchassis_->chassisInfo.crawler_on = !pchassis_->chassisInfo.crawler_on;
+            }
+        }
+    }
+
 
     /******************* 机械臂 *******************/
     // 使用控制器臂部数据控制机械臂
@@ -486,7 +506,7 @@ void CSystemCore::ControlFromController_() {
             robotdata.p3_lock = !robotdata.p3_lock;
         }
 
-    // 云台抬升
+    // 云台yaw
     if (pgimbal_) {
         if(!pgimbal_->gimbalCmd.isAutoCtrl && !pgimbal_->gimbalInfo.isIntoControll){  // 进入自定义控制器控制时云台自动归位
             pgimbal_->gimbalCmd.set_visualyaw = 0.0f;  // 进入自定义控制器控制时云台自动归位

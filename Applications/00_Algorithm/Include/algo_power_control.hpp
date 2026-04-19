@@ -19,7 +19,7 @@ namespace my_engineer{
 class CAlgoPowerControl {
 public:
 	struct SAlgoInitParamPower{
-		uint16_t kDefaultMaxPower = 120;		//默认最大功率限制
+		uint16_t kDefaultMaxPower = 115;		//默认最大功率限制
 		float kTorqueCoeff = 1.9968899944e-6f;	//力矩系数(20/16384)*(0.3)*(187/3591)/9.55
 		float k1 = 1.23e-07f;					//力矩二次方系数
 		float k2 = 1.453e-07f;					//转速二次方

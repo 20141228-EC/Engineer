@@ -42,6 +42,10 @@ void CSystemCore::StartReturnOriginTask(void *arg) {
 
     /* Set Chassis */
     core.pchassis_->chassisCmd.L_length = CHASSIS_HIP_INIT_LENGTH;
+	core.pchassis_->chassisInfo.crawler_on = false;
+
+	/* Set Gimbal  */
+	core.pgimbal_->gimbalCmd.set_visualyaw = GIMBAL_VISUAL_MOTOR_INIT_ANGLE;
     // 全部回到初始化位置
 
 	proc_waitMs(250);

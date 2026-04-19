@@ -131,7 +131,7 @@ void CSystemCore::UpdateHandler_() {
         zx_count++;
     }
     // 全部松开之后才清零计数器，否则会因为按下状态的抖动导致自定义控制器模式连续进出
-    else if (SysRemote.remoteInfo.keyboard.key_Z || SysRemote.remoteInfo.keyboard.key_X == false) {
+    else if ((SysRemote.remoteInfo.keyboard.key_Z || SysRemote.remoteInfo.keyboard.key_X) == false) {
         zx_count = 0;
         zx_flag = false;
     }
@@ -339,13 +339,13 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
             return APP_ERROR;
         }
 
-//        case EAutoCtrlProcess::RETURN_ORIGIN: {
-//            currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_ORIGIN;
-//            xTaskCreate(StartReturnOriginTask, "Return Origin Task",
-//                        512, this, proc_ModuleTaskPriority,
-//                        &autoCtrlTaskHandle_);
-//            return APP_OK;
-//        }
+       case EAutoCtrlProcess::RETURN_ORIGIN: {
+           currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_ORIGIN;
+           xTaskCreate(StartReturnOriginTask, "Return Origin Task",
+                       512, this, proc_ModuleTaskPriority,
+                       &autoCtrlTaskHandle_);
+           return APP_OK;
+       }
 
        case EAutoCtrlProcess::CLIMBING: {
            currentAutoCtrlProcess_ = EAutoCtrlProcess::CLIMBING;

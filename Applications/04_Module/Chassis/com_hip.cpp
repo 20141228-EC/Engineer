@@ -179,11 +179,11 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 
 		case FSM_CTRL: {
 
-			if(parent->reset_hip && !HipInfo.is_arrived){		///< 复位时候用滤波后的角度值，防止猛肘限位
-				pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.0f, 0.0f);
-				pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.0f, 0.0f);
-			}
-			else{
+			// if(parent->reset_hip && !HipInfo.is_arrived){		///< 复位时候用滤波后的角度值，防止猛肘限位
+			// 	pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(next_angle[LL]), 0.0f, 0.0f);
+			// 	pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(next_angle[LR]), 0.0f, 0.0f);
+			// }
+			// else{
 				float_t raw_torque_L = debug_kp * accel_y * 1;
 				float_t raw_torque_R = debug_kp * accel_y * -1;
 
@@ -201,7 +201,7 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 				debug_forward_L = mitCtrl[LL].tau + debug_hip_accel_filtered_torque_L;
 				debug_forward_R = mitCtrl[LR].tau + debug_hip_accel_filtered_torque_R;
 				// 用前馈扭矩做加速度补偿
-			}
+			// }
 			return APP_OK;
 			// _UpdateOutput(HipCmd.L_Set_Angle, HipCmd.R_Set_Angle);
 			// pMtr[LL]->Control_MIT(0.0f, 0.0f, 0.0f, 0.0f, mtrOutputBuffer[LL] * DM8009P_CURRENT_TO_TORQUE_L);

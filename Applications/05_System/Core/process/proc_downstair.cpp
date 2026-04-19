@@ -45,21 +45,27 @@ void CSystemCore::StartDownStairTask(void *arg) {
 	// 后续看情况得改 在初始化位置可能会干涉
 
 	/*Set Chassis*/
-	core.pchassis_->chassisCmd.L_length = DOWNSTAIR_HIP_ANGLE;
+	// core.pchassis_->chassisCmd.L_length = DOWNSTAIR_HIP_ANGLE;
 
 	/*Set Gimbal*/
 	// 在副板设置云台
 
 	proc_waitMs(300);
 
-	// 上台阶任务比较特殊，由操作手来决定何时退出任务
+	// 下台阶任务比较特殊，由操作手来决定何时退出任务
     while (keyboard.key_Ctrl)				///< 按住ctrl
     {
-		core.pchassis_->chassisCmd.speed_Y = DOWNSTAIR_SPEED;	// 保持底盘速度
-		if(core.pchassis_->Leg_is_soar){    // 等待后腿腾空
-			core.pchassis_->chassisCmd.L_length -= 120.f / 1000.f;	// 收腿
+		if(core.pchassis_->chassisInfo.L_Length < 80.f){
+			core.pchassis_->chassisCmd.L_length += 120.f / 1000.f;
 		}
-        proc_waitMs(20);
+		else{
+			core.pchassis_->chassisCmd.speed_Y = DOWNSTAIR_SPEED;	// 保持底盘速度
+			// if(core.pchassis_->Leg_is_soar){    // 等待后腿腾空
+			// 	core.pchassis_->chassisCmd.L_length -= 120.f / 1000.f;	// 收腿
+			// }
+			
+		}
+		proc_waitMs(20);
     }
 	// 松开ctrl退出下台阶模式
 

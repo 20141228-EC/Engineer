@@ -33,7 +33,9 @@
 #define CLIMBING_END_PITCH_ANGLE  ARM_END_PITCH_INIT_ANGLE
 #define CLIMBING_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
 #define CLIMBING_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
-#define CLIMBING_SPEED            23.f      ///< 全速的80%
+#define CLIMBING_SPEED            23.f      ///< 给一个较小的速度
+#define SAVING_SPEED              -40.f     ///< 回退
+#define SAVING_HIP_ANGLE          6.3f      ///< 自救腿长
 #define CLIMBING_HIP_ANGLE        2.5f      ///< 抬一点腿
 
 /* -----------------------下台阶--------------------*/
@@ -44,8 +46,8 @@
 #define DOWNSTAIR_END_PITCH_ANGLE  ARM_END_PITCH_INIT_ANGLE
 #define DOWNSTAIR_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
 #define DOWNSTAIR_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
-#define DOWNSTAIR_SPEED            -100.f      ///< 全速
-#define DOWNSTAIR_HIP_ANGLE        4.3f      ///< 抬一点腿
+#define DOWNSTAIR_SPEED            -80.f      ///< 全速的80%
+#define DOWNSTAIR_HIP_ANGLE        5.3f      ///< 腿抬高
 
 /* --------------------抓能量单元------------------- */
 #define GRAB_ENERGY_UNIT_YAW_ANGLE        1.0f

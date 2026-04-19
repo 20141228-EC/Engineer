@@ -115,11 +115,13 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				pidPosCtrl_pitch3.ResetPidController();
 				pidSpdCtrl_pitch3.ResetPidController();
 				/*设置每个关节的绝对角度*/
-				motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT1_YAW_MACH;
-				while(motor[Y]->motorData[CDevMtr::DATA_POSIT] < -32767)
-					motor[Y]->motorData[CDevMtr::DATA_POSIT] += 65535;
-				motor[Y]->motorData[CDevMtr::DATA_POSIT]  += POSIT_JOINT1_YAW_MACH_PHY * 182.04f * POSIT_JOINT1_YAW_MACH;	
-				jointCmd.setPosit_yaw = static_cast<int32_t>(0.0f * 182.04f);		
+				// motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT1_YAW_MACH;
+				// while(motor[Y]->motorData[CDevMtr::DATA_POSIT] < -32767)
+				// 	motor[Y]->motorData[CDevMtr::DATA_POSIT] += 65535;
+				// motor[Y]->motorData[CDevMtr::DATA_POSIT]  += POSIT_JOINT1_YAW_MACH_PHY * 182.04f * POSIT_JOINT1_YAW_MACH;	
+				// jointCmd.setPosit_yaw = static_cast<int32_t>(0.0f * 182.04f);	
+				
+				motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] * ARM_YAW_MOTOR_DIR;
 
 				motor[P1]->motorData[CDevMtr::DATA_POSIT] = motor[P1]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT2_PITCH1_MACH;		///<刚上电的时候获取初始值.距离机械中值的偏差
 				while(motor[P1]->motorData[CDevMtr::DATA_POSIT] < -32767)
@@ -164,7 +166,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				}
 				/*全部到位后才进入初始化*/
 				else if(jointInfo.isPositArrived_pitch3 && jointInfo.isPositArrived_pitch2 && jointInfo.isPositArrived_pitch1 && alreadySetYaw == false){
-					jointCmd.setPosit_yaw = 0;								///<yaw轴在p1,p2抬升到安全位置之后才动
+					jointCmd.setPosit_yaw = POSIT_JOINT1_YAW_MACH;								///<yaw轴在p1,p2抬升到安全位置之后才动
 					alreadySetYaw = true;
 					return _UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 						static_cast<float_t>(jointCmd.setPosit_pitch1),

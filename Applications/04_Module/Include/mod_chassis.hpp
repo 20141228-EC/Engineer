@@ -20,13 +20,13 @@
 #define ROLL_LIFT_DIR   -1                   ///< roll轴增大方向是否和抬头方向一致 一致为1 否则为-1
 #define CHASSIS_HIP_INIT_LENGTH 0.0f        ///< 初始化腿长 后续待改
 #define CHASSIS_HIP_INIT_ECD_L  -0.1f//15.f//
-#define CHASSIS_HIP_INIT_ECD_R  8.4f//-38.f//      ///< 这两个是左右电机在初始化腿长时候的编码器值  这个得和陀螺仪数据0对应
+#define CHASSIS_HIP_INIT_ECD_R  0.f//-38.f//      ///< 这两个是左右电机在初始化腿长时候的编码器值  这个得和陀螺仪数据0对应
 #define CHASSIS_HIP_PHY_MAX     100.0f
 #define CHASSIS_HIP_PHY_MIN     0.0f        ///< 这个是最大和最短腿长  这两个目前还用不到
 #define CHASSIS_HIP_ECD_MAX_L   9.2f//1685.f//
 #define CHASSIS_HIP_ECD_MIN_L   0.f//0.0f
-#define CHASSIS_HIP_ECD_MAX_R   8.4f//0.0f
-#define CHASSIS_HIP_ECD_MIN_R   -1.f//-1717.f//        ///< 这几个是极限腿长时候两个电机对应的编码值 即软件限位 待改
+#define CHASSIS_HIP_ECD_MAX_R   0.f//0.0f
+#define CHASSIS_HIP_ECD_MIN_R   -9.4f//-1717.f//        ///< 这几个是极限腿长时候两个电机对应的编码值 即软件限位 待改
 #define ECD_LENGTH_RATIO        -1.0f        ///< 这是腿长range和编码器range的线性对应关系，即传动比 这个保持为1就行
 #define ROLL_DEG_ECD_RATIO     50.f        ///< 这是roll动一度的时候编码器的变化值，待改
 #define G 9.7803f    ///< 南山区的g值
@@ -44,7 +44,9 @@
 
 // 一些阈值
 #define IS_CLIMBING_TORQUE 3.f  // 履带正在爬升的扭矩判断阈值
-#define IS_CLIMBED_TOR_DIFF 0.4f    // 已经上了台阶的前后轮组扭矩差判断阈值
+#define IS_CLIMBED_TOR_DIFF 0.35f    // 已经上了台阶的前后轮组扭矩差判断阈值
+
+#define ENABLE_CRAWLER_POWER_LIMIT 0 // 是否开启履带功率限制(1为开启，0为不限制履带功率)
 
 /* public定义用户层方便调试和获取信息，private定义了底层用于直接驱动电机，而不会因为外界的干扰影响了输出的值 */
 
@@ -95,7 +97,7 @@ public:
         CAlgoPowerControl::SAlgoInitParamPower powerParamRF;  // 右前电机功率参数
         CAlgoPowerControl::SAlgoInitParamPower powerParamLB;  // 左后电机功率参数
         CAlgoPowerControl::SAlgoInitParamPower powerParamRB;  // 右后电机功率参数
-        uint16_t chassisMaxPower = 120;                       // 底盘总功率限制
+        uint16_t chassisMaxPower = 115;                       // 底盘总功率限制
     };
 
     // 定义底盘信息结构体并实例化
@@ -158,12 +160,18 @@ public:
     EVarStatus left_is_on = false;
     EVarStatus right_is_on = false;
 
+    // 履带没爬一段时间后收腿
+    EVarStatus time_to_reset_hip = false;
+
     // 下台阶时后腿腾空标志位
     EVarStatus Leg_is_soar = false;
 
+    // 上台阶用于自救标志位
+    EVarStatus should_be_saved = false;
+
 private:
 
-    uint16_t chassisMaxPower_ = 120; // 底盘总功率限制
+    uint16_t chassisMaxPower_ = 115; // 底盘总功率限制
     // 底盘电机功率控制实例
     CAlgoPowerControl powerCtrlLF_;  // 左前电机功率控制实例
     CAlgoPowerControl powerCtrlRF_;  // 右前电机功率控制实例
@@ -359,5 +367,8 @@ extern float wheel_power_lf;
 extern float wheel_power_rf;
 extern float wheel_power_lb;
 extern float wheel_power_rb;
+extern float crawler_power_l;
+extern float crawler_power_r;
+extern float crawler_power_sum;
 
 #endif // MOD_CHASSIS_HPP   

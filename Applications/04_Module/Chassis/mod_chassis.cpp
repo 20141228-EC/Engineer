@@ -26,9 +26,14 @@ float actual_torque_LR = 0.0f;
 float_t raw_speed_LL = 0.0f;
 float_t crawler_torque_l = 0.f;
 float_t crawler_torque_r = 0.f;
+float crawler_power_l = 0.0f;
+float crawler_power_r = 0.0f;
+float crawler_power_sum = 0.0f;
 bool is_climbing_debug = false;
 bool is_climbed_debug = false;
 bool is_slip = false;   // 打滑标志位
+uint16_t reset_hip_time = 0;
+float_t totalDemand_debug = 0.f;
 
 
 namespace my_engineer {
@@ -108,6 +113,16 @@ float CModChassis::CalcTotalDemandPower(const CComWheelset& wheelset){
     totalDemand += (powerCtrlRF_.CalcMotorPower(speed[1], torque[1]) > 0.0f) ? powerCtrlRF_.CalcMotorPower(speed[1], torque[1]) : 0.0f;
     totalDemand += (powerCtrlLB_.CalcMotorPower(speed[2], torque[2]) > 0.0f) ? powerCtrlLB_.CalcMotorPower(speed[2], torque[2]) : 0.0f;
     totalDemand += (powerCtrlRB_.CalcMotorPower(speed[3], torque[3]) > 0.0f) ? powerCtrlRB_.CalcMotorPower(speed[3], torque[3]) : 0.0f;
+    
+    // 把履带需求加上去：计算当前履带消耗在规定限额内的功率
+    float crawler_max_power = (chassisInfo.crawler_on) ? 60.0f : 10.0f;
+#if ENABLE_CRAWLER_POWER_LIMIT
+    float crawler_power_alloc = std::clamp(crawler_power_sum, 0.0f, crawler_max_power);
+#else
+    float crawler_power_alloc = 0.0f; // 不限制履带时，履带功率不计入被限制的总功率需求中
+#endif
+    totalDemand += crawler_power_alloc;
+    
     return totalDemand;
 }
 
@@ -119,16 +134,26 @@ float CModChassis::CalcTotalDemandPower(const CComWheelset& wheelset){
 void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetPower[4]) {
 
     float totalDemand = CalcTotalDemandPower(wheelset);
-    const float maxTotal = static_cast<float>(chassisMaxPower_);
+    totalDemand_debug = totalDemand;
+    
+    // =======新增加底盘最大功率和履带功率限制逻辑=======
+    float crawler_max_power = (comHip_.MovMode_ == EmovMode::CLIMBING) ? 60.0f : 10.0f;
+#if ENABLE_CRAWLER_POWER_LIMIT
+    float crawler_power_alloc = std::clamp(crawler_power_sum, 0.0f, crawler_max_power); // 履带实际要消耗的配额功率
+#else
+    float crawler_power_alloc = 0.0f; // 不限制履带时，履带不占用轮毂电机的总功率上限
+#endif
+    const float chassisMax = static_cast<float>(chassisMaxPower_);                      // 底盘总功率限制 
+    const float maxTotalWheels = std::max(chassisMax - crawler_power_alloc, 0.0f);      // 留给轮毂电机的总功率上限，不得低于0
 
     // 初始化targetPower为固定值（单电机默认功率上限）
-    targetPower[0] = maxTotal;
-    targetPower[1] = maxTotal;
-    targetPower[2] = maxTotal;
-    targetPower[3] = maxTotal;
+    targetPower[0] = maxTotalWheels;
+    targetPower[1] = maxTotalWheels;
+    targetPower[2] = maxTotalWheels;
+    targetPower[3] = maxTotalWheels;
 
-    // 功率超限才执行动态分配 否则不作限制
-    if (totalDemand > maxTotal + 1e-6f) {
+    // 只有 系统总需求(轮毂+履带) 超限才执行动态压缩
+    if (totalDemand > chassisMax + 1e-6f) {
         float demand[4] = {
             powerCtrlLF_.CalcMotorPower(
                 static_cast<float>(wheelset.motor[CComWheelset::LF]->motorData[CDevMtr::DATA_SPEED]),
@@ -180,23 +205,23 @@ void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetPo
         float totalAbsDemand = std::max(demand[0], 0.0f) + std::max(demand[1], 0.0f) + std::max(demand[2], 0.0f) + std::max(demand[3], 0.0f);
         if (totalAbsDemand < 1e-3f) {
             // 无有效需求时，平均分配总功率
-            float avgPower = maxTotal / 4.0f;
+            float avgPower = maxTotalWheels / 4.0f;
             targetPower[0] = avgPower;
             targetPower[1] = avgPower;
             targetPower[2] = avgPower;
             targetPower[3] = avgPower;
         } else {
             // 按负载比例动态分配总功率
-            targetPower[0] = (std::max(demand[0], 0.0f) / totalAbsDemand) * maxTotal;
-            targetPower[1] = (std::max(demand[1], 0.0f) / totalAbsDemand) * maxTotal;
-            targetPower[2] = (std::max(demand[2], 0.0f) / totalAbsDemand) * maxTotal;
-            targetPower[3] = (std::max(demand[3], 0.0f) / totalAbsDemand) * maxTotal;
+            targetPower[0] = (std::max(demand[0], 0.0f) / totalAbsDemand) * maxTotalWheels;
+            targetPower[1] = (std::max(demand[1], 0.0f) / totalAbsDemand) * maxTotalWheels;
+            targetPower[2] = (std::max(demand[2], 0.0f) / totalAbsDemand) * maxTotalWheels;
+            targetPower[3] = (std::max(demand[3], 0.0f) / totalAbsDemand) * maxTotalWheels;
         }
 
         // 二次校准：消除浮点误差，确保总功率不超限
         float allocTotal = targetPower[0] + targetPower[1] + targetPower[2] + targetPower[3];
-        if (allocTotal > maxTotal) {
-            float ratio = maxTotal / allocTotal;
+        if (allocTotal > maxTotalWheels) {
+            float ratio = maxTotalWheels / allocTotal;
             for (int i = 0; i < 4; i++) {
                 targetPower[i] *= ratio;
             }
@@ -267,7 +292,7 @@ void CModChassis::UpdateHandler_(){
     DataBuffer<float_t> roll_Target = {0.0f}; ///< 目标roll角度，目前暂时写这个，后续出车之后根据实际可能有些误差待改
 
     // 更新Roll角
-    chassisInfo.roll_Measure = {filter->Imu_Ave_Info.imu_ave_pitch};
+    chassisInfo.roll_Measure = {filter->Imu_Ave_Info.imu_ave_roll};
 
     // 更新加速度
     chassisInfo.accel_y = filter->Imu_Ave_Info.accel_y;
@@ -282,10 +307,15 @@ void CModChassis::UpdateHandler_(){
             comHip_.pidRollCtrl.ResetPidController(); ///< 同时重置PID控制器
             reset_hip = 0;
         }
-        else{
-            // roll_target_climbing = comHip_.pidRollCtrl.UpdatePidController(roll_Target, chassisInfo.roll_Measure);
-            // chassisCmd.L_length += roll_target_climbing[0] * ROLL_DEG_ECD_RATIO * ROLL_LIFT_DIR * 1.f / 1000.f / 10.f; ///< 在当前腿长目标基础上进行累加
+
+        if(filter->Imu_Ave_Info.imu_ave_roll < -18.f){
+            should_be_saved = true;     // 仰角超过18°就自救
         }
+
+        // if(should_be_saved){    // 如果需要自救，就立刻抬腿
+        //     roll_target_climbing = comHip_.pidRollCtrl.UpdatePidController(roll_Target, chassisInfo.roll_Measure);
+        //     chassisCmd.L_length += roll_target_climbing[0] * ROLL_DEG_ECD_RATIO * ROLL_LIFT_DIR * 1.f / 1000.f / 10.f; ///< 在当前腿长目标基础上进行累加
+        // }
     } 
     else if(MovMode == EmovMode::NORMAL && reset_hip){   ///< 普通行进模式下复位腿标志位用一次清一次
             chassisCmd.L_length = 0; ///< 直接回到初始化腿长
@@ -337,8 +367,9 @@ void CModChassis::UpdateHandler_(){
     //     is_slip = true;
     // }
 
+    // static uint16_t reset_hip_time = 0;
     left_is_on = (wheel_torque_lf - wheel_torque_lb > IS_CLIMBED_TOR_DIFF);
-    right_is_on = (fabs(wheel_torque_rf) - fabs(wheel_torque_rb) > IS_CLIMBED_TOR_DIFF);   
+    right_is_on = (fabs(wheel_torque_rf) - fabs(wheel_torque_rb) > IS_CLIMBED_TOR_DIFF);        // 改成前轮组总扭矩减后轮组总扭矩
     if(comHip_.MovMode_ == EmovMode::CLIMBING && is_climbing){
     // if(chassisInfo.crawler_on){             // 目前暂且简化判断条件为开履带，后面是只有在自动任务中才判断is_climbed
         // if(wheel_torque_lf - wheel_torque_lb > 0.4f //1.35f
@@ -346,22 +377,35 @@ void CModChassis::UpdateHandler_(){
         // if(fabs(crawler_torque_l) < 0.3f && fabs(crawler_torque_r) < 0.3f)
         if(left_is_on && right_is_on && chassisCmd.L_length > 7.f)
         {
+            static uint8_t should_on_time = 0;
+            should_on_time ++;
             // proc_waitMs(200);
-            is_climbed = true;  ///< 已经上了台阶
+            if(should_on_time > 150){   // 150ms        // 测试用，看是否能避免踩弹丸乱收腿
+                is_climbed = true;  ///< 已经上了台阶
+            }
             // reset_hip = true;            // 用于测试
             // is_climbing = false;
         }
     // }
+        // if(fabs(crawler_torque_l) < 0.2f || fabs(crawler_torque_r) < 0.2f){     // 履带已经上了台阶
+        //     reset_hip_time++;
+        //     if(reset_hip_time > 30){
+        //         time_to_reset_hip = true;     ///< 只有履带上了台阶一段时间后，才给收腿
+        //         reset_hip_time = 0;     // 置零
+        //     }
+        // }
+
+        
     }
 
-    if(comHip_.MovMode_ == EmovMode::DOWNSTAIR){    // 只有自动任务能置这个标志位
-        if(wheel_torque_lf - wheel_torque_lb > 1.35f
-        &&(fabs(wheel_torque_rf) - fabs(wheel_torque_rb) > 1.35f)
-        &&chassisInfo.roll_Measure[0] < -10.f){      // 车身倾斜超过15°
-            Leg_is_soar = true;  ///< 后腿腾空
-            reset_hip = true;            // 用于测试
-        }
-    }
+    // if(comHip_.MovMode_ == EmovMode::DOWNSTAIR){    // 只有自动任务能置这个标志位
+    //     if(wheel_torque_lf - wheel_torque_lb > 1.35f
+    //     &&(fabs(wheel_torque_rf) - fabs(wheel_torque_rb) > 1.35f)
+    //     &&chassisInfo.roll_Measure[0] < -10.f){      // 车身倾斜超过15°
+    //         Leg_is_soar = true;  ///< 后腿腾空
+    //         reset_hip = true;            // 用于测试
+    //     }
+    // }
 
     // 更新底盘轮组
     comWheelset_.UpdateComponent();
@@ -369,6 +413,35 @@ void CModChassis::UpdateHandler_(){
    if(HalfTickRate){comHip_.UpdateComponent();} ///< 降为500Hz
     // 更新履带组件
     comCrawler_.UpdateComponent();
+
+    // ===============================================
+    // ==== 履带功率限制：截断履带的扭矩下发超出配额 ====
+    float crawler_max_power = (chassisInfo.crawler_on) ? 60.0f : 10.0f;
+    float speed_crawler_L = static_cast<float>(comCrawler_.motor[CComCrawler::L]->motorData[CDevMtr::DATA_SPEED]);
+    float speed_crawler_R = static_cast<float>(comCrawler_.motor[CComCrawler::R]->motorData[CDevMtr::DATA_SPEED]);
+    
+    float demand_crawler_L = std::max(powerCtrlLF_.CalcMotorPower(speed_crawler_L, static_cast<float>(comCrawler_.mtrOutputBuffer[CComCrawler::L])), 0.0f);
+    float demand_crawler_R = std::max(powerCtrlRF_.CalcMotorPower(speed_crawler_R, static_cast<float>(comCrawler_.mtrOutputBuffer[CComCrawler::R])), 0.0f);
+    float demand_crawler_sum = demand_crawler_L + demand_crawler_R;
+
+#if ENABLE_CRAWLER_POWER_LIMIT
+    if (demand_crawler_sum > crawler_max_power + 1e-3f) {
+        float ratioL = demand_crawler_L / demand_crawler_sum;
+        float ratioR = demand_crawler_R / demand_crawler_sum;
+        
+        powerCtrlLF_.SetDefaultMaxPower(static_cast<uint16_t>(crawler_max_power * ratioL));
+        comCrawler_.mtrOutputBuffer[CComCrawler::L] = powerCtrlLF_.UpdatePowerLimit(speed_crawler_L, comCrawler_.mtrOutputBuffer[CComCrawler::L]);
+        
+        powerCtrlRF_.SetDefaultMaxPower(static_cast<uint16_t>(crawler_max_power * ratioR));
+        comCrawler_.mtrOutputBuffer[CComCrawler::R] = powerCtrlRF_.UpdatePowerLimit(speed_crawler_R, comCrawler_.mtrOutputBuffer[CComCrawler::R]);
+    }
+#endif
+    
+    // 更新履带真实的终态功耗，用于AllocDynamicPower去扣减对应底盘额度
+    crawler_power_l = fabs(powerCtrlLF_.CalcMotorPower(speed_crawler_L, static_cast<float>(comCrawler_.mtrOutputBuffer[CComCrawler::L])));
+    crawler_power_r = fabs(powerCtrlRF_.CalcMotorPower(speed_crawler_R, static_cast<float>(comCrawler_.mtrOutputBuffer[CComCrawler::R])));
+    crawler_power_sum = crawler_power_l + crawler_power_r;
+    // ===============================================
 
     is_climbing_debug = is_climbing;
     is_climbed_debug = is_climbed;

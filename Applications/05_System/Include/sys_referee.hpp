@@ -68,7 +68,7 @@ private:
 
 	std::array<CDevReferee::SUiFigureConfig, 13> uiConfig;
 
-	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> hipTextMsg, crawlerTextMsg, modeTextMsg, curModeTextMsg, hipInfoTextMsg;
+	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> hipTextMsg, crawlerTextMsg, modeTextMsg, curModeTextMsg, hipInfoTextMsg, p3LockTextMsg;
 
 	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawPentaMsg> visionFigureMsg;
 
@@ -78,15 +78,19 @@ private:
 
 	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> pitchTextMsg, pitchStaticTextMsg;
 
-	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawDoubleMsg> positionFigureMsg;
+	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawDoubleMsg> positionFigureMsg, parallelFigureMsg;
+	
+	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawPentaMsg> armAngleFigureMsg, armYawFigureMsg;
 
-	CDevReferee *pRefereeDev_ = nullptr;
+	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawSingleMsg> p3LockMsg;
 
-	CInfUART * pInterface_ = nullptr;
+    CDevReferee *pRefereeDev_ = nullptr;
+
+    CInfUART * pInterface_ = nullptr;
 
 	void UpdateHandler_() final;
 
-	void HeartbeatHandler_() final;
+    void HeartbeatHandler_() final;
 
 	EAppStatus UpdateRaceInfo_();
 
@@ -124,7 +128,15 @@ private:
 
 	void UI_StartPositionFigureDrawing_();
 
+	void UI_StartArmAngleFigureDrawing_();
+	void UI_StartArmYawFigureDrawing_();
+
+	void UI_UpdateArmAngleFigureDrawing_();
+	void UI_UpdateArmYawFigureDrawing_();
+
 	void UI_UpdatePositionFigureDrawing_();
+
+	void UI_StartParallelFigureDrawing_();
 
 	void UI_RADAR_WARNING_TextDrawing_();
 	void UI_RADAR_WARNING_TextClearing_();
