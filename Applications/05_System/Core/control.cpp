@@ -145,7 +145,7 @@ void CSystemCore::ControlFromRemote_() {
     }
 
     // MID + MID 副臂关节四轴 + 夹爪
-    if (remote.switch_L == MID && remote.switch_R == MID) {
+    else if (remote.switch_L == MID && remote.switch_R == MID) {
         SysRemote.SetRemoteDeadZone(10.f);
         ///< 此处不执行任何操作，由板间通信将整个遥控器数据传给副板，副板自己执行控制逻辑
         if(pchassis_){
@@ -177,7 +177,16 @@ void CSystemCore::ControlFromRemote_() {
         }
         if(pchassis_){
             if(!pchassis_->chassisCmd.isAutoCtrl){
-                pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
+                
+            } 
+        }
+    }
+    else{   // 未定义模式直接锁底盘
+        if(pchassis_){
+            if(!pchassis_->chassisCmd.isAutoCtrl){
+                pchassis_->chassisCmd.speed_X = 0.f;
+                pchassis_->chassisCmd.speed_Y = 0.f;
+                pchassis_->chassisCmd.speed_W = 0.f;
             } 
         }
     }
@@ -371,6 +380,10 @@ void CSystemCore::ControlFromController_() {
     // 平滑更新角速度
     if (pchassis_) {
 
+        pchassis_->chassisCmd.speed_W = pchassis_->chassisCmd.speed_W +
+            0.03f*(keyboard.mouse_X - pchassis_->chassisCmd.speed_W);
+        std::clamp(pchassis_->chassisCmd.speed_W, -15.0f, 15.0f);
+
         if (!pchassis_->chassisCmd.isAutoCtrl)
         {
             pchassis_->chassisCmd.speed_X *= 0.97f;
@@ -381,9 +394,9 @@ void CSystemCore::ControlFromController_() {
                 pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 1.0f;
                 pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 1.0f;
                 pchassis_->chassisCmd.speed_X =
-                std::clamp(pchassis_->chassisCmd.speed_X, -10.0f, 10.0f);
+                std::clamp(pchassis_->chassisCmd.speed_X, -15.0f, 15.0f);
                 pchassis_->chassisCmd.speed_Y =
-                std::clamp(pchassis_->chassisCmd.speed_Y, -15.0f, 15.0f);
+                std::clamp(pchassis_->chassisCmd.speed_Y, -20.0f, 20.0f);
             if(keyboard.key_B){
                 pchassis_->chassisCmd.L_length += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 0.01f;
             }

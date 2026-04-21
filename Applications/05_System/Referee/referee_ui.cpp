@@ -977,8 +977,8 @@ void CSystemReferee::UI_UpdateArmYawFigureDrawing_() {
     
     //底盘示意直线 随臂的yaw变而变
     armYawFigureMsg.message.figureConfig[1].operate = 2;
-    armYawFigureMsg.message.figureConfig[1].details_4 = (uint32_t)(200.0f + 80.0f * sin(rad));
-    armYawFigureMsg.message.figureConfig[1].details_5 = (uint32_t)(700.0f + 80.0f * cos(rad));
+      armYawFigureMsg.message.figureConfig[1].details_4 = (uint32_t)(200.0f - 80.0f * sin(rad));
+      armYawFigureMsg.message.figureConfig[1].details_5 = (uint32_t)(700.0f + 80.0f * cos(rad));
     
     //臂示意直线 保持 90° 不动
     armYawFigureMsg.message.figureConfig[2].operate = 2;
@@ -998,9 +998,9 @@ void CSystemReferee::UI_UpdateArmAngleFigureDrawing_() {
   float len2 = 80.0f;
   float len3 = 50.0f;
 
-  float rad1 = arm_info.angle_Pitch1 * 2 * PI / 360.0f;
-  float rad2 = (arm_info.angle_Pitch1 + arm_info.angle_Pitch2) * 2 * PI / 360.0f;
-  float rad3 = (arm_info.angle_Pitch1 + arm_info.angle_Pitch2 + arm_info.angle_Pitch3) * 2 * PI / 360.0f;
+  float rad1 = (arm_info.angle_Pitch1 - 18.0f) * 2 * PI / 360.0f;
+  float rad2 = (arm_info.angle_Pitch1 - 18.0f + arm_info.angle_Pitch2 - 11.0f) * 2 * PI / 360.0f;
+  float rad3 = (arm_info.angle_Pitch1 - 18.0f + arm_info.angle_Pitch2 - 11.0f + arm_info.angle_Pitch3) * 2 * PI / 360.0f;
 
   float p1_x = origin_x + len1 * cos(rad1);
   float p1_y = origin_y + len1 * sin(rad1);
