@@ -320,6 +320,11 @@ void CSystemCore::ControlFromKeyboard_() {
                 StartAutoCtrlTask_(EAutoCtrlProcess::DOWN_STAIR);
             }
 
+            // Ctrl + R: 启动全部复位任务
+            if(keyboard.key_R){
+                StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);
+            }
+
             /* --- 其他旧的自动任务快捷键已被移除 ---
             if(keyboard.key_G) { StartAutoCtrlTask_(EAutoCtrlProcess::GOLD_ORE); }
             if(keyboard.key_X) { StartAutoCtrlTask_(EAutoCtrlProcess::SILVER_ORE); }

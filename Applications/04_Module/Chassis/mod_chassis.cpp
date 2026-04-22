@@ -342,8 +342,8 @@ void CModChassis::UpdateHandler_(){
         }
     }
 
-    crawler_torque_l = crawlerTorqueFiltered[0];
-    crawler_torque_r = crawlerTorqueFiltered[1];
+    crawler_torque_l = (comCrawler_.motor[CComCrawler::L]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A;
+    crawler_torque_r = (comCrawler_.motor[CComCrawler::R]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A;
 
     if(chassisInfo.crawler_on){
         comCrawler_.CrawlerCmd.speed_crawler = 60.f * 30.f;
@@ -377,12 +377,12 @@ void CModChassis::UpdateHandler_(){
         // if(fabs(crawler_torque_l) < 0.3f && fabs(crawler_torque_r) < 0.3f)
         if(left_is_on && right_is_on && chassisCmd.L_length > 7.f)
         {
-            static uint8_t should_on_time = 0;
-            should_on_time ++;
+            // static uint8_t should_on_time = 0;
+            // should_on_time ++;
             // proc_waitMs(200);
-            if(should_on_time > 150){   // 150ms        // 测试用，看是否能避免踩弹丸乱收腿
+            // if(should_on_time > 150){   // 150ms        // 测试用，看是否能避免踩弹丸乱收腿
                 is_climbed = true;  ///< 已经上了台阶
-            }
+            // }
             // reset_hip = true;            // 用于测试
             // is_climbing = false;
         }

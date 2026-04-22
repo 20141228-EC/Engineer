@@ -43,7 +43,7 @@
 #define TORQUE_CONSTANT_NM_PER_A 0.3f          // 电机扭矩常数 (N·m/A)
 
 // 一些阈值
-#define IS_CLIMBING_TORQUE 3.f  // 履带正在爬升的扭矩判断阈值
+#define IS_CLIMBING_TORQUE 1.5f  // 履带正在爬升的扭矩判断阈值
 #define IS_CLIMBED_TOR_DIFF 0.35f    // 已经上了台阶的前后轮组扭矩差判断阈值
 
 #define ENABLE_CRAWLER_POWER_LIMIT 1 // 是否开启履带功率限制(1为开启，0为不限制履带功率)
