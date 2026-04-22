@@ -115,7 +115,7 @@ float CModChassis::CalcTotalDemandPower(const CComWheelset& wheelset){
     totalDemand += (powerCtrlRB_.CalcMotorPower(speed[3], torque[3]) > 0.0f) ? powerCtrlRB_.CalcMotorPower(speed[3], torque[3]) : 0.0f;
     
     // 把履带需求加上去：计算当前履带消耗在规定限额内的功率
-    float crawler_max_power = (comHip_.MovMode_ == EmovMode::CLIMBING) ? 60.0f : 1.0f;
+    float crawler_max_power = (comHip_.MovMode_ == EmovMode::CLIMBING) ? 60.0f : 5.0f;
 #if ENABLE_CRAWLER_POWER_LIMIT
     float crawler_power_alloc = std::clamp(crawler_power_sum, 0.0f, crawler_max_power);
 #else
@@ -137,7 +137,7 @@ void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetPo
     totalDemand_debug = totalDemand;
     
     // =======新增加底盘最大功率和履带功率限制逻辑=======
-    float crawler_max_power = (comHip_.MovMode_ == EmovMode::CLIMBING) ? 60.0f : 10.0f;
+    float crawler_max_power = (comHip_.MovMode_ == EmovMode::CLIMBING) ? 60.0f : 5.0f;
 #if ENABLE_CRAWLER_POWER_LIMIT
     float crawler_power_alloc = std::clamp(crawler_power_sum, 0.0f, crawler_max_power); // 履带实际要消耗的配额功率
 #else
@@ -416,7 +416,7 @@ void CModChassis::UpdateHandler_(){
 
     // ===============================================
     // ==== 履带功率限制：截断履带的扭矩下发超出配额 ====
-    float crawler_max_power = (chassisInfo.crawler_on) ? 60.0f : 10.0f;
+    float crawler_max_power = (comHip_.MovMode_ == EmovMode::CLIMBING) ? 60.0f : 5.0f;
     float speed_crawler_L = static_cast<float>(comCrawler_.motor[CComCrawler::L]->motorData[CDevMtr::DATA_SPEED]);
     float speed_crawler_R = static_cast<float>(comCrawler_.motor[CComCrawler::R]->motorData[CDevMtr::DATA_SPEED]);
     
