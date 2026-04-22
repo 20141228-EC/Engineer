@@ -90,7 +90,7 @@ EAppStatus CModGimbal::RestrictGimbalCommand_(){
 	}
 
 	gimbalCmd.set_visualyaw =
-		std::clamp(gimbalCmd.set_visualyaw, -101.0f, 99.f);
+		std::clamp(gimbalCmd.set_visualyaw, -181.0f, 0.f);
 
 	if (gimbalCmd.isAutoCtrl) return APP_OK;
 
