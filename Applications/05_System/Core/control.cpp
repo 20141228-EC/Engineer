@@ -328,6 +328,9 @@ void CSystemCore::ControlFromKeyboard_() {
             // Ctrl + B: 启动取矿轨迹任务
             if(keyboard.key_B){
                 StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE);
+            // Ctrl + R: 启动全部复位任务
+            if(keyboard.key_R){
+                StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);
             }
 
             /* --- 其他旧的自动任务快捷键已被移除 ---
@@ -342,8 +345,9 @@ void CSystemCore::ControlFromKeyboard_() {
             //if(keyboard.key_Z) { StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN); }   // Shift + Z 能量单元任务 
             // if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE); }
         }
+        }
     }
-    }
+}
 }
 
 /**
