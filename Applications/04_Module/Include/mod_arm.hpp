@@ -74,8 +74,8 @@
 
 /*-------------------------------------初始化数据--------------------------------------------------------*/
 #define ARM_YAW_INIT_ANGLE 0.0f
-#define ARM_PITCH1_INIT_ANGLE 4.f
-#define ARM_PITCH2_INIT_ANGLE 11.f
+#define ARM_PITCH1_INIT_ANGLE 6.f
+#define ARM_PITCH2_INIT_ANGLE 20.f
 #define ARM_ROLL_INIT_ANGLE 0.0f
 #define ARM_END_PITCH_INIT_ANGLE 0.0f
 #define ARM_END_ROLL_INIT_ANGLE 0.0f
@@ -87,19 +87,19 @@
 
 #define POSIT_JOINT2_PITCH1_MACH 53021
 #define POSIT_JOINT2_PITCH1_MACH_PHY 0.f
-#define POSIT_JOINT2_PITCH1_INIT_PHY 4.0f
+#define POSIT_JOINT2_PITCH1_INIT_PHY 6.0f
 
 #define POSIT_JOINT3_PITCH2_MACH 50415 //12837
 #define POSIT_JOINT3_PITCH2_MACH_PHY 0.f
-#define POSIT_JOINT3_PITCH2_INIT_PHY 11.0f
+#define POSIT_JOINT3_PITCH2_INIT_PHY 20.0f
 
 /*-------------------------------------Pitch3 参数 (KT电机)------------------------------------------*/
 #define ARM_PITCH3_MOTOR_DIR -1
 #define ARM_PITCH3_MOTOR_RANGE 10942   
-#define ARM_PITCH3_INIT_ANGLE -11.0f
+#define ARM_PITCH3_INIT_ANGLE 0.0f
 #define POSIT_JOINT4_PITCH3_MACH 10942    
 #define POSIT_JOINT4_PITCH3_MACH_PHY 0.f
-#define POSIT_JOINT4_PITCH3_INIT_PHY -11.0f
+#define POSIT_JOINT4_PITCH3_INIT_PHY 0.0f
 
 #define POSIT_JOINT4_ROLL_OFFSET 0
 
@@ -378,6 +378,7 @@ private:
 		CAlgoPid pidPosCtrl;
 		CAlgoPid pidSpdCtrl;
 
+		int32_t rollZeroOffset = 0; ///< Roll零点偏移（手动标定后设置）
 		// 电机数据输出缓冲区
 		std::array<int16_t, 2> mtrOutputBuffer = {0};
 
@@ -393,17 +394,18 @@ private:
 		// 电机位置转换为物理位置: Pitch
 		static float_t MtrPositToPhyPosit_Pitch(int32_t mtrPosit);
 
-		// 物理位置转换为电机位置: Roll
-		static int32_t PhyPositToMtrPosit_Roll(float_t phyPosit);
+		// 物理位置转换为电机位置: Roll（非static，需要访问rollZeroOffset成员）
+		int32_t PhyPositToMtrPosit_Roll(float_t phyPosit);
 
-		// 电机位置转换为物理位置: Roll
-		static float_t MtrPositToPhyPosit_Roll(int32_t mtrPosit);
+		// 电机位置转换为物理位置: Roll（非static，需要访问rollZeroOffset成员）
+		float_t MtrPositToPhyPosit_Roll(int32_t mtrPosit);
 
 		// 输出更新函数
 		EAppStatus _UpdateOutput(float_t posit_Pitch, float_t posit_Roll);
 
 		// 电机can发送节点
 		std::array<CInfCAN::CCanTxNode*, 2> mtrCanTxNode;
+
 
 	} comEnd_;
 
@@ -420,6 +422,7 @@ private:
 			bool isGripped = false; 			///< 是否夹住
         	bool cmdGrip = false;   			///< 抓取（自适应力控）
         	bool cmdRelease = false;   			///< 释放
+			bool isRecalibrating = false;
 			// Roll增量补偿相关
 			int32_t lastEndRollPosit = 0;       ///< 上一次的 Roll 位置
 			float_t rollCompAccum = 0.0f;       ///< 累积的 Roll 补偿量

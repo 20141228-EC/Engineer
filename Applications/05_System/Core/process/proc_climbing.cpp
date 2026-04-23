@@ -37,7 +37,7 @@ void CSystemCore::StartClimbingTask(void *arg) {
 	core.parm_->armCmd.set_angle_Pitch2 = CLIMBING_PITCH2_ANGLE;
 	//core.parm_->armCmd.set_angle_Roll = CLIMBING_ROLL_ANGLE;
 	// core.parm_->armCmd.set_angle_end_pitch = CLIMBING_END_PITCH_ANGLE;
-	// core.parm_->armCmd.set_angle_end_roll = CLIMBING_END_ROLL_ANGLE; //由于限位反过来所以会猛肘限位
+	core.parm_->armCmd.set_angle_end_roll = CLIMBING_END_ROLL_ANGLE; //由于限位反过来所以会猛肘限位
     core.parm_->armCmd.set_length_grip = CLIMBING_GRIP_LENGTH;
 	// 后续看情况得改 在初始化位置可能会干涉
 

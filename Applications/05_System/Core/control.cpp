@@ -320,6 +320,14 @@ void CSystemCore::ControlFromKeyboard_() {
                 StartAutoCtrlTask_(EAutoCtrlProcess::DOWN_STAIR);
             }
 
+            // Ctrl + X: 启动存矿轨迹任务
+            if(keyboard.key_X){
+                StartAutoCtrlTask_(EAutoCtrlProcess::STORE_ORE);
+            }
+
+            // Ctrl + B: 启动取矿轨迹任务
+            if(keyboard.key_B){
+                StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE);
             // Ctrl + R: 启动全部复位任务
             if(keyboard.key_R){
                 StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);
@@ -334,11 +342,12 @@ void CSystemCore::ControlFromKeyboard_() {
             */
         }
         if(keyboard.key_Shift && parm_->armInfo.isModuleAvailable){
-            if(keyboard.key_Z) { StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN); }   // Shift + Z 能量单元任务 
+            //if(keyboard.key_Z) { StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN); }   // Shift + Z 能量单元任务 
             // if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE); }
         }
+        }
     }
-    }
+}
 }
 
 /**
@@ -384,6 +393,8 @@ void CSystemCore::ControlFromController_() {
 
     // 平滑更新角速度
     if (pchassis_) {
+        pchassis_->chassisCmd.speed_W *= 0.92f;
+        if (abs(pchassis_->chassisCmd.speed_W) < 0.3f) pchassis_->chassisCmd.speed_W = 0.0f;//处理旋转前停留的w速度避免自旋
 
         pchassis_->chassisCmd.speed_W = pchassis_->chassisCmd.speed_W +
             0.03f*(keyboard.mouse_X - pchassis_->chassisCmd.speed_W);
@@ -483,7 +494,7 @@ void CSystemCore::ControlFromController_() {
         if(keyboard_edge.key_V == CSystemRemote::ERemoteEdge::Rising){
             regrip_keyboardcom = true;
         }
-        if ((controller.gripper_regrip || regrip_keyboardcom) && parm_->armInfo.isGripped) {
+        if ((controller.gripper_regrip || regrip_keyboardcom)) {
             parm_->armCmd.reGripCmd = true;                                  // 传递 re-grip 指令
         }
         controller.gripper_regrip = false;  // 处理之后清除标志位
@@ -507,9 +518,9 @@ void CSystemCore::ControlFromController_() {
                  parm_->armCmd.set_length_grip = parm_->armInfo.holdLength_grip;  ///< 夹住后保持位置
              }
          } else if (!mode_switching) {
-             if (!parm_->armInfo.isGripped) {
+             
                  parm_->armCmd.set_length_grip += grip_speed / freq;    ///< 未夹取时才允许张开
-             }
+             
              ///< 已夹取但双击松开时保持位置，防止意外松手
          }
          parm_->armCmd.set_length_grip = std::clamp(parm_->armCmd.set_length_grip, 0.0f, 65.0f);
@@ -527,10 +538,10 @@ void CSystemCore::ControlFromController_() {
     // 云台yaw
     if (pgimbal_) {
         if(!pgimbal_->gimbalCmd.isAutoCtrl && !pgimbal_->gimbalInfo.isIntoControll){  // 进入自定义控制器控制时云台自动归位
-            pgimbal_->gimbalCmd.set_visualyaw = 0.0f;  // 进入自定义控制器控制时云台自动归位
+            pgimbal_->gimbalCmd.set_visualyaw = GIMBAL_VISUAL_MOTOR_INIT_ANGLE;  // 进入自定义控制器控制时云台自动归位
             pgimbal_->gimbalInfo.isIntoControll = true;
         }
-        pgimbal_->gimbalCmd.set_visualyaw += static_cast<float_t>(keyboard.mouse_Y - keyboard.mouse_X) * 1.0f / freq;
+        //pgimbal_->gimbalCmd.set_visualyaw += static_cast<float_t>(keyboard.mouse_Y - keyboard.mouse_X) * 1.0f / freq;
     }
 
 /*删除自定义控制器对应的兑矿操作

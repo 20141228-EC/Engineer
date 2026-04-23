@@ -164,8 +164,12 @@ EAppStatus CModArm::RestrictArmCommand_() {
 		armCmd = SArmCmd();
 		return APP_ERROR;
 	}
-
+	// 自动控制模式下跳过后续更复杂的动态限位
 	static float_t prevPitch1 = ARM_PITCH1_INIT_ANGLE;
+	if (armCmd.isAutoCtrl) {
+		prevPitch1 = armCmd.set_angle_Pitch1;  ///< 保持追踪，防止退出自动模式时P1-P2耦合跳变
+        return APP_OK;
+    }
     // 物理限位
     armCmd.set_angle_Yaw =
         std::clamp(armCmd.set_angle_Yaw, ARM_YAW_PHYSICAL_RANGE_MIN, ARM_YAW_PHYSICAL_RANGE_MAX);
@@ -222,10 +226,6 @@ EAppStatus CModArm::RestrictArmCommand_() {
     //                    18.0f, ARM_PITCH1_PHYSICAL_RANGE_MAX);
     // }
 
-    // 自动控制模式下跳过后续更复杂的动态限位
-    if (armCmd.isAutoCtrl) {
-        return APP_OK;
-    }
 
     // // 动态关联限位
     // // Pitch1 和 Pitch2 的关联

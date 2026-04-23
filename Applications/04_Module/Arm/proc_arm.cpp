@@ -95,7 +95,7 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 				arm.comEnd_.endCmd.setPosit_Pitch =
 					CComEnd::PhyPositToMtrPosit_Pitch(arm.armCmd.set_angle_end_pitch);
 				arm.comEnd_.endCmd.setPosit_Roll =
-					CComEnd::PhyPositToMtrPosit_Roll(arm.armCmd.set_angle_end_roll);
+					arm.comEnd_.PhyPositToMtrPosit_Roll(arm.armCmd.set_angle_end_roll);
 				arm.comGrip_.gripCmd.setPosit_grip = 									///< 夹爪的外部接口是距离，内部接口是编码器的数值
 					CComGrip::PhyPositToMtrPosit(arm.armCmd.set_length_grip);
 
