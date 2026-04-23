@@ -163,6 +163,7 @@ void CSystemCore::UpdateHandler_() {
                 armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
                 armCmd.set_speed_grip = 0;
             }
+            hold_grip_after_controller_switch_ = true;
             // 自动任务部分
             if (currentAutoCtrlProcess_ == EAutoCtrlProcess::EXCHANGE_ORE) {
     
@@ -190,6 +191,7 @@ void CSystemCore::UpdateHandler_() {
                 armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
                 armCmd.set_speed_grip = 0;
             }
+            hold_grip_after_controller_switch_ = false;
             if (pgimbal_) {
                 pgimbal_->gimbalInfo.isIntoControll = false; ///< 清除云台归位标志，下次进入时重新归位
             }

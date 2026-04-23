@@ -328,6 +328,7 @@ void CSystemCore::ControlFromKeyboard_() {
             // Ctrl + B: 启动取矿轨迹任务
             if(keyboard.key_B){
                 StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE);
+            }
             // Ctrl + R: 启动全部复位任务
             if(keyboard.key_R){
                 StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);
@@ -346,7 +347,6 @@ void CSystemCore::ControlFromKeyboard_() {
             // if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE); }
         }
         }
-    }
 }
 }
 
@@ -494,7 +494,8 @@ void CSystemCore::ControlFromController_() {
         if(keyboard_edge.key_V == CSystemRemote::ERemoteEdge::Rising){
             regrip_keyboardcom = true;
         }
-        if ((controller.gripper_regrip || regrip_keyboardcom)) {
+        const bool regrip_requested = controller.gripper_regrip || regrip_keyboardcom;
+        if (regrip_requested) {
             parm_->armCmd.reGripCmd = true;                                  // 传递 re-grip 指令
         }
         controller.gripper_regrip = false;  // 处理之后清除标志位
@@ -511,7 +512,13 @@ void CSystemCore::ControlFromController_() {
         if(keyboard_edge.key_C == CSystemRemote::ERemoteEdge::Rising){
             grip_keyboardcom = !grip_keyboardcom;
         }
-        if (controller.gripper_close || grip_keyboardcom) {
+        const bool grip_close_cmd = controller.gripper_close || grip_keyboardcom;
+        if (hold_grip_after_controller_switch_) {
+            parm_->armCmd.set_length_grip = parm_->armInfo.length_grip;
+            if (grip_close_cmd || regrip_requested) {
+                hold_grip_after_controller_switch_ = false;
+            }
+        } else if (grip_close_cmd) {
              if (!parm_->armInfo.isGripped) {
                  parm_->armCmd.set_length_grip -= grip_speed / freq;    ///< 闭合中
              } else {
