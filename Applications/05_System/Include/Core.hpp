@@ -20,6 +20,7 @@
 #include "algo_ave_filter.hpp"
 #include "algo_imu_ekf.hpp"
 #include "algo_kf_filter.hpp"
+#include "algo_traj_playback.hpp"
 
 #define I_AM_CONTROLLER 0 // 当前板子是控制器
 
@@ -147,6 +148,16 @@ public:
         // ...to be updated...
     } movemode_ = EMoveMode::NONE;
 
+    enum class EArmMode {
+        NONE,
+        NORMAL,             ///< 普通
+        STORE_L_ORE,           ///< 左边存矿
+        STORE_R_ORE,          ///< 右边存矿
+        GET_L_ORE,           ///< 左边取矿
+        GET_R_ORE,          ///< 右边取矿
+        // ...to be updated...
+    } armmode_ = EArmMode::NONE;
+
     EVarStatus use_Controller_ = false; ///< 是否使用控制器
 
     EVarStatus gimbal_auto_ctrl = false;   ///< 云台是否自动控制
@@ -202,6 +213,8 @@ private:
     static void StartExchangeOreTask(void *arg);
     static void StartReturnOriginTask(void *arg);
     static void StartEnergyUnitTask(void *arg);
+    static void StartStoreTask(void *arg);
+    static void StartExchangeGetTask(void *arg);
     
 };
 

@@ -27,34 +27,52 @@ void CSystemCore::StartDownStairTask(void *arg) {
 	auto cnt = 0;
 	const auto timeout = 30000 / 5; // unit: ms
 
+	/* Phase 1: 臂自动移到预设位姿，底盘WASD反转控制(图传180°掉头) */
 	core.parm_->armCmd.isAutoCtrl = true;           ///< 臂自动控制
-	core.pchassis_->chassisCmd.isAutoCtrl = true;   ///< 底盘自动控制
 	core.gimbal_auto_ctrl = true;					///< 云台自动控制
+	core.pchassis_->chassisCmd.isAutoCtrl = true;   ///< 阻止外部WASD，由本任务内部反转处理
 
-    core.movemode_ = EMoveMode::DOWNSTAIR;  // 更新系统层标志位
-	core.pchassis_->MovMode = CModChassis::EmovMode::DOWNSTAIR;     // 更新模块层标志位
-	
 	/*Set Arm*/
 	core.parm_->armCmd.set_angle_Yaw = DOWNSTAIR_YAW_ANGLE;
 	core.parm_->armCmd.set_angle_Pitch1 = DOWNSTAIR_PITCH1_ANGLE;
-	core.parm_->armCmd.set_angle_Pitch2 = DOWNSTAIR_PITCH2_ANGLE;
+	core.parm_->armCmd.set_angle_Pitch2 = DOWNSTAIR_PITCH2_ANGLE - 5;
 	//core.parm_->armCmd.set_angle_Roll = DOWNSTAIR_ROLL_ANGLE;
 	//core.parm_->armCmd.set_angle_end_pitch = DOWNSTAIR_END_PITCH_ANGLE;
-	//core.parm_->armCmd.set_angle_end_roll = DOWNSTAIR_END_ROLL_ANGLE;
+	core.parm_->armCmd.set_angle_end_roll = DOWNSTAIR_END_ROLL_ANGLE;
     core.parm_->armCmd.set_length_grip = DOWNSTAIR_GRIP_LENGTH;
 	core.pgimbal_->gimbalCmd.set_visualyaw = -180.f;
-	// 后续看情况得改 在初始化位置可能会干涉
 
-	/*Set Chassis*/
-	// core.pchassis_->chassisCmd.L_length = DOWNSTAIR_HIP_ANGLE;
+	proc_waitMs(300);	// 等待臂到位
 
-	/*Set Gimbal*/
-	// 在副板设置云台
+	/* Phase 1: 等待鼠标左键确认，WASD反转以适应图传180°掉头 */
+	while (!keyboard.mouse_L) {
 
-	proc_waitMs(300);
+		// 阻尼衰减
+		core.pchassis_->chassisCmd.speed_X *= 0.97f;
+		core.pchassis_->chassisCmd.speed_Y *= 0.98f;
+		if (abs(core.pchassis_->chassisCmd.speed_X) < 0.5f) core.pchassis_->chassisCmd.speed_X = 0.0f;
+		if (abs(core.pchassis_->chassisCmd.speed_Y) < 0.5f) core.pchassis_->chassisCmd.speed_Y = 0.0f;
 
-	// 下台阶任务比较特殊，由操作手来决定何时退出任务
-    while (keyboard.key_Ctrl)				///< 按住ctrl
+		// WASD反转: 图传180°掉头后，A/D和W/S方向都颠倒
+		if (keyboard.key_Shift) {
+			core.pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_A - keyboard.key_D) * 5.0f;
+			core.pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_S - keyboard.key_W) * 5.0f;
+			core.pchassis_->chassisCmd.speed_X = std::clamp(core.pchassis_->chassisCmd.speed_X, -50.0f, 50.0f);
+			core.pchassis_->chassisCmd.speed_Y = std::clamp(core.pchassis_->chassisCmd.speed_Y, -100.0f, 100.0f);
+		} else {
+			core.pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_A - keyboard.key_D) * 1.0f;
+			core.pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_S - keyboard.key_W) * 1.0f;
+			core.pchassis_->chassisCmd.speed_X = std::clamp(core.pchassis_->chassisCmd.speed_X, -20.0f, 20.0f);
+			core.pchassis_->chassisCmd.speed_Y = std::clamp(core.pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
+		}
+
+		proc_waitMs(20);
+	}
+    core.movemode_ = EMoveMode::DOWNSTAIR;  // 更新系统层标志位
+	core.pchassis_->MovMode = CModChassis::EmovMode::DOWNSTAIR;     // 更新模块层标志位
+
+	/* Phase 2: 下台阶 */
+    while (keyboard.key_Ctrl)
     {
 		static bool status = false;
 		while(!static_cast<bool>(CSystemRemote::ERemoteEdge::Rising) && (status == false)){
@@ -78,6 +96,7 @@ void CSystemCore::StartDownStairTask(void *arg) {
 proc_exit:
 	core.parm_->armCmd.isAutoCtrl = false;
 	core.pchassis_->chassisCmd.isAutoCtrl = false;
+	core.pgimbal_->gimbalCmd.set_visualyaw = 0.f;//头部回正
 	core.gimbal_auto_ctrl = false;
 	core.autoCtrlTaskHandle_ = nullptr;
 	core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;

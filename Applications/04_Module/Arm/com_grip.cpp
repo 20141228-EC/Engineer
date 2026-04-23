@@ -53,6 +53,16 @@ EAppStatus CModArm::CComGrip::InitComponent(SModInitParam_Base &param) {
 EAppStatus CModArm::CComGrip::UpdateComponent() {
     if (componentStatus == APP_RESET) return APP_ERROR;
 
+    static int8_t gripDir = 1;
+
+    if(motor->motorStatus == CDevMtr::EMotorStatus::RUNNING && motor->motorData[CDevMtr::DATA_SPEED] > 100){
+            gripDir = 1;  // 张开方向
+    }
+    if(motor->motorStatus == CDevMtr::EMotorStatus::RUNNING && motor->motorData[CDevMtr::DATA_SPEED] < -100){
+            gripDir = -1;  // 收拢方向
+    }
+
+
     // 更新夹爪当前位置（含Roll耦合补偿，反映真实物理位置）
     gripInfo.posit_grip = static_cast<int32_t>(
         motor->motorData[CDevMtr::DATA_POSIT] * ARM_GRIP_MOTOR_DIR
@@ -73,6 +83,7 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                 gripInfo.posit_grip = 0;
                 gripInfo.lastEndRollPosit = 0;
                 gripInfo.rollCompAccum = 0.0f;
+                gripInfo.isRecalibrating = false;
                 pidPosCtrl.ResetPidController();
                 pidSpdCtrl.ResetPidController();
                 return APP_OK;
@@ -81,6 +92,7 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                 // 预初始化状态，夹爪电机输出为0
                 mtrOutputBuffer = 0;
                 motor->motorData[CDevMtr::DATA_POSIT] = 0;
+                gripInfo.isRecalibrating = false;
                 pidPosCtrl.ResetPidController();
                 pidSpdCtrl.ResetPidController();
                 Component_FSMFlag_ = FSM_INIT;
@@ -122,37 +134,45 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                 // 更新增量式Roll补偿
                 _UpdateRollCompensation(endRollPosit);
 
-                if(gripInfo.isGripped){
-                    if(gripCmd.cmdReGrip){
-                        gripCmd.cmdReGrip = false;
-                        gripInfo.isGripped = false;          // 退出夹持锁定
-                        gripInfo.holdPosit_Grip = 0;         // 清空记忆位置
-                        return _UpdateOutput(gripCmd.setPosit_grip, endRollPosit); // 二次夹紧
+                if(gripInfo.isRecalibrating && gripInfo.isGripped){//堵转重新标定
+                    // 检测闭合方向堵转
+                    bool nearMaxOpen = (gripInfo.posit_grip > rangeLimit_Grip - 8192);
+                    if(motor->motorStatus == CDevMtr::EMotorStatus::STALL && gripDir == -1 && !nearMaxOpen){
+                        motor->motorData[CDevMtr::DATA_POSIT] = static_cast<int32_t>(0.1f * 8192) * ARM_GRIP_MOTOR_DIR;
+                        gripInfo.isRecalibrating = false;
+                        gripInfo.isGripped = true;
+                        gripInfo.lastSetPosit = 0;
+                        // 重标定后编码器参考系改变，必须重置Roll补偿
+                        gripInfo.rollCompAccum = 0.0f;
+                        gripInfo.lastEndRollPosit = endRollPosit;
+                        pidPosCtrl.ResetPidController();
+                        pidSpdCtrl.ResetPidController();
                     }
-
-                    // 夹持模式：向张开方向超过阈值则退出夹持
-                    if(gripCmd.setPosit_grip > gripInfo.holdPosit_Grip + 819){
-                        gripInfo.isGripped = false;
-                        gripInfo.lastSetPosit = gripCmd.setPosit_grip;  // 更新上次设定位置
-                        return _UpdateOutput(static_cast<float_t>(gripCmd.setPosit_grip), endRollPosit);  ///< 退出夹持，用新设定位置
-                    }
-                    gripInfo.lastSetPosit = gripCmd.setPosit_grip;  
-                    return _UpdateOutput(static_cast<float_t>(gripInfo.holdPosit_Grip), endRollPosit); ///<保持夹持位置
+                    gripCmd.setPosit_grip -= 500;
+                    return _UpdateOutput(static_cast<float_t>(gripCmd.setPosit_grip), endRollPosit);
                 }
-                else{
-                    // 正常模式：堵转且闭合方向移动时进入夹持状态
-                    // 闭合方向判断：当前设定位置 < 上次设定位置，即在往闭合方向设定
-                    // 排除接近最大张开位置的堵转（物理限位导致的堵转不是夹取）
+                
+                if(gripCmd.cmdReGrip){
+                    gripCmd.cmdReGrip = false;
+                    gripInfo.isRecalibrating = true;
+                    gripInfo.isGripped = false;
+                    gripCmd.setPosit_grip = 0;
+                    return _UpdateOutput(gripCmd.setPosit_grip, endRollPosit); // 二次夹紧
+                }
+                
+                {
+                    // 堵转检测：闭合方向堵转且不在最大张开位置附近
                     bool nearMaxOpen = (gripInfo.posit_grip > rangeLimit_Grip - 8192);
 
-                    if(motor->motorStatus == CDevMtr::EMotorStatus::STALL &&
-                       (gripCmd.setPosit_grip - gripInfo.lastSetPosit < -100) &&
-                       !nearMaxOpen){
+                    if(motor->motorStatus == CDevMtr::EMotorStatus::STALL && gripDir == -1 && !nearMaxOpen){
                         gripInfo.isGripped = true;
-                        gripInfo.holdPosit_Grip = gripCmd.setPosit_grip; ///<记忆夹持位置
+                    }
+                    if(gripDir == 1){
+                        gripInfo.isGripped = false;
                     }
 
-                    gripInfo.lastSetPosit = gripCmd.setPosit_grip; 
+                    // 始终跟随指令位置，不做位置锁定
+                    gripInfo.lastSetPosit = gripCmd.setPosit_grip;
                     return _UpdateOutput(static_cast<float_t>(gripCmd.setPosit_grip), endRollPosit);
                 }
             }

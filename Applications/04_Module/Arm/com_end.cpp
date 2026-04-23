@@ -131,10 +131,9 @@ int32_t CModArm::CComEnd::PhyPositToMtrPosit_Pitch(float_t phyPosit) {
 }
 
 int32_t CModArm::CComEnd::PhyPositToMtrPosit_Roll(float_t phyPosit) {
-	const int32_t zeroOffset = 0;
 	const float_t scale = ARM_END_ROLL_MOTOR_RATIO;
 
-	return (static_cast<int32_t>(phyPosit * scale) + zeroOffset);
+	return (static_cast<int32_t>(phyPosit * scale) + rollZeroOffset);
 }
 
 /**
@@ -151,10 +150,9 @@ float_t CModArm::CComEnd::MtrPositToPhyPosit_Pitch(int32_t mtrPosit) {
 }
 
 float_t CModArm::CComEnd::MtrPositToPhyPosit_Roll(int32_t mtrPosit) {
-	const int32_t zeroOffset = 0;
 	const float_t scale = ARM_END_ROLL_MOTOR_RATIO;
 
-	return (static_cast<float_t>(mtrPosit - zeroOffset) / scale);
+	return (static_cast<float_t>(mtrPosit - rollZeroOffset) / scale);
 }
 
 /**

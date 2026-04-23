@@ -363,6 +363,22 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
            return APP_OK;
        }
 
+       case EAutoCtrlProcess::STORE_ORE: {
+        currentAutoCtrlProcess_ = EAutoCtrlProcess::STORE_ORE;
+        xTaskCreate(StartStoreTask, "Save Ore Task",
+                    512, this, proc_ModuleTaskPriority,
+                    &autoCtrlTaskHandle_);
+        return APP_OK;
+        }
+
+        case EAutoCtrlProcess::EXCHANGE_ORE : {
+        currentAutoCtrlProcess_ = EAutoCtrlProcess::EXCHANGE_ORE;
+        xTaskCreate(StartExchangeGetTask, "Exchange Ore Task",
+                    512, this, proc_ModuleTaskPriority,
+                    &autoCtrlTaskHandle_);
+        return APP_OK;
+        }
+
 //        case EAutoCtrlProcess::ENERGY_UNIT: {
 //            currentAutoCtrlProcess_ = EAutoCtrlProcess::ENERGY_UNIT;
 //            xTaskCreate(StartEnergyUnitTask, "Grab Energy Unit Task",

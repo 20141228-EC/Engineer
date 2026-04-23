@@ -15,6 +15,7 @@
 #include "algo_ave_filter.hpp"
 #include "algo_kf_filter.hpp"
 #include "algo_imu_ekf.hpp"
+#include "algo_traj_playback.hpp"
 #include "bmi_ekf.h"
 #include "kalman_fliter.h"
 #include "matrix.h"
