@@ -180,7 +180,7 @@ private:
     // 自动任务句柄
     TaskHandle_t autoCtrlTaskHandle_ = nullptr;
 
-    // 自定义控制器模式下的夹爪键盘toggle状态（从static局部变量提成成员，供模式切换时reset）
+    // 自定义控制器模式下的夹爪键盘翻转状态
     bool gripKeyboardcom_ = false;
 
     // 定义系统核心的更新处理

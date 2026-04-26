@@ -397,10 +397,10 @@ private:
 		// 电机位置转换为物理位置: Pitch
 		static float_t MtrPositToPhyPosit_Pitch(int32_t mtrPosit);
 
-		// 物理位置转换为电机位置: Roll（非static，需要访问rollZeroOffset成员）
+		// 物理位置转换为电机位置: Roll
 		int32_t PhyPositToMtrPosit_Roll(float_t phyPosit);
 
-		// 电机位置转换为物理位置: Roll（非static，需要访问rollZeroOffset成员）
+		// 电机位置转换为物理位置: Roll
 		float_t MtrPositToPhyPosit_Roll(int32_t mtrPosit);
 
 		// 输出更新函数
@@ -422,12 +422,12 @@ private:
 			EGripState state = EGripState::RELEASE;	///< 夹爪控制子状态
 			int32_t posit_grip = 0;           	///< 夹爪当前位置（含Roll补偿）
 			int32_t lastSetPosit = 0;			///< 上一次设定位置
-			int32_t holdPosit_Grip = 0;			///< HOLD状态的PID目标（堵转位置）
-			bool isGripped = false; 			///< 是否夹住（上报上层）
+			int32_t holdPosit_Grip = 0;			///< HOLD状态的PID目标
+			bool isGripped = false; 			///< 是否夹住
 			// Roll增量补偿相关
 			int32_t lastEndRollPosit = 0;       ///< 上一次的 Roll 位置
 			float_t rollCompAccum = 0.0f;       ///< 累积的 Roll 补偿量
-			// 软件堵转检测（补充硬件检测在低力矩场景的不足）
+			// 软件堵转检测
 			int32_t lastPositForSoftStall = 0;  ///< 上一周期位置（软件堵转检测）
 			uint16_t softStallCount = 0;        ///< 软件堵转计数器
 		} gripInfo;

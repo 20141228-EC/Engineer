@@ -5,8 +5,8 @@
  * @version 1.4
  * @date 2026-4-25
  *
- * @details V1.4: 控制逻辑解耦 + 软件堵转检测
- *          V1.3: 双状态机重构（RELEASE/HOLD），堵转时PID目标钳位到实际位置，解决积分饱和
+ * @details V1.4: 控制逻辑解耦,软件堵转检测
+ *          V1.3: 双状态机重构（RELEASE/HOLD）
  *          V1.2: 二次夹紧改为闭合方向堵转重新标定
  *          V1.1: 添加Roll轴耦合补偿
  *
@@ -144,7 +144,7 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
 
                 switch(gripInfo.state) {
                     case SGripInfo::EGripState::RELEASE: {
-                        // RELEASE：effectiveTarget 已是 setPosit_grip（默认值）
+                        // RELEASE：effectiveTarget 已是 setPosit_grip
 
                         // --- 硬件堵转检测：电机驱动层检测 ---
                         bool nearMaxOpen = (gripInfo.posit_grip > rangeLimit_Grip - 8192);

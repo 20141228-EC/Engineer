@@ -496,7 +496,6 @@ void CSystemCore::ControlFromController_() {
         const bool regrip_requested = controller.gripper_regrip || regrip_keyboardcom;
         if (regrip_requested) {
             parm_->armCmd.reGripCmd = true;                                  // 传递 re-grip 指令
-            gripKeyboardcom_ = true;                                         // 同时确保闭合状态
         }
         controller.gripper_regrip = false;  // 处理之后清除标志位
         regrip_keyboardcom = false;

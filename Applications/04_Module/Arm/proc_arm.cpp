@@ -109,7 +109,7 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 					arm.armCmd.set_length_grip = CComGrip::MtrPositToPhyPosit(
 						static_cast<float_t>(arm.comGrip_.gripInfo.posit_grip));
 				} else {
-					// 自动任务/保持模式：从 armCmd 设定目标位置，确保手动标志清除
+					// 自动任务：从 armCmd 设定目标位置，确保手动标志清除
 					arm.comGrip_.gripCmd.setPosit_grip =
 						CComGrip::PhyPositToMtrPosit(arm.armCmd.set_length_grip);
 				}
