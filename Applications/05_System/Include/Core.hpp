@@ -47,6 +47,33 @@ public:
         POP_ORE,
     } currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
+    // 面向系统层的控制模式枚举
+    enum class ECtrlMode {
+        NONE,
+        RC_CTRL,            ///< 遥控器控制
+        KEY_CTRL,           ///< 键鼠控制
+        CONTROLLER_CTRL,    ///< 自定义控制器控制
+    } ctrlmode_ = ECtrlMode::NONE;
+
+    // 面向系统层的运动模式枚举
+    enum class EMoveMode {
+        NONE,
+        NORMAL,             ///< 普通
+        CLIMBING,           ///< 上台阶
+        DOWNSTAIR,          ///< 下台阶
+        // ...to be updated...
+    } movemode_ = EMoveMode::NONE;
+
+    enum class EArmMode {
+        NONE,
+        NORMAL,             ///< 普通
+        STORE_L_ORE,           ///< 左边存矿
+        STORE_R_ORE,          ///< 右边存矿
+        GET_L_ORE,           ///< 左边取矿
+        GET_R_ORE,          ///< 右边取矿
+        // ...to be updated...
+    } armmode_ = EArmMode::NONE;
+
     EVarStatus use_Controller_ = false; ///< 是否使用控制器
 
     // 初始化系统核心
@@ -70,6 +97,9 @@ private:
     CSystemBoardLink *pboardlink_ = nullptr;  ///< 板间通信系统指针
 
     TaskHandle_t autoCtrlTaskHandle_ = nullptr;
+
+    // 自定义控制器模式下的夹爪键盘翻转状态
+    bool gripKeyboardcom_ = false;
 
     // 底盘控制指令(由操作手决定)
     struct SChassisCmd {

@@ -136,30 +136,15 @@ void CSystemCore::UpdateHandler_() {
                   static_cast<int>(parm_->armCmd.set_angle_end_roll), static_cast<int>(parm_->armInfo.angle_end_roll),
                   static_cast<int>(parm_->armInfo.angle_end_roll - parm_->armCmd.set_angle_end_roll));
         }
-        // 删除子龙门调试打印信息
-        /* if (psubgantry_) {
-            Print("Subgantry_Stretch_L_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(psubgantry_->subGantryCmd.setStretchPosit_L), static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_L),
-                  static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_L - psubgantry_->subGantryCmd.setStretchPosit_L));
-            Print("Subgantry_Stretch_R_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(psubgantry_->subGantryCmd.setStretchPosit_R), static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_R),
-                  static_cast<int>(psubgantry_->subGantryInfo.stretchPosit_R - psubgantry_->subGantryCmd.setStretchPosit_R));
-            Print("Subgantry_Lift_L_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(psubgantry_->subGantryCmd.setLiftPosit_L), static_cast<int>(psubgantry_->subGantryInfo.liftPosit_L),
-                  static_cast<int>(psubgantry_->subGantryInfo.liftPosit_L - psubgantry_->subGantryCmd.setLiftPosit_L));
-            Print("Subgantry_Lift_R_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(psubgantry_->subGantryCmd.setLiftPosit_R), static_cast<int>(psubgantry_->subGantryInfo.liftPosit_R),
-                  static_cast<int>(psubgantry_->subGantryInfo.liftPosit_R - psubgantry_->subGantryCmd.setLiftPosit_R));
-        }*/
 
     }
 
-    bool zx = SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X;
+    bool zx = SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X; ///< 如果同时按下z和x
     if (SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X) {
         zx_count++;
     }
     // 全部松开之后才清零计数器，否则会因为按下状态的抖动导致自定义控制器模式连续进出
-    else if (SysRemote.remoteInfo.keyboard.key_Z || SysRemote.remoteInfo.keyboard.key_X == false) {
+    else if ((SysRemote.remoteInfo.keyboard.key_Z || SysRemote.remoteInfo.keyboard.key_X) == false) {
         zx_count = 0;
         zx_flag = false;
     }
@@ -167,30 +152,110 @@ void CSystemCore::UpdateHandler_() {
     if (zx_count > 20 && zx_flag == false) {
         zx_flag = true;
         zx_count = 0;
-        use_Controller_ = !use_Controller_;
-        if (use_Controller_ == true) {
-            // 根据当前在哪个自动任务中调整臂的初始角度
-            if (currentAutoCtrlProcess_ == EAutoCtrlProcess::EXCHANGE) {
-
-            }
-            else {
-
-            }
-            SysControllerLink.robotInfo.controlled_by_controller = true;
-            SysControllerLink.robotInfo.ask_return_flag = true;
-            StopAutoCtrlTask_(); // 停止自动任务运行
-        }
-        if (use_Controller_ == false) {
-            // StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE); // 已删除此自动流程
-            // TODO: 决定切换出自定义控制器模式后的行为
+        if (!use_Controller_ && !SysControllerLink.IsControllerOnline()) {
+            // 自定义控制器不在线同时不是自定义控制器控制的时候无法切换
+            // pgimbal_->gimbalInfo.isIntoControll = false;//切换出来清空云台标志位
+        } else {
+            use_Controller_ = !use_Controller_;
         }
     }
+    if (use_Controller_ != last_use_Controller) {
+        if (use_Controller_ == true) {
+            SysControllerLink.robotInfo.controlled_by_controller = true;
+            if (parm_) {
+                auto &armCmd = parm_->armCmd;
+                const auto &armInfo = parm_->armInfo;
+                armCmd.isCustomCtrl = true; 
+                armCmd.set_angle_Yaw = armInfo.angle_Yaw;
+                armCmd.set_angle_Pitch1 = armInfo.angle_Pitch1;
+                armCmd.set_angle_Pitch2 = armInfo.angle_Pitch2;
+                armCmd.set_angle_Pitch3 = armInfo.angle_Pitch3;
+                armCmd.set_angle_Roll = armInfo.angle_Roll;
+                armCmd.set_angle_end_pitch = armInfo.angle_end_pitch;
+                armCmd.set_angle_end_roll = armInfo.angle_end_roll;
+                armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
+                armCmd.set_speed_grip = 0;
+            }
+            // hold_grip_after_controller_switch_ = true;
+            // // 自动任务部分
+            // if (currentAutoCtrlProcess_ == EAutoCtrlProcess::EXCHANGE_ORE) {
+    
+            // }
+            else {
+                StopAutoCtrlTask_(); // 停止自动任务运行
+               // 根据当前在哪个自动任务中调整臂的初始角度
+            // SysControllerLink.robotInfo.controlled_by_controller = true;
+            // SysControllerLink.robotInfo.ask_reset_flag = true;
+            }
+        }
+        if (use_Controller_ == false) { //切换出自定义控制器的瞬间保留最后一帧数值避免后续出现大幅跳变，且切换出自定义控制器模式后不再受控制器输入影响
+            SysControllerLink.robotInfo.controlled_by_controller = false;
+            if (parm_) {
+                auto &armCmd = parm_->armCmd;
+                const auto &armInfo = parm_->armInfo;
+                armCmd.isCustomCtrl = false;
+                armCmd.set_angle_Yaw = armInfo.angle_Yaw;
+                armCmd.set_angle_Pitch1 = armInfo.angle_Pitch1;
+                armCmd.set_angle_Pitch2 = armInfo.angle_Pitch2;
+                armCmd.set_angle_Pitch3 = armInfo.angle_Pitch3;
+                armCmd.set_angle_Roll = armInfo.angle_Roll;
+                armCmd.set_angle_end_pitch = armInfo.angle_end_pitch;
+                armCmd.set_angle_end_roll = armInfo.angle_end_roll;
+                armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
+                armCmd.set_speed_grip = 0;
+            }
+        }
+    }
+    if (parm_) {   //反馈给控制器的数据
+        // 角度
+            SysControllerLink.robotInfo.arm.yaw       = parm_->armInfo.angle_Yaw;
+            SysControllerLink.robotInfo.arm.pitch1     = parm_->armInfo.angle_Pitch1;
+            SysControllerLink.robotInfo.arm.pitch2     = parm_->armInfo.angle_Pitch2;
+            SysControllerLink.robotInfo.arm.pitch3     = parm_->armInfo.angle_Pitch3;
+            SysControllerLink.robotInfo.arm.roll       = parm_->armInfo.angle_Roll;
+            SysControllerLink.robotInfo.arm.pitch_end  = parm_->armInfo.angle_end_pitch;
+
+            // 力矩/电流：直接传原始值，避免转物理量后被int16截断为0
+            SysControllerLink.robotInfo.torque.yaw       = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::Y]->motorData[CDevMtr::DATA_CURRENT]);
+            SysControllerLink.robotInfo.torque.pitch1    = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::P1]->motorData[CDevMtr::DATA_CURRENT]);
+            SysControllerLink.robotInfo.torque.pitch2    = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::P2]->motorData[CDevMtr::DATA_CURRENT]);
+            SysControllerLink.robotInfo.torque.pitch3    = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::P3]->motorData[CDevMtr::DATA_CURRENT]);
+            SysControllerLink.robotInfo.torque.roll      = static_cast<float>(parm_->comRoll_.motor->motorData[CDevMtr::DATA_TORQUE]);
+            SysControllerLink.robotInfo.torque.pitch_end = 0.f;  // 末端由双M2006差速驱动，暂不处理
+        }
+    SysControllerLink.robotInfo.robot_init_ok =
+        (parm_ && parm_->armInfo.isModuleAvailable) && (SysRemote.systemStatus == APP_OK);
+
+        // if (use_Controller_ == false) {
+        //     // StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE); // 已删除此自动流程
+        //     // TODO: 决定切换出自定义控制器模式后的行为
+        // }
     
     ControlFromEsp32_(); // ESP32控制
 
-    if (use_Controller_ == true)
-    {
-        ControlFromController_();
+    if (use_Controller_ == true){//在不主动切换模式的情况下，如果控制器掉线自动退出控制器模式
+        // 控制器掉线保护
+        if (!SysControllerLink.IsControllerOnline()) {
+            use_Controller_ = false;
+            SysControllerLink.robotInfo.controlled_by_controller = false;//控制器被反向控制
+            if (parm_) { // 同理自动保存最后一帧的数据
+                parm_->armCmd.isCustomCtrl = false;
+                parm_->armCmd.set_angle_Yaw = parm_->armInfo.angle_Yaw;
+                parm_->armCmd.set_angle_Pitch1 = parm_->armInfo.angle_Pitch1;
+                parm_->armCmd.set_angle_Pitch2 = parm_->armInfo.angle_Pitch2;
+                parm_->armCmd.set_angle_Pitch3 = parm_->armInfo.angle_Pitch3;
+                parm_->armCmd.set_angle_Roll = parm_->armInfo.angle_Roll;
+                parm_->armCmd.set_angle_end_pitch = parm_->armInfo.angle_end_pitch;
+                parm_->armCmd.set_angle_end_roll = parm_->armInfo.angle_end_roll;
+                parm_->armCmd.set_length_grip = parm_->armInfo.length_grip;  ///< 保存当前夹爪位置
+            }
+            if (pgimbal_) {
+                // pgimbal_->gimbalInfo.isIntoControll = false; ///< 控制器掉线也清除云台归位标志
+            }
+        } else {
+            ControlFromController_();
+            ctrlmode_ = ECtrlMode::CONTROLLER_CTRL; ///< 自定义控制器控制
+        }
     }
     else
     {
@@ -199,17 +264,16 @@ void CSystemCore::UpdateHandler_() {
         && SysRemote.remoteInfo.remote.switch_R == 1)
         {
             ControlFromKeyboard_();
+            ctrlmode_ = ECtrlMode::KEY_CTRL; ///< 键鼠控制
         }
-        else
+        else ///< 其他情况均为遥控器控制
         {
             ControlFromRemote_();
+            ctrlmode_ = ECtrlMode::RC_CTRL; ///< 遥控器控制
         }
-
-        Chassis_UpdateHandler_();
-        RestrictChassisCmd_();
     }
 
-    BoardLink_Info_Update_();
+    BoardLink_Info_Update_(); ///< 更新板间通信数据包
     
     last_use_Controller = use_Controller_;
     
@@ -410,10 +474,10 @@ void CSystemCore::Chassis_UpdateHandler_(){
         float_t yaw_angle = pgimbal_->gimbalInfo.encoder_yaw / 32768.f * 3.1415926;     // 归一到-pi~pi之间
         if(chassisCmd.is_spin_on){
             cycle = fabs(sin(HAL_GetTick() / 1000.f * 3.1415926) * 30);
-            cycle = std::clamp(cycle, 0.f, 30.f);     // 变速小陀螺，但是限制最低速度
+            cycle = std::clamp(cycle, 10.f, 30.f);     // 变速小陀螺，但是限制最低速度
         }
         else{
-            cycle = std::clamp(yaw_angle * 50, -100.f, 100.f);    // magic number,后续需要调整
+            cycle = std::clamp(yaw_angle * 50, -100.f, 100.f);    // 50是magic number,后续需要调整
         }   // 开小陀螺与否
         chassisCmd_.speed_y_ = front * cos(yaw_angle) - right * sin(yaw_angle);
         chassisCmd_.speed_x_ = right * cos(yaw_angle) + front * sin(yaw_angle);   // 根据云台角度计算底盘运动正方向

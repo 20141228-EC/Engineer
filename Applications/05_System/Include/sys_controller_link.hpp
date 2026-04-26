@@ -1,13 +1,15 @@
 /******************************************************************************
- * @brief        
- * 
+ * @brief
+ *
  * @file         sys_controller_link.hpp
  * @author       Fish_Joe (2328339747@qq.com)
- * @version      V1.0
+ * @version      V2.0
  * @date         2025-04-05
- * 
+ * @LastEditors  Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-17
+ *
  * @copyright    Copyright (c) 2025
- * 
+ *
  ******************************************************************************/
 
 #ifndef SYS_CONTROLLER_LINK_HPP
@@ -20,7 +22,7 @@ namespace my_engineer {
 
 /**
  * @brief 控制器通信系统类
- * 
+ *
  */
 class CSystemControllerLink final: public CSystemBase{
 public:
@@ -30,34 +32,51 @@ public:
 		EDeviceID controllerLinkDevID = EDeviceID::DEV_NULL; ///< 控制器通信设备ID
 	};
 
-	enum KEY_STATUS  {RELEASE = 0, PRESS = 1, LONG_PRESS = 2,};
+	// 拨杆档位枚举
+	enum EToggleSwitch : uint8_t {
+		TOGGLE_MIDDLE = 0,     ///< 中档
+		TOGGLE_ARM_ROLL = 1,   ///< 臂Roll末端模式
+		TOGGLE_CHASSIS = 2,    ///< 底盘模式
+	};
+
+	// 单臂角度结构体（5轴）
+	struct SArmAngles {
+		float_t yaw = 0.0f;
+		float_t pitch1 = 0.0f;
+		float_t pitch2 = 0.0f;
+		float_t pitch3 = 0.0f;
+		float_t roll = 0.0f;
+		float_t pitch_end = 0.0f;
+	};
 
 	// ControllerLink信息结构体(Controller -> Robot)
 	struct SControllerLinkInfo {
-		bool controller_OK = false;
-		bool return_success = false;
-		int8_t Rocker_X = 0;
-		int8_t Rocker_Y = 0;
-		KEY_STATUS Rocker_Key = KEY_STATUS::RELEASE;
-		float_t angle_yaw = 0.f;
-		float_t angle_pitch1 = 0.f;
-		float_t angle_pitch2 = 0.f;
-		float_t angle_roll = 0.0f;
-		float_t angle_pitch_end = 0.0f;
-		float_t angle_roll_end = 0.0f;
+		bool controller_OK = false;          ///< 控制器状态OK
+		bool return_success = false;         ///< 归位成功标志
+		//EToggleSwitch toggle_switch = TOGGLE_MIDDLE;  ///< 拨杆档位
+		bool gripper_close = false;          ///< 夹爪闭合
+		bool gripper_regrip = false;         ///< 夹爪二次夹紧请求（脉冲信号）
+		SArmAngles arm;                      ///< 单臂5轴角度
+		int8_t rocker_X = 0;                 ///< 摇杆X: roll_end / 底盘左右移动 (-100~100)
+		int8_t rocker_Y = 0;                 ///< 摇杆Y: 底盘前进 (-100~100)
 	} controllerInfo;
 
 	// 机器人信息结构体(Robot -> Controller)
 	struct SRobotInfo {
-		bool ask_reset_flag = false; ///< 是否要求复位
+		bool ask_reset_flag = false;         ///< 是否要求复位
 		bool controlled_by_controller = false; ///< 是否被控制器控制
-		bool ask_return_flag = false; ///< 是否要求归位
-		float_t angle_yaw = 0.f;
-		float_t angle_pitch1 = 0.f;
-		float_t angle_pitch2 = 0.f;
-		float_t angle_roll = 0.0f;
-		float_t angle_pitch_end = 0.0f;
+		bool robot_init_ok = false;          ///< 机器人初始化完成
+		bool p3_lock = false;                ///< P3锁定标志
+		SArmAngles arm;                      ///< 单臂6轴角度
+		SArmAngles torque;                   ///< 臂部力矩/电流反馈（原始值转float）
 	} robotInfo;
+
+	// 控制器是否在线（设备层心跳/数据层标志位）
+	bool IsControllerOnline() const {
+		return pcontrollerLink_
+			&& pcontrollerLink_->controllerLinkStatus == CDevControllerLink::EControllerLinkStatus::ONLINE
+			&& controllerInfo.controller_OK;
+	}
 
 	// 初始化系统
 	EAppStatus InitSystem(SSystemInitParam_Base *pStruct) final;

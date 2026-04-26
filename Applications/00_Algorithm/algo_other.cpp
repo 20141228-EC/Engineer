@@ -37,4 +37,15 @@ float_t Round(float_t x) {
 	}
 }
 
+float_t CAlgoLinearInterp::update(){
+		if (step_ < period_) step_++;
+		float_t t = static_cast<float_t>(step_) / static_cast<float_t>(period_);
+		return start_ + (target_ - start_) * t;
+	};
+void CAlgoLinearInterp::setTarget(float_t current, float_t target){
+		start_ = current;
+		target_ = target;
+		step_ = 0;
+	}	
+
 }// namespace my_engineer

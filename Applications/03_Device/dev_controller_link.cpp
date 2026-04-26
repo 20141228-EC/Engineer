@@ -3,9 +3,11 @@
  * 
  * @file         dev_controller_link.cpp
  * @author       Fish_Joe (2328339747@qq.com)
- * @version      V1.0
+ * @version      V2.0
  * @date         2025-04-05
- * 
+ * @LastEditors  Ciallo(1002046597@qq.com)
+ * @LastEditTime 2026-01-17
+ *
  * @copyright    Copyright (c) 2025
  * 
  ******************************************************************************/
@@ -33,7 +35,13 @@ EAppStatus CDevControllerLink::InitDevice(const SDevInitParam_Base *pStructInitP
 
 	auto callback = [this](auto &buffer, auto len) {
 		if (len > 512) return;
-		std::copy(buffer.data(), buffer.data() + len , rxBuffer_.data());
+		// 写入当前写缓冲区，不影响主循环正在读取的另一个缓冲区
+		auto &writeBuf = rxBuffers_[rxWriteIdx_];
+		std::copy(buffer.data(), buffer.data() + len, writeBuf.data());
+		if (len < 512) {
+			std::fill(writeBuf.begin() + len, writeBuf.end(), 0);
+		}
+		rxNewData_ = true;
 		rxTimestamp_ = HAL_GetTick();
 	};
 
@@ -64,7 +72,7 @@ EAppStatus CDevControllerLink::SendPackage(EPackageID packageID, SPkgHeader &pac
 			auto pkg = reinterpret_cast<SControllerDataPkg *>(&packageHeader);
 			pkg->header.SOF = 0xA5;
 			pkg->header.seq++;
-			pkg->header.pkgLen = sizeof(SControllerDataPkg) - sizeof(SPkgHeader) - 2; // 2 bytes for CRC16
+			pkg->header.pkgLen = sizeof(SControllerDataPkg) - sizeof(SPkgHeader) - 2; // 30 bytes
 			pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&(pkg->header)), 4);
 			pkg->header.cmd_Id = 0x0302;
 			pkg->CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(pkg), sizeof(SControllerDataPkg) - 2);
@@ -76,7 +84,7 @@ EAppStatus CDevControllerLink::SendPackage(EPackageID packageID, SPkgHeader &pac
 			auto pkg = reinterpret_cast<SRobotDataPkg *>(&packageHeader);
 			pkg->header.SOF = 0xA5;
 			pkg->header.seq++;
-			pkg->header.pkgLen = sizeof(SRobotDataPkg) - sizeof(SPkgHeader)- 2; // 2 bytes for CRC16
+			pkg->header.pkgLen = sizeof(SRobotDataPkg) - sizeof(SPkgHeader) - 2; // 30 bytes
 			pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&(pkg->header)), 4);
 			pkg->header.cmd_Id = 0x0309;
 			pkg->CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(pkg), sizeof(SRobotDataPkg) - 2);
@@ -91,13 +99,25 @@ EAppStatus CDevControllerLink::SendPackage(EPackageID packageID, SPkgHeader &pac
 
 /**
  * @brief 更新处理
- * 
+ *
+ * 双缓冲交换策略：
+ *   1. ISR 始终写入 rxBuffers_[rxWriteIdx_]
+ *   2. 主循环检测到新数据后，在临界区内交换索引
+ *   3. 主循环从旧写缓冲区（现读缓冲区）解析数据
+ *   4. ISR 此后写入另一个缓冲区，互不干扰
  */
 void CDevControllerLink::UpdateHandler_(){
 	if (deviceStatus == APP_RESET) return;
 
-	if (rxTimestamp_ > lastHeartbeatTime_) {
-		ResolveRxPackage_();
+	if (rxNewData_ && rxTimestamp_ > lastHeartbeatTime_) {
+		// 临界区：仅交换索引 + 清标志位，耗时极短
+		__disable_irq();
+		uint8_t readIdx = rxWriteIdx_;        // 拿到刚写完的缓冲区
+		rxWriteIdx_ = 1 - rxWriteIdx_;        // ISR 下次写入另一个缓冲区
+		rxNewData_ = false;
+		__enable_irq();
+
+		ResolveRxPackage_(rxBuffers_[readIdx]);
 	}
 }
 
@@ -121,28 +141,29 @@ void CDevControllerLink::HeartbeatHandler_(){
 
 /**
  * @brief 解析接收数据包
- * 
- * @return EAppStatus 
+ *
+ * @param buffer 待解析的缓冲区引用（由 UpdateHandler_ 传入已交换的读缓冲区）
+ * @return EAppStatus
  */
-EAppStatus CDevControllerLink::ResolveRxPackage_(){
+EAppStatus CDevControllerLink::ResolveRxPackage_(std::array<uint8_t, 512> &buffer){
 
 	if (deviceStatus == APP_RESET) return APP_ERROR;
 
-	for (size_t i = 0; i < rxBuffer_.size(); i++)
+	for (size_t i = 0; i < buffer.size(); i++)
 	{
-		if (rxBuffer_[i] != 0xA5) {
+		if (buffer[i] != 0xA5) {
 			continue;
 		}
 
-		auto header = reinterpret_cast<SPkgHeader *>(&rxBuffer_[i]);
-		if (CCrcValidator::Crc8Verify(rxBuffer_.data(), header->CRC8, 4) != APP_OK) {
+		auto header = reinterpret_cast<SPkgHeader *>(&buffer[i]);
+		if (CCrcValidator::Crc8Verify(&buffer[i], header->CRC8, 4) != APP_OK) {
 			continue;
 		}
 
 		switch (header->cmd_Id) {
 
 			case 0x0302: {
-				if (i + sizeof(SControllerDataPkg) > rxBuffer_.size())
+				if (i + sizeof(SControllerDataPkg) > buffer.size())
 					break;
 				auto pkg = reinterpret_cast<SControllerDataPkg *>(header);
 				if (CCrcValidator::Crc16Verify(reinterpret_cast<uint8_t *>(pkg), pkg->CRC16, sizeof(SControllerDataPkg) - 2) != APP_OK)
@@ -153,7 +174,7 @@ EAppStatus CDevControllerLink::ResolveRxPackage_(){
 			}
 
 			case 0x0309: {
-				if (i + sizeof(SRobotDataPkg) > rxBuffer_.size())
+				if (i + sizeof(SRobotDataPkg) > buffer.size())
 					break;
 				auto pkg = reinterpret_cast<SRobotDataPkg *>(header);
 				if (CCrcValidator::Crc16Verify(reinterpret_cast<uint8_t *>(pkg), pkg->CRC16, sizeof(SRobotDataPkg) - 2) != APP_OK)
@@ -169,7 +190,7 @@ EAppStatus CDevControllerLink::ResolveRxPackage_(){
 		}
 	}
 
-	rxBuffer_.fill(0);
+	buffer.fill(0);
 	lastHeartbeatTime_ = HAL_GetTick();
 	return APP_OK;
 
