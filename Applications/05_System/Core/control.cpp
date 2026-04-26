@@ -367,8 +367,7 @@ void CSystemCore::ControlFromController_() {
 
     SysControllerLink.robotInfo.controlled_by_controller = true;
 
-    // 夹爪控制（按步长渐变，使用控制器右手夹爪按钮）
-    constexpr float grip_speed = 160.0f;  
+    // 夹爪控制：Core层仅传递标志位，速度渐变由组件层处理
         // 检测是否正在进行模式切换（Z+X同时按住），切换期间冻结夹爪防止意外松开
     bool mode_switching = SysRemote.remoteInfo.keyboard.key_Z
                            && SysRemote.remoteInfo.keyboard.key_X;
@@ -508,29 +507,22 @@ void CSystemCore::ControlFromController_() {
         // } else {
         //     parm_->armCmd.set_speed_grip = 0;             // 模式切换冻结
         // }
-        static bool grip_keyboardcom = false;//键盘手动控制夹爪
         if(keyboard_edge.key_C == CSystemRemote::ERemoteEdge::Rising){
-            grip_keyboardcom = !grip_keyboardcom;
+            gripKeyboardcom_ = !gripKeyboardcom_;
         }
-        const bool grip_close_cmd = controller.gripper_close || grip_keyboardcom;
-        if (hold_grip_after_controller_switch_) {
-            parm_->armCmd.set_length_grip = parm_->armInfo.length_grip;
-            if (grip_close_cmd || regrip_requested) {
-                hold_grip_after_controller_switch_ = false;
-            }
-        } else if (grip_close_cmd) {
-             if (!parm_->armInfo.isGripped) {
-                 parm_->armCmd.set_length_grip -= grip_speed / freq;    ///< 闭合中
-             } else {
-                 parm_->armCmd.set_length_grip = parm_->armInfo.holdLength_grip;  ///< 夹住后保持位置
-             }
+        const bool grip_close_cmd = controller.gripper_close || gripKeyboardcom_;
+        if (grip_close_cmd) {
+             parm_->armCmd.gripClose = true;
+             parm_->armCmd.gripOpen = false;
+             // isGripped 判断由组件层 HOLD 状态自动处理
          } else if (!mode_switching) {
-             
-                 parm_->armCmd.set_length_grip += grip_speed / freq;    ///< 未夹取时才允许张开
-             
-             ///< 已夹取但双击松开时保持位置，防止意外松手
+             parm_->armCmd.gripClose = false;
+             parm_->armCmd.gripOpen = true;
+         } else {
+             // 模式切换期间冻结，清零标志防止残留
+             parm_->armCmd.gripClose = false;
+             parm_->armCmd.gripOpen = false;
          }
-         parm_->armCmd.set_length_grip = std::clamp(parm_->armCmd.set_length_grip, 0.0f, 65.0f);
     }
         // LowPassFilter(parm_->armCmd.set_angle_end_roll,
         //     Round(controller.angle_roll_end), 0.5f);
