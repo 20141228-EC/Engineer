@@ -180,8 +180,8 @@ private:
     // 自动任务句柄
     TaskHandle_t autoCtrlTaskHandle_ = nullptr;
 
-    // 进入自定义控制后的夹爪保持标志，避免切模式瞬间因无按键而误松开
-    bool hold_grip_after_controller_switch_ = false;
+    // 自定义控制器模式下的夹爪键盘toggle状态（从static局部变量提成成员，供模式切换时reset）
+    bool gripKeyboardcom_ = false;
 
     // 定义系统核心的更新处理
     void UpdateHandler_();

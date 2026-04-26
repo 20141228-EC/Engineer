@@ -163,7 +163,7 @@ void CSystemCore::UpdateHandler_() {
                 armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
                 armCmd.set_speed_grip = 0;
             }
-            hold_grip_after_controller_switch_ = true;
+            gripKeyboardcom_ = false;  ///< 重置夹爪toggle状态，防止残留
             // 自动任务部分
             if (currentAutoCtrlProcess_ == EAutoCtrlProcess::EXCHANGE_ORE) {
     
@@ -191,7 +191,6 @@ void CSystemCore::UpdateHandler_() {
                 armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
                 armCmd.set_speed_grip = 0;
             }
-            hold_grip_after_controller_switch_ = false;
             if (pgimbal_) {
                 pgimbal_->gimbalInfo.isIntoControll = false; ///< 清除云台归位标志，下次进入时重新归位
             }
@@ -223,6 +222,12 @@ void CSystemCore::UpdateHandler_() {
         // }
     
     ControlFromEsp32_(); // ESP32控制
+
+    // 每周期重置手动夹爪标志，由对应控制函数按需设置
+    if (parm_) {
+        parm_->armCmd.gripClose = false;
+        parm_->armCmd.gripOpen = false;
+    }
 
     if (use_Controller_ == true){//在不主动切换模式的情况下，如果控制器掉线自动退出控制器模式
         // 控制器掉线保护

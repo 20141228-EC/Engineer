@@ -80,6 +80,7 @@
 #define ARM_END_PITCH_INIT_ANGLE 0.0f
 #define ARM_END_ROLL_INIT_ANGLE 0.0f
 #define ARM_GRIP_INIT_LENGTH 0.0f
+#define ARM_GRIP_MANUAL_SPEED_MM_S 160.0f	///< 夹爪手动控制速度（mm/s）
 
 #define POSIT_JOINT1_YAW_MACH 43920
 #define POSIT_JOINT1_YAW_MACH_PHY 0.f
@@ -199,8 +200,10 @@ public:
 		float_t set_angle_Roll = 0.0f; ///< 机械臂关节Roll角度设定
 		float_t set_angle_end_pitch = 0.0f; ///< 机械臂末端Pitch角度设定
 		float_t set_angle_end_roll = 0.0f; ///< 机械臂末端Roll角度设定
-		float_t set_length_grip = 0.0f; ///< 机械臂夹爪角度设定
+		float_t set_length_grip = 0.0f; ///< 机械臂夹爪距离设定（自动任务直接设定）
 		float_t set_speed_grip = 0.0f; ///< 机械臂夹爪速度设定
+		bool gripClose = false;           ///< 手动闭合标志（Core层设置）
+		bool gripOpen = false;            ///< 手动张开标志（Core层设置）
 	} armCmd;
 
 	CModArm() = default;
@@ -415,23 +418,26 @@ private:
 		const int32_t rangeLimit_Grip = ARM_END_GRIP_MOTOR_RANGE; ///< 夹爪电机位置范围限制
 		// 定义夹爪信息结构体
 		struct SGripInfo {
-			int32_t posit_grip = 0;           	///< 夹爪当前位置
-			int32_t lastSetPosit = 0;			///< 上一次设定位置（用于方向判断）
-			float_t distance = 0;       		///< 夹爪距离
-			int32_t holdPosit_Grip = 0;			///< 记忆夹持位置
-			bool isGripped = false; 			///< 是否夹住
-        	bool cmdGrip = false;   			///< 抓取（自适应力控）
-        	bool cmdRelease = false;   			///< 释放
-			bool isRecalibrating = false;
+			enum class EGripState : uint8_t { RELEASE = 0, HOLD = 1 };
+			EGripState state = EGripState::RELEASE;	///< 夹爪控制子状态
+			int32_t posit_grip = 0;           	///< 夹爪当前位置（含Roll补偿）
+			int32_t lastSetPosit = 0;			///< 上一次设定位置
+			int32_t holdPosit_Grip = 0;			///< HOLD状态的PID目标（堵转位置）
+			bool isGripped = false; 			///< 是否夹住（上报上层）
 			// Roll增量补偿相关
 			int32_t lastEndRollPosit = 0;       ///< 上一次的 Roll 位置
 			float_t rollCompAccum = 0.0f;       ///< 累积的 Roll 补偿量
+			// 软件堵转检测（补充硬件检测在低力矩场景的不足）
+			int32_t lastPositForSoftStall = 0;  ///< 上一周期位置（软件堵转检测）
+			uint16_t softStallCount = 0;        ///< 软件堵转计数器
 		} gripInfo;
 
 		// 定义夹爪控制命令结构体
 		struct SGripCmd {
-			int32_t setPosit_grip = 0;        ///< 夹爪目标距离
+			int32_t setPosit_grip = 0;        ///< 夹爪目标位置（自动任务直接设定 / 手动模式内部渐变）
 			bool cmdReGrip = false;				///< 二次夹紧命令
+			bool cmdClose = false;				///< 手动闭合标志（每周期由Core层设置）
+			bool cmdOpen = false;				///< 手动张开标志（每周期由Core层设置）
 		} gripCmd;
 
 		// PID控制器
