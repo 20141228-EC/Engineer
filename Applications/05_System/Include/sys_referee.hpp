@@ -68,7 +68,7 @@ private:
 
 	std::array<CDevReferee::SUiFigureConfig, 13> uiConfig;
 
-	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> hipTextMsg, crawlerTextMsg, modeTextMsg, curModeTextMsg, hipInfoTextMsg, p3LockTextMsg;
+	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> hipTextMsg, crawlerTextMsg, gripCloseTextMsg, modeTextMsg, curModeTextMsg, hipInfoTextMsg, p3LockTextMsg;
 
 	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawPentaMsg> visionFigureMsg;
 
@@ -82,7 +82,7 @@ private:
 	
 	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawPentaMsg> armAngleFigureMsg, armYawFigureMsg;
 
-	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawSingleMsg> p3LockMsg;
+	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawSingleMsg> p3LockMsg, gripCloseMsg;
 
     CDevReferee *pRefereeDev_ = nullptr;
 

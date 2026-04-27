@@ -109,8 +109,8 @@ float CModChassis::CalcTotalDemandPower(const CComWheelset& wheelset){
         static_cast<float>(wheelset.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_SPEED]),
         static_cast<float>(wheelset.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_SPEED])
     };
-    totalDemand += (powerCtrlLF_.CalcMotorPower(speed[0], torque[0]) > 0.0f) ? powerCtrlLF_.CalcMotorPower(speed[0], torque[0]) : 0.0f;
-    totalDemand += (powerCtrlRF_.CalcMotorPower(speed[1], torque[1]) > 0.0f) ? powerCtrlRF_.CalcMotorPower(speed[1], torque[1]) : 0.0f;
+    totalDemand += (!is_climbing && powerCtrlLF_.CalcMotorPower(speed[0], torque[0]) > 0.0f) ? powerCtrlLF_.CalcMotorPower(speed[0], torque[0]) : 0.0f;
+    totalDemand += (!is_climbing && powerCtrlRF_.CalcMotorPower(speed[1], torque[1]) > 0.0f) ? powerCtrlRF_.CalcMotorPower(speed[1], torque[1]) : 0.0f;
     totalDemand += (powerCtrlLB_.CalcMotorPower(speed[2], torque[2]) > 0.0f) ? powerCtrlLB_.CalcMotorPower(speed[2], torque[2]) : 0.0f;
     totalDemand += (powerCtrlRB_.CalcMotorPower(speed[3], torque[3]) > 0.0f) ? powerCtrlRB_.CalcMotorPower(speed[3], torque[3]) : 0.0f;
     
@@ -152,6 +152,11 @@ void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetPo
     targetPower[2] = maxTotalWheels;
     targetPower[3] = maxTotalWheels;
 
+    // if (is_climbing) {
+    //     targetPower[0] = 0.0f;
+    //     targetPower[1] = 0.0f;
+    // }
+
     // 只有 系统总需求(轮毂+履带) 超限才执行动态压缩
     if (totalDemand > chassisMax + 1e-6f) {
         float demand[4] = {
@@ -172,6 +177,11 @@ void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetPo
                 static_cast<float>(wheelset.mtrOutputBuffer[CComWheelset::RB])
             )
         };
+
+        // if (is_climbing) {
+        //     demand[0] = 0.0f;
+        //     demand[1] = 0.0f;
+        // }
 
         // // 前轮多分功率版
         // const float front_weight = 1.f; // 1000.f 定义前轮权重
@@ -205,9 +215,9 @@ void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetPo
         float totalAbsDemand = std::max(demand[0], 0.0f) + std::max(demand[1], 0.0f) + std::max(demand[2], 0.0f) + std::max(demand[3], 0.0f);
         if (totalAbsDemand < 1e-3f) {
             // 无有效需求时，平均分配总功率
-            float avgPower = maxTotalWheels / 4.0f;
-            targetPower[0] = avgPower;
-            targetPower[1] = avgPower;
+            float avgPower = is_climbing ? (maxTotalWheels / 2.0f) : (maxTotalWheels / 4.0f);
+            targetPower[0] = is_climbing ? 0.0f : avgPower;
+            targetPower[1] = is_climbing ? 0.0f : avgPower;
             targetPower[2] = avgPower;
             targetPower[3] = avgPower;
         } else {
