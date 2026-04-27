@@ -152,10 +152,10 @@ void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetPo
     targetPower[2] = maxTotalWheels;
     targetPower[3] = maxTotalWheels;
 
-    if (is_climbing) {
-        targetPower[0] = 0.0f;
-        targetPower[1] = 0.0f;
-    }
+    // if (is_climbing) {
+    //     targetPower[0] = 0.0f;
+    //     targetPower[1] = 0.0f;
+    // }
 
     // 只有 系统总需求(轮毂+履带) 超限才执行动态压缩
     if (totalDemand > chassisMax + 1e-6f) {
@@ -178,10 +178,10 @@ void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetPo
             )
         };
 
-        if (is_climbing) {
-            demand[0] = 0.0f;
-            demand[1] = 0.0f;
-        }
+        // if (is_climbing) {
+        //     demand[0] = 0.0f;
+        //     demand[1] = 0.0f;
+        // }
 
         // // 前轮多分功率版
         // const float front_weight = 1.f; // 1000.f 定义前轮权重

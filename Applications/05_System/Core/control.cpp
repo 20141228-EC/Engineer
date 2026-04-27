@@ -515,13 +515,14 @@ void CSystemCore::ControlFromController_() {
              parm_->armCmd.gripClose = true;
              parm_->armCmd.gripOpen = false;
              // isGripped 判断由组件层 HOLD 状态自动处理
-         } else if (!mode_switching) {
-             parm_->armCmd.gripClose = false;
-             parm_->armCmd.gripOpen = true;
-         } else {
-             // 模式切换期间冻结，清零标志防止残留
+         } else if (!SysControllerLink.robotInfo.controlled_by_controller) {
              parm_->armCmd.gripClose = false;
              parm_->armCmd.gripOpen = false;
+         } 
+         else {
+             // 模式切换期间冻结，清零标志防止残留
+             parm_->armCmd.gripClose = false;
+             parm_->armCmd.gripOpen = true;
          }
     }
         // LowPassFilter(parm_->armCmd.set_angle_end_roll,

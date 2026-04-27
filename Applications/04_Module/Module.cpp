@@ -46,7 +46,7 @@ EAppStatus CModBase::StopModule() {
     if (moduleStatus == APP_RESET) return APP_ERROR;
 
     Module_FSMFlag_ = FSM_RESET; // 将模块设置为重置状态
-    CreateModuleTask_(); // 创建模块任务
+    // CreateModuleTask_(); // 创建模块任务
 
     moduleStatus = APP_OK;
 

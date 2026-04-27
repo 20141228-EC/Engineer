@@ -894,6 +894,7 @@ void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
 void CSystemReferee::UI_UpdateStateFigureDrawing_() {
 
   static auto &chassis_info = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->chassisInfo;
+  static auto &grip_info = reinterpret_cast<CModArm *>(ModuleIDMap.at(EModuleID::MOD_ARM))->armCmd;
 
 	stateFigureMsg.message.figureConfig[0].operate = 2;
 	stateFigureMsg.message.figureConfig[0].color = (chassis_info.crawler_on) ? 3 : 7;
@@ -941,7 +942,7 @@ void CSystemReferee::UI_UpdateStateFigureDrawing_() {
   proc_waitMs(50);
 
   gripCloseTextMsg.message.figureConfig.operate = 2;
-  if(true) {    // 这里留出来，等后面有了夹爪标志位加上
+  if(grip_info.gripClose) {    // 这里留出来，等后面有了夹爪标志位加上
     gripCloseTextMsg.message.figureConfig.color = 2;
   }
   else {
