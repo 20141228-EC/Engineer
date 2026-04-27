@@ -167,7 +167,7 @@ EAppStatus CModArm::RestrictArmCommand_() {
 	// 自动控制模式下跳过后续更复杂的动态限位
 	static float_t prevPitch1 = ARM_PITCH1_INIT_ANGLE;
 	if (armCmd.isAutoCtrl) {
-		//prevPitch1 = armCmd.set_angle_Pitch1;  ///< 保持追踪，防止退出自动模式时P1-P2耦合跳变
+		prevPitch1 = armCmd.set_angle_Pitch1;  ///< 保持追踪，防止退出自动模式时P1-P2耦合跳变
         return APP_OK;	
     }
     // 物理限位
