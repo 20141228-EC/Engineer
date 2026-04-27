@@ -47,7 +47,7 @@
 #define DOWNSTAIR_END_PITCH_ANGLE  ARM_END_PITCH_INIT_ANGLE
 #define DOWNSTAIR_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
 #define DOWNSTAIR_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
-#define DOWNSTAIR_SPEED            -80.f      ///< 全速的80%
+#define DOWNSTAIR_SPEED            -70.f      ///< 全速的80%
 #define DOWNSTAIR_HIP_ANGLE        5.3f      ///< 腿抬高
 
 /* --------------------抓能量单元------------------- */
