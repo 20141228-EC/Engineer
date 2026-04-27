@@ -160,10 +160,15 @@ void CSystemCore::UpdateHandler_() {
                 armCmd.set_angle_Roll = armInfo.angle_Roll;
                 armCmd.set_angle_end_pitch = armInfo.angle_end_pitch;
                 armCmd.set_angle_end_roll = armInfo.angle_end_roll;
-                armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
+                if(armInfo.isGripped){
+                    armCmd.set_length_grip = armInfo.holdLength_grip;
+                    gripKeyboardcom_ = true;
+                }else{
+                    armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
+                    gripKeyboardcom_ = false;
+                }
                 armCmd.set_speed_grip = 0;
             }
-            gripKeyboardcom_ = false;  ///< 重置夹爪toggle状态，防止残留
             // 自动任务部分
             if (currentAutoCtrlProcess_ == EAutoCtrlProcess::EXCHANGE_ORE) {
     
@@ -188,7 +193,13 @@ void CSystemCore::UpdateHandler_() {
                 armCmd.set_angle_Roll = armInfo.angle_Roll;
                 armCmd.set_angle_end_pitch = armInfo.angle_end_pitch;
                 armCmd.set_angle_end_roll = armInfo.angle_end_roll;
-                armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
+                if(armInfo.isGripped){
+                    armCmd.set_length_grip = armInfo.holdLength_grip;
+                    gripKeyboardcom_ = true; 
+                }else{
+                    armCmd.set_length_grip = armInfo.length_grip;
+                    gripKeyboardcom_ = false;
+                }
                 armCmd.set_speed_grip = 0;
             }
             if (pgimbal_) {

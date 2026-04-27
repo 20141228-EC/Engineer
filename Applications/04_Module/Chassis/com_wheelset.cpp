@@ -174,7 +174,7 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     };
 
     // 计算输出
-    DataBuffer<float_t> output;
+    DataBuffer<float_t> output(4,0.0f);
     for (int i = 0; i < 4; i++) {
         DataBuffer<float_t> wheelSpd_i = {wheelSpd[i]};
         DataBuffer<float_t> wheelSpdMeasure_i = {wheelSpdMeasure[i]};

@@ -101,7 +101,7 @@ namespace my_engineer{
                     float_t scale = jointTrajs[i].tTotal / maxTime_;
                     float_t vel = TrajConfig.jointParams[i].velMax * speedScale;
                     float_t acc = TrajConfig.jointParams[i].accMax * speedScale;
-                    jointTrajs[i].TrapezoidalSpeedPlanner(current[i], target[i], vel * scale, acc);
+                    jointTrajs[i].TrapezoidalSpeedPlanner(current[i], target[i], vel * scale, acc);//降速之后将每个关节的时间计算出来
                 }
             }
         }

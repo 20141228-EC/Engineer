@@ -507,20 +507,19 @@ void CSystemCore::ControlFromController_() {
         // } else {
         //     parm_->armCmd.set_speed_grip = 0;             // 模式切换冻结
         // }
-        if(keyboard_edge.key_C == CSystemRemote::ERemoteEdge::Rising){
+        if(!mode_switching && keyboard_edge.key_C == CSystemRemote::ERemoteEdge::Rising){
             gripKeyboardcom_ = !gripKeyboardcom_;
-        }
+        }//gripKeyboardcom_ == true的时候保持闭合
         const bool grip_close_cmd = controller.gripper_close || gripKeyboardcom_;
-        if (grip_close_cmd) {
+        if (mode_switching) {
+             // 模式切换期间冻结夹爪，避免 Z+X 切换被解释成张开
+             parm_->armCmd.gripClose = false;
+             parm_->armCmd.gripOpen = false;
+        } else if (grip_close_cmd) {
              parm_->armCmd.gripClose = true;
              parm_->armCmd.gripOpen = false;
              // isGripped 判断由组件层 HOLD 状态自动处理
-         } else if (!SysControllerLink.robotInfo.controlled_by_controller) {
-             parm_->armCmd.gripClose = false;
-             parm_->armCmd.gripOpen = false;
-         } 
-         else {
-             // 模式切换期间冻结，清零标志防止残留
+        } else {
              parm_->armCmd.gripClose = false;
              parm_->armCmd.gripOpen = true;
          }

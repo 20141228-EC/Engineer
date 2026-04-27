@@ -40,7 +40,7 @@ void CSystemCore::StartDownStairTask(void *arg) {
 	//core.parm_->armCmd.set_angle_end_pitch = DOWNSTAIR_END_PITCH_ANGLE;
 	core.parm_->armCmd.set_angle_end_roll = DOWNSTAIR_END_ROLL_ANGLE;
     core.parm_->armCmd.set_length_grip = DOWNSTAIR_GRIP_LENGTH;
-	core.pgimbal_->gimbalCmd.set_visualyaw = -180.f;
+	core.pgimbal_->gimbalCmd.set_visualyaw = -195.f;
 
 	proc_waitMs(300);	// 等待臂到位
 
