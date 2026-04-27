@@ -123,6 +123,7 @@
 
 #include "mod_common.hpp"
 
+
 namespace my_engineer {
 
 /**
@@ -208,6 +209,10 @@ public:
 
 	CModArm() = default;
 
+	CAlgoTrajPlayback initTraj_;                     ///< 初始化轨迹规划器实例
+	float_t initTrajTime_ = 0.0f;                    ///< 当前轨迹时间 (s)
+	bool isInitTrajActive_ = false;                  ///< 轨迹是否正在执行
+
 	// 定义带参数的模块构造函数，创建模块时自动调用初始化函数
 	explicit CModArm(SModInitParam_Arm &param) { InitModule(param); }        ///<要求**带参数**的构造函数要用explicit修饰，防止隐式转换
 
@@ -261,6 +266,10 @@ private:
 
 		// 电机数据输出缓冲区
 		std::array<int16_t, 4> mtrOutputBuffer = {0};
+
+		CAlgoTrajPlayback initTraj_;
+		float_t initTrajTime_ = 0.0f;
+		bool isInitTrajActive_ = false;
 
 		// 重补输出
 		float_t Grav_Pitch1_Out = 0;
