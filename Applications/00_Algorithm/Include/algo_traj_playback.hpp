@@ -80,12 +80,12 @@ public:
     struct SConfig
     {
         SJointPrarm jointParams[JointId::COUNT] = {
-        {60.0f,120.0f}, //yaw
+        {90.0f,180.0f}, //yaw
         {60.0f,120.0f}, //pitch1
-        {60.0f,120.0f}, //pitch2, 
-        {60.0f,120.0f}, //pitch3
-        {60.0f,120.0f}, //roll,
-        {60.0f,120.0f}, //pitch_end
+        {80.0f,160.0f}, //pitch2, 
+        {90.0f,180.0f}, //pitch3
+        {120.0f,300.0f}, //roll,
+        {120.0f,300.0f}, //pitch_end
         {60.0f,120.0f}, //end_roll,
         }; // 每个关节的运动参数
     } TrajConfig;  //

@@ -158,6 +158,12 @@ public:
         // ...to be updated...
     } armmode_ = EArmMode::NONE;
 
+    enum class EGripKeyboardCmd : uint8_t {
+        HOLD,
+        CLOSE,
+        OPEN,
+    };
+
     EVarStatus use_Controller_ = false; ///< 是否使用控制器
 
     EVarStatus gimbal_auto_ctrl = false;   ///< 云台是否自动控制
@@ -180,8 +186,8 @@ private:
     // 自动任务句柄
     TaskHandle_t autoCtrlTaskHandle_ = nullptr;
 
-    // 自定义控制器模式下的夹爪键盘翻转状态
-    bool gripKeyboardcom_ = false;
+    // 自定义控制器模式下的夹爪键盘指令状态
+    EGripKeyboardCmd gripKeyboardCmd_ = EGripKeyboardCmd::HOLD;
 
     // 定义系统核心的更新处理
     void UpdateHandler_();
