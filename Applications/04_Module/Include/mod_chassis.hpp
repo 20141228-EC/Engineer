@@ -153,6 +153,9 @@ public:
     // 正在上台阶标志位(由履带电机扭矩判断)
     EVarStatus is_climbing = false;
 
+    // 履带扭矩超过一定值超过一段时间
+    uint8_t is_climbing_Timeout = 0;
+
     // 已上台阶标志位(由前轮扭矩比后轮扭矩大判断)
     EVarStatus is_climbed = false;
 

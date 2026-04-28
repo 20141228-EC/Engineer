@@ -27,19 +27,21 @@ void CSystemCore::StartClimbingTask(void *arg) {
 	auto cnt = 0;
 	const auto timeout = 2250 / 5; // 9s
 
-	core.parm_->armCmd.isAutoCtrl = true;           ///< 臂自动控制
+	// core.parm_->armCmd.isAutoCtrl = true;           ///< 臂自动控制
 	core.pchassis_->chassisCmd.isAutoCtrl = true;   ///< 底盘自动控制
 	core.gimbal_auto_ctrl = true;					///< 云台自动控制
 	
-	/*Set Arm*/
-	core.parm_->armCmd.set_angle_Yaw = CLIMBING_YAW_ANGLE;
-	core.parm_->armCmd.set_angle_Pitch1 = CLIMBING_PITCH1_ANGLE;
-	core.parm_->armCmd.set_angle_Pitch2 = CLIMBING_PITCH2_ANGLE;
-	//core.parm_->armCmd.set_angle_Roll = CLIMBING_ROLL_ANGLE;
-	// core.parm_->armCmd.set_angle_end_pitch = CLIMBING_END_PITCH_ANGLE;
-	core.parm_->armCmd.set_angle_end_roll = CLIMBING_END_ROLL_ANGLE; //由于限位反过来所以会猛肘限位
-    core.parm_->armCmd.set_length_grip = CLIMBING_GRIP_LENGTH;
-	// 后续看情况得改 在初始化位置可能会干涉
+	// /*Set Arm*/
+	// core.parm_->armCmd.set_angle_Yaw = CLIMBING_YAW_ANGLE;
+	// core.parm_->armCmd.set_angle_Pitch1 = CLIMBING_PITCH1_ANGLE;
+	// core.parm_->armCmd.set_angle_Pitch2 = CLIMBING_PITCH2_ANGLE;
+	// //core.parm_->armCmd.set_angle_Roll = CLIMBING_ROLL_ANGLE;
+	// // core.parm_->armCmd.set_angle_end_pitch = CLIMBING_END_PITCH_ANGLE;
+	// core.parm_->armCmd.set_angle_end_roll = CLIMBING_END_ROLL_ANGLE; //由于限位反过来所以会猛肘限位
+    // core.parm_->armCmd.set_length_grip = CLIMBING_GRIP_LENGTH;
+	// // 后续看情况得改 在初始化位置可能会干涉
+
+	// 对臂的姿态不作限制，操作手根据情况调整
 
 	/*Set Chassis*/
 	core.pchassis_->chassisInfo.crawler_on = true;	// 开履带
@@ -71,6 +73,7 @@ void CSystemCore::StartClimbingTask(void *arg) {
 				// if(core.pchassis_->is_climbed && core.pchassis_->time_to_reset_hip){
 				if(core.pchassis_->is_climbed){
 					core.pchassis_->is_climbing = false;
+					proc_waitMs(50);
 					core.pchassis_->reset_hip = true;		// 检测到前轮爬上台阶之后就收腿 可能会需要一个延时
 					core.pchassis_->is_climbed = false;
 				}

@@ -942,7 +942,7 @@ void CSystemReferee::UI_UpdateStateFigureDrawing_() {
   proc_waitMs(50);
 
   gripCloseTextMsg.message.figureConfig.operate = 2;
-  if(grip_info.gripClose) {    // 这里留出来，等后面有了夹爪标志位加上
+  if(grip_info.gripClose) {    
     gripCloseTextMsg.message.figureConfig.color = 2;
   }
   else {
@@ -954,7 +954,7 @@ void CSystemReferee::UI_UpdateStateFigureDrawing_() {
   proc_waitMs(50);
 
   gripCloseMsg.message.figureConfig[0].operate = 2;
-  gripCloseMsg.message.figureConfig[0].color = (true) ? 3 : 7;
+  gripCloseMsg.message.figureConfig[0].color = (grip_info.gripClose) ? 3 : 7;
   gripCloseMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&gripCloseMsg), sizeof(gripCloseMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&gripCloseMsg), sizeof(gripCloseMsg));
 }
@@ -1075,7 +1075,7 @@ void CSystemReferee::UI_UpdateArmAngleFigureDrawing_() {
   float len2 = 80.0f;
   float len3 = 50.0f;
 
-  float rad1 = (arm_info.angle_Pitch1 - 0.0f) * 2 * PI / 360.0f;
+  float rad1 = (180.f - arm_info.angle_Pitch1) * 2 * PI / 360.0f;
   float rad2 = (arm_info.angle_Pitch2 - 70.f) * 2 * PI / 360.0f;   
   float rad3 = (arm_info.angle_Pitch3 - 0.0f) * 2 * PI / 360.0f;  
 

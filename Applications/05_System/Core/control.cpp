@@ -217,7 +217,7 @@ void CSystemCore::ControlFromKeyboard_() {
     // 平滑更新角速度
     if (pchassis_) {
         pchassis_->chassisCmd.speed_W = pchassis_->chassisCmd.speed_W +
-            0.03f*(keyboard.mouse_X - pchassis_->chassisCmd.speed_W);
+            0.1f*(keyboard.mouse_X - pchassis_->chassisCmd.speed_W);
 
         if (!pchassis_->chassisCmd.isAutoCtrl)
         {
