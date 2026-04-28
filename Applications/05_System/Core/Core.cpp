@@ -162,23 +162,26 @@ void CSystemCore::UpdateHandler_() {
                 armCmd.set_angle_end_roll = armInfo.angle_end_roll;
                 if(armInfo.isGripped){
                     armCmd.set_length_grip = armInfo.holdLength_grip;
-                    gripKeyboardcom_ = true;
+                    gripKeyboardCmd_ = EGripKeyboardCmd::CLOSE;
+                    armCmd.gripClose = true;
+                    armCmd.gripOpen = false;
                 }else{
                     armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
-                    gripKeyboardcom_ = false;
+                    gripKeyboardCmd_ = EGripKeyboardCmd::HOLD;
+                    armCmd.gripClose = false;
+                    armCmd.gripOpen = false;
                 }
-                armCmd.set_speed_grip = 0;
             }
             // 自动任务部分
-            if (currentAutoCtrlProcess_ == EAutoCtrlProcess::EXCHANGE_ORE) {
+            // if (currentAutoCtrlProcess_ == EAutoCtrlProcess::EXCHANGE_ORE) {
     
-            }
-            else {
-                StopAutoCtrlTask_(); // 停止自动任务运行
-               // 根据当前在哪个自动任务中调整臂的初始角度
-            // SysControllerLink.robotInfo.controlled_by_controller = true;
-            // SysControllerLink.robotInfo.ask_reset_flag = true;
-            }
+            // }
+            // else {
+            //     StopAutoCtrlTask_(); // 停止自动任务运行
+            //    // 根据当前在哪个自动任务中调整臂的初始角度
+            // // SysControllerLink.robotInfo.controlled_by_controller = true;
+            // // SysControllerLink.robotInfo.ask_reset_flag = true;
+            // }
         }
         if (use_Controller_ == false) { //切换出自定义控制器的瞬间保留最后一帧数值避免后续出现大幅跳变，且切换出自定义控制器模式后不再受控制器输入影响
             SysControllerLink.robotInfo.controlled_by_controller = false;
@@ -195,12 +198,15 @@ void CSystemCore::UpdateHandler_() {
                 armCmd.set_angle_end_roll = armInfo.angle_end_roll;
                 if(armInfo.isGripped){
                     armCmd.set_length_grip = armInfo.holdLength_grip;
-                    gripKeyboardcom_ = true; 
+                    gripKeyboardCmd_ = EGripKeyboardCmd::CLOSE; 
+                    armCmd.gripClose = true;
+                    armCmd.gripOpen = false;
                 }else{
                     armCmd.set_length_grip = armInfo.length_grip;
-                    gripKeyboardcom_ = false;
+                    gripKeyboardCmd_ = EGripKeyboardCmd::HOLD;
+                    armCmd.gripClose = false;
+                    armCmd.gripOpen = false;
                 }
-                armCmd.set_speed_grip = 0;
             }
             if (pgimbal_) {
                 pgimbal_->gimbalInfo.isIntoControll = false; ///< 清除云台归位标志，下次进入时重新归位

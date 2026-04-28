@@ -508,9 +508,12 @@ void CSystemCore::ControlFromController_() {
         //     parm_->armCmd.set_speed_grip = 0;             // 模式切换冻结
         // }
         if(!mode_switching && keyboard_edge.key_C == CSystemRemote::ERemoteEdge::Rising){
-            gripKeyboardcom_ = !gripKeyboardcom_;
-        }//gripKeyboardcom_ == true的时候保持闭合
-        const bool grip_close_cmd = controller.gripper_close || gripKeyboardcom_;
+            gripKeyboardCmd_ = (gripKeyboardCmd_ == EGripKeyboardCmd::CLOSE)
+                ? EGripKeyboardCmd::OPEN
+                : EGripKeyboardCmd::CLOSE;
+        }
+        const bool grip_close_cmd = controller.gripper_close || gripKeyboardCmd_ == EGripKeyboardCmd::CLOSE;
+        const bool grip_open_cmd = gripKeyboardCmd_ == EGripKeyboardCmd::OPEN;
         if (mode_switching) {
              // 模式切换期间冻结夹爪，避免 Z+X 切换被解释成张开
              parm_->armCmd.gripClose = false;
@@ -519,9 +522,12 @@ void CSystemCore::ControlFromController_() {
              parm_->armCmd.gripClose = true;
              parm_->armCmd.gripOpen = false;
              // isGripped 判断由组件层 HOLD 状态自动处理
-        } else {
+        } else if (grip_open_cmd) {
              parm_->armCmd.gripClose = false;
              parm_->armCmd.gripOpen = true;
+        } else {
+             parm_->armCmd.gripClose = false;
+             parm_->armCmd.gripOpen = false;
          }
     }
         // LowPassFilter(parm_->armCmd.set_angle_end_roll,

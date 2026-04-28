@@ -112,6 +112,7 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                 constexpr int32_t gripSpeedStep = static_cast<int32_t>(
                     ARM_GRIP_MANUAL_SPEED_MM_S / 1000.0f * ARM_END_GRIP_MOTOR_RATIO);
 
+                // 上层的非遥控器的控制指令
                 if (gripCmd.cmdClose) {
                     if (gripInfo.state != SGripInfo::EGripState::HOLD) {
                         gripCmd.setPosit_grip -= gripSpeedStep;
@@ -131,7 +132,7 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                     gripCmd.cmdReGrip = false;
                     gripInfo.state = SGripInfo::EGripState::RELEASE;
                     gripInfo.isGripped = false;
-                    gripCmd.setPosit_grip = gripInfo.posit_grip;
+                    gripCmd.setPosit_grip = gripInfo.posit_grip;//用补偿后的位置信息来设置当前的位置
                     gripCmd.cmdClose = true;
                     gripCmd.cmdOpen = false;
                     pidPosCtrl.ResetPidController();

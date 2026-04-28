@@ -20,7 +20,7 @@
 #define ARM_PITCH2_PHYSICAL_RANGE_MIN 1.f
 #define ARM_PITCH2_PHYSICAL_RANGE_MAX 120.f
 #define ARM_PITCH3_PHYSICAL_RANGE_MIN -76.f
-#define ARM_PITCH3_PHYSICAL_RANGE_MAX 0.f //test
+#define ARM_PITCH3_PHYSICAL_RANGE_MAX 0.f 
 #define ARM_ROLL_PHYSICAL_RANGE_MIN -3.0f
 #define ARM_ROLL_PHYSICAL_RANGE_MAX 323.0f
 #define ARM_END_PITCH_PHYSICAL_RANGE_MIN -145.0f
@@ -202,7 +202,6 @@ public:
 		float_t set_angle_end_pitch = 0.0f; ///< 机械臂末端Pitch角度设定
 		float_t set_angle_end_roll = 0.0f; ///< 机械臂末端Roll角度设定
 		float_t set_length_grip = 0.0f; ///< 机械臂夹爪距离设定（自动任务直接设定）
-		float_t set_speed_grip = 0.0f; ///< 机械臂夹爪速度设定
 		bool gripClose = false;           ///< 手动闭合标志（Core层设置）
 		bool gripOpen = false;            ///< 手动张开标志（Core层设置）
 	} armCmd;

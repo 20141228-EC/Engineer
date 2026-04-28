@@ -97,19 +97,18 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 				arm.comEnd_.endCmd.setPosit_Roll =
 					arm.comEnd_.PhyPositToMtrPosit_Roll(arm.armCmd.set_angle_end_roll);
 
-				// 夹爪命令传递：手动模式传标志位，自动模式传目标位置
-				const bool manualGrip =
-					!arm.armCmd.isAutoCtrl && (arm.armCmd.gripClose || arm.armCmd.gripOpen);
+				// 夹爪命令传递：有开合标志时走增量开合，否则按目标位置控制
+				const bool gripCommand = arm.armCmd.gripClose || arm.armCmd.gripOpen;
 
-				arm.comGrip_.gripCmd.cmdClose = manualGrip && arm.armCmd.gripClose;
-				arm.comGrip_.gripCmd.cmdOpen  = manualGrip && arm.armCmd.gripOpen;
+				arm.comGrip_.gripCmd.cmdClose = arm.armCmd.gripClose;
+				arm.comGrip_.gripCmd.cmdOpen  = arm.armCmd.gripOpen;
 
-				if (manualGrip) {
-					// 手动模式：不让 proc_arm 覆盖 setPosit_grip，同步当前位置到 armCmd
+				if (gripCommand) {
+					// 开合标志控制：不让 proc_arm 覆盖 setPosit_grip，同步当前位置到 armCmd
 					arm.armCmd.set_length_grip = CComGrip::MtrPositToPhyPosit(
 						static_cast<float_t>(arm.comGrip_.gripInfo.posit_grip));
 				} else {
-					// 自动任务：从 armCmd 设定目标位置，确保手动标志清除
+					// 位置控制：从 armCmd 设定目标位置
 					arm.comGrip_.gripCmd.setPosit_grip =
 						CComGrip::PhyPositToMtrPosit(arm.armCmd.set_length_grip);
 				}

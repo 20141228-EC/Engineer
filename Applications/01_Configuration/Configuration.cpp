@@ -34,6 +34,9 @@ void ApplicationEntryPoint(){
 }
 
 void Print(const char *format, ...) {
+    (void)format;
+
+#if 0
     va_list args;
     va_start(args, format);
     char buffer[512];
@@ -44,6 +47,7 @@ void Print(const char *format, ...) {
     if (esp32dev) {
         esp32dev->ESP32_Print("print:%s", buffer);
     }
+#endif
 
 }
 
