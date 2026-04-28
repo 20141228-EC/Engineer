@@ -1076,8 +1076,8 @@ void CSystemReferee::UI_UpdateArmAngleFigureDrawing_() {
   float len3 = 50.0f;
 
   float rad1 = (180.f - arm_info.angle_Pitch1) * 2 * PI / 360.0f;
-  float rad2 = (arm_info.angle_Pitch2 - 70.f) * 2 * PI / 360.0f;   
-  float rad3 = (arm_info.angle_Pitch3 - 0.0f) * 2 * PI / 360.0f;  
+  float rad2 = (180.f - (arm_info.angle_Pitch2 - 70.f)) * 2 * PI / 360.0f;   
+  float rad3 = (180.f - (arm_info.angle_Pitch3 - 0.0f)) * 2 * PI / 360.0f;  
 
   float p1_x = origin_x + len1 * cos(rad1);
   float p1_y = origin_y + len1 * sin(rad1);

@@ -368,7 +368,7 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
     }
 
     if(!parm_->armInfo.isModuleAvailable){
-        return;
+        return APP_ERROR;
     }
 
     switch (process)
