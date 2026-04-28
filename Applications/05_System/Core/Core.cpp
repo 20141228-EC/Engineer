@@ -93,38 +93,46 @@ void CSystemCore::UpdateHandler_() {
     if (coreStatus == APP_RESET) return;
 
     // 检查遥控器系统状态
-    if (SysRemote.systemStatus == APP_RESET) return;
+    if (SysRemote.systemStatus == APP_RESET){
+        RTT_LOG_ERROR("Remote is offline!!!");
+        return;
+    } 
+
+    if (SysRemote.ResetFlag)
+    {
+        RESET_SYSTEM();
+    }
 
     static bool last_use_Controller = false;
     static uint8_t zx_count = 0;
     static bool zx_flag = false;
 
-    static uint8_t print_cnt = 0;
-    if (print_cnt-- == 0) {
-        print_cnt = 200;
-        Print("------------------------------\n");
-        if (parm_) {
-            Print("Arm_Yaw_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_Yaw), static_cast<int>(parm_->armInfo.angle_Yaw),
-                  static_cast<int>(parm_->armInfo.angle_Yaw - parm_->armCmd.set_angle_Yaw));
-            Print("Arm_Pitch1_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_Pitch1), static_cast<int>(parm_->armInfo.angle_Pitch1),
-                  static_cast<int>(parm_->armInfo.angle_Pitch1 - parm_->armCmd.set_angle_Pitch1));
-            Print("Arm_Pitch2_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_Pitch2), static_cast<int>(parm_->armInfo.angle_Pitch2),
-                  static_cast<int>(parm_->armInfo.angle_Pitch2 - parm_->armCmd.set_angle_Pitch2));
-            Print("Arm_Roll_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_Roll), static_cast<int>(parm_->armInfo.angle_Roll),
-                  static_cast<int>(parm_->armInfo.angle_Roll - parm_->armCmd.set_angle_Roll));
-            Print("Arm_EndPitch_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_end_pitch), static_cast<int>(parm_->armInfo.angle_end_pitch),
-                  static_cast<int>(parm_->armInfo.angle_end_pitch - parm_->armCmd.set_angle_end_pitch));
-            Print("Arm_EndRoll_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_end_roll), static_cast<int>(parm_->armInfo.angle_end_roll),
-                  static_cast<int>(parm_->armInfo.angle_end_roll - parm_->armCmd.set_angle_end_roll));
-        }
+    // static uint8_t print_cnt = 0;
+    // if (print_cnt-- == 0) {
+    //     print_cnt = 200;
+    //     Print("------------------------------\n");
+    //     if (parm_) {
+    //         Print("Arm_Yaw_Cmd: %d, Info: %d, Err: %d\n",
+    //               static_cast<int>(parm_->armCmd.set_angle_Yaw), static_cast<int>(parm_->armInfo.angle_Yaw),
+    //               static_cast<int>(parm_->armInfo.angle_Yaw - parm_->armCmd.set_angle_Yaw));
+    //         Print("Arm_Pitch1_Cmd: %d, Info: %d, Err: %d\n",
+    //               static_cast<int>(parm_->armCmd.set_angle_Pitch1), static_cast<int>(parm_->armInfo.angle_Pitch1),
+    //               static_cast<int>(parm_->armInfo.angle_Pitch1 - parm_->armCmd.set_angle_Pitch1));
+    //         Print("Arm_Pitch2_Cmd: %d, Info: %d, Err: %d\n",
+    //               static_cast<int>(parm_->armCmd.set_angle_Pitch2), static_cast<int>(parm_->armInfo.angle_Pitch2),
+    //               static_cast<int>(parm_->armInfo.angle_Pitch2 - parm_->armCmd.set_angle_Pitch2));
+    //         Print("Arm_Roll_Cmd: %d, Info: %d, Err: %d\n",
+    //               static_cast<int>(parm_->armCmd.set_angle_Roll), static_cast<int>(parm_->armInfo.angle_Roll),
+    //               static_cast<int>(parm_->armInfo.angle_Roll - parm_->armCmd.set_angle_Roll));
+    //         Print("Arm_EndPitch_Cmd: %d, Info: %d, Err: %d\n",
+    //               static_cast<int>(parm_->armCmd.set_angle_end_pitch), static_cast<int>(parm_->armInfo.angle_end_pitch),
+    //               static_cast<int>(parm_->armInfo.angle_end_pitch - parm_->armCmd.set_angle_end_pitch));
+    //         Print("Arm_EndRoll_Cmd: %d, Info: %d, Err: %d\n",
+    //               static_cast<int>(parm_->armCmd.set_angle_end_roll), static_cast<int>(parm_->armInfo.angle_end_roll),
+    //               static_cast<int>(parm_->armInfo.angle_end_roll - parm_->armCmd.set_angle_end_roll));
+    //     }
 
-    }
+    // }
 
     bool zx = SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X; ///< 如果同时按下z和x
     if (SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X) {
@@ -284,10 +292,10 @@ void CSystemCore::UpdateHandler_() {
     
     last_use_Controller = use_Controller_;
     
-    if (SysRemote.ResetFlag)
-    {
-        RESET_SYSTEM();
-    }
+    // if (SysRemote.ResetFlag)
+    // {
+    //     RESET_SYSTEM();
+    // }
 
 }
 
@@ -304,6 +312,8 @@ void CSystemCore::HeartbeatHandler_() {
 
     // 遥控器掉线
     if (lastRemoteState == APP_OK && currentRemoteState != APP_OK) {
+
+        use_Controller_ = false;
         // 停止所有自动操作
         StopAutoCtrlTask_();
         
@@ -349,6 +359,10 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
     // 设置机械臂yaw轴限位（添加空指针检查）
     if (parm_) {
         parm_->should_limit_yaw = 0;
+    }
+
+    if(!parm_->armInfo.isModuleAvailable){
+        return;
     }
 
     switch (process)
@@ -439,16 +453,18 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
  * @retval EAppStatus
  */
 EAppStatus CSystemCore::StopAutoCtrlTask_() {
-    if (autoCtrlTaskHandle_ == nullptr) return APP_ERROR;
 
-    vTaskDelete(autoCtrlTaskHandle_);
-    autoCtrlTaskHandle_ = nullptr;
+    if (autoCtrlTaskHandle_ != nullptr) {
+        vTaskDelete(autoCtrlTaskHandle_);
+        autoCtrlTaskHandle_ = nullptr;
+    }
+
     currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
     // 清除所有模块的自动控制标志（添加空指针检查）
     if (pchassis_) pchassis_->chassisCmd.isAutoCtrl = false;
     if (parm_) parm_->armCmd.isAutoCtrl = false;
-    if (pgimbal_) pgimbal_->StopModule();
+    if (pgimbal_) pgimbal_->gimbalCmd.isAutoCtrl = false;
 
     return APP_OK;
 }
