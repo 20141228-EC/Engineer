@@ -249,50 +249,50 @@ void CModChassis::UpdateHandler_(){
     // 检查模块状态
     if (moduleStatus == APP_RESET) return;
 
-    // 用于无符号类型的转化
-    static auto uint_to_float = [](uint16_t x_uint, float xmin, float xmax, uint8_t bits) -> float {
-        float span = xmax - xmin;
-        float data_norm = static_cast<float>(x_uint) / ((1 << bits) - 1);
-        return data_norm * span + xmin;
-    };
+    // // 用于无符号类型的转化
+    // static auto uint_to_float = [](uint16_t x_uint, float xmin, float xmax, uint8_t bits) -> float {
+    //     float span = xmax - xmin;
+    //     float data_norm = static_cast<float>(x_uint) / ((1 << bits) - 1);
+    //     return data_norm * span + xmin;
+    // };
 
-    // 用于有符号类型的转化
-    static auto int_to_float = [](int16_t x_int, float xmin, float xmax, uint8_t bits) -> float {
-        float span = xmax - xmin;
-        // 计算有符号数的最大值：2^(bits-1) - 1 （12位则为2047）
-        int32_t int_max = (1 << (bits - 1)) - 1;
-        // 有符号数归一化：映射到[-1, 1]区间，再缩放至[xmin, xmax]
-        float data_norm = static_cast<float>(x_int) / static_cast<float>(int_max);
-        return (data_norm + 1.0f) * 0.5f * span + xmin;
-    };
+    // // 用于有符号类型的转化
+    // static auto int_to_float = [](int16_t x_int, float xmin, float xmax, uint8_t bits) -> float {
+    //     float span = xmax - xmin;
+    //     // 计算有符号数的最大值：2^(bits-1) - 1 （12位则为2047）
+    //     int32_t int_max = (1 << (bits - 1)) - 1;
+    //     // 有符号数归一化：映射到[-1, 1]区间，再缩放至[xmin, xmax]
+    //     float data_norm = static_cast<float>(x_int) / static_cast<float>(int_max);
+    //     return (data_norm + 1.0f) * 0.5f * span + xmin;
+    // };
 
-    // 计算每个电机轴上的实际物理扭矩 (N·m)，并做一阶低通滤波
-    constexpr float WHEEL_TORQUE_LPF_ALPHA = 0.2f;
-    static bool wheelTorqueFilterInited = false;
-    static float wheelTorqueFiltered[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    // // 计算每个电机轴上的实际物理扭矩 (N·m)，并做一阶低通滤波
+    // constexpr float WHEEL_TORQUE_LPF_ALPHA = 0.2f;
+    // static bool wheelTorqueFilterInited = false;
+    // static float wheelTorqueFiltered[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
-    float rawWheelTorque[4] = {
-        static_cast<float>(comWheelset_.motor[CComWheelset::LF]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
-        static_cast<float>(comWheelset_.motor[CComWheelset::RF]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
-        static_cast<float>(comWheelset_.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
-        static_cast<float>(comWheelset_.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A
-    };
+    // float rawWheelTorque[4] = {
+    //     static_cast<float>(comWheelset_.motor[CComWheelset::LF]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
+    //     static_cast<float>(comWheelset_.motor[CComWheelset::RF]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
+    //     static_cast<float>(comWheelset_.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
+    //     static_cast<float>(comWheelset_.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A
+    // };
 
-    if (!wheelTorqueFilterInited) {
-        for (int i = 0; i < 4; i++) {
-            wheelTorqueFiltered[i] = rawWheelTorque[i];
-        }
-        wheelTorqueFilterInited = true;
-    } else {
-        for (int i = 0; i < 4; i++) {
-            wheelTorqueFiltered[i] += WHEEL_TORQUE_LPF_ALPHA * (rawWheelTorque[i] - wheelTorqueFiltered[i]);
-        }
-    }
+    // if (!wheelTorqueFilterInited) {
+    //     for (int i = 0; i < 4; i++) {
+    //         wheelTorqueFiltered[i] = rawWheelTorque[i];
+    //     }
+    //     wheelTorqueFilterInited = true;
+    // } else {
+    //     for (int i = 0; i < 4; i++) {
+    //         wheelTorqueFiltered[i] += WHEEL_TORQUE_LPF_ALPHA * (rawWheelTorque[i] - wheelTorqueFiltered[i]);
+    //     }
+    // }
 
-    wheel_torque_lf = wheelTorqueFiltered[0];
-    wheel_torque_rf = wheelTorqueFiltered[1];
-    wheel_torque_lb = wheelTorqueFiltered[2];
-    wheel_torque_rb = wheelTorqueFiltered[3];
+    // wheel_torque_lf = wheelTorqueFiltered[0];
+    // wheel_torque_rf = wheelTorqueFiltered[1];
+    // wheel_torque_lb = wheelTorqueFiltered[2];
+    // wheel_torque_rb = wheelTorqueFiltered[3];
 
     static uint8_t HalfTickRate = 0;
 	HalfTickRate = 1 - HalfTickRate;
@@ -333,24 +333,24 @@ void CModChassis::UpdateHandler_(){
             reset_hip = 0;      ///< 清空标志位
     }
 
-    constexpr float CRAWLER_TORQUE_LPF_ALPHA = 0.2f;
-    static bool crawlerTorqueFilterInited = false;
-    static float crawlerTorqueFiltered[2] = {0.0f, 0.0f};
+    // constexpr float CRAWLER_TORQUE_LPF_ALPHA = 0.2f;
+    // static bool crawlerTorqueFilterInited = false;
+    // static float crawlerTorqueFiltered[2] = {0.0f, 0.0f};
 
-    float rawCrawlerTorque[2] = {
-        static_cast<float>(comCrawler_.motor[CComCrawler::L]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
-        static_cast<float>(comCrawler_.motor[CComCrawler::R]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A
-    };
+    // float rawCrawlerTorque[2] = {
+    //     static_cast<float>(comCrawler_.motor[CComCrawler::L]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
+    //     static_cast<float>(comCrawler_.motor[CComCrawler::R]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A
+    // };
 
-    if (!crawlerTorqueFilterInited) {
-        crawlerTorqueFiltered[0] = rawCrawlerTorque[0];
-        crawlerTorqueFiltered[1] = rawCrawlerTorque[1];
-        crawlerTorqueFilterInited = true;
-    } else {
-        for (int i = 0; i < 2; i++) {
-            crawlerTorqueFiltered[i] += CRAWLER_TORQUE_LPF_ALPHA * (rawCrawlerTorque[i] - crawlerTorqueFiltered[i]);
-        }
-    }
+    // if (!crawlerTorqueFilterInited) {
+    //     crawlerTorqueFiltered[0] = rawCrawlerTorque[0];
+    //     crawlerTorqueFiltered[1] = rawCrawlerTorque[1];
+    //     crawlerTorqueFilterInited = true;
+    // } else {
+    //     for (int i = 0; i < 2; i++) {
+    //         crawlerTorqueFiltered[i] += CRAWLER_TORQUE_LPF_ALPHA * (rawCrawlerTorque[i] - crawlerTorqueFiltered[i]);
+    //     }
+    // }
 
     crawler_torque_l = (comCrawler_.motor[CComCrawler::L]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A;
     crawler_torque_r = (comCrawler_.motor[CComCrawler::R]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A;
@@ -457,8 +457,8 @@ void CModChassis::UpdateHandler_(){
     crawler_power_sum = crawler_power_l + crawler_power_r;
     // ===============================================
 
-    is_climbing_debug = is_climbing;
-    is_climbed_debug = is_climbed;
+    // is_climbing_debug = is_climbing;
+    // is_climbed_debug = is_climbed;
 
     // 功率分配
     float dynamicTargetPower[4] = {0.0f};
@@ -507,24 +507,24 @@ void CModChassis::UpdateHandler_(){
         static_cast<int16_t>(limitedTorque[3])
     };
 
-    auto pMtr_Hip_LL = comHip_.motor[0];
-    auto pMtr_Hip_LR = comHip_.motor[1];
-    // 读取左髋关节电机的实际输出力矩 (N·m)
-    raw_torque_LL = int_to_float(
-        pMtr_Hip_LL->motorData[CDevMtr::DATA_TORQUE],
-        -54, // 扭矩下限
-        54,  // 扭矩上限
-        12   // 扭矩数据是12位
-    );
-    actual_torque_LL = abs(54 - raw_torque_LL) * ((raw_torque_LL - 54) > 0 ? 1 : -1);
-    // 读取右髋关节电机的实际输出力矩 (N·m)
-    raw_torque_LR = int_to_float(
-        pMtr_Hip_LR->motorData[CDevMtr::DATA_TORQUE],
-        -54,
-        54,
-        12
-    );
-    actual_torque_LR = abs(raw_torque_LR - 54) * ((raw_torque_LR - 54) > 0 ? 1 : -1);
+    // auto pMtr_Hip_LL = comHip_.motor[0];
+    // auto pMtr_Hip_LR = comHip_.motor[1];
+    // // 读取左髋关节电机的实际输出力矩 (N·m)
+    // raw_torque_LL = int_to_float(
+    //     pMtr_Hip_LL->motorData[CDevMtr::DATA_TORQUE],
+    //     -54, // 扭矩下限
+    //     54,  // 扭矩上限
+    //     12   // 扭矩数据是12位
+    // );
+    // actual_torque_LL = abs(54 - raw_torque_LL) * ((raw_torque_LL - 54) > 0 ? 1 : -1);
+    // // 读取右髋关节电机的实际输出力矩 (N·m)
+    // raw_torque_LR = int_to_float(
+    //     pMtr_Hip_LR->motorData[CDevMtr::DATA_TORQUE],
+    //     -54,
+    //     54,
+    //     12
+    // );
+    // actual_torque_LR = abs(raw_torque_LR - 54) * ((raw_torque_LR - 54) > 0 ? 1 : -1);
 
     /**********************用于debug end*****************************/
 
@@ -604,12 +604,12 @@ EAppStatus CModChassis::RestrictChassisCommand_() {
     chassisCmd.speed_crawler = std::clamp(chassisCmd.speed_crawler, -100.f, 100.f);
 
     // 自动控制启用，则不继续做限制
-    if (chassisCmd.isAutoCtrl){
-        // 自动任务中不限制腿长 只应在上台阶任务中将底盘自控标志位置1
-        // chassisCmd.L_length = std::clamp(chassisCmd.L_length, 2.3f, 9.5f);
-        // 默认抬一点腿
-        return APP_OK;
-    }
+    // if (chassisCmd.isAutoCtrl){
+    //     // 自动任务中不限制腿长 只应在上台阶任务中将底盘自控标志位置1
+    //     // chassisCmd.L_length = std::clamp(chassisCmd.L_length, 2.3f, 9.5f);
+    //     // 默认抬一点腿
+    //     return APP_OK;
+    // }
     // else{
         chassisCmd.L_length = std::clamp(chassisCmd.L_length, 0.f, 9.4f);
     // } 

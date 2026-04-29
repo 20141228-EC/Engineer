@@ -74,10 +74,6 @@ void CSystemCore::StartDownStairTask(void *arg) {
 	/* Phase 2: 下台阶 */
     while (keyboard.key_Ctrl)
     {
-		static bool status = false;
-		while(!static_cast<bool>(CSystemRemote::ERemoteEdge::Rising) && (status == false)){
-			status = true;
-		}
 		if(core.pchassis_->chassisInfo.L_Length < 80.f){
 			core.pchassis_->chassisCmd.L_length += 120.f / 1000.f;
 		}
