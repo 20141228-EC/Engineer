@@ -11,6 +11,7 @@
 #include "conf_device.hpp"
 #include "conf_CanTxNode.hpp"
 #include "Device.hpp"
+#include "dev_custom_data.hpp"
 
 // extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim3;
@@ -304,6 +305,16 @@ EAppStatus InitAllDevice(){
     gimbalMotor_Visualyaw_initparam.TAU_MAX = 1.0f;
     gimbalMotor_Visualyaw_initparam.useAngleToPosit = true;
     gimbalMotor_Visualyaw.InitDevice(& gimbalMotor_Visualyaw_initparam);
+
+
+    /******************************************
+     * 自定义客户端数据链路
+     *****************************************/
+    static CDevCustomData customData;
+    CDevCustomData::SDevInitParam_CustomData customData_initparam;
+    customData_initparam.deviceID = EDeviceID::DEV_CUSTOM_DATA_COM;
+    customData_initparam.interfaceID = EInterfaceID::INF_UART10;
+    customData.InitDevice(&customData_initparam);
 
     return APP_OK;
 }

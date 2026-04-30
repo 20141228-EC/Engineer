@@ -77,6 +77,7 @@ enum class EDeviceID{
     DEV_CHAS_CRAWLER_L,     ///< 履带电机左（M3508）
     DEV_CHAS_CRAWLER_R,     ///< 履带电机右（M3508）
     DEV_GIMBAL_MTR_VISUAL_YAW,///<云台电机
+    DEV_CUSTOM_DATA_COM, ///< 自定义客户端通信
 };
 
 /**
@@ -119,6 +120,7 @@ enum class ESystemID{
     SYS_BOARD_LINK,         ///< 板间通信系统
     SYS_ESP32,              ///< ESP32系统
     SYS_CONTROLLER_LINK, ///< 控制器通信系统
+    SYS_CUSTOM_DATA,     ///< 自定义客户端通信系统
 };
 
 /**

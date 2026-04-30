@@ -76,6 +76,7 @@ public:
         DEV_ESP32,      ///< ESP32设备
         DEV_BOARD_LINK, ///< 板间通信设备
         DEV_CONTROLLER_LINK, ///< 控制器通信设备
+        DEV_CUSTOM_DATA_COM, ///< 自定义客户端通信
         DEV_OTHER,      ///< 其他设备
     } deviceType = EDevType::DEV_UNDEF;    ///< 设备类型
 
