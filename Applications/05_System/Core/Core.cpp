@@ -231,7 +231,7 @@ void CSystemCore::UpdateHandler_() {
         //     // TODO: 决定切换出自定义控制器模式后的行为
         // }
     
-    ControlFromEsp32_(); // ESP32控制
+    // ControlFromEsp32_(); // ESP32控制
 
     if (use_Controller_ == true){//在不主动切换模式的情况下，如果控制器掉线自动退出控制器模式
         // 控制器掉线保护
@@ -463,6 +463,7 @@ void CSystemCore::BoardLink_Info_Update_(){
 
     SysBoardLink.otherInfos.is_spin_on = chassisCmd.is_spin_on;
     SysBoardLink.otherInfos.yaw_gyro = static_cast<int16_t>(pgimbal_->gimbalInfo.posit_yaw);
+    SysBoardLink.otherInfos.autoTask = static_cast<uint8_t>(currentAutoCtrlProcess_);
 
 }
 
