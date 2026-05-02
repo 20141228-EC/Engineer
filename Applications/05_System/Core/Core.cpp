@@ -368,9 +368,9 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
         parm_->should_limit_yaw = 0;
     }
 
-    // if(!parm_->armInfo.isModuleAvailable){
-    //     return APP_ERROR;
-    // }
+    if(!parm_->armInfo.isModuleAvailable){
+        return APP_ERROR;
+    }
 
     switch (process)
     {
