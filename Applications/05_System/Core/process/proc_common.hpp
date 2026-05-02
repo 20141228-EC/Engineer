@@ -14,6 +14,7 @@
 
 #include "Core.hpp"
 #include <map>
+#include <cmath>
 
 namespace my_engineer{
     
@@ -48,18 +49,14 @@ namespace my_engineer{
         const float_t (*frame)[FC_COUNT]; // 指向关键帧的数组
         int frameCount ; //关键帧计数器
     };
-    
-    //关节角度的自适应参数
-    struct SAdjustConfig {
-    float_t  nearLimitThreshold = 3.0f;   ///< 近限位判定阈值（度）
-    int      maxRetries = 4;               ///< 最大调整重试次数
-    float_t  yawStep = 1.f;              ///< Yaw 每次调整步进（度）
-    float_t  speedScale = 0.3f;           ///< 调整阶段速度比例
-    float_t  arrivalTolerance = 1.0f;     ///< 到位判定容差（度）
-    uint32_t convergenceWaitMs = 200;     ///< 收敛等待时间（ms）
-    uint32_t settleWaitMs = 100;          ///< 每次调整后 PID 稳定等待（ms）
-    };
 
+    struct SArrivalCheckConfig {
+        float_t toleranceDeg = 5.0f;     ///< 关节到位容差，单位：度
+        uint32_t stableMs = 200;          ///< 每个关节进入容差后需要连续稳定的时间
+        uint32_t timeoutMs = 1000;        ///< 本帧目标指令到达后，等待真实反馈到位的报警时间
+        uint32_t hardTimeoutMs = 5000;    ///< 本帧目标指令到达后，等待真实反馈到位的硬超时时间
+        uint32_t gripTimeoutMs = 3000;   ///< 本帧目标指令到达后，等待夹爪到位的超时时间
+    };
     //轨迹外部声明
     extern const float_t Traj_Grab[][FC_COUNT];
     extern const int     Traj_GrabLen; 
@@ -72,10 +69,7 @@ namespace my_engineer{
 
     // 检查所有关节是否到达目标角度
     bool CheckAllJointsArrived(const CModArm &arm, const float_t target[J::COUNT],
-                           float_t tolerance);
-    
-    /// 检查指定关节角度是否靠近物理限位
-    bool IsJointNearLimit(int jointId, float_t angle, float_t threshold);
+                               const SArrivalCheckConfig &cfg);
     
     //将 float_t[7] 写入 armCmd 的7个关节 
     void WriteArmjoint(CModArm &arm, const float_t output[7]);

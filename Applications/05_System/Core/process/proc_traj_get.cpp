@@ -53,7 +53,7 @@ namespace my_engineer {
                 proc_waitMs(1);
             }
             // Ctrl确认: 当前电机Roll位置设为零点偏移
-            arm.comEnd_.rollZeroOffset = arm.comEnd_.endInfo.posit_Roll;
+            //arm.comEnd_.rollZeroOffset = arm.comEnd_.endInfo.posit_Roll;
         }
 
         {

@@ -72,7 +72,7 @@ EAppStatus InitAllModule() {
    armInitParam.Pitch2SpdPidParam.maxIntegral = 2000.0f;
    armInitParam.Pitch2SpdPidParam.maxOutput = 2000.0f;
    // 初始化 Pitch3PosPidParam 的成员
-   armInitParam.Pitch3PosPidParam.kp = 4.f;
+   armInitParam.Pitch3PosPidParam.kp = 6.8f;
    armInitParam.Pitch3PosPidParam.ki = 0.05f;
    armInitParam.Pitch3PosPidParam.kd = 0.0f;
    armInitParam.Pitch3PosPidParam.maxIntegral = 4000.0f;
@@ -99,16 +99,26 @@ EAppStatus InitAllModule() {
    armInitParam.endSpdPidParam.maxIntegral = 4000.0f;
    armInitParam.endSpdPidParam.maxOutput = 4500.0f;
    // 初始化 GripPosPidParam 的成员
-   armInitParam.GripPosPidParam.kp = 0.12f;
+   armInitParam.GripPosPidParam.kp = 0.3f;
     armInitParam.GripPosPidParam.ki = 0.15f;
     armInitParam.GripPosPidParam.kd = 0.0f;
     armInitParam.GripPosPidParam.maxOutput = 3000.0f;
     // 初始化 GripSpdPidParam 的成员
-    armInitParam.GripSpdPidParam.kp = 3.15f;
+    armInitParam.GripSpdPidParam.kp = 5.15f;
     armInitParam.GripSpdPidParam.ki = 0.4f;
     armInitParam.GripSpdPidParam.kd = 0.0f;
     armInitParam.GripSpdPidParam.maxIntegral = 3000.0f;
     armInitParam.GripSpdPidParam.maxOutput = 4000.0f;
+    armInitParam.GripInitParam.initSpeedMax_     = 6000.0f;   ///< 初始化最大速度
+    armInitParam.GripInitParam.initSpeedMin_     = 1500.0f;   ///< 保底最低速度
+    armInitParam.GripInitParam.initTorqueThresh_ = 1200.0f;   ///< 力矩开始减速的阈值
+    armInitParam.GripInitParam.initTorqueRange_  = 2000.0f;   ///< 从全速减到最低速的力矩区间
+    // 夹取检测参数（滤波力矩减速+边沿检测）
+    armInitParam.GripDetectParam.closeTorqueThresh = 1700.0f; ///< 滤波力矩开始减速的阈值
+    armInitParam.GripDetectParam.closeTorqueRange  = 1100.0f; ///< 从全速减到最低速的滤波力矩区间
+    armInitParam.GripDetectParam.closeSpeedMin     = 1000.0f; ///< 闭合时保底最低速度
+    armInitParam.GripDetectParam.detectTorque      = 2800.0f; ///< 滤波力矩超过此值即判定夹取成功
+    armInitParam.GripDetectParam.filterAlpha       = 0.95f;   ///< LowPassFilter滤波系数α（越大越平滑）
     // armInitParam.Need_Grav_Compensation = false;
     // 使用初始化后的参数创建 armModule 实例 
     static auto armModule = CModArm(armInitParam);

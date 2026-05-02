@@ -43,7 +43,6 @@ EAppStatus CModArm::InitModule(SModInitParam_Base &param) {
 	comRoll_.InitComponent(param);
 	comEnd_.InitComponent(param);
 	comGrip_.InitComponent(param);
-	comGrip_.parentModule = this;  ///< 设置父模块指针，用于Roll耦合补偿
 
 
 	// 创建任务并注册模块
@@ -95,6 +94,10 @@ void CModArm::UpdateHandler_() {
 	armInfo.isAngleArrived_End_Roll = comEnd_.endInfo.isPositArrived_Roll;
 	armInfo.isAngleArrived_Grip = comGrip_.gripInfo.isGripped;
 	armInfo.isGripped = comGrip_.gripInfo.isGripped;
+	armInfo.gripState =
+		(comGrip_.gripInfo.state == CComGrip::SGripInfo::EGripState::HOLD)
+			? SArmInfo::EGripState::HOLD
+			: SArmInfo::EGripState::RELEASE;//模块层传递夹爪的状态
 	armInfo.holdLength_grip = CComGrip::MtrPositToPhyPosit(
 		static_cast<float_t>(comGrip_.gripInfo.holdPosit_Grip));
 
@@ -218,6 +221,9 @@ EAppStatus CModArm::RestrictArmCommand_() {
     armCmd.set_length_grip = 
         std::clamp(armCmd.set_length_grip,
             ARM_END_GRIP_PHYSICAL_RANGE_MIN, ARM_END_GRIP_PHYSICAL_RANGE_MAX);
+	armCmd.set_angle_end_roll =
+        std::clamp(armCmd.set_angle_end_roll,
+            ARM_END_ROLL_PHYSICAL_RANGE_MIN, ARM_END_ROLL_PHYSICAL_RANGE_MAX);//限制末端roll
 
     // 自定义控制器限制
     // if(armCmd.isCustomCtrl) {

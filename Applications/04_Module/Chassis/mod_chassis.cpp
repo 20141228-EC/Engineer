@@ -266,33 +266,33 @@ void CModChassis::UpdateHandler_(){
     //     return (data_norm + 1.0f) * 0.5f * span + xmin;
     // };
 
-    // // 计算每个电机轴上的实际物理扭矩 (N·m)，并做一阶低通滤波
-    // constexpr float WHEEL_TORQUE_LPF_ALPHA = 0.2f;
-    // static bool wheelTorqueFilterInited = false;
-    // static float wheelTorqueFiltered[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    // 计算每个电机轴上的实际物理扭矩 (N·m)，并做一阶低通滤波
+    constexpr float WHEEL_TORQUE_LPF_ALPHA = 0.2f;
+    static bool wheelTorqueFilterInited = false;
+    static float wheelTorqueFiltered[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
-    // float rawWheelTorque[4] = {
-    //     static_cast<float>(comWheelset_.motor[CComWheelset::LF]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
-    //     static_cast<float>(comWheelset_.motor[CComWheelset::RF]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
-    //     static_cast<float>(comWheelset_.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
-    //     static_cast<float>(comWheelset_.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A
-    // };
+    float rawWheelTorque[4] = {
+        static_cast<float>(comWheelset_.motor[CComWheelset::LF]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
+        static_cast<float>(comWheelset_.motor[CComWheelset::RF]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
+        static_cast<float>(comWheelset_.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A,
+        static_cast<float>(comWheelset_.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_CURRENT]) * FEEDBACK_TO_AMP_RATIO * TORQUE_CONSTANT_NM_PER_A
+    };
 
-    // if (!wheelTorqueFilterInited) {
-    //     for (int i = 0; i < 4; i++) {
-    //         wheelTorqueFiltered[i] = rawWheelTorque[i];
-    //     }
-    //     wheelTorqueFilterInited = true;
-    // } else {
-    //     for (int i = 0; i < 4; i++) {
-    //         wheelTorqueFiltered[i] += WHEEL_TORQUE_LPF_ALPHA * (rawWheelTorque[i] - wheelTorqueFiltered[i]);
-    //     }
-    // }
+    if (!wheelTorqueFilterInited) {
+        for (int i = 0; i < 4; i++) {
+            wheelTorqueFiltered[i] = rawWheelTorque[i];
+        }
+        wheelTorqueFilterInited = true;
+    } else {
+        for (int i = 0; i < 4; i++) {
+            wheelTorqueFiltered[i] += WHEEL_TORQUE_LPF_ALPHA * (rawWheelTorque[i] - wheelTorqueFiltered[i]);
+        }
+    }
 
-    // wheel_torque_lf = wheelTorqueFiltered[0];
-    // wheel_torque_rf = wheelTorqueFiltered[1];
-    // wheel_torque_lb = wheelTorqueFiltered[2];
-    // wheel_torque_rb = wheelTorqueFiltered[3];
+    wheel_torque_lf = wheelTorqueFiltered[0];
+    wheel_torque_rf = wheelTorqueFiltered[1];
+    wheel_torque_lb = wheelTorqueFiltered[2];
+    wheel_torque_rb = wheelTorqueFiltered[3];
 
     static uint8_t HalfTickRate = 0;
 	HalfTickRate = 1 - HalfTickRate;
