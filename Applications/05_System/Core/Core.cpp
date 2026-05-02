@@ -249,9 +249,10 @@ void CSystemCore::UpdateHandler_() {
     ControlFromEsp32_(); // ESP32控制
 
     // 每周期重置手动夹爪标志，由对应控制函数按需设置
-    if (parm_) {
+    if (parm_ && !parm_->armCmd.isAutoCtrl) {
         parm_->armCmd.gripClose = false;
         parm_->armCmd.gripOpen = false;
+        parm_->armCmd.set_speed_grip = 0.0f;
     }
 
     if (use_Controller_ == true){//在不主动切换模式的情况下，如果控制器掉线自动退出控制器模式
@@ -367,9 +368,9 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
         parm_->should_limit_yaw = 0;
     }
 
-    if(!parm_->armInfo.isModuleAvailable){
-        return APP_ERROR;
-    }
+    // if(!parm_->armInfo.isModuleAvailable){
+    //     return APP_ERROR;
+    // }
 
     switch (process)
     {

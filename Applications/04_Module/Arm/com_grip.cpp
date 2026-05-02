@@ -2,19 +2,18 @@
  * @file com_grip.cpp
  * @author Ciallo～(∠·ω< )⌒☆(1002046597@qq.com)
  * @brief 机械臂夹爪组件
- * @version 1.4
- * @date 2026-4-25
- *
- * @details V1.4: 控制逻辑解耦,软件堵转检测
- *          V1.3: 双状态机重构（RELEASE/HOLD）
- *          V1.2: 二次夹紧改为闭合方向堵转重新标定
- *          V1.1: 添加Roll轴耦合补偿
+ * @version 2.0
+ * @date 2025-12-11
+ * @lastedit：2026-04-30
+ * @details V2.0: 机械结构更换为2006丝杆直驱，移除Roll轴耦合补偿
+ *          速度环控制 + 力矩反馈检测 + RELEASE/HOLD 双状态机
  *
  * @copyright Copyright (c) 2025
  *
  */
 
  #include "mod_arm.hpp"
+ #include "algo_other.hpp"
 
  namespace my_engineer {
 
@@ -33,9 +32,24 @@ EAppStatus CModArm::CComGrip::InitComponent(SModInitParam_Base &param) {
     armParam.GripPosPidParam.threadNum = 1;
     pidPosCtrl.InitPID(&armParam.GripPosPidParam);
 
+    // 初始化速度PID参数
     armParam.GripSpdPidParam.threadNum = 1;
     pidSpdCtrl.InitPID(&armParam.GripSpdPidParam);
 
+    // 初始化力矩反馈减速参数
+    GripinitParam_.initSpeedMax_     = armParam.GripInitParam.initSpeedMax_;
+    GripinitParam_.initSpeedMin_     = armParam.GripInitParam.initSpeedMin_;
+    GripinitParam_.initTorqueThresh_ = armParam.GripInitParam.initTorqueThresh_;
+    GripinitParam_.initTorqueRange_  = armParam.GripInitParam.initTorqueRange_;
+
+    // 夹取检测参数
+    gripDetect_.closeTorqueThresh = armParam.GripDetectParam.closeTorqueThresh;
+    gripDetect_.closeTorqueRange  = armParam.GripDetectParam.closeTorqueRange;
+    gripDetect_.closeSpeedMin     = armParam.GripDetectParam.closeSpeedMin;
+    gripDetect_.detectTorque      = armParam.GripDetectParam.detectTorque;
+    gripDetect_.filterAlpha       = armParam.GripDetectParam.filterAlpha;
+
+    //输出缓冲区清零
     mtrOutputBuffer = 0;
 
     Component_FSMFlag_ = FSM_RESET;
@@ -48,33 +62,41 @@ EAppStatus CModArm::CComGrip::InitComponent(SModInitParam_Base &param) {
  * @brief 更新组件
  */
 EAppStatus CModArm::CComGrip::UpdateComponent() {
-    if (componentStatus == APP_RESET) return APP_ERROR;
-
-    // 更新夹爪当前位置（含Roll耦合补偿）
-    gripInfo.posit_grip = static_cast<int32_t>(
-        motor->motorData[CDevMtr::DATA_POSIT] * ARM_GRIP_MOTOR_DIR
-        + gripInfo.rollCompAccum);
-
-    // 获取End Roll位置用于耦合补偿
-    int32_t endRollPosit = 0;
-    if (parentModule != nullptr) {
-        endRollPosit = parentModule->comEnd_.endInfo.posit_Roll;
+    if (componentStatus == APP_RESET) {
+        mtrOutputBuffer = 0;
+        return APP_ERROR;
     }
+
+    // 获取力矩绝对值
+    auto getAbsTorque = [this]() -> float_t {
+        return static_cast<float_t>(
+            motor->motorData[CDevMtr::DATA_TORQUE] < 0
+                ? -motor->motorData[CDevMtr::DATA_TORQUE]
+                :  motor->motorData[CDevMtr::DATA_TORQUE]);
+    };
+
+    // 更新夹爪当前位置
+    gripInfo.posit_grip = motor->motorData[CDevMtr::DATA_POSIT] * ARM_GRIP_MOTOR_DIR;
 
     switch (Component_FSMFlag_){
 
             case FSM_RESET:{
+                // 复位状态，夹爪电机输出为0
                 mtrOutputBuffer = 0;
-                motor->motorData[CDevMtr::DATA_POSIT] = 0;
-                gripInfo = SGripInfo();  // 完整复位所有状态
+                speedTargetFiltered_ = 0.0f;
+                speedMeasuredFiltered_ = 0.0f;
+                initTick_ = 0;
                 pidPosCtrl.ResetPidController();
                 pidSpdCtrl.ResetPidController();
                 return APP_OK;
             }
             case FSM_PREINIT:{
+                // 预初始化状态，夹爪电机输出为0
                 mtrOutputBuffer = 0;
+                speedTargetFiltered_ = 0.0f;
+                speedMeasuredFiltered_ = 0.0f;
+                initTick_ = 0;
                 motor->motorData[CDevMtr::DATA_POSIT] = 0;
-                gripInfo = SGripInfo();  // 完整复位所有状态
                 pidPosCtrl.ResetPidController();
                 pidSpdCtrl.ResetPidController();
                 Component_FSMFlag_ = FSM_INIT;
@@ -83,150 +105,123 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
             case FSM_INIT:{
                 if(motor->motorStatus == CDevMtr::EMotorStatus::STALL){
 
-                    gripCmd = SGripCmd();
-                    motor->motorData[CDevMtr::DATA_POSIT] = static_cast<int32_t> (0.1*8192 + rangeLimit_Grip) * ARM_GRIP_MOTOR_DIR;
+                    gripCmd = SGripCmd();///<堵转之后设置目标值
+                    motor->motorData[CDevMtr::DATA_POSIT] = static_cast<int32_t> (0.1*8192 + rangeLimit_Grip) * ARM_GRIP_MOTOR_DIR;///<堵转零点超量标定
                     gripInfo.state = SGripInfo::EGripState::RELEASE;
                     gripInfo.isGripped = false;
                     gripInfo.holdPosit_Grip = 0;
-                    gripInfo.lastSetPosit = gripCmd.setPosit_grip;
-
-                    // 初始化增量式 Roll 补偿
-                    if (parentModule == nullptr ||  parentModule->comEnd_.componentStatus != APP_OK) {
-                        return APP_ERROR;
-                    }
-                    rollPositAtGripInit_ = parentModule->comEnd_.endInfo.posit_Roll;
-                    gripInfo.lastEndRollPosit = rollPositAtGripInit_;
-                    gripInfo.rollCompAccum = 0.0f;
 
                     pidPosCtrl.ResetPidController();
                     pidSpdCtrl.ResetPidController();
+                    speedTargetFiltered_ = 0.0f;
+                    speedMeasuredFiltered_ = 0.0f;
+                    initTick_ = 0;
+                    gripDetect_.edgeReady = false;  ///< 禁用边沿检测，等进入CTRL后滤波力矩低值激活
                     Component_FSMFlag_ = FSM_CTRL;
                     componentStatus = APP_OK;
                     return APP_OK;
                 }
-                gripCmd.setPosit_grip += 500;
-                return _UpdateOutput(static_cast<float_t>(gripCmd.setPosit_grip), 0);
-            }
 
-            case FSM_CTRL:{
-                constexpr int32_t gripSpeedStep = static_cast<int32_t>(
-                    ARM_GRIP_MANUAL_SPEED_MM_S / 1000.0f * ARM_END_GRIP_MOTOR_RATIO);
-
-                // 上层的非遥控器的控制指令
-                if (gripCmd.cmdClose) {
-                    if (gripInfo.state != SGripInfo::EGripState::HOLD) {
-                        gripCmd.setPosit_grip -= gripSpeedStep;
-                    }
-                } else if (gripCmd.cmdOpen) {
-                    gripCmd.setPosit_grip += gripSpeedStep;
+                // 力矩反馈线性减速
+                gripDetect_.filteredTorque = getAbsTorque();
+                if (gripDetect_.filteredTorque > GripinitParam_.initTorqueThresh_) {
+                    gripCmd.setSpeed_grip = GripinitParam_.initSpeedMax_  * (1.0f - (gripDetect_.filteredTorque - GripinitParam_.initTorqueThresh_) / GripinitParam_.initTorqueRange_);
+                    if (gripCmd.setSpeed_grip < GripinitParam_.initSpeedMin_) gripCmd.setSpeed_grip = GripinitParam_.initSpeedMin_;
+                } else {
+                    gripCmd.setSpeed_grip = GripinitParam_.initSpeedMax_;
                 }
-                
+                return _UpdateOutputSpd(gripCmd.setSpeed_grip);
+            }
+            case FSM_CTRL:{
+                /// 自动控制速度常量（电机的转速rpm）
+                const float_t GRIP_AUTO_SPEED = 6000.0f;
 
-                gripCmd.setPosit_grip = std::clamp<int32_t>(gripCmd.setPosit_grip, static_cast<int32_t>(0), rangeLimit_Grip);
+                // 力矩低通滤波
+                gripDetect_.filteredTorque = LowPassFilter(
+                    gripDetect_.filteredTorque, getAbsTorque(), gripDetect_.filterAlpha);
 
-                // 更新增量式Roll补偿
-                _UpdateRollCompensation(endRollPosit);
+                // cmdClose/cmdOpen
+                if (gripCmd.cmdClose) {
+                    gripCmd.setSpeed_grip = -GRIP_AUTO_SPEED;
+                } else if (gripCmd.cmdOpen) {
+                    gripCmd.setSpeed_grip = GRIP_AUTO_SPEED;
+                }
 
                 /* ---- 二次夹紧：从当前位置重新闭合（任何状态均可触发）---- */
                 if(gripCmd.cmdReGrip){
                     gripCmd.cmdReGrip = false;
                     gripInfo.state = SGripInfo::EGripState::RELEASE;
                     gripInfo.isGripped = false;
-                    gripCmd.setPosit_grip = gripInfo.posit_grip;//用补偿后的位置信息来设置当前的位置
-                    gripCmd.cmdClose = true;
+                    gripCmd.cmdClose = false;
                     gripCmd.cmdOpen = false;
-                    pidPosCtrl.ResetPidController();
+                    gripCmd.setSpeed_grip = -GRIP_AUTO_SPEED; ///< 闭合方向
                     pidSpdCtrl.ResetPidController();
                 }
 
-                /* ---- 双状态控制 ---- */
-                // 命令位置，HOLD 状态会覆写为 holdPosit_Grip
-                int32_t effectiveTarget = gripCmd.setPosit_grip;
+                // 软件限位：基于编码器位置防止超出机械行程
+                const bool isClosingCommand = gripCmd.setSpeed_grip < 0;
+                if (gripInfo.posit_grip <= 0 && isClosingCommand) {
+                    gripCmd.setSpeed_grip = 0;  ///< 已到闭合极限，禁止继续闭合
+                }
+                if (gripInfo.posit_grip >= rangeLimit_Grip && gripCmd.setSpeed_grip > 0) {
+                    gripCmd.setSpeed_grip = 0;  ///< 已到张开极限，禁止继续张开
+                }
 
+                /* ---- 双状态控制 ---- */
                 switch(gripInfo.state) {
                     case SGripInfo::EGripState::RELEASE: {
-                        // RELEASE：effectiveTarget 已是 setPosit_grip
-
-                        // --- 硬件堵转检测：电机驱动层检测 ---
-                        bool nearMaxOpen = (gripInfo.posit_grip > rangeLimit_Grip - 8192);
-                        bool commandWantClose = (gripCmd.setPosit_grip < gripInfo.posit_grip);
-                        if(motor->motorStatus == CDevMtr::EMotorStatus::STALL
-                           && commandWantClose && !nearMaxOpen){
+                        if (gripInfo.posit_grip <= 0 && isClosingCommand) {
                             gripInfo.state = SGripInfo::EGripState::HOLD;
                             gripInfo.holdPosit_Grip = gripInfo.posit_grip;
                             gripInfo.isGripped = true;
-                            effectiveTarget = gripInfo.holdPosit_Grip;
-                            gripInfo.softStallCount = 0;
-                            pidPosCtrl.ResetPidController();
-                            pidSpdCtrl.ResetPidController();
-                            break;
+                            gripDetect_.edgeReady = false;
+                            return _UpdateOutputSpd(0);
                         }
 
-                        // --- 软件堵转检测：补充硬件检测在低力矩/零点附近的不足 ---
-                        // 条件：闭合命令 + 不在最大张开处 + 位置停滞 + 被阻挡无法到达目标
-                        if (gripCmd.cmdClose && !nearMaxOpen) {
-                            bool positionStuck = (abs(gripInfo.posit_grip - gripInfo.lastPositForSoftStall) < 200);
-                            bool blockedFromTarget = (gripInfo.posit_grip > gripCmd.setPosit_grip + 500)
-                                || (gripCmd.setPosit_grip == 0);  // 目标已到最小值但仍未到达
-
-                            if (positionStuck && blockedFromTarget) {
-                                gripInfo.softStallCount++;
-                                if (gripInfo.softStallCount > 100) {  
-                                    gripInfo.state = SGripInfo::EGripState::HOLD;
-                                    gripInfo.holdPosit_Grip = gripInfo.posit_grip;
-                                    gripInfo.isGripped = true;
-                                    effectiveTarget = gripInfo.holdPosit_Grip;
-                                    gripInfo.softStallCount = 0;
-                                    pidPosCtrl.ResetPidController();
-                                    pidSpdCtrl.ResetPidController();
-                                    break;
-                                }
-                            } else {
-                                gripInfo.softStallCount = 0;
+                        // 力矩边沿检测：低->高 边沿判定夹取成功
+                        if (gripDetect_.filteredTorque < gripDetect_.detectTorque) {
+                            gripDetect_.edgeReady = true;
+                        } else if (gripDetect_.edgeReady && gripDetect_.filteredTorque > gripDetect_.detectTorque) {
+                            if (gripCmd.setSpeed_grip < 0) { ///< 仅闭合方向触发
+                                gripInfo.state = SGripInfo::EGripState::HOLD;
+                                gripInfo.holdPosit_Grip = gripInfo.posit_grip;
+                                gripInfo.isGripped = true;
+                                gripDetect_.edgeReady = false;
+                                return _UpdateOutputSpd(0);
                             }
-                        } else {
-                            gripInfo.softStallCount = 0;
+                            gripDetect_.edgeReady = false;
                         }
 
-                        gripInfo.lastPositForSoftStall = gripInfo.posit_grip;
-                        break;
+                        // 闭合方向滤波力矩反馈减速，保护夹爪和工件
+                        if (gripCmd.setSpeed_grip < 0 && gripDetect_.filteredTorque > gripDetect_.closeTorqueThresh) {
+                            gripCmd.setSpeed_grip *= (gripDetect_.filteredTorque - gripDetect_.closeTorqueThresh < gripDetect_.closeTorqueRange)
+                                ? (1.0f - (gripDetect_.filteredTorque - gripDetect_.closeTorqueThresh) / gripDetect_.closeTorqueRange)
+                                : 0.0f;
+                            if (gripCmd.setSpeed_grip > -gripDetect_.closeSpeedMin)
+                                gripCmd.setSpeed_grip = -gripDetect_.closeSpeedMin;
+                        }
+                        return _UpdateOutputSpd(gripCmd.setSpeed_grip);
                     }
 
                     case SGripInfo::EGripState::HOLD: {
-                        gripInfo.softStallCount = 0;
-                        // HOLD：收到明确张开命令立即退出，避免 reGrip 后目标仍在0导致无法释放
-                        if(gripCmd.cmdOpen){
-                            gripCmd.setPosit_grip = std::max(
-                                gripCmd.setPosit_grip,
-                                std::min(gripInfo.holdPosit_Grip + gripSpeedStep, rangeLimit_Grip));
-                            effectiveTarget = gripCmd.setPosit_grip;
+                        // 收到张开方向指令则退出夹持
+                        if(gripCmd.setSpeed_grip > 0){
                             gripInfo.state = SGripInfo::EGripState::RELEASE;
                             gripInfo.isGripped = false;
-                            pidPosCtrl.ResetPidController();
                             pidSpdCtrl.ResetPidController();
+                            return _UpdateOutputSpd(gripCmd.setSpeed_grip);
                         }
-                        // 自动任务/目标位置控制：目标明显大于保持位置时退出
-                        else if(gripCmd.setPosit_grip > gripInfo.holdPosit_Grip + 819){
-                            gripInfo.state = SGripInfo::EGripState::RELEASE;
-                            gripInfo.isGripped = false;
-                            pidPosCtrl.ResetPidController();
-                            pidSpdCtrl.ResetPidController();
-                        }
-                        else {
-                            // 保持：目标固定在原始堵转位置，不随外力拖动
-                            effectiveTarget = gripInfo.holdPosit_Grip;
-                        }
-                        break;
+                        // 保持夹持：速度归零，丝杆自锁保持位置
+                        return _UpdateOutputSpd(0);
                     }
                 }
-
-                gripInfo.lastSetPosit = effectiveTarget;
-                return _UpdateOutput(static_cast<float_t>(effectiveTarget), endRollPosit);
             }
-
             default:{
                 StopComponent();
                 mtrOutputBuffer = 0;
+                speedTargetFiltered_ = 0.0f;
+                speedMeasuredFiltered_ = 0.0f;
+                initTick_ = 0;
                 pidPosCtrl.ResetPidController();
                 pidSpdCtrl.ResetPidController();
                 componentStatus = APP_ERROR;
@@ -234,20 +229,20 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
             }
 
         }
-        return APP_OK;
+    return APP_OK;
 }
 
 /**
- * @brief 输出更新函数（Roll耦合补偿）
+ * @brief 输出更新函数（位置环）
  */
-EAppStatus CModArm::CComGrip::_UpdateOutput(float gripTarget, int32_t endRollPosit) {
+EAppStatus CModArm::CComGrip::_UpdateOutput(float_t gripTarget) {
     DataBuffer<float_t> gripPos = {
         static_cast<float_t>(gripTarget)
     };
 
-    float_t actualGripPosit = static_cast<float_t>(motor->motorData[CDevMtr::DATA_POSIT])
-                              + gripInfo.rollCompAccum;
-    DataBuffer<float_t> gripPosMeasured = {actualGripPosit};
+    DataBuffer<float_t> gripPosMeasured = {
+        static_cast<float_t>(motor->motorData[CDevMtr::DATA_POSIT])
+    };
 
     auto pidPosOutput = pidPosCtrl.UpdatePidController(gripPos, gripPosMeasured);
 
@@ -261,19 +256,26 @@ EAppStatus CModArm::CComGrip::_UpdateOutput(float gripTarget, int32_t endRollPos
 }
 
 /**
- * @brief Roll补偿累积更新函数
+ * @brief 速度环输出更新函数（复用内环pidSpdCtrl）
+ *
+ * @note 丝杆自锁特性：speedTarget=0时电机停转，夹爪机械保持
  */
-void CModArm::CComGrip::_UpdateRollCompensation(int32_t endRollPosit) {
-    int32_t deltaRoll = endRollPosit - gripInfo.lastEndRollPosit;
+EAppStatus CModArm::CComGrip::_UpdateOutputSpd(float_t speedTarget) {
+    const float_t motorSpeedTarget = speedTarget * ARM_GRIP_MOTOR_DIR;
 
-    if (deltaRoll > ARM_END_ROLL_HALF_TURN) {
-        deltaRoll -= ARM_END_ROLL_ONE_TURN;
-    } else if (deltaRoll < -ARM_END_ROLL_HALF_TURN) {
-        deltaRoll += ARM_END_ROLL_ONE_TURN;
-    }
+    DataBuffer<float_t> spdRef = {
+        static_cast<float_t>(motorSpeedTarget)
+    };
 
-    gripInfo.rollCompAccum += static_cast<float_t>(deltaRoll) * ARM_ROLL_GRIP_COUPLING_RATIO;
-    gripInfo.lastEndRollPosit = endRollPosit;
+    DataBuffer<float_t> spdMeasured = {
+        static_cast<float_t>(motor->motorData[CDevMtr::DATA_SPEED])
+    };
+
+    auto output = pidSpdCtrl.UpdatePidController(spdRef, spdMeasured);
+
+    mtrOutputBuffer = static_cast<int16_t>(output[0]);
+
+    return APP_OK;
 }
 
 /**
@@ -292,9 +294,11 @@ int32_t CModArm::CComGrip::PhyPositToMtrPosit(float_t phyPosit) {
  * @brief 电机位置转换为物理位置
  */
 float_t CModArm::CComGrip::MtrPositToPhyPosit(float_t mtrPosit) {
-    const int32_t zeroOffset = 0; ///< 夹爪电机零点偏移
-    const float_t ratio = ARM_END_GRIP_MOTOR_RATIO; ///< 夹爪电机与物理位置转换比（单位mm）
+    const int32_t zeroOffset = 0;
+    const float_t ratio = ARM_END_GRIP_MOTOR_RATIO;
     return (static_cast<float_t>(mtrPosit - zeroOffset) / ratio);
 }
+
+
 
 }//namespace my_engineer

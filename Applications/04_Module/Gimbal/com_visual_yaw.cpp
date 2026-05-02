@@ -34,7 +34,10 @@ EAppStatus CModGimbal::CComVisualyaw::InitComponent(SModInitParam_Base &param){
 
 EAppStatus CModGimbal::CComVisualyaw::UpdateComponent(){
 
-    if (componentStatus == APP_RESET) return APP_ERROR;
+    if (componentStatus == APP_RESET) {
+        static_cast<CDevMtrDM_MIT *>(motor)->Control_MIT(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        return APP_ERROR;
+    }
 
     CDevMtrDM_MIT *pMtr = static_cast<CDevMtrDM_MIT *>(motor);
 	VisuallyawInfo.angle = rad2deg(pMtr->motorPhyAngle);

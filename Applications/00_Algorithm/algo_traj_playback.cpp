@@ -32,6 +32,7 @@ namespace my_engineer{
             tAcc = tDec = tConst = 0.0f;
             sAcc = sDec = sConst = 0.0f;   //加减速的时间都设置为0
             vPeak = 0.0f;
+            tTotal = 0.0f;
             return;
         }
 
@@ -101,7 +102,7 @@ namespace my_engineer{
                     float_t scale = jointTrajs[i].tTotal / maxTime_;
                     float_t vel = TrajConfig.jointParams[i].velMax * speedScale;
                     float_t acc = TrajConfig.jointParams[i].accMax * speedScale;
-                    jointTrajs[i].TrapezoidalSpeedPlanner(current[i], target[i], vel * scale, acc);//降速之后将每个关节的时间计算出来
+                    jointTrajs[i].TrapezoidalSpeedPlanner(current[i], target[i], vel * scale, acc * scale * scale);//降速并将时间同步到maxTime_
                 }
             }
         }

@@ -53,7 +53,7 @@ namespace my_engineer {
                 proc_waitMs(1);
             }
             // 左键确认: 当前电机Roll位置设为零点偏移
-            arm.comEnd_.rollZeroOffset = arm.comEnd_.endInfo.posit_Roll;
+            //arm.comEnd_.rollZeroOffset = arm.comEnd_.endInfo.posit_Roll;
         }
 
         {
@@ -68,9 +68,9 @@ namespace my_engineer {
             /*step 2 :逐段播放轨迹*/
             for(int seg = 1; seg < Traj.frameCount; seg++){
                 if(!PlayFrameSegment(arm, Traj.frame, seg, player, true)) goto proc_exit;
-                if(seg == 7){
-                    proc_waitMs(50);
-                }
+//                if(Traj.frame[8] == 1){
+//                    proc_waitMs(0);
+//                }
             }
         }
 

@@ -135,8 +135,8 @@ void CSystemCore::ControlFromRemote_() {
                     (remote.joystick_RY / 100.f) * 90.f / freq;
                 parm_->armCmd.set_angle_Pitch3 +=
                     (remote.joystick_RX / 100.f) * 90.f / freq;
-                parm_->armCmd.set_length_grip +=
-                    (remote.thumbWheel / 100.f) * 60.f / freq; ///< 拨轮控夹爪
+				parm_->armCmd.set_speed_grip =
+					(remote.thumbWheel / 100.f) * 6000.f;
             }
         }
         if(pchassis_){
@@ -292,6 +292,9 @@ void CSystemCore::ControlFromKeyboard_() {
             // end_roll(C键)
             if(keyboard.key_C)
                 parm_->armCmd.set_angle_end_roll += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 90.0f / freq;
+
+            parm_->armCmd.gripClose = (gripKeyboardCmd_ == EGripKeyboardCmd::CLOSE);
+            parm_->armCmd.gripOpen = (gripKeyboardCmd_ == EGripKeyboardCmd::OPEN);
         }
     }
 
