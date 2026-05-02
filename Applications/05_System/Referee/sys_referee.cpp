@@ -129,6 +129,8 @@ EAppStatus CSystemReferee::UpdateRobotInfo_() {
 	}
 	refereeInfo.robot.robotID =
 		pRefereeDev_->robotStatusPkg.robotId % 100;
+	refereeInfo.robot.robotMaxPower =
+		static_cast<int16_t>(pRefereeDev_->robotStatusPkg.robotMaxPower);
 
 	return APP_OK;
 }

@@ -79,7 +79,8 @@ void StartUpdateTask(void *argument) {
 		    TxNode_Can3_280.Transmit(); ///< 机械臂后三轴电机 500Hz
         }
             
-        TxNode_Can1_200.Transmit(); ///< 底盘轮毂电机
+        TxNode_Can2_200.Transmit(); ///< 底盘轮向电机(0x201~0x204)
+        TxNode_Can1_1FF.Transmit(); ///< 底盘舵向电机(0x205~0x208)
         TxNode_Can2_1FF.Transmit(); ///< 末端pitch roll和夹爪收放
 
         proc_waitMs(1); // 1000Hz

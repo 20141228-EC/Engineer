@@ -111,6 +111,12 @@ void CSystemBoardLink::UpdateBoardRxData_() {
     fdbInfo.pack1_status = pboardLink_->fdbInfo_pkt.pack1_status;
     fdbInfo.pack2_status = pboardLink_->fdbInfo_pkt.pack2_status;
     fdbInfo.pack3_status = pboardLink_->fdbInfo_pkt.pack3_status; ///< 这个说不存在成员不用管 vscode乱报错 ninja编译是可以过的
+
+    gimbalInfo.pack_id = pboardLink_->gimbalInfo_pkt.pack_id;
+    gimbalInfo.remote_is_online = pboardLink_->gimbalInfo_pkt.remote_is_online;
+    gimbalInfo.speed_x = pboardLink_->gimbalInfo_pkt.speed_x;
+    gimbalInfo.speed_y = pboardLink_->gimbalInfo_pkt.speed_y;
+    gimbalInfo.speed_w = pboardLink_->gimbalInfo_pkt.speed_w;
 	
 }
 

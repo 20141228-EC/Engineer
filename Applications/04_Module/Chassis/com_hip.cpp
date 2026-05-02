@@ -86,6 +86,7 @@ EAppStatus CModChassis::CComHip::InitComponent(SModInitParam_Base &param){
 EAppStatus CModChassis::CComHip::UpdateComponent() {
 	// 检查组件状态
 	if (componentStatus == APP_RESET) return APP_ERROR;
+	constexpr bool kEnableHipMitSend = false; // 仅保留舵轮电机CAN发送
 
 	CDevMtrDM_MIT *pMtr[2];
     pMtr[LL] = static_cast<CDevMtrDM_MIT *>(motor[LL]);
@@ -122,8 +123,10 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 
 	switch (Component_FSMFlag_) {
 		case FSM_RESET: {
-			pMtr[LL]->Control_MIT(0.0f, 0.0f, deg2rad(0.0f) * L_LIFT_MOTOR_DIR, 0.0f, 0.0f);
-            pMtr[LR]->Control_MIT(0.0f, 0.0f, deg2rad(0.0f) * R_LIFT_MOTOR_DIR, 0.0f, 0.0f);
+			if (kEnableHipMitSend) {
+				// pMtr[LL]->Control_MIT(0.0f, 0.0f, deg2rad(0.0f) * L_LIFT_MOTOR_DIR, 0.0f, 0.0f);
+            	// pMtr[LR]->Control_MIT(0.0f, 0.0f, deg2rad(0.0f) * R_LIFT_MOTOR_DIR, 0.0f, 0.0f);
+			}
 			// mtrOutputBuffer.fill(0);
 			// HipPosPid[LL].ResetPidController();
 			// HipSpdPid[LL].ResetPidController();
@@ -151,9 +154,11 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 				componentStatus = APP_OK;
 			}
 			// pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.0f, 0.0f);
-            pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(next_angle[LL]), 0.0f, 0.0f);
+			if (kEnableHipMitSend) {
+            	// pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(next_angle[LL]), 0.0f, 0.0f);
 			// pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.0f, 0.0f);
-            pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(next_angle[LR]), 0.0f, 0.0f);
+				// pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(next_angle[LR]), 0.0f, 0.0f);
+			}
 			// if(fabs(HipInfo.pos_L_L - HipCmd.L_Set_Angle) < 100 && fabs(HipInfo.pos_L_R - HipCmd.R_Set_Angle) < 100){
 			// 	Component_FSMFlag_ = FSM_CTRL;
 			// 	componentStatus = APP_OK;
@@ -167,12 +172,16 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 		case FSM_CTRL: {
 
 			if(parent->reset_hip){		///< 复位时候用滤波后的角度值，防止猛肘限位
-				pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(next_angle[LL]), 0.0f, 0.0f);
-				pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(next_angle[LR]), 0.0f, 0.0f);
+				if (kEnableHipMitSend) {
+					// pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(next_angle[LL]), 0.0f, 0.0f);
+					// pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(next_angle[LR]), 0.0f, 0.0f);
+				}
 			}
 			else{
-				pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.0f, mitCtrl[LL].tau);
-				pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.0f, mitCtrl[LR].tau);
+				if (kEnableHipMitSend) {
+					// pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.0f, mitCtrl[LL].tau);
+					// pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.0f, mitCtrl[LR].tau);
+				}
 			}
 			return APP_OK;
 			// _UpdateOutput(HipCmd.L_Set_Angle, HipCmd.R_Set_Angle);

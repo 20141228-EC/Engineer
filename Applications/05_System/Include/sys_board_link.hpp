@@ -98,6 +98,14 @@ public:
         uint8_t  reserved[5];       ///< 预留
     } __packed fdbInfo = {};
 
+    struct SGimbalInfoPack {
+        uint8_t pack_id;            ///< 包ID = 3
+        uint8_t remote_is_online;   ///< 遥控器在线标志（1有效）
+        int16_t speed_x;            ///< 底盘X速度
+        int16_t speed_y;            ///< 底盘Y速度
+        int16_t speed_w;            ///< 底盘旋转速度
+    } __packed gimbalInfo = {};
+
 	// 初始化系统
 	EAppStatus InitSystem(SSystemInitParam_Base *pStruct) final;
 

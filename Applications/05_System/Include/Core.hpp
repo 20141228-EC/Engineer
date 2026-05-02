@@ -158,6 +158,9 @@ private:
     CModChassis *pchassis_ = nullptr;
     CModArm *parm_ = nullptr;
 
+    // 遥控离线标记，用于恢复在线后强制退出小陀螺
+    bool remoteWasOffline_ = false;
+
     // 自动任务句柄
     TaskHandle_t autoCtrlTaskHandle_ = nullptr;
 
