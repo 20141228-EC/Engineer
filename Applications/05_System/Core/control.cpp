@@ -240,6 +240,8 @@ void CSystemCore::ControlFromKeyboard_() {
             // pitch2(R键)
             if(keyboard.key_R)
                 parm_->armCmd.set_angle_Pitch2 += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 70.0f / freq;
+            if(keyboard.key_F)
+                parm_->armCmd.set_angle_Pitch3 += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 70.0f / freq;
             // roll(Z键)
             if(keyboard.key_Z)
                 parm_->armCmd.set_angle_Roll += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 80.0f / freq;
@@ -521,24 +523,24 @@ void CSystemCore::ControlFromController_() {
     
 }
 
-void CSystemCore::ControlFromEsp32_() {
-    const auto freq = 1000.f; // 系统核心频率
+// void CSystemCore::ControlFromEsp32_() {
+//     const auto freq = 1000.f; // 系统核心频率
 
-    auto &esp32 = SysESP32.BLEInfo;
+//     auto &esp32 = SysESP32.BLEInfo;
 
-    if (parm_) {
-        parm_->should_limit_yaw = 0;
+//     if (parm_) {
+//         parm_->should_limit_yaw = 0;
 
-        if (SysESP32.BLE_Mode_Open) {
-            parm_->armCmd.set_angle_Yaw = LowPassFilter(parm_->armCmd.set_angle_Yaw, esp32.Yaw, 0.5f);
-            parm_->armCmd.set_angle_Pitch1 = LowPassFilter(parm_->armCmd.set_angle_Pitch1, esp32.Pitch1, 0.5f);
-            parm_->armCmd.set_angle_Pitch2 = LowPassFilter(parm_->armCmd.set_angle_Pitch2, esp32.Pitch2, 0.5f);
-            parm_->armCmd.set_angle_Roll = LowPassFilter(parm_->armCmd.set_angle_Roll, esp32.Roll, 0.5f);
-            parm_->armCmd.set_angle_end_pitch = LowPassFilter(parm_->armCmd.set_angle_end_pitch, esp32.End_Pitch, 0.5f);
-            parm_->armCmd.set_angle_end_roll = LowPassFilter(parm_->armCmd.set_angle_end_roll, esp32.End_Roll, 0.5f);
-        }
-    }
-}
+//         if (SysESP32.BLE_Mode_Open) {
+//             parm_->armCmd.set_angle_Yaw = LowPassFilter(parm_->armCmd.set_angle_Yaw, esp32.Yaw, 0.5f);
+//             parm_->armCmd.set_angle_Pitch1 = LowPassFilter(parm_->armCmd.set_angle_Pitch1, esp32.Pitch1, 0.5f);
+//             parm_->armCmd.set_angle_Pitch2 = LowPassFilter(parm_->armCmd.set_angle_Pitch2, esp32.Pitch2, 0.5f);
+//             parm_->armCmd.set_angle_Roll = LowPassFilter(parm_->armCmd.set_angle_Roll, esp32.Roll, 0.5f);
+//             parm_->armCmd.set_angle_end_pitch = LowPassFilter(parm_->armCmd.set_angle_end_pitch, esp32.End_Pitch, 0.5f);
+//             parm_->armCmd.set_angle_end_roll = LowPassFilter(parm_->armCmd.set_angle_end_roll, esp32.End_Roll, 0.5f);
+//         }
+//     }
+// }
 
 
 }   // namespace my_engineer
