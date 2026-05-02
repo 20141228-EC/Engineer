@@ -80,4 +80,5 @@ dm-mc02/dev_servo.o: ..\..\..\Applications\03_Device\dev_servo.cpp \
   ..\..\..\Applications\01_Configuration\Include\conf_process.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
-  ..\..\..\Applications\01_Configuration\Include\conf_device.hpp
+  ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp

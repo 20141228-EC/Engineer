@@ -81,6 +81,7 @@ dm-mc02/interface.o: ..\..\..\Applications\02_Interface\Interface.cpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_uart.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_can.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_spi.hpp \

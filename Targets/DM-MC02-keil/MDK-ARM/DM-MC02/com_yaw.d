@@ -1,5 +1,5 @@
-dm-mc02/com_yaw.o: ..\..\..\Applications\04_Module\Arm\com_yaw.cpp \
-  ..\..\..\Applications\04_Module\Include\mod_arm.hpp \
+dm-mc02/com_yaw.o: ..\..\..\Applications\04_Module\Gimbal\com_yaw.cpp \
+  ..\..\..\Applications\04_Module\Include\mod_gimbal.hpp \
   ..\..\..\Applications\04_Module\Include\mod_common.hpp \
   ..\..\..\Applications\01_Configuration\Include\Configuration.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_common.hpp \
@@ -81,6 +81,7 @@ dm-mc02/com_yaw.o: ..\..\..\Applications\04_Module\Arm\com_yaw.cpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_pid.hpp \
   ..\..\..\Applications\02_Interface\Include\Interface.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_common.hpp \
@@ -121,4 +122,8 @@ dm-mc02/com_yaw.o: ..\..\..\Applications\04_Module\Arm\com_yaw.cpp \
   ..\..\..\Applications\03_Device\Include\dev_esp32.hpp \
   ..\..\..\Applications\03_Device\Include\dev_vision.hpp \
   ..\..\..\Applications\03_Device\Include\dev_referee.hpp \
-  ..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp
+  ..\..\..\Applications\03_Device\Include\dev_board_link.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_ave_filter.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_filter_common.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_other.hpp

@@ -83,6 +83,7 @@ dm-mc02/referee_ui.o: \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_uart.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_can.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_spi.hpp \
@@ -121,11 +122,14 @@ dm-mc02/referee_ui.o: \
   ..\..\..\Applications\03_Device\Include\dev_esp32.hpp \
   ..\..\..\Applications\03_Device\Include\dev_vision.hpp \
   ..\..\..\Applications\03_Device\Include\dev_referee.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_board_link.hpp \
   ..\..\..\Applications\04_Module\Include\Module.hpp \
   ..\..\..\Applications\04_Module\Include\mod_common.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp \
-  ..\..\..\Applications\04_Module\Include\mod_chassis.hpp \
   ..\..\..\Applications\04_Module\Include\mod_gimbal.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_ave_filter.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_filter_common.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_other.hpp \
   ..\..\..\Applications\04_Module\Include\mod_arm.hpp \
   ..\..\..\Applications\05_System\Include\System.hpp \
   ..\..\..\Applications\05_System\Include\sys_common.hpp \
@@ -137,4 +141,4 @@ dm-mc02/referee_ui.o: \
   ..\..\..\Applications\05_System\Include\sys_referee.hpp \
   ..\..\..\Applications\05_System\Include\sys_controller_link.hpp \
   ..\..\..\Applications\05_System\Include\sys_esp32.hpp \
-  ..\..\..\Applications\00_Algorithm\Include\algo_other.hpp
+  ..\..\..\Applications\05_System\Include\sys_board_link.hpp

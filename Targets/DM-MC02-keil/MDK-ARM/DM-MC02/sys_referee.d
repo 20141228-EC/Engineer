@@ -82,6 +82,7 @@ dm-mc02/sys_referee.o: \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\05_System\Include\RTT_DEBUG.h \
   ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT.h \
   ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT_Conf.h \
@@ -125,6 +126,7 @@ dm-mc02/sys_referee.o: \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h \
   ..\..\..\Applications\03_Device\Include\dev_referee.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_board_link.hpp \
   ..\..\..\Applications\05_System\Include\sys_vision.hpp \
   ..\..\..\Applications\05_System\Include\sys_referee.hpp \
   ..\..\..\Applications\05_System\Include\sys_controller_link.hpp \
@@ -133,6 +135,9 @@ dm-mc02/sys_referee.o: \
   ..\..\..\Applications\04_Module\Include\mod_common.hpp \
   ..\..\..\Applications\02_Interface\Include\Interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp \
-  ..\..\..\Applications\04_Module\Include\mod_chassis.hpp \
   ..\..\..\Applications\04_Module\Include\mod_gimbal.hpp \
-  ..\..\..\Applications\04_Module\Include\mod_arm.hpp
+  ..\..\..\Applications\00_Algorithm\Include\algo_ave_filter.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_filter_common.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_other.hpp \
+  ..\..\..\Applications\04_Module\Include\mod_arm.hpp \
+  ..\..\..\Applications\05_System\Include\sys_board_link.hpp

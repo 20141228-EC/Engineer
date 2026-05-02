@@ -105,18 +105,45 @@ void CDevBoardLink::HeartbeatHandler_() {
  * 
  * @details 将从系统层获取，已经存到设备层结构体中的数据填入can发送缓冲区
  * 
+ * @param pack_id 要发送的数据包ID
  * @retval EAppStatus
  */
-EAppStatus CDevBoardLink::SendPackage(void){
+EAppStatus CDevBoardLink::SendPackage(EPacketID pack_id){
 
 	// 检查设备状态
 	if (deviceStatus == APP_RESET) return APP_ERROR;
 
 	std::array<uint8_t, 8> data_buf{};
 
-    memcpy(data_buf.data(), &ctrlInfo_, sizeof(ctrlInfo_));
-
-    Modify_CanTxData(data_buf.data());
+ 	switch (pack_id)
+	{
+	case PKT_CTRL_INFOS:{
+		// 获取数据
+		ctrlInfo_.pack_id = PKT_CTRL_INFOS;
+		memcpy(data_buf.data(), &ctrlInfo_, sizeof(ctrlInfo_));
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+		break;
+	}
+	case PKT_JOINT_INFOS:{
+		// 获取数据
+		angleInfo_.pack_id = PKT_JOINT_INFOS;
+		memcpy(data_buf.data(), &angleInfo_, sizeof(angleInfo_));
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+		break;
+	}
+	case PKT_OTHER_INFOS:{
+		// 获取数据
+		otherInfo_.pack_id = PKT_OTHER_INFOS;
+		memcpy(data_buf.data(), &otherInfo_, sizeof(otherInfo_));
+		// 填充数据帧
+		Modify_CanTxData(data_buf.data());
+		break;
+	}
+	default:
+		return APP_ERROR;
+	}
 
 	txNode_.Transmit(); ///< 发送数据
 

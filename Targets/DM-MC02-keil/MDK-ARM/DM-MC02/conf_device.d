@@ -76,40 +76,17 @@ dm-mc02/conf_device.o: \
   ..\..\..\Middlewares\FreeRTOS-Kernel\include\task.h \
   ..\..\..\Middlewares\FreeRTOS-Kernel\include\list.h \
   ..\..\..\Middlewares\FreeRTOS-Kernel\include\queue.h \
-  ..\..\..\Applications\03_Device\Include\Device.hpp \
-  ..\..\..\Applications\03_Device\Include\dev_common.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp \
+  ..\..\..\Applications\02_Interface\Include\Interface.hpp \
+  ..\..\..\Applications\02_Interface\Include\inf_common.hpp \
   ..\..\..\Applications\01_Configuration\Include\Configuration.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_process.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
-  ..\..\..\Applications\03_Device\Include\mtr\motor.hpp \
-  ..\..\..\Applications\03_Device\Include\mtr\mtr_common.hpp \
-  ..\..\..\Applications\03_Device\Include\mtr\mtr_dm.hpp \
-  ..\..\..\Applications\02_Interface\Include\inf_can.hpp \
-  ..\..\..\Applications\02_Interface\Include\inf_common.hpp \
-  ..\..\..\Applications\03_Device\Include\mtr\mtr_dm_mit.hpp \
-  ..\..\..\Applications\03_Device\Include\mtr\mtr_dji.hpp \
-  ..\..\..\Applications\03_Device\Include\mtr\mtr_m2006.hpp \
-  ..\..\..\Applications\03_Device\Include\mtr\mtr_m3508.hpp \
-  ..\..\..\Applications\03_Device\Include\mtr\mtr_kt.hpp \
-  ..\..\..\Applications\03_Device\Include\mems\mems.hpp \
-  ..\..\..\Applications\03_Device\Include\mems\mems_common.hpp \
-  ..\..\..\Applications\03_Device\Include\mems\mems_bmi088.hpp \
-  ..\..\..\Applications\02_Interface\Include\inf_spi.hpp \
-  ..\..\..\Applications\00_Algorithm\Include\algo_pid.hpp \
-  ..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h \
-  ..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h \
-  ..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h \
-  ..\..\..\Applications\03_Device\Include\rc\remote.hpp \
-  ..\..\..\Applications\03_Device\Include\rc\rc_common.hpp \
-  ..\..\..\Applications\03_Device\Include\rc\rc_def.hpp \
-  ..\..\..\Applications\03_Device\Include\rc\rc_dr16.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_uart.hpp \
-  ..\..\..\Applications\03_Device\Include\dev_servo.hpp \
-  ..\..\..\Applications\03_Device\Include\dev_controller_link.hpp \
-  ..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp \
-  ..\..\..\Applications\03_Device\Include\dev_esp32.hpp \
-  ..\..\..\Applications\03_Device\Include\dev_vision.hpp \
+  ..\..\..\Applications\02_Interface\Include\inf_can.hpp \
+  ..\..\..\Applications\02_Interface\Include\inf_spi.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_usb_cdc.hpp \
   ..\USB_DEVICE\App\usb_device.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_def.h \
@@ -118,4 +95,31 @@ dm-mc02/conf_device.o: \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h \
-  ..\..\..\Applications\03_Device\Include\dev_referee.hpp
+  ..\..\..\Applications\03_Device\Include\Device.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_common.hpp \
+  ..\..\..\Applications\03_Device\Include\mtr\motor.hpp \
+  ..\..\..\Applications\03_Device\Include\mtr\mtr_common.hpp \
+  ..\..\..\Applications\03_Device\Include\mtr\mtr_dm.hpp \
+  ..\..\..\Applications\03_Device\Include\mtr\mtr_dm_mit.hpp \
+  ..\..\..\Applications\03_Device\Include\mtr\mtr_dji.hpp \
+  ..\..\..\Applications\03_Device\Include\mtr\mtr_m2006.hpp \
+  ..\..\..\Applications\03_Device\Include\mtr\mtr_m3508.hpp \
+  ..\..\..\Applications\03_Device\Include\mtr\mtr_kt.hpp \
+  ..\..\..\Applications\03_Device\Include\mems\mems.hpp \
+  ..\..\..\Applications\03_Device\Include\mems\mems_common.hpp \
+  ..\..\..\Applications\03_Device\Include\mems\mems_bmi088.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_pid.hpp \
+  ..\..\..\Drivers\BMI08x_SensorAPI\bmi08x.h \
+  ..\..\..\Drivers\BMI08x_SensorAPI\bmi08.h \
+  ..\..\..\Drivers\BMI08x_SensorAPI\bmi08_defs.h \
+  ..\..\..\Applications\03_Device\Include\rc\remote.hpp \
+  ..\..\..\Applications\03_Device\Include\rc\rc_common.hpp \
+  ..\..\..\Applications\03_Device\Include\rc\rc_def.hpp \
+  ..\..\..\Applications\03_Device\Include\rc\rc_dr16.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_servo.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_controller_link.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_esp32.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_vision.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_referee.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_board_link.hpp

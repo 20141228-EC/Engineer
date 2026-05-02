@@ -81,6 +81,7 @@ dm-mc02/device.o: ..\..\..\Applications\03_Device\Device.cpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\motor.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_common.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_dm.hpp \
@@ -117,4 +118,5 @@ dm-mc02/device.o: ..\..\..\Applications\03_Device\Device.cpp \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h \
-  ..\..\..\Applications\03_Device\Include\dev_referee.hpp
+  ..\..\..\Applications\03_Device\Include\dev_referee.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_board_link.hpp

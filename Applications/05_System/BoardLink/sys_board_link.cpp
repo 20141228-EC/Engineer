@@ -86,9 +86,22 @@ void CSystemBoardLink::UpdateHandler_() {
 
     UpdateCtrlInfos_();
 
-    // 发送信息
+    // 发送信息（轮询发送或者根据需求分别发送，这里依次发送）
     if (pBoardLinkDev_ != nullptr) {
-        pBoardLinkDev_->SendPackage();
+        static uint8_t send_cnt = 0;
+        
+        switch(send_cnt % 3) {
+            case 0:
+                pBoardLinkDev_->SendPackage(CDevBoardLink::PKT_CTRL_INFOS);
+                break;
+            case 1:
+                pBoardLinkDev_->SendPackage(CDevBoardLink::PKT_JOINT_INFOS);
+                break;
+            case 2:
+                pBoardLinkDev_->SendPackage(CDevBoardLink::PKT_OTHER_INFOS);
+                break;
+        }
+        send_cnt++;
     }
 }
 
@@ -119,15 +132,22 @@ EAppStatus CSystemBoardLink::UpdateCtrlInfos_() {
 
     if (pBoardLinkDev_ == nullptr) return APP_ERROR;
 
-    const auto &infos = pBoardLinkDev_->ctrlInfo_;
-
     // 控制信息
     pBoardLinkDev_->ctrlInfo_.remote_is_online = ctrlInfos.remote_is_online;
     pBoardLinkDev_->ctrlInfo_.speed_x = ctrlInfos.speed_x;
     pBoardLinkDev_->ctrlInfo_.speed_y = ctrlInfos.speed_y;
     pBoardLinkDev_->ctrlInfo_.speed_w = ctrlInfos.speed_w;
 
-    pBoardLinkDev_->ctrlInfo_.reserved = 0;
+    // 关节信息 (包括夹爪)
+    pBoardLinkDev_->angleInfo_.grip_close = angleInfos.grip_close;
+    pBoardLinkDev_->angleInfo_.pitch1 = angleInfos.pitch1;
+    pBoardLinkDev_->angleInfo_.pitch2 = angleInfos.pitch2;
+    pBoardLinkDev_->angleInfo_.pitch3 = angleInfos.pitch3;
+
+    // 其他信息 (包括陀螺仪、小陀螺)
+    pBoardLinkDev_->otherInfo_.yaw_gyro = otherInfos.yaw_gyro;
+    pBoardLinkDev_->otherInfo_.is_spin_on = otherInfos.is_spin_on;
+    pBoardLinkDev_->otherInfo_.autoTask = otherInfos.autoTask;
 
     return APP_OK;
 }

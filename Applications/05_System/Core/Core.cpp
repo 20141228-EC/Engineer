@@ -456,7 +456,13 @@ void CSystemCore::BoardLink_Info_Update_(){
     SysBoardLink.ctrlInfos.speed_y = static_cast<int16_t>(CSystemCore::chassisCmd_.speed_y_ * 80);
     SysBoardLink.ctrlInfos.speed_w = static_cast<int16_t>(CSystemCore::chassisCmd_.speed_w_ * 40);
 
-    SysBoardLink.ctrlInfos.reserved = 0;
+    SysBoardLink.angleInfos.grip_close = parm_->armCmd.gripClose;
+    SysBoardLink.angleInfos.pitch1 = parm_->armCmd.set_angle_Pitch1;
+    SysBoardLink.angleInfos.pitch2 = parm_->armCmd.set_angle_Pitch2;
+    SysBoardLink.angleInfos.pitch3 = parm_->armCmd.set_angle_Pitch3;
+
+    SysBoardLink.otherInfos.is_spin_on = chassisCmd.is_spin_on;
+    SysBoardLink.otherInfos.yaw_gyro = static_cast<int16_t>(pgimbal_->gimbalInfo.posit_yaw);
 
 }
 

@@ -45,9 +45,31 @@ public:
         int16_t speed_x;    // 底盘x轴速度
         int16_t speed_y;    // 底盘y轴速度
         int16_t speed_w;    // 底盘旋转速度
-
-        uint8_t reserved;   // 保留
     } __packed ctrlInfos = {};
+
+    /**
+     * @brief 云台+臂数据包
+     * @note 包含云台朝向 臂关节角度信息
+     * 
+     */
+    struct SAngleInfo {
+        uint8_t grip_close;   // 夹爪是否收紧
+
+        int16_t pitch1;     ///< pitch1角度值
+        int16_t pitch2;     ///< pitch2角度值
+        int16_t pitch3;     ///< pitch3角度值
+    }__packed angleInfos = {};
+
+    /**
+     * @brief 其他数据，包括是否开小陀螺等
+     * 
+     */
+     struct SOtherInfo {
+        int16_t yaw_gyro;   ///< 陀螺仪yaw值
+        uint8_t is_spin_on;     ///< 是否开小陀螺
+
+        uint8_t autoTask;   /// 自动任务编号
+     }__packed otherInfos = {};
 
     /**
      * @brief 检查板间通信是否在线

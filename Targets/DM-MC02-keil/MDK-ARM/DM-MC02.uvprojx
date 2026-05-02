@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>STM32H723VGTx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32H7xx_DFP.4.1.3</PackID>
+          <PackID>Keil.STM32H7xx_DFP.4.1.2</PackID>
           <PackURL>https://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000-0x2001FFFF) IRAM2(0x24000000-0x2401FFFF) IROM(0x8000000-0x80FFFFF) CLOCK(12000000) FPU3(DFPU) CPUTYPE("Cortex-M7") ELITTLE TZ</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -414,6 +414,11 @@
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\01_Configuration\Configuration.cpp</FilePath>
             </File>
+            <File>
+              <FileName>conf_algo.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\01_Configuration\conf_algo.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -469,6 +474,11 @@
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\05_System\Referee\sys_referee.cpp</FilePath>
             </File>
+            <File>
+              <FileName>sys_board_link.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\05_System\BoardLink\sys_board_link.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -520,33 +530,8 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Application/Module/Chassis</GroupName>
-          <Files>
-            <File>
-              <FileName>com_wheelset.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\Applications\04_Module\Chassis\com_wheelset.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>mod_chassis.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\Applications\04_Module\Chassis\mod_chassis.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>proc_chassis.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\Applications\04_Module\Chassis\proc_chassis.cpp</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Application/Module/Gimbal</GroupName>
           <Files>
-            <File>
-              <FileName>com_lift_gimbal.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\Applications\04_Module\Gimbal\com_lift_gimbal.cpp</FilePath>
-            </File>
             <File>
               <FileName>mod_gimbal.cpp</FileName>
               <FileType>8</FileType>
@@ -556,6 +541,11 @@
               <FileName>proc_gimbal.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\04_Module\Gimbal\proc_gimbal.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>com_yaw.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\04_Module\Gimbal\com_yaw.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -579,6 +569,16 @@
               <FileName>algo_pid.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\00_Algorithm\algo_pid.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>algo_ave_filter.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\00_Algorithm\algo_ave_filter.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>Algorithm.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\00_Algorithm\Algorithm.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -669,6 +669,11 @@
               <FileName>dev_esp32.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\03_Device\dev_esp32.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>dev_board_link.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\03_Device\dev_board_link.cpp</FilePath>
             </File>
           </Files>
         </Group>

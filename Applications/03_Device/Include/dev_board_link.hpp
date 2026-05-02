@@ -35,10 +35,13 @@ public:
 
     /**
      * @brief 数据包ID枚举
-     * @note  pack_id位于每个数据包的第一个字节
+     * @note  pack_id位于每个数据包的第一个字节+
+     * 
      */
     enum EPacketID : uint8_t {
         PKT_CTRL_INFOS = 0,  ///< 控制信息包
+        PKT_JOINT_INFOS = 1,    ///< 云台朝向、臂关节角度
+        PKT_OTHER_INFOS = 2,    ///< 其他数据
         PKT_COUNT,           ///< 包类型数量
         PKT_FEEDBACK   = 0xFE,  ///< 反馈包（副板发送给主板）
     };
@@ -50,15 +53,47 @@ public:
      */
     struct SCtrlInfo {
 
-        uint8_t remote_is_online;   // 遥控器是否在线
+        uint8_t pack_id;    // ID：1
 
+        uint8_t remote_is_online;   // 遥控器是否在线
         int16_t speed_x;    // 底盘x轴速度
         int16_t speed_y;    // 底盘y轴速度
         int16_t speed_w;    // 底盘旋转速度
 
-        uint8_t reserved;   // 保留
 
     }__packed ctrlInfo_ = {};
+
+    /**
+     * @brief 臂数据包
+     * @note 包含臂关节角度 夹爪信息
+     * 
+     */
+    struct SAngleInfo {
+
+        uint8_t pack_id;    // ID：2
+
+        uint8_t grip_close;   // 夹爪是否收紧
+
+        int16_t pitch1;     ///< pitch1角度值
+        int16_t pitch2;     ///< pitch2角度值
+        int16_t pitch3;     ///< pitch3角度值
+    }__packed angleInfo_ = {};
+
+    /**
+     * @brief 其他数据，包括是否开小陀螺等
+     * 
+     * 
+     */
+     struct SOtherInfo {
+
+        uint8_t pack_id;    // ID：3
+        int16_t yaw_gyro;   ///< 陀螺仪yaw值
+        uint8_t is_spin_on;     ///< 是否开小陀螺
+
+        uint8_t autoTask;   /// 自动任务编号
+
+        uint8_t reserved[4];    /// 保留
+     }__packed otherInfo_ = {};
 
     /**
      * @brief 反馈包 - 副板发送给主板
@@ -102,7 +137,7 @@ public:
 		return APP_OK;
 	}
 
-    EAppStatus SendPackage(void);
+    EAppStatus SendPackage(EPacketID pack_id);
 
 private:
 
