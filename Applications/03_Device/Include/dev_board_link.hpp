@@ -131,10 +131,10 @@ public:
 
     struct SGimbalInfoPack {
         uint8_t pack_id;            ///< 包ID = 3
-        int16_t yaw;                ///< 云台yaw角度(×100)
-        int16_t yaw_rate;           ///< 云台yaw角速度(×100)
-        uint8_t data_valid;         ///< 数据有效标志（1有效）
-        uint8_t reserved[2];
+        uint8_t remote_is_online;   ///< 遥控器在线标志（1有效）
+        int16_t speed_x;            ///< 底盘X速度
+        int16_t speed_y;            ///< 底盘Y速度
+        int16_t speed_w;            ///< 底盘旋转速度
     } __packed gimbalInfo_pkt = {};
 
 	enum class EBoardLinkStatus {

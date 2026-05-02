@@ -77,7 +77,7 @@ private:
 
 	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawHeptaMsg> stateFigureMsg;
 
-	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> yawTextMsg, yawStaticTextMsg, speedTextMsg;
+	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> yawTextMsg, yawStaticTextMsg, speedTextMsg, speedStaticTextMsg;
 
 	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawHeptaMsg> positionFigureMsg;
 
@@ -112,6 +112,8 @@ private:
 	void UI_StartHipTextDrawing_();
 
 	void UI_StartYawTextDrawing_();
+
+	void UI_StartSpeedTextDrawing_();
 
 	void UI_UpdateCurModeTextDrawing_();
 

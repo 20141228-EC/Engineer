@@ -171,9 +171,10 @@ EAppStatus CDevBoardLink::ResolveRxPackage_(){
 		case PKT_GIMBAL_INFO: {
 			SGimbalInfoPack gimbalInfo = *reinterpret_cast<SGimbalInfoPack*>(canRxNode_.dataBuffer.data());
 			gimbalInfo_pkt.pack_id = gimbalInfo.pack_id;
-			gimbalInfo_pkt.yaw = gimbalInfo.yaw;
-			gimbalInfo_pkt.yaw_rate = gimbalInfo.yaw_rate;
-			gimbalInfo_pkt.data_valid = gimbalInfo.data_valid;
+			gimbalInfo_pkt.remote_is_online = gimbalInfo.remote_is_online;
+			gimbalInfo_pkt.speed_x = gimbalInfo.speed_x;
+			gimbalInfo_pkt.speed_y = gimbalInfo.speed_y;
+			gimbalInfo_pkt.speed_w = gimbalInfo.speed_w;
 			break;
 		}
 		default:

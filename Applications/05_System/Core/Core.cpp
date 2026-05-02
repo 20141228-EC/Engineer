@@ -94,6 +94,24 @@ void CSystemCore::UpdateHandler_() {
     static uint8_t zx_count = 0;
     static bool zx_flag = false;
 
+    // 遥控离线时持续执行熄火保护，避免沿用上一帧指令导致车辆继续运动。
+    if (SysRemote.systemStatus != APP_OK) {
+        remoteWasOffline_ = true;
+        if (pchassis_) {
+            pchassis_->chassisCmd.speed_X = 0.0f;
+            pchassis_->chassisCmd.speed_Y = 0.0f;
+            pchassis_->chassisCmd.speed_W = 0.0f;
+            pchassis_->crawler_on = 0;
+            pchassis_->chassisCmd.isAutoCtrl = false;
+            pchassis_->StopModule();
+        }
+        if (parm_) {
+            parm_->armCmd.isAutoCtrl = false;
+            parm_->StopModule();
+        }
+        return;
+    }
+
     static uint8_t print_cnt = 0;
     if (print_cnt-- == 0) {
         print_cnt = 200;

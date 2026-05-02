@@ -30,7 +30,6 @@
 #define ECD_LENGTH_RATIO        -1.0f        ///< 这是腿长range和编码器range的线性对应关系，即传动比 这个保持为1就行
 #define ROLL_DEG_ECD_RATIO     50.f        ///< 这是roll动一度的时候编码器的变化值，待改
 #define G 9.7803f    ///< 南山区的g值
-
 #define deg2rad(x) ((x) * 0.017453292519943295769236907684886)
 #define rad2deg(x) ((x) * 57.295779513082320876798154814105)
 #define ecd2rad(x) ((x) * 0.0000958251953125) ///< 编码器总值到角度转化 0.0054931640625
@@ -41,6 +40,24 @@
 /* public定义用户层方便调试和获取信息，private定义了底层用于直接驱动电机，而不会因为外界的干扰影响了输出的值 */
 
 namespace my_engineer {
+
+inline constexpr float kPi = 3.14159265358979323846f;
+inline constexpr float kTwoPi = 2.0f * kPi;
+inline constexpr float COS_45 = 0.70710678118f;
+inline constexpr float SIN_45 = 0.70710678118f;
+inline constexpr int ECD_CYCLE = 8192;
+inline constexpr int ECD_HALF = ECD_CYCLE / 2;
+inline constexpr int ECD_QUARTER = ECD_CYCLE / 4;
+inline constexpr float DJI_ECD_TO_RAD = kTwoPi / static_cast<float>(ECD_CYCLE);
+inline constexpr float RAD_TO_DJI_ECD = static_cast<float>(ECD_CYCLE) / kTwoPi;
+inline constexpr float RADPS_TO_RPM = 9.5492965855f;
+inline constexpr float STEER_SPD_CMD_GAIN = 3.5f;
+inline constexpr float STEER_SPD_TGT_FILTER_ALPHA = 0.35f;
+inline constexpr float STEER_SPD_TGT_LIMIT = 12000.0f;
+inline constexpr float STEER_CMD_LIMIT = 16000.0f;
+inline constexpr int ECD_FLIP_HYST = 96;
+inline constexpr float ALIGN_FACTOR_MIN = 0.20f;
+inline constexpr float STEER_CMD_DEADBAND = 80.0f;
 
 /**
  * @brief 底盘模块类

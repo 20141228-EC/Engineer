@@ -165,56 +165,56 @@ EAppStatus InitAllModule() {
     chassisInitParam.wheelsetSpdPidParam[3].maxIntegral = 10000.0f;
     chassisInitParam.wheelsetSpdPidParam[3].maxOutput = 10000.0f;        
 
-    chassisInitParam.steerPosPidParam[0].kp = 35.0f;
+    chassisInitParam.steerPosPidParam[0].kp = 30.0f;
     chassisInitParam.steerPosPidParam[0].ki = 0.0f;
     chassisInitParam.steerPosPidParam[0].kd = 0.0f;
     chassisInitParam.steerPosPidParam[0].Input_deadband = 0.0f;
     chassisInitParam.steerPosPidParam[0].maxIntegral = 0.0f;
     chassisInitParam.steerPosPidParam[0].maxOutput = 12000.0f;
 
-    chassisInitParam.steerPosPidParam[1].kp = 35.0f;
+    chassisInitParam.steerPosPidParam[1].kp = 30.0f;
     chassisInitParam.steerPosPidParam[1].ki = 0.0f;
     chassisInitParam.steerPosPidParam[1].kd = 0.0f;
     chassisInitParam.steerPosPidParam[1].Input_deadband = 0.0f;
     chassisInitParam.steerPosPidParam[1].maxIntegral = 0.0f;
     chassisInitParam.steerPosPidParam[1].maxOutput = 12000.0f;
 
-    chassisInitParam.steerPosPidParam[2].kp = 35.0f;
+    chassisInitParam.steerPosPidParam[2].kp = 30.0f;
     chassisInitParam.steerPosPidParam[2].ki = 0.0f;
     chassisInitParam.steerPosPidParam[2].kd = 0.0f;
     chassisInitParam.steerPosPidParam[2].Input_deadband = 0.0f;
     chassisInitParam.steerPosPidParam[2].maxIntegral = 0.0f;
     chassisInitParam.steerPosPidParam[2].maxOutput = 12000.0f;
 
-    chassisInitParam.steerPosPidParam[3].kp = 35.0f;
+    chassisInitParam.steerPosPidParam[3].kp = 30.0f;
     chassisInitParam.steerPosPidParam[3].ki = 0.0f;
     chassisInitParam.steerPosPidParam[3].kd = 0.0f;
     chassisInitParam.steerPosPidParam[3].Input_deadband = 0.0f;
     chassisInitParam.steerPosPidParam[3].maxIntegral = 0.0f;
     chassisInitParam.steerPosPidParam[3].maxOutput = 12000.0f;
 
-    chassisInitParam.steerSpdPidParam[0].kp = 48.0f;
+    chassisInitParam.steerSpdPidParam[0].kp = 40.0f;
     chassisInitParam.steerSpdPidParam[0].ki = 0.0f;
     chassisInitParam.steerSpdPidParam[0].kd = 0.18f;
     chassisInitParam.steerSpdPidParam[0].Input_deadband = 0.0f;
     chassisInitParam.steerSpdPidParam[0].maxIntegral = 10000.0f;
     chassisInitParam.steerSpdPidParam[0].maxOutput = 16000.0f;
 
-    chassisInitParam.steerSpdPidParam[1].kp = 48.0f;
+    chassisInitParam.steerSpdPidParam[1].kp = 40.0f;
     chassisInitParam.steerSpdPidParam[1].ki = 0.0f;
     chassisInitParam.steerSpdPidParam[1].kd = 0.18f;
     chassisInitParam.steerSpdPidParam[1].Input_deadband = 0.0f;
     chassisInitParam.steerSpdPidParam[1].maxIntegral = 10000.0f;
     chassisInitParam.steerSpdPidParam[1].maxOutput = 16000.0f;
 
-    chassisInitParam.steerSpdPidParam[2].kp = 48.0f;
+    chassisInitParam.steerSpdPidParam[2].kp = 40.0f;
     chassisInitParam.steerSpdPidParam[2].ki = 0.0f;
     chassisInitParam.steerSpdPidParam[2].kd = 0.18f;
     chassisInitParam.steerSpdPidParam[2].Input_deadband = 0.0f;
     chassisInitParam.steerSpdPidParam[2].maxIntegral = 10000.0f;
     chassisInitParam.steerSpdPidParam[2].maxOutput = 16000.0f;
 
-    chassisInitParam.steerSpdPidParam[3].kp = 48.0f;
+    chassisInitParam.steerSpdPidParam[3].kp = 40.0f;
     chassisInitParam.steerSpdPidParam[3].ki = 0.0f;
     chassisInitParam.steerSpdPidParam[3].kd = 0.18f;
     chassisInitParam.steerSpdPidParam[3].Input_deadband = 0.0f;
@@ -264,12 +264,12 @@ EAppStatus InitAllModule() {
     chassisInitParam.CrawlerSpdPidParam.maxIntegral = 4000.f;
     chassisInitParam.CrawlerSpdPidParam.maxOutput = 15000.f;
 
-    chassisInitParam.powerParamLF.kDefaultMaxPower = 30;
-    chassisInitParam.powerParamLF.kTorqueCoeff  = 1.996889994401361e-06f;
-    chassisInitParam.powerParamLF.k1 = 2.0194700553517952e-07f;
-    chassisInitParam.powerParamLF.k2 = 1.6677144615631449e-07f;
-    chassisInitParam.powerParamLF.kConstant = 1.7961569592046123f;
-    chassisInitParam.powerParamLF.kMotorOutputMax = 16000;
+    // chassisInitParam.powerParamLF.kDefaultMaxPower = 30;
+    // chassisInitParam.powerParamLF.kTorqueCoeff  = 1.996889994401361e-06f;
+    // chassisInitParam.powerParamLF.k1 = 2.0194700553517952e-07f;
+    // chassisInitParam.powerParamLF.k2 = 1.6677144615631449e-07f;
+    // chassisInitParam.powerParamLF.kConstant = 1.7961569592046123f;
+    // chassisInitParam.powerParamLF.kMotorOutputMax = 16000;
 
     // chassisInitParam.powerParamLF.kDefaultMaxPower = 30;
     // chassisInitParam.powerParamLF.kTorqueCoeff  = 1.7186108961163208e-06f;

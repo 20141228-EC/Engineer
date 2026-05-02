@@ -16,7 +16,7 @@
 namespace my_engineer {
 
 // 舵轮零位补偿和方向（如需反向可将1改为-1）
-constexpr int STEER_MECH_MID[4] = {1300, 8000, 6623, 1303}; // LF, RF, LB, RB
+constexpr int STEER_MECH_MID[4] = {600, 7302, 4700, 7450}; // LF, RF, LB, RB
 constexpr int STEER_DIR[4]      = {1, 1, 1, 1};
 
 CMemsBase *pmems_wheel_test = nullptr;
@@ -203,23 +203,7 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
         static_cast<float_t>(steerMotor[RB]->motorData[CDevMtr::DATA_SPEED]),
     };
 
-    constexpr float kPi = 3.14159265358979323846f;
-    constexpr float kTwoPi = 2.0f * kPi;
-    constexpr float COS_45 = 0.70710678118f;
-    constexpr float SIN_45 = 0.70710678118f;
-    constexpr int32_t ECD_CYCLE = 8192;
-    constexpr int32_t ECD_HALF = ECD_CYCLE / 2;
-    constexpr int32_t ECD_QUARTER = ECD_CYCLE / 4;
-    constexpr float DJI_ECD_TO_RAD = (kTwoPi / static_cast<float>(ECD_CYCLE));
-    constexpr float RAD_TO_DJI_ECD = (static_cast<float>(ECD_CYCLE) / kTwoPi);
-    constexpr float RADPS_TO_RPM = 9.5492965855f;
-    constexpr float STEER_SPD_CMD_GAIN = 3.5f;
-    constexpr float STEER_SPD_TGT_FILTER_ALPHA = 0.35f;
-    constexpr float STEER_SPD_TGT_LIMIT = 12000.0f;
-    constexpr float STEER_CMD_LIMIT = 16000.0f;
-    constexpr int32_t ECD_FLIP_HYST = 96;
-    constexpr float ALIGN_FACTOR_MIN = 0.20f;
-    constexpr float STEER_CMD_DEADBAND = 80.0f;
+
 
     int32_t steerErrDbg[4] = {0, 0, 0, 0};
     float steerRawOutDbg[4] = {0, 0, 0, 0};
@@ -227,7 +211,7 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     static int32_t stopHoldSteerEcd[4] = {0, 0, 0, 0};
     static bool lastIsStopCmd = false;
 
-    auto normAngle = [kPi, kTwoPi](float angle) {
+    auto normAngle = [](float angle) {
         while (angle > kPi) angle -= kTwoPi;
         while (angle < -kPi) angle += kTwoPi;
         return angle;
@@ -324,13 +308,9 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
 
         float currentSteerAngle = static_cast<float>(currentSteerEcd) * DJI_ECD_TO_RAD;
         float targetSteerAngle = static_cast<float>(targetSteerEcd) * DJI_ECD_TO_RAD;
-        if (currentSteerAngle > kPi) {
-            currentSteerAngle -= kTwoPi;
-        }
-        if (targetSteerAngle > kPi) {
-            targetSteerAngle -= kTwoPi;
-        }
+        currentSteerAngle = normAngle(currentSteerAngle);
         targetSteerAngle = normAngle(targetSteerAngle);
+        targetSteerAngle = currentSteerAngle + normAngle(targetSteerAngle - currentSteerAngle);
 
         const float currentSteerDeg = rad2deg(currentSteerAngle);
         switch (i) {
@@ -348,8 +328,8 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
         DataBuffer<float_t> steerTarget = {targetSteerAngle};
         DataBuffer<float_t> steerMeasure = {currentSteerAngle};
         float steerTargetSpdRad = pidSteerPosCtrl[i].UpdatePidController(steerTarget, steerMeasure)[0];
-        float steerTargetSpd = steerTargetSpdRad * RADPS_TO_RPM;
-        steerTargetSpd *= STEER_SPD_CMD_GAIN;
+        float steerTargetSpd = steerTargetSpdRad * RADPS_TO_RPM; // 将目标速度从rad/s转换为RPM
+        steerTargetSpd *= STEER_SPD_CMD_GAIN; // 增益调整，提升响应速度
         steerTargetSpd = std::clamp(steerTargetSpd, -STEER_SPD_TGT_LIMIT, STEER_SPD_TGT_LIMIT);
 
         if (isStopCmd) {

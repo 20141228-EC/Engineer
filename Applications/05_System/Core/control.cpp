@@ -59,7 +59,7 @@ inline float WrapDeg180(float deg) {
 inline float kGyroFollowLimited(float speed){
     if(speed <= 80.0f)return 1.0f;
     else {
-        float scale = 1.0f - (speed - 80.0f) / 20.0f * (1.0 - 0.7f);
+        float scale = 1.0f - (speed - 80.0f) / 20.0f * (1.0 - 0.9f);
         return (scale > 0.0f) ? scale : 0.0f;
     }
 }
@@ -137,16 +137,13 @@ inline void ApplyGyroSpinChassisControl(CModChassis *chassis,
         state.virtualGimbalAbsYawDeg = chassis->filter->Imu_Ave_Info.imu_ave_yaw;
     }
 
-    const bool gimbalDataValid = (SysBoardLink.gimbalInfo.pack_id == 3 && SysBoardLink.gimbalInfo.data_valid == 1);
+    const bool gimbalDataValid = false;
     const bool shouldUseVirtualGimbal = (!gimbalDataValid && imuYawValid);
 
     float gimbalYawDeg = 0.0f;
     bool gimbalYawUsable = false;
 
-    if (gimbalDataValid) {
-        gimbalYawDeg = static_cast<float>(SysBoardLink.gimbalInfo.yaw) * 0.01f;
-        gimbalYawUsable = true;
-    } else if (shouldUseVirtualGimbal) {
+    if (shouldUseVirtualGimbal) {
         const float chassisYawDeg = chassis->filter->Imu_Ave_Info.imu_ave_yaw;
         state.virtualGimbalAbsYawDeg = WrapDeg180(state.virtualGimbalAbsYawDeg + yawCmd / freq);
         gimbalYawDeg = WrapDeg180(state.virtualGimbalAbsYawDeg - chassisYawDeg);
@@ -436,15 +433,26 @@ void CSystemCore::ControlFromRemote_() {
     {
         if(pchassis_){
             if(!pchassis_->chassisCmd.isAutoCtrl){
-                const float remoteYawCmd = -getRemoteYawCmd();
-                ApplyGyroSpinChassisControl(pchassis_,
-                                            {remote.joystick_LX / 2, remote.joystick_LY},
-                                            remoteYawCmd,
-                                            true,
-                                            remote_edge.thumbWheel == CSystemRemote::ERemoteEdge::Rising,
-                                            keyboard.key_Ctrl && keyboard.key_F,
-                                            gyroSpinState,
-                                            freq);
+                const bool gimbalXywValid = (SysBoardLink.gimbalInfo.pack_id == 3
+                    && SysBoardLink.gimbalInfo.remote_is_online == 1);
+                if (gimbalXywValid) {
+                    // 云台直接下发xyw时，优先使用云台控制量；原有陀螺跟随逻辑作为回退保留。
+                    pchassis_->chassisCmd.speed_X = static_cast<float>(SysBoardLink.gimbalInfo.speed_x);
+                    pchassis_->chassisCmd.speed_Y = static_cast<float>(SysBoardLink.gimbalInfo.speed_y);
+                    pchassis_->chassisCmd.speed_W = static_cast<float>(SysBoardLink.gimbalInfo.speed_w);
+                    pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
+                    ResetGyroSpinRuntimeState(gyroSpinState, false);
+                } else {
+                    const float remoteYawCmd = -getRemoteYawCmd();
+                    ApplyGyroSpinChassisControl(pchassis_,
+                                                {remote.joystick_LX / 2, remote.joystick_LY},
+                                                remoteYawCmd,
+                                                true,
+                                                remote_edge.thumbWheel == CSystemRemote::ERemoteEdge::Rising,
+                                                keyboard.key_Ctrl && keyboard.key_F,
+                                                gyroSpinState,
+                                                freq);
+                }
             } 
         }
         ///< 云台控制逻辑均在副板

@@ -14,13 +14,21 @@ file(GLOB_RECURSE DEV_SRC  Applications/03_Device/*)
 file(GLOB_RECURSE MOD_SRC  Applications/04_Module/*)
 file(GLOB_RECURSE SYS_SRC  Applications/05_System/*)
 
-# 排除备份文件、测试文件和临时文件
-list(FILTER CONF_SRC EXCLUDE REGEX ".*(backup|bak|old|tmp|test).*")
-list(FILTER ALGO_SRC EXCLUDE REGEX ".*(backup|bak|old|tmp|test).*")
-list(FILTER INF_SRC  EXCLUDE REGEX ".*(backup|bak|old|tmp|test).*")
-list(FILTER DEV_SRC  EXCLUDE REGEX ".*(backup|bak|old|tmp|test).*")
-list(FILTER MOD_SRC  EXCLUDE REGEX ".*(backup|bak|old|tmp|test).*")
-list(FILTER SYS_SRC  EXCLUDE REGEX ".*(backup|bak|old|tmp|test).*")
+# 排除备份文件、测试文件和临时文件（仅按文件名过滤，避免路径中含 test 被误排除）
+set(APP_EXCLUDE_BASENAME_REGEX ".*/[^/]*(backup|bak|old|tmp|test)[^/]*\\.(c|cc|cpp|cxx|h|hpp)$")
+set(APP_EXCLUDE_DIR_REGEX ".*/Applications/.*/[^/]*(backup|bak|old|tmp|test)[^/]*/.*")
+list(FILTER CONF_SRC EXCLUDE REGEX "${APP_EXCLUDE_BASENAME_REGEX}")
+list(FILTER CONF_SRC EXCLUDE REGEX "${APP_EXCLUDE_DIR_REGEX}")
+list(FILTER ALGO_SRC EXCLUDE REGEX "${APP_EXCLUDE_BASENAME_REGEX}")
+list(FILTER ALGO_SRC EXCLUDE REGEX "${APP_EXCLUDE_DIR_REGEX}")
+list(FILTER INF_SRC  EXCLUDE REGEX "${APP_EXCLUDE_BASENAME_REGEX}")
+list(FILTER INF_SRC  EXCLUDE REGEX "${APP_EXCLUDE_DIR_REGEX}")
+list(FILTER DEV_SRC  EXCLUDE REGEX "${APP_EXCLUDE_BASENAME_REGEX}")
+list(FILTER DEV_SRC  EXCLUDE REGEX "${APP_EXCLUDE_DIR_REGEX}")
+list(FILTER MOD_SRC  EXCLUDE REGEX "${APP_EXCLUDE_BASENAME_REGEX}")
+list(FILTER MOD_SRC  EXCLUDE REGEX "${APP_EXCLUDE_DIR_REGEX}")
+list(FILTER SYS_SRC  EXCLUDE REGEX "${APP_EXCLUDE_BASENAME_REGEX}")
+list(FILTER SYS_SRC  EXCLUDE REGEX "${APP_EXCLUDE_DIR_REGEX}")
 
 target_sources(FIRMWARE.elf PRIVATE 
                 ${CONF_SRC} ${ALGO_SRC} ${INF_SRC} ${DEV_SRC}

@@ -228,6 +228,11 @@ void CDevMtrDM_MIT::HeartbeatHandler_() {
     // 检查设备状态
     if(deviceStatus == APP_RESET) return;
 
+	// 底盘髋关节电机暂不使用：屏蔽其保活/清错报文发送
+	if (deviceID == EDeviceID::DEV_CHAS_L_HIP || deviceID == EDeviceID::DEV_CHAS_R_HIP) {
+		return;
+	}
+
 	// 每隔100ms使能一次
 	if (HAL_GetTick() - lastEnableTime_ > 10) {
 		// 使能电机

@@ -235,6 +235,29 @@ void CSystemReferee::UI_InitDrawing() {
   yawStaticTextMsg.message.figureConfig.width = 2;            // Line Width
   strcpy(reinterpret_cast<char *>(yawStaticTextMsg.message.text), "YAW:");
 
+  speedStaticTextMsg.header = CDevReferee::SPkgHeader();
+  speedStaticTextMsg.header.len = sizeof(speedStaticTextMsg) - 9;
+  speedStaticTextMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
+  speedStaticTextMsg.header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&speedStaticTextMsg.header), 4);
+  speedStaticTextMsg.transmitterID = (refereeInfo.robot.robotCamp == 2) ? 100 : 0;
+  speedStaticTextMsg.transmitterID += (refereeInfo.robot.robotID);
+  speedStaticTextMsg.receiverID = (refereeInfo.robot.robotCamp == 2) ? 0x164 : 0x100;
+  speedStaticTextMsg.receiverID += (refereeInfo.robot.robotID);
+  speedStaticTextMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_TEXT;
+  speedStaticTextMsg.message.figureConfig.figureName[0] = 0;    // Frame ID
+  speedStaticTextMsg.message.figureConfig.figureName[1] = 0;    // Layer ID
+  speedStaticTextMsg.message.figureConfig.figureName[2] = 9;    // Figure ID
+  speedStaticTextMsg.message.figureConfig.operate = 1;
+  speedStaticTextMsg.message.figureConfig.figureType = 7;
+  speedStaticTextMsg.message.figureConfig.layerID = 0;
+  speedStaticTextMsg.message.figureConfig.details_1 = 20;       // Font Size
+  speedStaticTextMsg.message.figureConfig.posit_X = 1400;
+  speedStaticTextMsg.message.figureConfig.posit_Y = 750,
+  speedStaticTextMsg.message.figureConfig.color = 4;
+  speedStaticTextMsg.message.figureConfig.details_2 = 5;        // String Length
+  speedStaticTextMsg.message.figureConfig.width = 2;            // Line Width
+  strcpy(reinterpret_cast<char *>(speedStaticTextMsg.message.text), "SPEED:");
+
   /* Figure - State Config */
   stateFigureMsg.header = CDevReferee::SPkgHeader();
   stateFigureMsg.header.len = sizeof(stateFigureMsg) - 9;
@@ -494,11 +517,11 @@ void CSystemReferee::UI_StartStaticTextDrawing_() {
 
   proc_waitMs(200);
 
-  hipInfoTextMsg.message.figureConfig.operate = 1;
-  hipInfoTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg) - 2);
-	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg));
+  // hipInfoTextMsg.message.figureConfig.operate = 1;
+  // hipInfoTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg) - 2);
+	// pInterface_->Transmit(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg));
 
-  proc_waitMs(200);
+  // proc_waitMs(200);
 
   yawStaticTextMsg.message.figureConfig.operate = 1;
   yawStaticTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&yawStaticTextMsg), sizeof(yawStaticTextMsg) - 2);
@@ -509,6 +532,12 @@ void CSystemReferee::UI_StartStaticTextDrawing_() {
   yawTextMsg.message.figureConfig.operate = 1;
   yawTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&yawTextMsg), sizeof(yawTextMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&yawTextMsg), sizeof(yawTextMsg));
+
+  proc_waitMs(200);
+
+  speedStaticTextMsg.message.figureConfig.operate = 1;
+  speedStaticTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&speedStaticTextMsg), sizeof(speedStaticTextMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&speedStaticTextMsg), sizeof(speedStaticTextMsg));
 
   proc_waitMs(200);
 
@@ -561,6 +590,11 @@ void CSystemReferee::UI_StartHipTextDrawing_() {
   hipInfoTextMsg.message.figureConfig.operate = 1;
   hipInfoTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg));
+}
+void CSystemReferee::UI_StartSpeedTextDrawing_() {
+  speedTextMsg.message.figureConfig.operate = 1;
+  speedTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&speedTextMsg), sizeof(speedTextMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&speedTextMsg), sizeof(speedTextMsg));
 }
 
 void CSystemReferee::UI_StartYawTextDrawing_() {
@@ -749,8 +783,8 @@ void CSystemReferee::UI_UpdateYawTextDrawing_() {
   }
 
   float gimbalYawDeg = 0.0f;
-  if (SysBoardLink.gimbalInfo.pack_id == 3 && SysBoardLink.gimbalInfo.data_valid == 1) {
-    gimbalYawDeg = static_cast<float>(SysBoardLink.gimbalInfo.yaw) * 0.01f;
+  if (SysBoardLink.gimbalInfo.pack_id == 3 && SysBoardLink.gimbalInfo.remote_is_online == 1) {
+    gimbalYawDeg = chassisYawDeg;
   }
 
   float deltaYawDeg = chassisYawDeg - gimbalYawDeg;
@@ -782,7 +816,7 @@ void CSystemReferee::UI_UpdateSpeedTextDrawing_() {
   speedTextMsg.message.figureConfig.details_4 = (int_val >> 10) & 0x7FF;
   speedTextMsg.message.figureConfig.details_5 = (int_val >> 21) & 0x7FF;
   speedTextMsg.message.figureConfig.posit_X = 1520;
-  speedTextMsg.message.figureConfig.posit_Y = 830;
+  speedTextMsg.message.figureConfig.posit_Y = 750;
   speedTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&speedTextMsg), sizeof(speedTextMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&speedTextMsg), sizeof(speedTextMsg));
 }
@@ -794,8 +828,8 @@ void CSystemReferee::UI_UpdatePositionFigureDrawing_() {
   }
 
   float gimbalYawDeg = 0.0f;
-  if (SysBoardLink.gimbalInfo.pack_id == 3 && SysBoardLink.gimbalInfo.data_valid == 1) {
-    gimbalYawDeg = static_cast<float>(SysBoardLink.gimbalInfo.yaw) * 0.01f;
+  if (SysBoardLink.gimbalInfo.pack_id == 3 && SysBoardLink.gimbalInfo.remote_is_online == 1) {
+    gimbalYawDeg = chassisYawDeg;
   }
 
   float deltaYawDeg = chassisYawDeg - gimbalYawDeg;
@@ -807,11 +841,24 @@ void CSystemReferee::UI_UpdatePositionFigureDrawing_() {
   constexpr float kRadius = 80.0f;
   constexpr float kWheelLineHalf = 24.0f;
   const float deltaYawRad = (deltaYawDeg + 90.0f) * PI / 180.0f;
+  constexpr float kEcdToDeg = 360.0f / 8192.0f;
 
   // 轮子在示意圆中的固定位置（LF, RF, LB, RB）
   const float wheelPosX[4] = {920.0f, 1000.0f, 920.0f, 1000.0f};
   const float wheelPosY[4] = {240.0f, 240.0f, 160.0f, 160.0f};
-  const float wheelSteerDeg[4] = {steer_angle_lf_deg, steer_angle_rf_deg, steer_angle_lb_deg, steer_angle_rb_deg};
+  const float wheelSteerRawDeg[4] = {steer_angle_lf_deg, steer_angle_rf_deg, steer_angle_lb_deg, steer_angle_rb_deg};
+  const float wheelMechMidDeg[4] = {
+      600.0f * kEcdToDeg,
+      7302.0f * kEcdToDeg,
+      4700.0f * kEcdToDeg,
+      7450.0f * kEcdToDeg,
+  };
+
+  auto normDeg = [](float angle) {
+    while (angle > 180.0f) angle -= 360.0f;
+    while (angle < -180.0f) angle += 360.0f;
+    return angle;
+  };
 
   positionFigureMsg.message.figureConfig[0].operate = 2;
   positionFigureMsg.message.figureConfig[1].operate = 2;
@@ -822,7 +869,8 @@ void CSystemReferee::UI_UpdatePositionFigureDrawing_() {
 
   for (uint8_t i = 0; i < 4; ++i) {
     const uint8_t idx = static_cast<uint8_t>(2 + i);
-    const float wheelDirRad = deltaYawRad + wheelSteerDeg[i] * PI / 180.0f;
+    const float wheelSteerDeg = -normDeg(wheelSteerRawDeg[i] - wheelMechMidDeg[i]);
+    const float wheelDirRad = deltaYawRad + wheelSteerDeg * PI / 180.0f;
     const float dx = kWheelLineHalf * cosf(wheelDirRad);
     const float dy = kWheelLineHalf * sinf(wheelDirRad);
     positionFigureMsg.message.figureConfig[idx].operate = 2;
@@ -894,8 +942,8 @@ void CSystemReferee::StartSysRefereeUiTask(void *arg) {
 		SysReferee.UI_UpdateStateFigureDrawing_();
 		proc_waitMs(50);
 
-    SysReferee.UI_UpdateHipTextDrawing_();
-    proc_waitMs(50);
+    // SysReferee.UI_UpdateHipTextDrawing_();
+    // proc_waitMs(50);
 
     SysReferee.UI_UpdateYawTextDrawing_();
     proc_waitMs(50);

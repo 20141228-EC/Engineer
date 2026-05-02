@@ -69,6 +69,46 @@ void CModChassis::StartChassisModuleTask(void *argument) {
 
             case FSM_CTRL: {
 
+                // 轮组电机掉线后尝试重连：仅对“曾在线后离线”的情况触发，避免上电初期反复重置。
+                {
+                    static bool wheelMotorHadOnline[8] = {false, false, false, false, false, false, false, false};
+                    static uint32_t lastReconnectTryMs = 0U;
+                    constexpr uint32_t kReconnectTryIntervalMs = 350U;
+
+                    bool needReconnect = false;
+                    for (int i = 0; i < 4; i++) {
+                        auto *driveMtr = chassis.comWheelset_.motor[i];
+                        if (driveMtr != nullptr) {
+                            const bool online = driveMtr->IsMotorOnline();
+                            if (online) {
+                                wheelMotorHadOnline[i] = true;
+                            } else if (wheelMotorHadOnline[i]) {
+                                needReconnect = true;
+                            }
+                        }
+
+                        auto *steerMtr = chassis.comWheelset_.steerMotor[i];
+                        if (steerMtr != nullptr) {
+                            const bool online = steerMtr->IsMotorOnline();
+                            if (online) {
+                                wheelMotorHadOnline[4 + i] = true;
+                            } else if (wheelMotorHadOnline[4 + i]) {
+                                needReconnect = true;
+                            }
+                        }
+                    }
+
+                    if (needReconnect) {
+                        const uint32_t nowMs = HAL_GetTick();
+                        if ((nowMs - lastReconnectTryMs) >= kReconnectTryIntervalMs) {
+                            lastReconnectTryMs = nowMs;
+                            chassis.Module_FSMFlag_ = FSM_INIT;
+                        }
+                        vTaskDelayUntil(&lastWakeTime, ctrlPeriodTicks);
+                        continue;
+                    }
+                }
+
                 // 限制控制量
                 chassis.RestrictChassisCommand_();
 
