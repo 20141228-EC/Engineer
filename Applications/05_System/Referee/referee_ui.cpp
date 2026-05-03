@@ -137,9 +137,33 @@ void CSystemReferee::UI_InitDrawing() {
   spinTextMsg.message.figureConfig.posit_X = 1400;
   spinTextMsg.message.figureConfig.posit_Y = 840;
   spinTextMsg.message.figureConfig.color = 4;
-  spinTextMsg.message.figureConfig.details_2 = 11;        // String Length
+  spinTextMsg.message.figureConfig.details_2 = 8;        // String Length
   spinTextMsg.message.figureConfig.width = 2;            // Line Width
-  strcpy(reinterpret_cast<char *>(spinTextMsg.message.text), "SPIN_ON:");  
+  strcpy(reinterpret_cast<char *>(spinTextMsg.message.text), "SPIN:OFF");
+
+  /* Text - Grip Config */
+  gripTextMsg.header = CDevReferee::SPkgHeader();
+  gripTextMsg.header.len = sizeof(gripTextMsg) - 9;
+  gripTextMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
+  gripTextMsg.header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&gripTextMsg.header), 4);
+  gripTextMsg.transmitterID = (refereeInfo.robot.robotCamp == 2) ? 100 : 0;
+  gripTextMsg.transmitterID += (refereeInfo.robot.robotID);
+  gripTextMsg.receiverID = (refereeInfo.robot.robotCamp == 2) ? 0x164 : 0x100;
+  gripTextMsg.receiverID += (refereeInfo.robot.robotID);
+  gripTextMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_TEXT;
+  gripTextMsg.message.figureConfig.figureName[0] = 0;
+  gripTextMsg.message.figureConfig.figureName[1] = 0;
+  gripTextMsg.message.figureConfig.figureName[2] = 10;
+  gripTextMsg.message.figureConfig.operate = 1;
+  gripTextMsg.message.figureConfig.figureType = 7;
+  gripTextMsg.message.figureConfig.layerID = 0;
+  gripTextMsg.message.figureConfig.details_1 = 20;
+  gripTextMsg.message.figureConfig.posit_X = 1400;
+  gripTextMsg.message.figureConfig.posit_Y = 880;
+  gripTextMsg.message.figureConfig.color = 4;
+  gripTextMsg.message.figureConfig.details_2 = 8;
+  gripTextMsg.message.figureConfig.width = 2;
+  strcpy(reinterpret_cast<char *>(gripTextMsg.message.text), "GRIP:OFF");
 
   /* Text - hipInfo Config */
   hipInfoTextMsg.header = CDevReferee::SPkgHeader();
@@ -517,6 +541,12 @@ void CSystemReferee::UI_StartStaticTextDrawing_() {
 
   proc_waitMs(200);
 
+  gripTextMsg.message.figureConfig.operate = 1;
+  gripTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&gripTextMsg), sizeof(gripTextMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&gripTextMsg), sizeof(gripTextMsg));
+
+  proc_waitMs(200);
+
   // hipInfoTextMsg.message.figureConfig.operate = 1;
   // hipInfoTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg) - 2);
 	// pInterface_->Transmit(reinterpret_cast<uint8_t *>(&hipInfoTextMsg), sizeof(hipInfoTextMsg));
@@ -595,6 +625,18 @@ void CSystemReferee::UI_StartSpeedTextDrawing_() {
   speedTextMsg.message.figureConfig.operate = 1;
   speedTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&speedTextMsg), sizeof(speedTextMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&speedTextMsg), sizeof(speedTextMsg));
+}
+
+void CSystemReferee::UI_StartSpinTextDrawing_() {
+  spinTextMsg.message.figureConfig.operate = 1;
+  spinTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&spinTextMsg), sizeof(spinTextMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&spinTextMsg), sizeof(spinTextMsg));
+}
+
+void CSystemReferee::UI_StartGripTextDrawing_() {
+  gripTextMsg.message.figureConfig.operate = 1;
+  gripTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&gripTextMsg), sizeof(gripTextMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&gripTextMsg), sizeof(gripTextMsg));
 }
 
 void CSystemReferee::UI_StartYawTextDrawing_() {
@@ -703,7 +745,10 @@ void CSystemReferee::UI_UpdateStateFigureDrawing_() {
 
 	static auto &chassis = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->chassisInfo;
   stateFigureMsg.message.figureConfig[0].operate = 2;
-  stateFigureMsg.message.figureConfig[0].color = (reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->spin_on) ? 3 : 7;
+  const bool boardSpinValid = (SysBoardLink.otherInfo.pack_id == CDevBoardLink::PKT_OTHER_INFOS);
+  const bool spinOn = boardSpinValid ? (SysBoardLink.otherInfo.is_spin_on != 0)
+                                     : (reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->spin_on);
+  stateFigureMsg.message.figureConfig[0].color = spinOn ? 3 : 7;
 
 	stateFigureMsg.message.figureConfig[0].operate = 2;
 	stateFigureMsg.message.figureConfig[1].operate = 2;
@@ -776,22 +821,12 @@ void CSystemReferee::UI_UpdateHipTextDrawing_() {
 void CSystemReferee::UI_UpdateYawTextDrawing_() {
   std::fill(&yawTextMsg.message.text[0], &yawTextMsg.message.text[29], 0);
   yawTextMsg.message.figureConfig.operate = 2;
-  auto *chassisModule = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS));
-  float chassisYawDeg = 0.0f;
-  if (chassisModule && chassisModule->filter && chassisModule->filter->Imu_Ave_Info.is_initialized) {
-    chassisYawDeg = chassisModule->filter->Imu_Ave_Info.imu_ave_yaw;
+  float yawValue = 0.0f;
+  if (SysBoardLink.otherInfo.pack_id == CDevBoardLink::PKT_OTHER_INFOS) {
+    yawValue = static_cast<float>(SysBoardLink.otherInfo.yaw_gyro);
   }
 
-  float gimbalYawDeg = 0.0f;
-  if (SysBoardLink.gimbalInfo.pack_id == 3 && SysBoardLink.gimbalInfo.remote_is_online == 1) {
-    gimbalYawDeg = chassisYawDeg;
-  }
-
-  float deltaYawDeg = chassisYawDeg - gimbalYawDeg;
-  while (deltaYawDeg > 180.f) deltaYawDeg -= 360.f;
-  while (deltaYawDeg < -180.f) deltaYawDeg += 360.f;
-
-  int32_t int_val = static_cast<int32_t>(deltaYawDeg * 1000.f);
+  int32_t int_val = static_cast<int32_t>(yawValue * 1000.f);
   yawTextMsg.message.figureConfig.details_3 = int_val & 0x3FF;
   yawTextMsg.message.figureConfig.details_4 = (int_val >> 10) & 0x7FF;
   yawTextMsg.message.figureConfig.details_5 = (int_val >> 21) & 0x7FF;
@@ -804,9 +839,10 @@ void CSystemReferee::UI_UpdateYawTextDrawing_() {
 void CSystemReferee::UI_UpdateSpeedTextDrawing_() {
   speedTextMsg.message.figureConfig.operate = 2;
 
-  const auto &remote = SysRemote.remoteInfo.remote;
-
-  const float vy = remote.joystick_LY;
+  float vy = 0.0f;
+  if (SysBoardLink.ctrlInfos.pack_id == CDevBoardLink::PKT_CTRL_INFOS) {
+    vy = static_cast<float>(SysBoardLink.ctrlInfos.speed_y);
+  }
   const float kSpeedWarn = 60.0f;
   speedTextMsg.message.figureConfig.color = (std::fabs(vy) > kSpeedWarn) ? 3 : 2;
 
@@ -820,6 +856,26 @@ void CSystemReferee::UI_UpdateSpeedTextDrawing_() {
   speedTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&speedTextMsg), sizeof(speedTextMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&speedTextMsg), sizeof(speedTextMsg));
 }
+
+void CSystemReferee::UI_UpdateSpinTextDrawing_() {
+  spinTextMsg.message.figureConfig.operate = 2;
+  const bool spinOn = (SysBoardLink.otherInfo.pack_id == CDevBoardLink::PKT_OTHER_INFOS)
+      && (SysBoardLink.otherInfo.is_spin_on != 0);
+  spinTextMsg.message.figureConfig.details_2 = spinOn ? 7 : 8;
+  strcpy(reinterpret_cast<char *>(spinTextMsg.message.text), spinOn ? "SPIN:ON" : "SPIN:OFF");
+  spinTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&spinTextMsg), sizeof(spinTextMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&spinTextMsg), sizeof(spinTextMsg));
+}
+
+void CSystemReferee::UI_UpdateGripTextDrawing_() {
+  gripTextMsg.message.figureConfig.operate = 2;
+  const bool gripOn = (SysBoardLink.angleInfo.pack_id == CDevBoardLink::PKT_JOINT_INFOS)
+      && (SysBoardLink.angleInfo.grip_close != 0);
+  gripTextMsg.message.figureConfig.details_2 = gripOn ? 7 : 8;
+  strcpy(reinterpret_cast<char *>(gripTextMsg.message.text), gripOn ? "GRIP:ON" : "GRIP:OFF");
+  gripTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&gripTextMsg), sizeof(gripTextMsg) - 2);
+  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&gripTextMsg), sizeof(gripTextMsg));
+}
 void CSystemReferee::UI_UpdatePositionFigureDrawing_() {
   auto *chassisModule = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS));
   float chassisYawDeg = 0.0f;
@@ -828,7 +884,8 @@ void CSystemReferee::UI_UpdatePositionFigureDrawing_() {
   }
 
   float gimbalYawDeg = 0.0f;
-  if (SysBoardLink.gimbalInfo.pack_id == 3 && SysBoardLink.gimbalInfo.remote_is_online == 1) {
+  if (SysBoardLink.ctrlInfos.pack_id == CDevBoardLink::PKT_CTRL_INFOS
+      && SysBoardLink.ctrlInfos.remote_is_online == 1) {
     gimbalYawDeg = chassisYawDeg;
   }
 
@@ -949,6 +1006,12 @@ void CSystemReferee::StartSysRefereeUiTask(void *arg) {
     proc_waitMs(50);
 
     SysReferee.UI_UpdateSpeedTextDrawing_();
+    proc_waitMs(50);
+
+    SysReferee.UI_UpdateGripTextDrawing_();
+    proc_waitMs(50);
+
+    SysReferee.UI_UpdateSpinTextDrawing_();
     proc_waitMs(50);
 
     SysReferee.UI_UpdatePositionFigureDrawing_();
