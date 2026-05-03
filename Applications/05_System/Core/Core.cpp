@@ -162,7 +162,7 @@ void CSystemCore::UpdateHandler_() {
 
             }
             SysControllerLink.robotInfo.controlled_by_controller = true;
-            SysControllerLink.robotInfo.ask_return_flag = true;
+            SysControllerLink.robotInfo.ask_reset_flag = true;
             StopAutoCtrlTask_(); // 停止自动任务运行
         }
         if (use_Controller_ == false) {
@@ -359,30 +359,7 @@ void CSystemCore::BoardLink_Info_Update_(){
     // 检查系统核心状态
     if (coreStatus == APP_RESET) return;
 
-    // 包0数据更新
-    SysBoardLink.ctrlFlags.pack_id = 0;
-    SysBoardLink.ctrlFlags.rc_status = SysRemote.systemStatus;
-    SysBoardLink.ctrlFlags.ctrl_mode = static_cast<uint8_t>(ctrlmode_);
-    SysBoardLink.ctrlFlags.move_mode = static_cast<uint8_t>(movemode_);
-
-    SysBoardLink.ctrlFlags.chassis_auto_ctrl = pchassis_->chassisCmd.isAutoCtrl;
-    SysBoardLink.ctrlFlags.gimbal_auto_ctrl = gimbal_auto_ctrl;
-    SysBoardLink.ctrlFlags.arm_auto_ctrl = parm_->armCmd.isAutoCtrl;
-
-    // 包1 - 控制器左臂后三轴命令包
-    SysBoardLink.controllerbackcmd_l.pack_id = 1;
-    SysBoardLink.controllerbackcmd_l.yaw = SysControllerLink.controllerInfo.left_arm.yaw;          ///< 左臂yaw
-    SysBoardLink.controllerbackcmd_l.pitch1 = SysControllerLink.controllerInfo.left_arm.pitch1;    ///< 左臂pitch1
-    SysBoardLink.controllerbackcmd_l.pitch2 = SysControllerLink.controllerInfo.left_arm.pitch2;    ///< 左臂pitch2
-
-    // 包2 - 控制器左臂前三轴命令包
-    SysBoardLink.controllerfrontcmd_l.pack_id = 2;
-    SysBoardLink.controllerfrontcmd_l.roll = SysControllerLink.controllerInfo.left_arm.roll;              ///< 左臂roll
-    SysBoardLink.controllerfrontcmd_l.pitch_end = SysControllerLink.controllerInfo.left_arm.pitch_end;    ///< 左臂末端pitch
-    SysBoardLink.controllerfrontcmd_l.roll_end = SysControllerLink.controllerInfo.rocker_LX;              ///< 左臂末端roll(增量式)
-    SysBoardLink.controllerfrontcmd_l.grip_close = SysControllerLink.controllerInfo.gripper_left_close;  ///< 左臂夹爪开合
-    SysBoardLink.controllerfrontcmd_l.chassis_speed = SysControllerLink.controllerInfo.rocker_RY;           ///< 底盘速度
-
+    // 当前版本板间通信主要用于接收副板控制信息，此处暂不主动组包发送业务数据。
 }
 
 

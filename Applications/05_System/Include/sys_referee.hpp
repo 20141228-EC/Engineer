@@ -69,7 +69,7 @@ private:
 
 	std::array<CDevReferee::SUiFigureConfig, 13> uiConfig;
 
-	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> hipTextMsg, spinTextMsg, modeTextMsg, curModeTextMsg, hipInfoTextMsg;
+	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> hipTextMsg, spinTextMsg, gripTextMsg, modeTextMsg, curModeTextMsg, hipInfoTextMsg;
 
 	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawPentaMsg> visionFigureMsg;
 
@@ -115,6 +115,10 @@ private:
 
 	void UI_StartSpeedTextDrawing_();
 
+	void UI_StartSpinTextDrawing_();
+
+	void UI_StartGripTextDrawing_();
+
 	void UI_UpdateCurModeTextDrawing_();
 
 	void UI_UpdateStateFigureDrawing_();
@@ -130,6 +134,10 @@ private:
 	void UI_UpdatePositionFigureDrawing_();
 
 	void UI_UpdateSpeedTextDrawing_();
+
+	void UI_UpdateSpinTextDrawing_();
+
+	void UI_UpdateGripTextDrawing_();
 	
 	void UI_RADAR_WARNING_TextDrawing_();
 	void UI_RADAR_WARNING_TextClearing_();

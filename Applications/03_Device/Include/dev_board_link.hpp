@@ -25,10 +25,11 @@ namespace my_engineer{
 class CDevBoardLink final: public CDevBase{
 public:
 
-	// 定义板间通信设备初始化参数结构体
-	struct SDevInitParam_BoardLink: public SDevInitParam_Base{
-		EInterfaceID interfaceID = EInterfaceID::INF_NULL; ///< CAN总线
-	};
+    // 定义板间通信设备初始化参数结构体
+    struct SDevInitParam_BoardLink: public SDevInitParam_Base{
+        EInterfaceID interfaceID = EInterfaceID::INF_NULL;  ///< CAN接口ID
+        uint32_t offlineTimeout = 100;                      ///< 离线超时时间(ms)
+    };
 
 	//板间通信包信息
 
@@ -37,82 +38,47 @@ public:
      * @note  pack_id位于每个数据包的第一个字节
      */
     enum EPacketID : uint8_t {
-        PKT_CTRL_FLAGS = 0,  ///< 控制标志
-        PKT_CTRLER_L_B = 1,     ///< 控制器左臂后三轴
-        PKT_CTRLER_L_F = 2,     ///< 控制器左臂前三轴
-        PKT_GIMBAL_INFO = 3,    ///< 云台姿态信息（副板->主板）
-        PKT_COUNT,           ///< 发送包类型数量
+        PKT_CTRL_INFOS = 1,  ///< 控制信息包
+        PKT_JOINT_INFOS = 2, ///< 云台朝向、臂关节角度
+        PKT_OTHER_INFOS = 3, ///< 其他数据
+        PKT_COUNT,
         PKT_FEEDBACK   = 0xFE,  ///< 反馈包（副板发送给主板）
     };
 
     /**
-     * @brief 包0 - 控制标志
-     * @note  8字节，包含遥控器状态、工作模式、命令标志等
+     * @brief 控制数据包
+     * @note 包含遥控在线状态和底盘速度控制信息
      */
-    struct SControlFlags {
-        uint8_t  pack_id;           ///< 包ID = 0
-
-        // 控制模式 (1字节)
-        uint8_t  chassis_ctrl : 1;          ///< 底盘控制使能
-        uint8_t  gimbal_ctrl : 1;           ///< 云台控制使能
-        uint8_t  arm_front_ctrl : 1;        ///< 机械臂前三轴控制
-        uint8_t  arm_rear_ctrl : 1;         ///< 机械臂后三轴控制
-        uint8_t  reserved_mode : 4;         ///< 预留
-
-        // 使能标志 (1字节)
-        uint8_t  arm_enable : 1;            ///< 机械臂使能
-        uint8_t  gimbal_enable : 1;         ///< 云台使能
-        uint8_t  chassis_enable : 1;        ///< 底盘使能
-        uint8_t  reserved_en : 5;           ///< 预留
-
-        // 状态标志
-        uint8_t  rc_status : 1;             ///< 遥控器在线，是1非0
-        uint8_t  ctrl_mode : 3;             ///< 控制模式
-        uint8_t  move_mode : 3;             ///< 运动模式
-        uint8_t  emergency_stop : 1;        ///< 急停信号
-        
-        // 自动控制标志
-        uint8_t  chassis_auto_ctrl : 1;     ///< 底盘自动控制标志位
-        uint8_t  gimbal_auto_ctrl : 1;      ///< 云台自动控制标志位
-        uint8_t  arm_auto_ctrl : 1;         ///< 臂自动控制标志位
-        uint8_t  auto_ctrl_mode : 5;        ///< 自动控制任务类型
-
-        uint8_t  reserved[3];               ///< 预留给未来扩展
-    } __packed ctrlFlags_pkt = {};
+    struct SCtrlInfo {
+        uint8_t pack_id;            ///< 包ID = 1 (PKT_CTRL_INFOS)
+        uint8_t remote_is_online;   ///< 遥控器是否在线
+        int16_t speed_x;            ///< 底盘x轴速度
+        int16_t speed_y;            ///< 底盘y轴速度
+        int16_t speed_w;            ///< 底盘旋转速度
+    } __packed ctrlInfo_ = {};
 
     /**
-     * @brief 自定义控制器左臂后三轴命令包
-     * @note  自定义控制模式下的臂目标位置等
-     * 
+     * @brief 臂数据包
+     * @note 包含夹爪和关节角信息
      */
-    struct SControllerBackCmd_L{
-        uint8_t pack_id;        ///< 包ID = 1
-
-        // 角度指令
-        int16_t yaw;            ///< Yaw角度 (×100)
-	    int16_t pitch1;         ///< Pitch1角度 (×100)
-	    int16_t pitch2;         ///< Pitch2角度 (×100)
-        uint8_t  reserved;          ///< 预留
-        
-    } __packed controllerbackcmd_l_b_pkt = {};
+    struct SAngleInfo {
+        uint8_t pack_id;        ///< 包ID = 2 (PKT_JOINT_INFOS)
+        uint8_t grip_close;     ///< 夹爪是否收紧
+        int16_t pitch1;         ///< pitch1角度值
+        int16_t pitch2;         ///< pitch2角度值
+        int16_t pitch3;         ///< pitch3角度值
+    } __packed angleInfo_ = {};
 
     /**
-     * @brief 自定义控制器左臂前三轴命令包
-     * @note  自定义控制模式下的臂目标位置等
-     * 
+     * @brief 其他数据
+     * @note 包含云台yaw和小陀螺状态
      */
-    struct SControllerFrontCmd_L{
-        uint8_t pack_id;        ///< 包ID = 2
-
-        // 角度指令
-        int16_t roll;       ///< Roll角度 (×100)
-	    int16_t pitch_end;  ///< PitchEnd角度 (×100)
-        int8_t roll_end;    ///< 左臂roll_end增量 (-100~100)，控制第6轴
-        uint8_t grip_close; ///< 夹爪闭合
-
-        uint8_t chassis_speed;  ///< 底盘速度
-        
-    } __packed controllerfrontcmd_l_f_pkt = {};
+    struct SOtherInfo {
+        uint8_t pack_id;        ///< 包ID = 3 (PKT_OTHER_INFOS)
+        int16_t yaw_gyro;       ///< 陀螺仪yaw值
+        uint8_t is_spin_on;     ///< 是否开小陀螺
+        uint8_t reserved[4];    ///< 预留
+    } __packed otherInfo_ = {};
     
     /**
      * @brief 反馈包 - 副板发送给主板
@@ -120,34 +86,24 @@ public:
      */
     struct SFeedbackPack {
         uint8_t  pack_id;           ///< 包ID = 0xFE（反馈包标识）
-        uint8_t  pack0_status : 1;
-        uint8_t  pack1_status : 1;         
-        uint8_t  pack2_status : 1;
-        uint8_t  pack3_status : 1;  ///< 各包接收状态（bit0~3对应包0~3，1=已接收）
-        uint8_t  pack_status : 4;   /// 包通信状态 保留
+        uint8_t  rx_status;         ///< 各包接收状态（bit0~2对应包0~2，1=已接收）
         uint8_t  link_status;       ///< 通信状态（0=RESET 1=OFFLINE 2=ONLINE）
         uint8_t  reserved[5];       ///< 预留
-    } __packed fdbInfo_pkt = {};
+    } __packed;
 
-    struct SGimbalInfoPack {
-        uint8_t pack_id;            ///< 包ID = 3
-        uint8_t remote_is_online;   ///< 遥控器在线标志（1有效）
-        int16_t speed_x;            ///< 底盘X速度
-        int16_t speed_y;            ///< 底盘Y速度
-        int16_t speed_w;            ///< 底盘旋转速度
-    } __packed gimbalInfo_pkt = {};
+    SFeedbackPack feedbackPack_ = {};
 
 	enum class EBoardLinkStatus {
 		RESET,
 		OFFLINE,
 		ONLINE,
-	} boardLinkStatus = EBoardLinkStatus::RESET; ///< 板间通信状态
+    } linkStatus = EBoardLinkStatus::RESET; ///< 板间通信状态
 
 	CDevBoardLink() {deviceType = EDevType::DEV_BOARD_LINK; }
 
 	EAppStatus InitDevice(const SDevInitParam_Base *pStructInitParam) override;
 
-	EAppStatus SendPackage(EPacketID pack_id);
+    EAppStatus SendPackage();
 
     /**
 	 * @brief 修改CAN发送数据
@@ -155,27 +111,27 @@ public:
 	EAppStatus Modify_CanTxData(uint8_t* data) 
 	{
 		if (data == nullptr) return APP_ERROR;
-		std::copy(data, data + canTxNode_.dataBuffer.size(), canTxNode_.dataBuffer.begin());
+        std::copy(data, data + txNode_.dataBuffer.size(), txNode_.dataBuffer.begin());
 		return APP_OK;
 	}
 
 private:
 
-	CInfCAN *canInterface_ = nullptr; ///< CAN接口指针
+    CInfCAN::CCanRxNode rxNode_; ///< CAN接收节点
 
-    CInfCAN::CCanRxNode canRxNode_; ///< 定义接收节点
+    CInfCAN::CCanTxNode txNode_; ///< CAN发送节点
 
-    CInfCAN::CCanTxNode canTxNode_; ///< 定义发送节点
-
-	std::array<uint8_t, 8> rxBuffer_ = {0}; ///< 接收缓冲区
-
-	uint32_t rxTimestamp_ = 0; ///< 接收时间戳
+    struct STimeoutParam {
+        uint32_t offlineTimeout = 100;   ///< 离线超时时间(ms)
+        uint32_t rxTimestamp = 0;        ///< 最后接收时间戳
+        uint32_t lastParseTime = 0;      ///< 最后解析时间
+    } timeoutParam_;
 
 	void UpdateHandler_() override;
 
 	void HeartbeatHandler_() override;
 
-	EAppStatus ResolveRxPackage_();
+    EAppStatus ParseRxPacket_();
 };
 
 } // namespace my_engineer

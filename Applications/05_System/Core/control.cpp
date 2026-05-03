@@ -214,44 +214,44 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
         }
     }
 
-    if(if_remote_control) {
-        enum { HIG = 1, LOW = 2, MID = 3 };
-        auto &remote = SysRemote.remoteInfo.remote;
+    // if(if_remote_control) {
+    //     enum { HIG = 1, LOW = 2, MID = 3 };
+    //     auto &remote = SysRemote.remoteInfo.remote;
 
-        static uint8_t last_switch_L = LOW; // 遥控器系统层的数据更新比设备层的状态更新要慢
+    //     static uint8_t last_switch_L = LOW; // 遥控器系统层的数据更新比设备层的状态更新要慢
 
-        if (parm_) {
-            if (!parm_->armInfo.isModuleAvailable
-                && parm_->moduleStatus == APP_OK
-                && remote.switch_L == HIG && last_switch_L != HIG) { 
-                parm_->StartModule();       ///< 左拨杆拨到上时初始化臂
-            }
-        }
+    //     if (parm_) {
+    //         if (!parm_->armInfo.isModuleAvailable
+    //             && parm_->moduleStatus == APP_OK
+    //             && remote.switch_L == HIG && last_switch_L != HIG) { 
+    //             parm_->StartModule();       ///< 左拨杆拨到上时初始化臂
+    //         }
+    //     }
 
-        last_switch_L = remote.switch_L;        ///<记录上一次的左拨杆状态
+    //     last_switch_L = remote.switch_L;        ///<记录上一次的左拨杆状态
 
-    }
+    // }
 
-    else {
-        auto &keyboard = SysRemote.remoteInfo.keyboard;
+    // else {
+    //     auto &keyboard = SysRemote.remoteInfo.keyboard;
 
-        if (parm_) {
-            if (!parm_->armInfo.isModuleAvailable
-                && parm_->moduleStatus == APP_OK
-                && keyboard.key_Ctrl && keyboard.key_Shift && keyboard.key_F) { ///< ctrl+shift+f 初始化臂
-                parm_->StartModule();
-            }
-        }
-    }
+    //     if (parm_) {
+    //         if (!parm_->armInfo.isModuleAvailable
+    //             && parm_->moduleStatus == APP_OK
+    //             && keyboard.key_Ctrl && keyboard.key_Shift && keyboard.key_F) { ///< ctrl+shift+f 初始化臂
+    //             parm_->StartModule();
+    //         }
+    //     }
+    // }
 
-    if(I_dont_have_a_remote) {
-        if (parm_) {
-            if (!parm_->armInfo.isModuleAvailable
-                && parm_->moduleStatus == APP_OK) {
-                parm_->StartModule();
-            }
-        }
-    }
+    // if(I_dont_have_a_remote) {
+    //     if (parm_) {
+    //         if (!parm_->armInfo.isModuleAvailable
+    //             && parm_->moduleStatus == APP_OK) {
+    //             parm_->StartModule();
+    //         }
+    //     }
+    // }
     
 }
 
@@ -352,56 +352,56 @@ void CSystemCore::ControlFromRemote_() {
     }
 
     // MID + HIG 主臂关节四轴 + 夹爪
-    else if (remote.switch_L == MID && remote.switch_R == HIG) {
-        SysRemote.SetRemoteDeadZone(10.f);
-        if (parm_) {
-            if(!parm_->armCmd.isAutoCtrl){
-                parm_->armCmd.set_angle_Yaw +=
-                    (remote.joystick_LX / 100.f) * 90.f / freq;
-                parm_->armCmd.set_angle_Pitch1 +=
-                    (remote.joystick_LY / 100.f) * 90.f / freq;
-                parm_->armCmd.set_angle_Pitch2 +=
-                    (remote.joystick_RY / 100.f) * 90.f / freq;
-                parm_->armCmd.set_angle_Roll +=
-                    (remote.joystick_RX / 100.f) * 90.f / freq;
-                parm_->armCmd.set_length_grip +=
-                    (remote.thumbWheel / 100.f) * 60.f / freq; ///< 拨轮控夹爪
-            }
-        }
-        if(pchassis_){
-            pchassis_->MovMode = CModChassis::EmovMode::NORMAL; 
-        }
-    }
+    // else if (remote.switch_L == MID && remote.switch_R == HIG) {
+    //     SysRemote.SetRemoteDeadZone(10.f);
+    //     if (parm_) {
+    //         if(!parm_->armCmd.isAutoCtrl){
+    //             parm_->armCmd.set_angle_Yaw +=
+    //                 (remote.joystick_LX / 100.f) * 90.f / freq;
+    //             parm_->armCmd.set_angle_Pitch1 +=
+    //                 (remote.joystick_LY / 100.f) * 90.f / freq;
+    //             parm_->armCmd.set_angle_Pitch2 +=
+    //                 (remote.joystick_RY / 100.f) * 90.f / freq;
+    //             parm_->armCmd.set_angle_Roll +=
+    //                 (remote.joystick_RX / 100.f) * 90.f / freq;
+    //             parm_->armCmd.set_length_grip +=
+    //                 (remote.thumbWheel / 100.f) * 60.f / freq; ///< 拨轮控夹爪
+    //         }
+    //     }
+    //     if(pchassis_){
+    //         pchassis_->MovMode = CModChassis::EmovMode::NORMAL; 
+    //     }
+    // }
 
     // MID + MID 副臂关节四轴 + 夹爪
-    if (remote.switch_L == MID && remote.switch_R == MID) {
-        SysRemote.SetRemoteDeadZone(10.f);
-        ///< 此处不执行任何操作，由板间通信将整个遥控器数据传给副板，副板自己执行控制逻辑
-        if(pchassis_){
-            if(!pchassis_->chassisCmd.isAutoCtrl){
-                pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
-            } 
-        }
-    }
+    // if (remote.switch_L == MID && remote.switch_R == MID) {
+    //     SysRemote.SetRemoteDeadZone(10.f);
+    //     ///< 此处不执行任何操作，由板间通信将整个遥控器数据传给副板，副板自己执行控制逻辑
+    //     if(pchassis_){
+    //         if(!pchassis_->chassisCmd.isAutoCtrl){
+    //             pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
+    //         } 
+    //     }
+    // }
 
     // MID + LOW 左摇杆主臂末端，右摇杆副臂末端
-    else if (remote.switch_L == MID && remote.switch_R == LOW) {
-        SysRemote.SetRemoteDeadZone(10.f);
-        if (parm_) {
-            if(!parm_->armCmd.isAutoCtrl){
-                parm_->armCmd.set_angle_end_pitch +=
-                    (remote.joystick_LY / 100.f) * 300.f / freq;
-                parm_->armCmd.set_angle_end_roll +=
-                    (remote.joystick_LX / 100.f) * 120.f / freq;
-            }
-                // 只写了主臂末端的控制，副臂的目标设置在副板代码中
-        }
-        if(pchassis_){
-            if(!pchassis_->chassisCmd.isAutoCtrl){
-                pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
-            } 
-        }
-    }
+    // else if (remote.switch_L == MID && remote.switch_R == LOW) {
+    //     SysRemote.SetRemoteDeadZone(10.f);
+    //     if (parm_) {
+    //         if(!parm_->armCmd.isAutoCtrl){
+    //             parm_->armCmd.set_angle_end_pitch +=
+    //                 (remote.joystick_LY / 100.f) * 300.f / freq;
+    //             parm_->armCmd.set_angle_end_roll +=
+    //                 (remote.joystick_LX / 100.f) * 120.f / freq;
+    //         }
+    //             // 只写了主臂末端的控制，副臂的目标设置在副板代码中
+    //     }
+    //     if(pchassis_){
+    //         if(!pchassis_->chassisCmd.isAutoCtrl){
+    //             pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
+    //         } 
+    //     }
+    // }
 
     // HIG + MID 自动上台阶 利用陀螺仪数据控腿长
     else if(remote.switch_L == HIG && remote.switch_R == MID)
@@ -428,18 +428,19 @@ void CSystemCore::ControlFromRemote_() {
             ///< 右摇杆y控云台pitch，逻辑在副板
         }
     }
-    // HIG + LOW 云台全控制
+    // HIG + LOW 由板间通信下发底盘速度
     else if(remote.switch_L == HIG && remote.switch_R == LOW)
     {
         if(pchassis_){
             if(!pchassis_->chassisCmd.isAutoCtrl){
-                const bool gimbalXywValid = (SysBoardLink.gimbalInfo.pack_id == 3
-                    && SysBoardLink.gimbalInfo.remote_is_online == 1);
-                if (gimbalXywValid) {
-                    // 云台直接下发xyw时，优先使用云台控制量；原有陀螺跟随逻辑作为回退保留。
-                    pchassis_->chassisCmd.speed_X = static_cast<float>(SysBoardLink.gimbalInfo.speed_x);
-                    pchassis_->chassisCmd.speed_Y = static_cast<float>(SysBoardLink.gimbalInfo.speed_y);
-                    pchassis_->chassisCmd.speed_W = static_cast<float>(SysBoardLink.gimbalInfo.speed_w);
+                const bool boardLinkCtrlValid = (SysBoardLink.ctrlInfos.pack_id == CDevBoardLink::PKT_CTRL_INFOS
+                    && SysBoardLink.ctrlInfos.remote_is_online == 1);
+                if (boardLinkCtrlValid) {
+                    pchassis_->chassisCmd.speed_X = static_cast<float>(SysBoardLink.ctrlInfos.speed_x);
+                    pchassis_->chassisCmd.speed_Y = static_cast<float>(SysBoardLink.ctrlInfos.speed_y);
+                    pchassis_->chassisCmd.speed_W = static_cast<float>(SysBoardLink.ctrlInfos.speed_w);
+                    pchassis_->spin_on = (SysBoardLink.otherInfo.pack_id == CDevBoardLink::PKT_OTHER_INFOS
+                        && SysBoardLink.otherInfo.is_spin_on != 0);
                     pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
                     ResetGyroSpinRuntimeState(gyroSpinState, false);
                 } else {
@@ -453,9 +454,8 @@ void CSystemCore::ControlFromRemote_() {
                                                 gyroSpinState,
                                                 freq);
                 }
-            } 
+            }
         }
-        ///< 云台控制逻辑均在副板
     }
 }
 
@@ -537,196 +537,86 @@ void CSystemCore::ControlFromKeyboard_() {
         }
     }
 
-    /******************* 云台手动控制 *******************/
-    // 通过G键+鼠标左右键控抬升
-    // 通过鼠标y轴速度控pitch
+    // /******************* 云台手动控制 *******************/
+    // // 通过G键+鼠标左右键控抬升
+    // // 通过鼠标y轴速度控pitch
 
-    /******************* 机械臂手动控制 *******************/
-    // 按下ctrl时控副臂，否则控主臂
-    if (parm_) {
-        if (!parm_->armCmd.isAutoCtrl) {
-            // !SysBoardLink.pArm_Cmd->isAutoCtrl) {
-            // yaw(Q键)
-            if(keyboard.key_Q)
-                parm_->armCmd.set_angle_Yaw += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 60.0f / freq;
-            // pitch1(E键)
-            if(keyboard.key_E)
-                parm_->armCmd.set_angle_Pitch1 += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 70.0f / freq;
-            // pitch2(R键)
-            if(keyboard.key_R)
-                parm_->armCmd.set_angle_Pitch2 += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 70.0f / freq;
-            // roll(Z键)
-            if(keyboard.key_Z)
-                parm_->armCmd.set_angle_Roll += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 80.0f / freq;
-            // end_pitch(X键)
-            if(keyboard.key_X)
-                parm_->armCmd.set_angle_end_pitch += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 90.0f / freq;
-            // end_roll(C键)
-            if(keyboard.key_C)
-                parm_->armCmd.set_angle_end_roll += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 90.0f / freq;
-        }
-    }
+    // /******************* 机械臂手动控制 *******************/
+    // // 按下ctrl时控副臂，否则控主臂
+    // if (parm_) {
+    //     if (!parm_->armCmd.isAutoCtrl) {
+    //         // !SysBoardLink.pArm_Cmd->isAutoCtrl) {
+    //         // yaw(Q键)
+    //         if(keyboard.key_Q)
+    //             parm_->armCmd.set_angle_Yaw += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 60.0f / freq;
+    //         // pitch1(E键)
+    //         if(keyboard.key_E)
+    //             parm_->armCmd.set_angle_Pitch1 += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 70.0f / freq;
+    //         // pitch2(R键)
+    //         if(keyboard.key_R)
+    //             parm_->armCmd.set_angle_Pitch2 += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 70.0f / freq;
+    //         // roll(Z键)
+    //         if(keyboard.key_Z)
+    //             parm_->armCmd.set_angle_Roll += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 80.0f / freq;
+    //         // end_pitch(X键)
+    //         if(keyboard.key_X)
+    //             parm_->armCmd.set_angle_end_pitch += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 90.0f / freq;
+    //         // end_roll(C键)
+    //         if(keyboard.key_C)
+    //             parm_->armCmd.set_angle_end_roll += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 90.0f / freq;
+    //     }
+    // }
 
     lastMouseStatus_L = keyboard.mouse_L;
     lastMouseStatus_R = keyboard.mouse_R;
 
 
-    /******************* 自动控制 *******************/
-    if (parm_ && pchassis_) {
-        if (keyboard.key_Ctrl && parm_->armInfo.isModuleAvailable)
-        {
-            // Ctrl + V: 停止所有自动任务
-            if(keyboard.key_V)
-            {
-                StopAutoCtrlTask_();
-            }
+    // /******************* 自动控制 *******************/
+    // if (parm_ && pchassis_) {
+    //     if (keyboard.key_Ctrl && parm_->armInfo.isModuleAvailable)
+    //     {
+    //         // Ctrl + V: 停止所有自动任务
+    //         if(keyboard.key_V)
+    //         {
+    //             StopAutoCtrlTask_();
+    //         }
 
-            // Ctrl + C: 启动上台阶任务
-            if(keyboard.key_C)
-            {
-                StartAutoCtrlTask_(EAutoCtrlProcess::CLIMBING);
-            }
+    //         // Ctrl + C: 启动上台阶任务
+    //         if(keyboard.key_C)
+    //         {
+    //             StartAutoCtrlTask_(EAutoCtrlProcess::CLIMBING);
+    //         }
 
-            /* --- 其他旧的自动任务快捷键已被移除 ---
-            if(keyboard.key_G) { StartAutoCtrlTask_(EAutoCtrlProcess::GOLD_ORE); }
-            if(keyboard.key_X) { StartAutoCtrlTask_(EAutoCtrlProcess::SILVER_ORE); }
-            if(keyboard.key_F) { StartAutoCtrlTask_(EAutoCtrlProcess::GROUND_ORE); }
-            if(keyboard.key_R) { StartAutoCtrlTask_(EAutoCtrlProcess::PUSH_ORE); }
-            if(keyboard.key_Q) { StartAutoCtrlTask_(EAutoCtrlProcess::POP_ORE); }
-            */
-        }
-        /* --- 其他旧的自动任务快捷键已被移除 ---
-        if(keyboard.key_Shift && parm_->armInfo.isModuleAvailable){
-            if(keyboard.key_Z) { StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE); }
-            if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE); }
-        }
-        */
-    }
+    //         /* --- 其他旧的自动任务快捷键已被移除 ---
+    //         if(keyboard.key_G) { StartAutoCtrlTask_(EAutoCtrlProcess::GOLD_ORE); }
+    //         if(keyboard.key_X) { StartAutoCtrlTask_(EAutoCtrlProcess::SILVER_ORE); }
+    //         if(keyboard.key_F) { StartAutoCtrlTask_(EAutoCtrlProcess::GROUND_ORE); }
+    //         if(keyboard.key_R) { StartAutoCtrlTask_(EAutoCtrlProcess::PUSH_ORE); }
+    //         if(keyboard.key_Q) { StartAutoCtrlTask_(EAutoCtrlProcess::POP_ORE); }
+    //         */
+    //     }
+    //     /* --- 其他旧的自动任务快捷键已被移除 ---
+    //     if(keyboard.key_Shift && parm_->armInfo.isModuleAvailable){
+    //         if(keyboard.key_Z) { StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE); }
+    //         if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE); }
+    //     }
+    //     */
+    // }
     }
 }
 
 /**
- * @brief 自定义控制器操作
+ * @brief 自定义控制器操作（当前仅保留底盘相关依赖）
  */
 void CSystemCore::ControlFromController_() {
-    const auto freq = 1000.f; // 系统核心频率
-    static uint16_t last_key_F,last_key_G;
-
-    auto &controller = SysControllerLink.controllerInfo;
-
-    auto &keyboard = SysRemote.remoteInfo.keyboard;
-
-    SysControllerLink.robotInfo.controlled_by_controller = true;
-    SysControllerLink.robotInfo.ask_return_flag = true;
-
-    // 将模块启动
-    if (SysRemote.systemStatus == APP_OK) {
-        StartRobot(false);
+    if (pchassis_ && !pchassis_->chassisCmd.isAutoCtrl) {
+        pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
     }
-
-    if (parm_) {
-        parm_->should_limit_yaw = 0;
-    }
-
-    /******************* 底盘控制 *******************/
-    if (pchassis_) {
-        if (!pchassis_->chassisCmd.isAutoCtrl)
-        {
-            pchassis_->chassisCmd.speed_X *= 0.97f;
-            pchassis_->chassisCmd.speed_Y *= 0.98f;
-            pchassis_->chassisCmd.speed_W *= 0.98f;
-            if (abs(pchassis_->chassisCmd.speed_X) < 0.5f) pchassis_->chassisCmd.speed_X = 0.0f;
-            if (abs(pchassis_->chassisCmd.speed_Y) < 0.5f) pchassis_->chassisCmd.speed_Y = 0.0f;
-            if (abs(pchassis_->chassisCmd.speed_W) < 0.3f) pchassis_->chassisCmd.speed_W = 0.0f;
-
-            pchassis_->chassisCmd.speed_Y = controller.rocker_RY;     ///< 右拨杆y方向控底盘前进速度
-        }
-    }
-
-    /******************* 机械臂 *******************/
-    //  if (controller.return_success) {
-    // 主臂
-    if (parm_) {
-        parm_->armCmd.set_angle_Yaw =
-            LowPassFilter(parm_->armCmd.set_angle_Yaw,
-                Round(controller.right_arm.yaw), 0.5f);
-        parm_->armCmd.set_angle_Pitch1 =
-            LowPassFilter(parm_->armCmd.set_angle_Pitch1,
-                Round(controller.right_arm.pitch1 + 20.0f), 0.5f);
-        parm_->armCmd.set_angle_Pitch2 =
-            LowPassFilter(parm_->armCmd.set_angle_Pitch2,
-                Round(controller.right_arm.pitch2 + 20.0f), 0.5f);
-        parm_->armCmd.set_angle_Roll =
-            LowPassFilter(parm_->armCmd.set_angle_Roll,
-                Round(-controller.right_arm.roll), 0.5f);
-        if (controller.right_arm.pitch1 < 38.0f) {
-            parm_->armCmd.set_angle_end_pitch =
-                std::clamp(parm_->armCmd.set_angle_end_pitch, 0.0f, 40.0f);
-        }
-        else {
-            parm_->armCmd.set_angle_end_pitch =
-            LowPassFilter(parm_->armCmd.set_angle_end_pitch,
-                Round(controller.right_arm.pitch_end), 0.5f);
-        }
-        // 只有末端的roll轴是增量式控制
-        parm_->armCmd.set_angle_end_roll += 50.f * controller.rocker_RX / freq;
-    }
-        // LowPassFilter(parm_->armCmd.set_angle_end_roll,
-        //     Round(controller.angle_roll_end), 0.5f);
-        // if (controller.Rocker_Key == CSystemControllerLink::KEY_STATUS::PRESS &&
-        //     last_rocker_key_status == CSystemControllerLink::KEY_STATUS::RELEASE) {
-        //     psubgantry_->subGantryCmd.setPumpOn_Gantry = !psubgantry_->subGantryCmd.setPumpOn_Gantry;
-        // }
-
-    // 云台抬升
-
-/*删除自定义控制器对应的兑矿操作
-    if (psubgantry_) {
-        psubgantry_->subGantryCmd.setLiftPosit_L = 88.5f;           ///<兑矿时必须保证刺雷抬到最高点
-        psubgantry_->subGantryCmd.setLiftPosit_R = 88.5f;
-
-        // 气泵控制
-        static uint8_t vb_count = 0;
-        static bool vb_flag = false;
-        if (SysRemote.remoteInfo.keyboard.key_V && SysRemote.remoteInfo.keyboard.key_B) {
-            vb_count++;
-        }
-        // 全部松开之后才清零计数器
-        else if (SysRemote.remoteInfo.keyboard.key_V || SysRemote.remoteInfo.keyboard.key_B == false) {
-            vb_count = 0;
-            vb_flag = false;
-        }
-        if (vb_count > 20 && vb_flag == false) {
-            vb_flag = true;
-            vb_count = 0;
-            psubgantry_->subGantryCmd.setPumpOn_Arm = !psubgantry_->subGantryCmd.setPumpOn_Arm;
-        }
-    }
-*/
-    // }
-    last_key_F = SysRemote.remoteInfo.keyboard.key_F;
-    last_key_G = SysRemote.remoteInfo.keyboard.key_G;
-    // last_rocker_key_status = controller.Rocker_Key
-
-    
 }
 
 void CSystemCore::ControlFromEsp32_() {
-    const auto freq = 1000.f; // 系统核心频率
-
-    auto &esp32 = SysESP32.BLEInfo;
-
-    if (parm_) {
-        parm_->should_limit_yaw = 0;
-
-        if (SysESP32.BLE_Mode_Open) {
-            parm_->armCmd.set_angle_Yaw = LowPassFilter(parm_->armCmd.set_angle_Yaw, esp32.Yaw, 0.5f);
-            parm_->armCmd.set_angle_Pitch1 = LowPassFilter(parm_->armCmd.set_angle_Pitch1, esp32.Pitch1, 0.5f);
-            parm_->armCmd.set_angle_Pitch2 = LowPassFilter(parm_->armCmd.set_angle_Pitch2, esp32.Pitch2, 0.5f);
-            parm_->armCmd.set_angle_Roll = LowPassFilter(parm_->armCmd.set_angle_Roll, esp32.Roll, 0.5f);
-            parm_->armCmd.set_angle_end_pitch = LowPassFilter(parm_->armCmd.set_angle_end_pitch, esp32.End_Pitch, 0.5f);
-            parm_->armCmd.set_angle_end_roll = LowPassFilter(parm_->armCmd.set_angle_end_roll, esp32.End_Roll, 0.5f);
-        }
+    if (pchassis_ && !pchassis_->chassisCmd.isAutoCtrl) {
+        pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
     }
 }
 

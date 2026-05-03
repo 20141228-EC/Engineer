@@ -2,10 +2,9 @@
  * @brief
  *
  * @file         sys_controller_link.cpp
- * @author       Fish_Joe (2328339747@qq.com)
+ * @author       Ciallo (1002046597@qq.com)
  * @version      V2.0
  * @date         2025-04-05
- * @LastEditors  Ciallo(1002046597@qq.com)
  * @LastEditTime 2026-01-17
  *
  * @copyright    Copyright (c) 2025
@@ -16,7 +15,7 @@
 
 namespace my_engineer {
 
-#define I_AM_CONTROLLER 0 // 当前板子是副板
+#define I_AM_CONTROLLER 0 // 当前板子是副板，控制机器人
 
 // 实例化一个控制器通信系统
 CSystemControllerLink SysControllerLink;
@@ -57,21 +56,22 @@ EAppStatus CSystemControllerLink::InitSystem(SSystemInitParam_Base *pStruct) {
 void CSystemControllerLink::UpdateHandler_() {
 	// 检查系统状态
 	if (systemStatus != APP_OK) return;
-
-	static uint8_t delay = 40;
-	delay -= 4;
-	if (delay > 0) return;
-	delay = 40;
-
 	if (!pcontrollerLink_) return;
 
 	#if I_AM_CONTROLLER == 0
-		// 更新控制器信息（从数据包解压到系统层）
+		// 接收：全速解析控制器发来的最新数据（25Hz的数据包）
 		UpdateControllerLinkInfo_();
-		// 更新发送数据包（从系统层压缩到数据包）
-		UpdateRobotDataPkg_();
-		// 发送机器人信息
-		pcontrollerLink_->SendPackage(CDevControllerLink::ID_ROBOT_DATA, pcontrollerLink_->robotData_info_pkg.header);
+
+		// 发送：独立限频 10Hz
+		// 系统任务1kHz
+		static uint8_t sendDelay = 100;
+		//sendDelay -= 4;
+		sendDelay -= 1;
+		if (sendDelay == 0) {
+			sendDelay = 100;
+			UpdateRobotDataPkg_();
+			pcontrollerLink_->SendPackage(CDevControllerLink::ID_ROBOT_DATA, pcontrollerLink_->robotData_info_pkg.header);
+		}
 	#else
 		// 更新机器人信息
 		UpdateRobotInfo_();
@@ -92,31 +92,24 @@ void CSystemControllerLink::UpdateControllerLinkInfo_() {
 
 	auto &pkg = pcontrollerLink_->controllerData_info_pkg;
 
-	// 解析状态标志位
+	// 解析状态标志位 (按位掩码)
 	controllerInfo.controller_OK = (pkg.status_flags & STATUS_CONTROLLER_OK) != 0;
 	controllerInfo.return_success = (pkg.status_flags & STATUS_RETURN_SUCCESS) != 0;
-	controllerInfo.toggle_switch = static_cast<EToggleSwitch>((pkg.status_flags & STATUS_TOGGLE_MASK) >> STATUS_TOGGLE_SHIFT);
-	controllerInfo.gripper_left_close = (pkg.status_flags & STATUS_GRIPPER_LEFT) != 0;
-	controllerInfo.gripper_right_close = (pkg.status_flags & STATUS_GRIPPER_RIGHT) != 0;
+	// toggle switch 位由 STATUS_TOGGLE_* 掩码提取（若需要可恢复）
+	controllerInfo.gripper_close = ((pkg.status_flags & STATUS_GRIPPER_LEFT) != 0) || ((pkg.status_flags & STATUS_GRIPPER_RIGHT) != 0);
+	controllerInfo.gripper_regrip = false; // 未定义单独的regrip位，保留为false
 
-	// 解压左臂角度数据 (int16 -> float)
-	controllerInfo.left_arm.yaw = CDevControllerLink::DecompressAngle(pkg.left_arm.yaw);
-	controllerInfo.left_arm.pitch1 = CDevControllerLink::DecompressAngle(pkg.left_arm.pitch1);
-	controllerInfo.left_arm.pitch2 = CDevControllerLink::DecompressAngle(pkg.left_arm.pitch2);
-	controllerInfo.left_arm.roll = CDevControllerLink::DecompressAngle(pkg.left_arm.roll);
-	controllerInfo.left_arm.pitch_end = CDevControllerLink::DecompressAngle(pkg.left_arm.pitch_end);
+	// 单臂角度数据 (解压 compressed -> float)，映射到 left_arm
+	controllerInfo.arm.yaw       = CDevControllerLink::DecompressAngle(pkg.left_arm.yaw);
+	controllerInfo.arm.pitch1    = CDevControllerLink::DecompressAngle(pkg.left_arm.pitch1);
+	controllerInfo.arm.pitch2    = CDevControllerLink::DecompressAngle(pkg.left_arm.pitch2);
+	controllerInfo.arm.pitch3    = CDevControllerLink::DecompressAngle(pkg.left_arm.roll);
+	controllerInfo.arm.roll      = CDevControllerLink::DecompressAngle(pkg.left_arm.roll);
+	controllerInfo.arm.pitch_end = CDevControllerLink::DecompressAngle(pkg.left_arm.pitch_end);
 
-	// 解压右臂角度数据 (int16 -> float)
-	controllerInfo.right_arm.yaw = CDevControllerLink::DecompressAngle(pkg.right_arm.yaw);
-	controllerInfo.right_arm.pitch1 = CDevControllerLink::DecompressAngle(pkg.right_arm.pitch1);
-	controllerInfo.right_arm.pitch2 = CDevControllerLink::DecompressAngle(pkg.right_arm.pitch2);
-	controllerInfo.right_arm.roll = CDevControllerLink::DecompressAngle(pkg.right_arm.roll);
-	controllerInfo.right_arm.pitch_end = CDevControllerLink::DecompressAngle(pkg.right_arm.pitch_end);
-
-	// 摇杆数据（直接复制，已是int8）
-	controllerInfo.rocker_LX = pkg.rocker_LX;
-	controllerInfo.rocker_RX = pkg.rocker_RX;
-	controllerInfo.rocker_RY = pkg.rocker_RY;
+	// 摇杆数据 映射：使用 left rocker X 和 right rocker Y 作为参考
+	controllerInfo.rocker_X = pkg.rocker_LX;
+	controllerInfo.rocker_Y = pkg.rocker_RY;
 }
 
 /**
@@ -129,24 +122,27 @@ void CSystemControllerLink::UpdateRobotInfo_() {
 
 	auto &pkg = pcontrollerLink_->robotData_info_pkg;
 
-	// 解析状态标志位
-	robotInfo.ask_reset_flag = (pkg.status_flags & STATUS_CONTROLLER_OK) != 0;
-	robotInfo.controlled_by_controller = (pkg.status_flags & STATUS_RETURN_SUCCESS) != 0;
-	robotInfo.ask_return_flag = (pkg.status_flags & STATUS_GRIPPER_LEFT) != 0;
+	// 解析状态标志位 (按位掩码)
+	robotInfo.ask_reset_flag = (pkg.status_flags & STATUS_ASK_RESET) != 0;
+	robotInfo.controlled_by_controller = (pkg.status_flags & STATUS_CONTROLLED) != 0;
+	robotInfo.robot_init_ok = (pkg.status_flags & STATUS_ROBOT_INIT_OK) != 0;
+	robotInfo.p3_lock = false; // no explicit bit for p3_lock in current protocol
 
-	// 解压左臂角度数据
-	robotInfo.left_arm.yaw = CDevControllerLink::DecompressAngle(pkg.left_arm.yaw);
-	robotInfo.left_arm.pitch1 = CDevControllerLink::DecompressAngle(pkg.left_arm.pitch1);
-	robotInfo.left_arm.pitch2 = CDevControllerLink::DecompressAngle(pkg.left_arm.pitch2);
-	robotInfo.left_arm.roll = CDevControllerLink::DecompressAngle(pkg.left_arm.roll);
-	robotInfo.left_arm.pitch_end = CDevControllerLink::DecompressAngle(pkg.left_arm.pitch_end);
+	// 解压角度 (int16 -> float)，映射到 left_arm
+	robotInfo.arm.yaw       = CDevControllerLink::DecompressAngle(pkg.left_arm.yaw);
+	robotInfo.arm.pitch1    = CDevControllerLink::DecompressAngle(pkg.left_arm.pitch1);
+	robotInfo.arm.pitch2    = CDevControllerLink::DecompressAngle(pkg.left_arm.pitch2);
+	robotInfo.arm.pitch3    = CDevControllerLink::DecompressAngle(pkg.left_arm.roll);
+	robotInfo.arm.roll      = CDevControllerLink::DecompressAngle(pkg.left_arm.roll);
+	robotInfo.arm.pitch_end = CDevControllerLink::DecompressAngle(pkg.left_arm.pitch_end);
 
-	// 解压右臂角度数据
-	robotInfo.right_arm.yaw = CDevControllerLink::DecompressAngle(pkg.right_arm.yaw);
-	robotInfo.right_arm.pitch1 = CDevControllerLink::DecompressAngle(pkg.right_arm.pitch1);
-	robotInfo.right_arm.pitch2 = CDevControllerLink::DecompressAngle(pkg.right_arm.pitch2);
-	robotInfo.right_arm.roll = CDevControllerLink::DecompressAngle(pkg.right_arm.roll);
-	robotInfo.right_arm.pitch_end = CDevControllerLink::DecompressAngle(pkg.right_arm.pitch_end);
+	// 设备包中没有 torque 字段，清零占位
+	robotInfo.torque.yaw = 0.0f;
+	robotInfo.torque.pitch1 = 0.0f;
+	robotInfo.torque.pitch2 = 0.0f;
+	robotInfo.torque.pitch3 = 0.0f;
+	robotInfo.torque.roll = 0.0f;
+	robotInfo.torque.pitch_end = 0.0f;
 }
 
 /**
@@ -159,25 +155,21 @@ void CSystemControllerLink::UpdateRobotDataPkg_() {
 
 	auto &pkg = pcontrollerLink_->robotData_info_pkg;
 
-	// 打包状态标志位
-	pkg.status_flags = 0;
-	if (robotInfo.ask_reset_flag) pkg.status_flags |= STATUS_CONTROLLER_OK;
-	if (robotInfo.controlled_by_controller) pkg.status_flags |= STATUS_RETURN_SUCCESS;
-	if (robotInfo.ask_return_flag) pkg.status_flags |= STATUS_GRIPPER_LEFT;
+	pkg.status_flags = 0; // 清空状态标志位
 
-	// 压缩左臂角度数据 (float -> int16)
-	pkg.left_arm.yaw = CDevControllerLink::CompressAngle(robotInfo.left_arm.yaw);
-	pkg.left_arm.pitch1 = CDevControllerLink::CompressAngle(robotInfo.left_arm.pitch1);
-	pkg.left_arm.pitch2 = CDevControllerLink::CompressAngle(robotInfo.left_arm.pitch2);
-	pkg.left_arm.roll = CDevControllerLink::CompressAngle(robotInfo.left_arm.roll);
-	pkg.left_arm.pitch_end = CDevControllerLink::CompressAngle(robotInfo.left_arm.pitch_end);
+	// 打包状态标志位 (按位设置)
+	if (robotInfo.ask_reset_flag) pkg.status_flags |= STATUS_ASK_RESET;
+	if (robotInfo.controlled_by_controller) pkg.status_flags |= STATUS_CONTROLLED;
+	if (robotInfo.robot_init_ok) pkg.status_flags |= STATUS_ROBOT_INIT_OK;
 
-	// 压缩右臂角度数据 (float -> int16)
-	pkg.right_arm.yaw = CDevControllerLink::CompressAngle(robotInfo.right_arm.yaw);
-	pkg.right_arm.pitch1 = CDevControllerLink::CompressAngle(robotInfo.right_arm.pitch1);
-	pkg.right_arm.pitch2 = CDevControllerLink::CompressAngle(robotInfo.right_arm.pitch2);
-	pkg.right_arm.roll = CDevControllerLink::CompressAngle(robotInfo.right_arm.roll);
-	pkg.right_arm.pitch_end = CDevControllerLink::CompressAngle(robotInfo.right_arm.pitch_end);
+	// 压缩角度 (float -> int16)，放入 left_arm
+	pkg.left_arm.yaw       = CDevControllerLink::CompressAngle(robotInfo.arm.yaw);
+	pkg.left_arm.pitch1    = CDevControllerLink::CompressAngle(robotInfo.arm.pitch1);
+	pkg.left_arm.pitch2    = CDevControllerLink::CompressAngle(robotInfo.arm.pitch2);
+	pkg.left_arm.roll      = CDevControllerLink::CompressAngle(robotInfo.arm.roll);
+	pkg.left_arm.pitch_end = CDevControllerLink::CompressAngle(robotInfo.arm.pitch_end);
+
+	// 设备包没有 torque 字段，跳过
 }
 
 /**
@@ -189,33 +181,23 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 	if (!pcontrollerLink_) return;
 
 	auto &pkg = pcontrollerLink_->controllerData_info_pkg;
-
-	// 打包状态标志位
+	
 	pkg.status_flags = 0;
+
 	if (controllerInfo.controller_OK) pkg.status_flags |= STATUS_CONTROLLER_OK;
 	if (controllerInfo.return_success) pkg.status_flags |= STATUS_RETURN_SUCCESS;
-	pkg.status_flags |= (static_cast<uint8_t>(controllerInfo.toggle_switch) << STATUS_TOGGLE_SHIFT) & STATUS_TOGGLE_MASK;
-	if (controllerInfo.gripper_left_close) pkg.status_flags |= STATUS_GRIPPER_LEFT;
-	if (controllerInfo.gripper_right_close) pkg.status_flags |= STATUS_GRIPPER_RIGHT;
+	if (controllerInfo.gripper_close) pkg.status_flags |= STATUS_GRIPPER_LEFT; // 使用左夹爪位表示闭合
 
-	// 压缩左臂角度数据 (float -> int16)
-	pkg.left_arm.yaw = CDevControllerLink::CompressAngle(controllerInfo.left_arm.yaw);
-	pkg.left_arm.pitch1 = CDevControllerLink::CompressAngle(controllerInfo.left_arm.pitch1);
-	pkg.left_arm.pitch2 = CDevControllerLink::CompressAngle(controllerInfo.left_arm.pitch2);
-	pkg.left_arm.roll = CDevControllerLink::CompressAngle(controllerInfo.left_arm.roll);
-	pkg.left_arm.pitch_end = CDevControllerLink::CompressAngle(controllerInfo.left_arm.pitch_end);
+	// 单臂角度数据 (float -> compressed)，放入 left_arm
+	pkg.left_arm.yaw       = CDevControllerLink::CompressAngle(controllerInfo.arm.yaw);
+	pkg.left_arm.pitch1    = CDevControllerLink::CompressAngle(controllerInfo.arm.pitch1);
+	pkg.left_arm.pitch2    = CDevControllerLink::CompressAngle(controllerInfo.arm.pitch2);
+	pkg.left_arm.roll      = CDevControllerLink::CompressAngle(controllerInfo.arm.roll);
+	pkg.left_arm.pitch_end = CDevControllerLink::CompressAngle(controllerInfo.arm.pitch_end);
 
-	// 压缩右臂角度数据 (float -> int16)
-	pkg.right_arm.yaw = CDevControllerLink::CompressAngle(controllerInfo.right_arm.yaw);
-	pkg.right_arm.pitch1 = CDevControllerLink::CompressAngle(controllerInfo.right_arm.pitch1);
-	pkg.right_arm.pitch2 = CDevControllerLink::CompressAngle(controllerInfo.right_arm.pitch2);
-	pkg.right_arm.roll = CDevControllerLink::CompressAngle(controllerInfo.right_arm.roll);
-	pkg.right_arm.pitch_end = CDevControllerLink::CompressAngle(controllerInfo.right_arm.pitch_end);
-
-	// 摇杆数据
-	pkg.rocker_LX = controllerInfo.rocker_LX;
-	pkg.rocker_RX = controllerInfo.rocker_RX;
-	pkg.rocker_RY = controllerInfo.rocker_RY;
+	// 摇杆数据 映射到可用字段
+	pkg.rocker_LX = controllerInfo.rocker_X;
+	pkg.rocker_RY = controllerInfo.rocker_Y;
 }
 
 /**

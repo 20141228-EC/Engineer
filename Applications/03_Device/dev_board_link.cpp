@@ -28,24 +28,26 @@ EAppStatus CDevBoardLink::InitDevice(const SDevInitParam_Base *pStructInitParam)
 	// 类型转换
 	auto &boardLinkParam = *static_cast<const SDevInitParam_BoardLink *>(pStructInitParam);
 	deviceID = boardLinkParam.deviceID;
-	canInterface_ = reinterpret_cast<CInfCAN *>(InterfaceIDMap.at(boardLinkParam.interfaceID));
+	timeoutParam_.offlineTimeout = boardLinkParam.offlineTimeout;
 
 	// 初始化CAN接收节点
-    auto canRxID = 0x302;
-    canRxNode_.InitRxNode(boardLinkParam.interfaceID, canRxID, 
+    constexpr uint32_t kCanRxID = 0x302;
+    rxNode_.InitRxNode(boardLinkParam.interfaceID, kCanRxID,
                                 CInfCAN::ECanFrameType::DATA, 
                                 CInfCAN::ECanFrameDlc::DLC_8);
 
 	// 初始化CAN发送节点
-	auto canTxID = 0x300;
-	canTxNode_.InitTxNode(boardLinkParam.interfaceID, canTxID, 
+    constexpr uint32_t kCanTxID = 0x300;
+	txNode_.InitTxNode(boardLinkParam.interfaceID, kCanTxID,
                                 CInfCAN::ECanFrameType::DATA, 
                                 CInfCAN::ECanFrameDlc::DLC_8);
 
 	RegisterDevice_(); ///< 注册设备
 
 	deviceStatus = APP_OK;
-	boardLinkStatus = EBoardLinkStatus::OFFLINE;
+	linkStatus = EBoardLinkStatus::OFFLINE;
+
+    feedbackPack_.pack_id = PKT_FEEDBACK;
 
 	return APP_OK;
 }
@@ -57,48 +59,22 @@ EAppStatus CDevBoardLink::InitDevice(const SDevInitParam_Base *pStructInitParam)
  * 
  * @retval EAppStatus
  */
-EAppStatus CDevBoardLink::SendPackage(EPacketID pack_id){
+EAppStatus CDevBoardLink::SendPackage(){
 
 	// 检查设备状态
 	if (deviceStatus == APP_RESET) return APP_ERROR;
 
 	std::array<uint8_t, 8> data_buf{};
+    feedbackPack_.pack_id = PKT_FEEDBACK;
+    feedbackPack_.rx_status = 0;
+    if (ctrlInfo_.pack_id == PKT_CTRL_INFOS) feedbackPack_.rx_status |= (1u << 0);
+    if (angleInfo_.pack_id == PKT_JOINT_INFOS) feedbackPack_.rx_status |= (1u << 1);
+    if (otherInfo_.pack_id == PKT_OTHER_INFOS) feedbackPack_.rx_status |= (1u << 2);
+    feedbackPack_.link_status = static_cast<uint8_t>(linkStatus);
 
-	switch (pack_id) ///< 这些获取的逻辑还得具体实现
-	{
-	case PKT_CTRL_FLAGS:{
-
-		// 获取数据
-		ctrlFlags_pkt.pack_id = PKT_CTRL_FLAGS;
-		memcpy(data_buf.data(), &ctrlFlags_pkt, sizeof(ctrlFlags_pkt));
-
-		// 填充数据帧
-		Modify_CanTxData(data_buf.data());
-		break;
-	}
-	case PKT_CTRLER_L_B:{
-		// 获取数据
-		controllerbackcmd_l_b_pkt.pack_id = PKT_CTRLER_L_B;
-		memcpy(data_buf.data(), &controllerbackcmd_l_b_pkt, sizeof(controllerbackcmd_l_b_pkt));
-
-		// 填充数据帧
-		Modify_CanTxData(data_buf.data());
-		break;
-	}
-	case PKT_CTRLER_L_F:{
-		// 获取数据
-		controllerfrontcmd_l_f_pkt.pack_id = PKT_CTRLER_L_F;
-		memcpy(data_buf.data(), &controllerfrontcmd_l_f_pkt, sizeof(controllerfrontcmd_l_f_pkt));
-
-		// 填充数据帧
-		Modify_CanTxData(data_buf.data());
-		break;
-	}
-	default:
-		return APP_ERROR;
-	}
-
-	canTxNode_.Transmit(); ///< 发送数据
+    memcpy(data_buf.data(), &feedbackPack_, sizeof(feedbackPack_));
+	Modify_CanTxData(data_buf.data());
+	txNode_.Transmit(); ///< 发送反馈数据
 
 	return APP_OK;
 }
@@ -112,9 +88,7 @@ void CDevBoardLink::UpdateHandler_(){
 
 	if (deviceStatus == APP_RESET) return;
 
-	// if (rxTimestamp_ > lastHeartbeatTime_) {
-		ResolveRxPackage_();
-	// }
+    ParseRxPacket_();
 }
 
 /**
@@ -126,13 +100,13 @@ void CDevBoardLink::HeartbeatHandler_(){
 
 	if (deviceStatus == APP_RESET) return;
 
-	if (HAL_GetTick() - lastHeartbeatTime_ > 1000) {
+	if (HAL_GetTick() - timeoutParam_.rxTimestamp > timeoutParam_.offlineTimeout) {
 		deviceStatus = APP_ERROR;
-		boardLinkStatus = EBoardLinkStatus::OFFLINE;
+		linkStatus = EBoardLinkStatus::OFFLINE;
 	}
 	else {
 		deviceStatus = APP_OK;
-		boardLinkStatus = EBoardLinkStatus::ONLINE;
+		linkStatus = EBoardLinkStatus::ONLINE;
 	}
 }
 
@@ -141,50 +115,37 @@ void CDevBoardLink::HeartbeatHandler_(){
  * 
  * @retval EAppStatus
  */
-EAppStatus CDevBoardLink::ResolveRxPackage_(){
+EAppStatus CDevBoardLink::ParseRxPacket_(){
 
 	// 检查设备状态
 	if (deviceStatus == APP_RESET) return APP_ERROR;
 
-	uint8_t pack_id = canRxNode_.dataBuffer[0];
+	const uint8_t pack_id = rxNode_.dataBuffer[0];
 
-	if (canRxNode_.timestamp >= lastHeartbeatTime_) {
-		switch (pack_id)
-		{
-		case PKT_FEEDBACK:{
+	if (rxNode_.timestamp == timeoutParam_.lastParseTime) {
+        return APP_OK;
+    }
 
-			// 将databuffer转化成结构体指针并解引用
-			SFeedbackPack feedbackInfo = *reinterpret_cast<SFeedbackPack*>(canRxNode_.dataBuffer.data());
-			// 后续如果发现不能正确读取或位运算有错的话，可以试试换成用feedbackInfo来接收
-			fdbInfo_pkt.pack_id = canRxNode_.dataBuffer[0];
-			fdbInfo_pkt.pack0_status = canRxNode_.dataBuffer[1] & 0x01;
-			fdbInfo_pkt.pack1_status = (canRxNode_.dataBuffer[1] >> 1) & 0x01;
-			fdbInfo_pkt.pack2_status = (canRxNode_.dataBuffer[1] >> 2) & 0x01;
-			fdbInfo_pkt.pack3_status = (canRxNode_.dataBuffer[1] >> 3) & 0x01;
-
-			// fdbInfo_pkt.pack0_status = feedbackInfo.pack0_status;
-			// fdbInfo_pkt.pack1_status = feedbackInfo.pack1_status;
-			// fdbInfo_pkt.pack2_status = feedbackInfo.pack2_status;
-			// fdbInfo_pkt.pack3_status = feedbackInfo.pack3_status;
+    switch (pack_id)
+	{
+        case PKT_CTRL_INFOS: {
+            ctrlInfo_ = *reinterpret_cast<SCtrlInfo *>(rxNode_.dataBuffer.data());
+            break;
+        }
+        case PKT_JOINT_INFOS: {
+            angleInfo_ = *reinterpret_cast<SAngleInfo *>(rxNode_.dataBuffer.data());
+            break;
+        }
+        case PKT_OTHER_INFOS: {
+            otherInfo_ = *reinterpret_cast<SOtherInfo *>(rxNode_.dataBuffer.data());
+            break;
+        }
+        default:
 			break;
-		}
-		case PKT_GIMBAL_INFO: {
-			SGimbalInfoPack gimbalInfo = *reinterpret_cast<SGimbalInfoPack*>(canRxNode_.dataBuffer.data());
-			gimbalInfo_pkt.pack_id = gimbalInfo.pack_id;
-			gimbalInfo_pkt.remote_is_online = gimbalInfo.remote_is_online;
-			gimbalInfo_pkt.speed_x = gimbalInfo.speed_x;
-			gimbalInfo_pkt.speed_y = gimbalInfo.speed_y;
-			gimbalInfo_pkt.speed_w = gimbalInfo.speed_w;
-			break;
-		}
-		default:
-			break;
-		}
-		rxTimestamp_ = canRxNode_.timestamp; ///< 更新时间戳
 	}
 
-    // 在所有case的外部，只要是这个设备的消息，就更新时间戳
-    lastHeartbeatTime_ = canRxNode_.timestamp;
+    timeoutParam_.lastParseTime = rxNode_.timestamp;
+    timeoutParam_.rxTimestamp = rxNode_.timestamp;
 
 	return APP_OK;
 }
