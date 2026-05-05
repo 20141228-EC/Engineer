@@ -96,7 +96,7 @@ void CSystemCore::ControlFromRemote_() {
     }
 
     //用于调试，免去遥控器上电
-    StartRobot(true, true);
+    // StartRobot(true, true);
 
     if (parm_) {
         parm_->should_limit_yaw = 0;
@@ -108,58 +108,50 @@ void CSystemCore::ControlFromRemote_() {
             chassisCmd.speed_x = remote.joystick_LX / 2;
             chassisCmd.speed_y = remote.joystick_LY;
             chassisCmd.speed_w = remote.joystick_RX;
+
+        if(pgimbal_){
+            pgimbal_->gimbalCmd.set_posit_yaw += 
+                (remote.joystick_RY / 100.f) * 90.f / freq;
+        }
         
     }
 
-    // MID + HIG 机械臂前四轴
-    if (remote.switch_L == MID && remote.switch_R == HIG) {
+    // MID + HIG 臂前关节四轴 + 夹爪
+    else if (remote.switch_L == MID && remote.switch_R == HIG) {
         SysRemote.SetRemoteDeadZone(10.f);
         if (parm_) {
-            // parm_->armCmd.set_angle_Yaw +=
-            //     (remote.joystick_LX / 100.f) * 90.f / freq;
-            // parm_->armCmd.set_angle_Pitch1 +=
-            //     (remote.joystick_LY / 100.f) * 90.f / freq;
-            // parm_->armCmd.set_angle_Pitch2 +=
-            //     (remote.joystick_RY / 100.f) * 90.f / freq;
-            // parm_->armCmd.set_angle_Roll +=
-            //     (remote.joystick_RX / 100.f) * 90.f / freq;
+            if(!parm_->armCmd.isAutoCtrl){
+                parm_->armCmd.set_angle_Yaw +=
+                    (remote.joystick_LX / 100.f) * 90.f / freq;
+                parm_->armCmd.set_angle_Pitch1 +=
+                    (remote.joystick_LY / 100.f) * 90.f / freq;
+                parm_->armCmd.set_angle_Pitch2 +=
+                    (remote.joystick_RY / 100.f) * 90.f / freq;
+                parm_->armCmd.set_angle_Pitch3 +=
+                    (remote.joystick_RX / 100.f) * 90.f / freq;
+				parm_->armCmd.set_speed_grip =
+					(remote.thumbWheel / 100.f) * 6000.f;
+            }
         }
     }
 
-    // MID + MID 机械臂后四轴
-    if (remote.switch_L == MID && remote.switch_R == MID) {
+    // MID + MID 关节后三轴
+    else if (remote.switch_L == MID && remote.switch_R == MID) {
         SysRemote.SetRemoteDeadZone(10.f);
-        if (parm_) {
-            // parm_->armCmd.set_angle_Pitch2 +=
-            //     (remote.joystick_LY / 100.f) * 90.f / freq;
-            // parm_->armCmd.set_angle_Roll +=
-            //     (remote.joystick_LX / 100.f) * 90.f / freq;
-            // parm_->armCmd.set_angle_end_pitch +=
-            //     (remote.joystick_RY / 100.f) * 90.f / freq;
-            // parm_->armCmd.set_angle_end_roll +=
-            //     (remote.joystick_RX / 100.f) * 90.f / freq;
+        if(parm_){
+            parm_->armCmd.set_angle_Roll +=
+                    (remote.joystick_RY / 100.f) * 90.f / freq;
+            parm_->armCmd.set_angle_end_pitch +=
+                    (remote.joystick_LY / 100.f) * 300.f / freq;
+            parm_->armCmd.set_angle_end_roll +=
+                    (remote.joystick_LX / 100.f) * 120.f / freq;
         }
     }
 
-    // MID + LOW 子龙门控制
-    if (remote.switch_L == MID && remote.switch_R == LOW) {
-        SysRemote.SetRemoteDeadZone(10.f);
-
-    }
-
-    // MID + LOW 云台 + 夹爪控制
-    if (remote.switch_L == MID && remote.switch_R == LOW) {
-        SysRemote.SetRemoteDeadZone(10.f);
-        // if (pgimbal_) {                                                             ///< 云台抬升 (左摇杆Y)
-        //     pgimbal_->gimbalCmd.set_posit_lift +=
-        //         (remote.joystick_LY / 100.f) * 100.f / freq;
-        // }
-        // if (parm_) {
-        //     parm_->armCmd.set_length_grip +=                                        ///< 夹爪控制：正值张开，负值闭合
-        //         (remote.thumbWheel / 100.f) * 150.f / freq;
-        //     parm_->armCmd.set_length_grip =
-        //         std::clamp(parm_->armCmd.set_length_grip, 0.0f, 65.0f);            ///< 限幅：0~65mm
-        // }
+    else{   // 未定义模式直接锁底盘
+            chassisCmd.speed_x = 0.f;
+            chassisCmd.speed_y = 0.f;
+            chassisCmd.speed_w = 0.f;
     }
 }
 
@@ -240,6 +232,7 @@ void CSystemCore::ControlFromKeyboard_() {
             // pitch2(R键)
             if(keyboard.key_R)
                 parm_->armCmd.set_angle_Pitch2 += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 70.0f / freq;
+            // pitch3(F键)
             if(keyboard.key_F)
                 parm_->armCmd.set_angle_Pitch3 += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 70.0f / freq;
             // roll(Z键)
@@ -251,27 +244,9 @@ void CSystemCore::ControlFromKeyboard_() {
             // end_roll(C键)
             if(keyboard.key_C)
                 parm_->armCmd.set_angle_end_roll += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 90.0f / freq;
-            // 气泵(B键) 删除气泵控制代码
-/*            if (psubgantry_) {
-                if(keyboard.key_B) {
-                    if (!lastMouseStatus_L && keyboard.mouse_L) {
-                        psubgantry_->subGantryCmd.setPumpOn_Arm = !psubgantry_->subGantryCmd.setPumpOn_Arm;
-                    }
-                    if (!lastMouseStatus_R && keyboard.mouse_R) {
-                        if (psubgantry_->subGantryCmd.setPumpOn_Left *
-                            psubgantry_->subGantryCmd.setPumpOn_Right == 0) {
-                            psubgantry_->subGantryCmd.setPumpOn_Left = true;
-                            psubgantry_->subGantryCmd.setPumpOn_Right = true;
-                        }
-                        else {
-                            psubgantry_->subGantryCmd.setPumpOn_Left = !psubgantry_->subGantryCmd.setPumpOn_Left;
-                            psubgantry_->subGantryCmd.setPumpOn_Right = !psubgantry_->subGantryCmd.setPumpOn_Right;
-                        }
 
-                    }
-                }
-            }
-*/
+            parm_->armCmd.gripClose = (gripKeyboardCmd_ == EGripKeyboardCmd::CLOSE);
+            parm_->armCmd.gripOpen = (gripKeyboardCmd_ == EGripKeyboardCmd::OPEN);
         }
     }
 
@@ -280,55 +255,23 @@ void CSystemCore::ControlFromKeyboard_() {
 
 
     /******************* 自动控制 *******************/
-    // 删除自动控制快捷键已注释
-    // if (parm_) {
-    //     if (keyboard.key_Ctrl
-    //     && parm_->armInfo.isModuleAvailable)
-    //     {
-    //         if(keyboard.key_V)
-    //         {
-    //             //TODO: 这个任务最好可以用于终止proc_waituntil
-    //             StopAutoCtrlTask_();
-    //             StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);
-    //         }
-    //         if(keyboard.key_G)
-    //         {
-    //             StartAutoCtrlTask_(EAutoCtrlProcess::GOLD_ORE);
-    //         }
-    //         if(keyboard.key_X)
-    //         {
-    //             StartAutoCtrlTask_(EAutoCtrlProcess::SILVER_ORE);
-    //         }
-    //         if(keyboard.key_F)
-    //         {
-    //             StartAutoCtrlTask_(EAutoCtrlProcess::GROUND_ORE);
-    //         }
-    //         if(keyboard.key_R)
-    //         {
-    //             StartAutoCtrlTask_(EAutoCtrlProcess::PUSH_ORE);
-    //         }
-    //         if(keyboard.key_Q)
-    //         {
-    //             StartAutoCtrlTask_(EAutoCtrlProcess::POP_ORE);
-    //         }
-    //         // if(keyboard.key_B)
-    //         // {
-    //         //     StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE);
-    //         // }
-    //
-    //     }
-    //     if(keyboard.key_Shift &&
-    //         parm_->armInfo.isModuleAvailable){
-    //         if(keyboard.key_Z)
-    //         {
-    //             StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE);
-    //         }
-    //         if(keyboard.key_C)
-    //         {
-    //             StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE);
-    //         }
-    //     }
-    // }
+    if (parm_) {
+        if (keyboard.key_Ctrl
+        && parm_->armInfo.isModuleAvailable)
+        {
+            if(keyboard.key_Z)
+            {
+                StopAutoCtrlTask_();
+                StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);
+            }
+            
+    
+        }
+        if(keyboard.key_Shift &&
+            parm_->armInfo.isModuleAvailable){
+                
+        }
+    }
 
 }
 

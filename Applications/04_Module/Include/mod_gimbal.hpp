@@ -17,8 +17,9 @@
 #include "algo_other.hpp"
 
 // -------------------- 大yaw组件参数 ---------------------
-#define GIMBAL_YAW_MOTOR_DIR 1		///< 目前给1
-#define GINBAL_FRONT_MOTOR_ANGLE 0	///< 目前给0 后续改成朝前时的编码器值
+#define GIMBAL_YAW_MOTOR_GYRO_DIR -1		///< 陀螺仪模式输出方向
+#define GIMBAL_YAW_MOTOR_MEC_DIR  -1		///< 机械模式输出方向
+#define GINBAL_FRONT_MOTOR_ANGLE 17562	///< 目前给0 后续改成朝前时的编码器值
 #define GIMBAL_YAW_INIT_ANGLE	GINBAL_FRONT_MOTOR_ANGLE	///< 初始化编码器值（朝前）
 
 // -------------------- 升降组件参数 ---------------------
@@ -136,7 +137,7 @@ private:
 		} yawInfo;
 
 		struct SYawCmd{
-			int32_t setPosit = 0;	// 陀螺仪目标角度
+			float_t setPosit = 0;	// 陀螺仪目标角度
 			int16_t setEncoder = 0;	// 编码器目标值
 		} yawCmd;
 

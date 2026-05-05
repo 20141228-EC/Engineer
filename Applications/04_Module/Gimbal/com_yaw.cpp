@@ -75,9 +75,9 @@ EAppStatus CModGimbal::CComYaw::UpdateComponent() {
 	// 更新组件信息
 	static float_t Init_Encoder_Posit_MACH = 0.f;
 
-	yawInfo.posit = filter->Imu_Ave_Info.imu_ave_yaw - Init_Encoder_Posit_MACH;	// 由于每次重新上电yaw的角度都为0，因此这里做一个特殊处理
-	yawInfo.encoder = HalfCycle(motor->motorData[CDevMtr::DATA_POSIT] - GINBAL_FRONT_MOTOR_ANGLE, static_cast<int32_t>(65535));	// 将encoder归一化在朝前为0
-	yawInfo.isPositArrived = (fabs(yawInfo.posit - yawCmd.setPosit) < 3.0f);
+	yawInfo.posit = filter->Imu_Ave_Info.imu_ave_yaw;	// 由于陀螺仪Z轴与电机编码器增加的方向是相反的，位置反馈需加负号
+	yawInfo.encoder = HalfCycle(motor->motorData[CDevMtr::DATA_ANGLE] - GINBAL_FRONT_MOTOR_ANGLE, static_cast<int32_t>(65535));	// 将encoder归一化在朝前为0
+	yawInfo.isPositArrived = (fabs(yawInfo.posit - yawCmd.setPosit) < 1.5f);
 
 	switch (Component_FSMFlag_) {
 		case FSM_RESET: {
@@ -87,24 +87,38 @@ EAppStatus CModGimbal::CComYaw::UpdateComponent() {
 		}
 
 		case FSM_PREINIT: {
-			yawCmd.setEncoder = GIMBAL_YAW_INIT_ANGLE;
+			yawCmd.setEncoder = 0;
 			Component_FSMFlag_ = FSM_INIT;
 			return APP_OK;
 		}
 
 		case FSM_INIT: {
-			// if (fabs(yawInfo.encoder - yawCmd.setEncoder) < 500) {		///< 阈值姑且定为500 后续再改
-				Init_Encoder_Posit_MACH = filter->Imu_Ave_Info.imu_ave_yaw;	///< 初始化完成记录当前yaw角度
+			if (fabs(yawInfo.encoder - yawCmd.setEncoder) < 100) {		///< 阈值姑且定为500 后续再改
+			mtrOutputBuffer = 0;
+
+			pidPosCtrl_Gyro.ResetPidController();
+			pidSpdCtrl_Gyro.ResetPidController();
+			pidPosCtrl_Mec.ResetPidController();
+			pidSpdCtrl_Mec.ResetPidController();
+
+			// Init_Encoder_Posit_MACH = filter->Imu_Ave_Info.imu_ave_yaw;	///< 初始化完成记录当前yaw角度
+
+			yawCmd.setPosit = 0.0f;
+
 				Component_FSMFlag_ = FSM_CTRL;
 				componentStatus = APP_OK;	// 用于调试，先把到位条件注释掉，直接进ctrl，等调完pid再搞回来
-			// }
-			_UpdateOutput_Mec(static_cast<float_t>(yawCmd.setEncoder));
-			// yawCmd.setPosit = filter->Imu_Ave_Info.imu_ave_yaw; // 如果上面那个特殊处理不好用，可以用这个
+			}
+			else{
+				_UpdateOutput_Mec(static_cast<float_t>(yawCmd.setEncoder));
+			}
+			
+			yawCmd.setPosit = filter->Imu_Ave_Info.imu_ave_yaw; // 如果上面那个特殊处理不好用，可以用这个
 			return APP_OK;
 		}
 
 		case FSM_CTRL: {
 			_UpdateOutput_Gyro(yawCmd.setPosit);
+			// mtrOutputBuffer = 0; // 取消这行注释以排查旧值残留
 			return APP_OK;
 		}
 
@@ -124,16 +138,19 @@ EAppStatus CModGimbal::CComYaw::UpdateComponent() {
  */
 EAppStatus CModGimbal::CComYaw::_UpdateOutput_Gyro(float_t posit){
 
-	DataBuffer<float_t> posit_measure = {yawInfo.posit};	// 测量值
-	DataBuffer<float_t> posit_target = {posit};	// 目标值
+	float_t err = HalfCycle(posit - yawInfo.posit, 360.0f);
+
+    DataBuffer<float_t> posit_measure = {0.0f};		// 误差为0
+    DataBuffer<float_t> posit_target = {err};		// 目标值为得到的误差
 
 	auto spd_Yaw = pidPosCtrl_Gyro.UpdatePidController(posit_target, posit_measure);
 
-	DataBuffer<float_t> spd_measure = {static_cast<float_t>(motor->motorData[CDevMtr::DATA_SPEED])};
+	DataBuffer<float_t> spd_measure = {static_cast<float_t>(mems->memsData[CMemsBase::DATA_GYRO_Z]) * 57.2957795f}; // 同样加负号与编码器极性对齐
+	// DataBuffer<float_t> spd_measure = {static_cast<float_t>(motor->motorData[CDevMtr::DATA_SPEED])};
 	
 	auto output = pidSpdCtrl_Gyro.UpdatePidController(spd_Yaw, spd_measure);
 
-	mtrOutputBuffer = output[0];
+	mtrOutputBuffer = output[0] * GIMBAL_YAW_MOTOR_GYRO_DIR;
 
     return APP_OK;
 }

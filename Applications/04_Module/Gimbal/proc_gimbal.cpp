@@ -49,7 +49,7 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 				proc_waitUntil(gimbal.comYaw_.componentStatus == APP_OK);
 				gimbal.gimbalCmd = SGimbalCmd();
 				gimbal.gimbalCmd.set_encoder_yaw = 0;
-				gimbal.gimbalCmd.set_posit_yaw = 0.0f;
+				gimbal.gimbalCmd.set_posit_yaw = gimbal.comYaw_.yawInfo.posit;
 				gimbal.gimbalInfo.isModuleAvailable = true;
 				gimbal.Module_FSMFlag_ = FSM_CTRL;
 				break;

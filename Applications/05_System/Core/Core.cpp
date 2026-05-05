@@ -106,38 +106,46 @@ void CSystemCore::UpdateHandler_() {
     if (coreStatus == APP_RESET) return;
 
     // 检查遥控器系统状态
-    if (SysRemote.systemStatus == APP_RESET) return;
+    if (SysRemote.systemStatus == APP_RESET){
+        RTT_LOG_ERROR("Remote is offline!!!");
+        return;
+    } 
+
+    if (SysRemote.ResetFlag)
+    {
+        RESET_SYSTEM();
+    }
 
     static bool last_use_Controller = false;
     static uint8_t zx_count = 0;
     static bool zx_flag = false;
 
-    static uint8_t print_cnt = 0;
-    if (print_cnt-- == 0) {
-        print_cnt = 200;
-        Print("------------------------------\n");
-        if (parm_) {
-            Print("Arm_Yaw_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_Yaw), static_cast<int>(parm_->armInfo.angle_Yaw),
-                  static_cast<int>(parm_->armInfo.angle_Yaw - parm_->armCmd.set_angle_Yaw));
-            Print("Arm_Pitch1_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_Pitch1), static_cast<int>(parm_->armInfo.angle_Pitch1),
-                  static_cast<int>(parm_->armInfo.angle_Pitch1 - parm_->armCmd.set_angle_Pitch1));
-            Print("Arm_Pitch2_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_Pitch2), static_cast<int>(parm_->armInfo.angle_Pitch2),
-                  static_cast<int>(parm_->armInfo.angle_Pitch2 - parm_->armCmd.set_angle_Pitch2));
-            Print("Arm_Roll_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_Roll), static_cast<int>(parm_->armInfo.angle_Roll),
-                  static_cast<int>(parm_->armInfo.angle_Roll - parm_->armCmd.set_angle_Roll));
-            Print("Arm_EndPitch_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_end_pitch), static_cast<int>(parm_->armInfo.angle_end_pitch),
-                  static_cast<int>(parm_->armInfo.angle_end_pitch - parm_->armCmd.set_angle_end_pitch));
-            Print("Arm_EndRoll_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_end_roll), static_cast<int>(parm_->armInfo.angle_end_roll),
-                  static_cast<int>(parm_->armInfo.angle_end_roll - parm_->armCmd.set_angle_end_roll));
-        }
+    // static uint8_t print_cnt = 0;
+    // if (print_cnt-- == 0) {
+    //     print_cnt = 200;
+    //     Print("------------------------------\n");
+    //     if (parm_) {
+    //         Print("Arm_Yaw_Cmd: %d, Info: %d, Err: %d\n",
+    //               static_cast<int>(parm_->armCmd.set_angle_Yaw), static_cast<int>(parm_->armInfo.angle_Yaw),
+    //               static_cast<int>(parm_->armInfo.angle_Yaw - parm_->armCmd.set_angle_Yaw));
+    //         Print("Arm_Pitch1_Cmd: %d, Info: %d, Err: %d\n",
+    //               static_cast<int>(parm_->armCmd.set_angle_Pitch1), static_cast<int>(parm_->armInfo.angle_Pitch1),
+    //               static_cast<int>(parm_->armInfo.angle_Pitch1 - parm_->armCmd.set_angle_Pitch1));
+    //         Print("Arm_Pitch2_Cmd: %d, Info: %d, Err: %d\n",
+    //               static_cast<int>(parm_->armCmd.set_angle_Pitch2), static_cast<int>(parm_->armInfo.angle_Pitch2),
+    //               static_cast<int>(parm_->armInfo.angle_Pitch2 - parm_->armCmd.set_angle_Pitch2));
+    //         Print("Arm_Roll_Cmd: %d, Info: %d, Err: %d\n",
+    //               static_cast<int>(parm_->armCmd.set_angle_Roll), static_cast<int>(parm_->armInfo.angle_Roll),
+    //               static_cast<int>(parm_->armInfo.angle_Roll - parm_->armCmd.set_angle_Roll));
+    //         Print("Arm_EndPitch_Cmd: %d, Info: %d, Err: %d\n",
+    //               static_cast<int>(parm_->armCmd.set_angle_end_pitch), static_cast<int>(parm_->armInfo.angle_end_pitch),
+    //               static_cast<int>(parm_->armInfo.angle_end_pitch - parm_->armCmd.set_angle_end_pitch));
+    //         Print("Arm_EndRoll_Cmd: %d, Info: %d, Err: %d\n",
+    //               static_cast<int>(parm_->armCmd.set_angle_end_roll), static_cast<int>(parm_->armInfo.angle_end_roll),
+    //               static_cast<int>(parm_->armInfo.angle_end_roll - parm_->armCmd.set_angle_end_roll));
+    //     }
 
-    }
+    // }
 
     bool zx = SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X; ///< 如果同时按下z和x
     if (SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X) {
@@ -173,20 +181,28 @@ void CSystemCore::UpdateHandler_() {
                 armCmd.set_angle_Roll = armInfo.angle_Roll;
                 armCmd.set_angle_end_pitch = armInfo.angle_end_pitch;
                 armCmd.set_angle_end_roll = armInfo.angle_end_roll;
-                armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
-                armCmd.set_speed_grip = 0;
+                if(armInfo.isGripped){
+                    armCmd.set_length_grip = armInfo.holdLength_grip;
+                    gripKeyboardCmd_ = EGripKeyboardCmd::CLOSE;
+                    armCmd.gripClose = true;
+                    armCmd.gripOpen = false;
+                }else{
+                    armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
+                    gripKeyboardCmd_ = EGripKeyboardCmd::HOLD;
+                    armCmd.gripClose = false;
+                    armCmd.gripOpen = false;
+                }
             }
-            // hold_grip_after_controller_switch_ = true;
-            // // 自动任务部分
+            // 自动任务部分
             // if (currentAutoCtrlProcess_ == EAutoCtrlProcess::EXCHANGE_ORE) {
     
             // }
-            else {
-                StopAutoCtrlTask_(); // 停止自动任务运行
-               // 根据当前在哪个自动任务中调整臂的初始角度
-            // SysControllerLink.robotInfo.controlled_by_controller = true;
-            // SysControllerLink.robotInfo.ask_reset_flag = true;
-            }
+            // else {
+            //     StopAutoCtrlTask_(); // 停止自动任务运行
+            //    // 根据当前在哪个自动任务中调整臂的初始角度
+            // // SysControllerLink.robotInfo.controlled_by_controller = true;
+            // // SysControllerLink.robotInfo.ask_reset_flag = true;
+            // }
         }
         if (use_Controller_ == false) { //切换出自定义控制器的瞬间保留最后一帧数值避免后续出现大幅跳变，且切换出自定义控制器模式后不再受控制器输入影响
             SysControllerLink.robotInfo.controlled_by_controller = false;
@@ -201,9 +217,21 @@ void CSystemCore::UpdateHandler_() {
                 armCmd.set_angle_Roll = armInfo.angle_Roll;
                 armCmd.set_angle_end_pitch = armInfo.angle_end_pitch;
                 armCmd.set_angle_end_roll = armInfo.angle_end_roll;
-                armCmd.set_length_grip = armInfo.length_grip;  ///< 保存当前夹爪位置，防止切换后意外张开
-                armCmd.set_speed_grip = 0;
+                if(armInfo.isGripped){
+                    armCmd.set_length_grip = armInfo.holdLength_grip;
+                    gripKeyboardCmd_ = EGripKeyboardCmd::CLOSE; 
+                    armCmd.gripClose = true;
+                    armCmd.gripOpen = false;
+                }else{
+                    armCmd.set_length_grip = armInfo.length_grip;
+                    gripKeyboardCmd_ = EGripKeyboardCmd::HOLD;
+                    armCmd.gripClose = false;
+                    armCmd.gripOpen = false;
+                }
             }
+            // if (pgimbal_) {
+            //     pgimbal_->gimbalInfo.isIntoControll = false; ///< 清除云台归位标志，下次进入时重新归位
+            // }
         }
     }
     if (parm_) {   //反馈给控制器的数据
@@ -232,6 +260,13 @@ void CSystemCore::UpdateHandler_() {
         // }
     
     // ControlFromEsp32_(); // ESP32控制
+
+    // 每周期重置手动夹爪标志，由对应控制函数按需设置
+    if (parm_ && !parm_->armCmd.isAutoCtrl) {
+        parm_->armCmd.gripClose = false;
+        parm_->armCmd.gripOpen = false;
+        parm_->armCmd.set_speed_grip = 0.0f;
+    }
 
     if (use_Controller_ == true){//在不主动切换模式的情况下，如果控制器掉线自动退出控制器模式
         // 控制器掉线保护
@@ -277,10 +312,10 @@ void CSystemCore::UpdateHandler_() {
     
     last_use_Controller = use_Controller_;
     
-    if (SysRemote.ResetFlag)
-    {
-        RESET_SYSTEM();
-    }
+    // if (SysRemote.ResetFlag)
+    // {
+    //     RESET_SYSTEM();
+    // }
 
 }
 

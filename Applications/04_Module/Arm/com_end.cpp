@@ -1,24 +1,25 @@
 /**
  * @file com_end.cpp
- * @author Fish_Joe (2328339747@qq.com)
+ * @author ciallo (1002046597@qq.com)
  * @brief 机械臂末端组件
- * @version 1.0
+ * @version 1.1
  * @date 2025-01-14
- * 
+ * @lastedit：2026-04-30
+ * @details V1.1: 两阶段初始化：先标定Pitch（堵转），再标定Roll（堵转）
+ *
  * @copyright Copyright (c) 2025
- * 
+ *
  */
 
 
 #include "mod_arm.hpp"
+float_t end_l_test = 0.f;
+float_t end_r_test = 0.f;
 
 namespace my_engineer {
 
 /**
  * @brief 初始化机械臂末端组件
- * 
- * @param param 
- * @return EAppStatus 
  */
 EAppStatus CModArm::CComEnd::InitComponent(SModInitParam_Base &param) {
 	if (param.moduleID == EModuleID::MOD_NULL) return APP_ERROR;
@@ -47,10 +48,12 @@ EAppStatus CModArm::CComEnd::InitComponent(SModInitParam_Base &param) {
 
 /**
  * @brief 更新组件
- * 
  */
 EAppStatus CModArm::CComEnd::UpdateComponent() {
-	if (componentStatus == APP_RESET) return APP_ERROR;
+	if (componentStatus == APP_RESET) {
+		mtrOutputBuffer.fill(0);
+		return APP_ERROR;
+	}
 
 	endInfo.posit_Roll 	=  (motor[L]->motorData[CDevMtr::DATA_POSIT] + motor[R]->motorData[CDevMtr::DATA_POSIT]) / 2;
 	endInfo.posit_Pitch = ((motor[R]->motorData[CDevMtr::DATA_POSIT] - endInfo.posit_Roll) - (motor[L]->motorData[CDevMtr::DATA_POSIT] - endInfo.posit_Roll))/2.0;
@@ -62,16 +65,25 @@ EAppStatus CModArm::CComEnd::UpdateComponent() {
 
 		case FSM_RESET: {
 			mtrOutputBuffer.fill(0);
+			endCmd = SEndCmd{};
+			pitchCalibrated_ = false;
+			rollCalibrated_ = false;
+			initState_ = EEndInitState::PITCH;
+			initStateTick_ = 0;
 			pidPosCtrl.ResetPidController();
 			pidSpdCtrl.ResetPidController();
 			return APP_OK;
 		}
 
 		case FSM_PREINIT: {
-			endCmd.setPosit_Pitch = 0;
+			endCmd = SEndCmd{};
 			motor[L]->motorData[CDevMtr::DATA_POSIT] = 0;
 			motor[R]->motorData[CDevMtr::DATA_POSIT] = 0;
 			mtrOutputBuffer.fill(0);
+			pitchCalibrated_ = false;
+			rollCalibrated_ = false;
+			initState_ = EEndInitState::PITCH;
+			initStateTick_ = 0;
 			pidPosCtrl.ResetPidController();
 			pidSpdCtrl.ResetPidController();
 			Component_FSMFlag_ = FSM_INIT;
@@ -79,23 +91,99 @@ EAppStatus CModArm::CComEnd::UpdateComponent() {
 		}
 
 		case FSM_INIT: {
-			if (motor[L]->motorStatus == CDevMtr::EMotorStatus::STALL || motor[R]->motorStatus == CDevMtr::EMotorStatus::STALL) {
-				motor[L]->motorData[CDevMtr::DATA_POSIT] = -(static_cast<int32_t>(0.5 * 8192) + rangeLimit_Pitch);
-				motor[R]->motorData[CDevMtr::DATA_POSIT] = (static_cast<int32_t>(0.5 * 8192) + rangeLimit_Pitch);
-				pidPosCtrl.ResetPidController();
-				pidSpdCtrl.ResetPidController();
-				componentStatus = APP_OK;
-				Component_FSMFlag_ = FSM_CTRL;
-				return APP_OK;
+			switch (initState_) {
+				case EEndInitState::PITCH: {//pitch轴的标定
+					endCmd.setPosit_Roll = 0;
+
+					if (!pitchCalibrated_) {
+						if ((motor[L]->motorStatus == CDevMtr::EMotorStatus::STALL) &&
+							(motor[R]->motorStatus == CDevMtr::EMotorStatus::STALL)) {
+							motor[L]->motorData[CDevMtr::DATA_POSIT] = -(static_cast<int32_t>(0.5f * 8192) + rangeLimit_Pitch);
+							motor[R]->motorData[CDevMtr::DATA_POSIT] = (static_cast<int32_t>(0.5f * 8192) + rangeLimit_Pitch);
+							mtrOutputBuffer.fill(0);
+							pidPosCtrl.ResetPidController();
+							pidSpdCtrl.ResetPidController();
+							pitchCalibrated_ = true;
+							initStateTick_ = 0;
+							return APP_OK;
+						}
+
+						endCmd.setPosit_Pitch += 200;
+						return _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch),
+											static_cast<float_t>(endCmd.setPosit_Roll));
+					}
+
+					endCmd.setPosit_Pitch = PhyPositToMtrPosit_Pitch(ARM_END_PITCH_INIT_ANGLE);
+
+					if (abs(endInfo.posit_Pitch - endCmd.setPosit_Pitch) < 8192 * 2) { //末端pitch的到位检查
+						mtrOutputBuffer.fill(0);
+						pidPosCtrl.ResetPidController();
+						pidSpdCtrl.ResetPidController();
+						initState_ = EEndInitState::ROLL;
+						initStateTick_ = 0;
+						return APP_OK;
+					}
+
+					return _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch),
+										static_cast<float_t>(endCmd.setPosit_Roll));
+				}
+
+				case EEndInitState::ROLL: {//末端roll的标定
+					endCmd.setPosit_Pitch = PhyPositToMtrPosit_Pitch(ARM_END_PITCH_INIT_ANGLE);
+					if (!rollCalibrated_) {
+						endCmd.setPosit_Roll += 200;
+						if (initStateTick_ < 150) {
+							++initStateTick_;			//避免pitch轴堵转标定的残留
+							return _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch),
+												static_cast<float_t>(endCmd.setPosit_Roll));
+						}
+
+						if ((motor[L]->motorStatus == CDevMtr::EMotorStatus::STALL) &&
+							(motor[R]->motorStatus == CDevMtr::EMotorStatus::STALL)) {
+							rollZeroOffset = endInfo.posit_Roll -
+								static_cast<int32_t>(ARM_END_ROLL_STALL_ANGLE * ARM_END_ROLL_MOTOR_RATIO);//减去末端roll的零偏
+							endCmd.setPosit_Roll = PhyPositToMtrPosit_Roll(ARM_END_ROLL_INIT_ANGLE);
+							mtrOutputBuffer.fill(0);
+							pidPosCtrl.ResetPidController();
+							pidSpdCtrl.ResetPidController();
+							rollCalibrated_ = true;
+							initStateTick_ = 0;
+							return APP_OK;
+						}
+
+						return _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch),
+											static_cast<float_t>(endCmd.setPosit_Roll));
+					}
+
+					endCmd.setPosit_Roll = PhyPositToMtrPosit_Roll(ARM_END_ROLL_INIT_ANGLE);
+
+					if (abs(endInfo.posit_Roll - endCmd.setPosit_Roll) < 8192 * 2) { //末端roll到位检查
+						mtrOutputBuffer.fill(0);
+						pidPosCtrl.ResetPidController();
+						pidSpdCtrl.ResetPidController();
+						initState_ = EEndInitState::DONE; //初始化检查的状态
+						componentStatus = APP_OK;
+						Component_FSMFlag_ = FSM_CTRL;
+						return APP_OK;
+					}
+
+					return _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch),
+										static_cast<float_t>(endCmd.setPosit_Roll));
+				}
+
+				case EEndInitState::DONE: {
+					componentStatus = APP_OK;
+					Component_FSMFlag_ = FSM_CTRL;
+					return APP_OK;
+				}
 			}
-			endCmd.setPosit_Pitch += 200;
-			return _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch), 
-								static_cast<float_t>(0));
+			return APP_OK;
 		}
 
 		case FSM_CTRL: {
-			// endCmd.setPosit_Pitch = std::clamp(endCmd.setPosit_Pitch, static_cast<int32_t>(0), rangeLimit_Pitch);
-			return _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch), 
+			end_l_test = motor[L]->motorData[CDevMtr::DATA_TORQUE];
+			end_r_test = motor[R]->motorData[CDevMtr::DATA_TORQUE];
+			return _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch),
 								static_cast<float_t>(endCmd.setPosit_Roll));
 		}
 		
@@ -126,10 +214,9 @@ int32_t CModArm::CComEnd::PhyPositToMtrPosit_Pitch(float_t phyPosit) {
 }
 
 int32_t CModArm::CComEnd::PhyPositToMtrPosit_Roll(float_t phyPosit) {
-	const int32_t zeroOffset = 0;
 	const float_t scale = ARM_END_ROLL_MOTOR_RATIO;
 
-	return (static_cast<int32_t>(phyPosit * scale) + zeroOffset);
+	return (static_cast<int32_t>(phyPosit * scale) + rollZeroOffset);
 }
 
 /**
@@ -146,10 +233,9 @@ float_t CModArm::CComEnd::MtrPositToPhyPosit_Pitch(int32_t mtrPosit) {
 }
 
 float_t CModArm::CComEnd::MtrPositToPhyPosit_Roll(int32_t mtrPosit) {
-	const int32_t zeroOffset = 0;
 	const float_t scale = ARM_END_ROLL_MOTOR_RATIO;
 
-	return (static_cast<float_t>(mtrPosit - zeroOffset) / scale);
+	return (static_cast<float_t>(mtrPosit - rollZeroOffset) / scale);
 }
 
 /**

@@ -20,6 +20,26 @@
 
 #define I_AM_CONTROLLER 0 // 当前板子是控制器
 
+/* ----------------------存矿------------------------*/
+#define STORE_ORE_YAW_ANGLE_PHASE1        1.0f
+#define STORE_ORE_PITCH1_ANGLE_PHASE1     1.0f
+#define STORE_ORE_PITCH2_ANGLE_PHASE1     1.0f
+#define STORE_ORE_PITCH3_ANGLE_PHASE1     1.0f
+#define STORE_ORE_ROLL_ANGLE_PHASE1       1.0f
+#define STORE_ORE_END_PITCH_ANGLE_PHASE1  1.0f
+#define STORE_ORE_END_ROLL_ANGLE_PHASE1   1.0f
+#define STORE_ORE_GRIP_LENGTH_PHASE1      1.0f
+// 第一阶段
+#define STORE_ORE_YAW_ANGLE_PHASE2        1.0f
+#define STORE_ORE_PITCH1_ANGLE_PHASE2     1.0f
+#define STORE_ORE_PITCH2_ANGLE_PHASE2     1.0f
+#define STORE_ORE_PITCH3_ANGLE_PHASE2     1.0f
+#define STORE_ORE_ROLL_ANGLE_PHASE2       1.0f
+#define STORE_ORE_END_PITCH_ANGLE_PHASE2  1.0f
+#define STORE_ORE_END_ROLL_ANGLE_PHASE2   1.0f
+#define STORE_ORE_GRIP_LENGTH_PHASE2      1.0f
+// 待改
+
 namespace my_engineer {
 
 
@@ -74,7 +94,16 @@ public:
         // ...to be updated...
     } armmode_ = EArmMode::NONE;
 
+    enum class EGripKeyboardCmd : uint8_t {
+        HOLD,
+        CLOSE,
+        OPEN,
+    };
+
     EVarStatus use_Controller_ = false; ///< 是否使用控制器
+
+    // 自定义控制器模式下的夹爪键盘指令状态
+    EGripKeyboardCmd gripKeyboardCmd_ = EGripKeyboardCmd::HOLD;
 
     // 初始化系统核心
     EAppStatus InitSystemCore();
@@ -150,6 +179,7 @@ private:
     void RestrictChassisCmd_();
 
     // 声明自动操作的任务函数
+    static void StartStoreOreTask(void *arg);
     // 以下任务函数已注释（对应流程文件已删除）
     // static void StartReturnOriginTask(void *arg);
     // static void StartReturnDriveTask(void *arg);

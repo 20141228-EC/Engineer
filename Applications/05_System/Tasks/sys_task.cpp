@@ -73,8 +73,8 @@ void StartUpdateTask(void *argument) {
         // TxNode_Can1_1FF.Transmit();         ///< 板2: 末端电机(End_L/R) + 夹爪(Grip)
         // TxNode_Can2_200.Transmit();
 		// TxNode_Can2_1FF.Transmit();         ///< 云台电机
-        TxNode_Can1_280.Transmit();          ///< 瓴控一拖四(臂关节四轴)
-		TxNode_Can3_280.Transmit();         ///< 瓴控电机(大Yaw)
+        // TxNode_Can1_280.Transmit();          ///< 瓴控一拖四(臂关节四轴)
+ 		TxNode_Can3_280.Transmit();         ///< 瓴控电机(大Yaw)
 
 
         proc_waitMs(1); // 1000Hz
