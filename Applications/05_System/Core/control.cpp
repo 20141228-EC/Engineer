@@ -203,6 +203,34 @@ inline void ApplyGyroSpinChassisControl(CModChassis *chassis,
     state.lastModeActive = true;
 }
 
+static bool g_useBoardLinkChassis = true;
+
+inline void ApplyBoardLinkChassisControl(CModChassis *chassis) {
+    if (!chassis) {
+        return;
+    }
+
+    const bool ctrlValid = (SysBoardLink.ctrlInfos.pack_id == CDevBoardLink::PKT_CTRL_INFOS)
+        && (SysBoardLink.ctrlInfos.remote_is_online == 1);
+    if (ctrlValid) {
+        chassis->chassisCmd.speed_X = static_cast<float>(SysBoardLink.ctrlInfos.speed_x);
+        chassis->chassisCmd.speed_Y = static_cast<float>(SysBoardLink.ctrlInfos.speed_y);
+        chassis->chassisCmd.speed_W = static_cast<float>(SysBoardLink.ctrlInfos.speed_w);
+    } else {
+        chassis->chassisCmd.speed_X = 0.0f;
+        chassis->chassisCmd.speed_Y = 0.0f;
+        chassis->chassisCmd.speed_W = 0.0f;
+    }
+
+    const bool otherValid = (SysBoardLink.otherInfo.pack_id == CDevBoardLink::PKT_OTHER_INFOS);
+    chassis->spin_on = otherValid && (SysBoardLink.otherInfo.is_spin_on != 0);
+
+    // no legs/crawler on this board; keep normal mode and clear related flags
+    chassis->MovMode = CModChassis::EmovMode::NORMAL;
+    chassis->reset_hip = false;
+    chassis->crawler_on = false;
+}
+
 } // namespace
 
 void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) {
@@ -261,6 +289,17 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
  */
 void CSystemCore::ControlFromRemote_() {
     const auto freq = 1000.f; // 系统核心频率
+
+    if (g_useBoardLinkChassis) {
+        StartRobot(true);
+        if (parm_) {
+            parm_->should_limit_yaw = 0;
+        }
+        if (pchassis_ && !pchassis_->chassisCmd.isAutoCtrl) {
+            ApplyBoardLinkChassisControl(pchassis_);
+        }
+        return;
+    }
 
     enum { HIG = 1, LOW = 2, MID = 3 };
     auto &remote = SysRemote.remoteInfo.remote;
@@ -466,6 +505,16 @@ void CSystemCore::ControlFromRemote_() {
 void CSystemCore::ControlFromKeyboard_() {
     const auto freq = 1000.f; // 系统核心频率
 
+    if (g_useBoardLinkChassis) {
+        if (SysRemote.systemStatus == APP_OK) {
+            StartRobot(false);
+        }
+        if (pchassis_ && !pchassis_->chassisCmd.isAutoCtrl) {
+            ApplyBoardLinkChassisControl(pchassis_);
+        }
+        return;
+    }
+
     auto &keyboard = SysRemote.remoteInfo.keyboard;
     static SGyroSpinRuntimeState keyboardGyroSpinState;
     static float keyboardGimbalSpeedX = 0.0f;
@@ -606,15 +655,27 @@ void CSystemCore::ControlFromKeyboard_() {
 }
 
 /**
- * @brief 自定义控制器操作（当前仅保留底盘相关依赖）
+ * @brief 自定义控制器操作
  */
 void CSystemCore::ControlFromController_() {
+    if (g_useBoardLinkChassis) {
+        if (pchassis_ && !pchassis_->chassisCmd.isAutoCtrl) {
+            ApplyBoardLinkChassisControl(pchassis_);
+        }
+        return;
+    }
     if (pchassis_ && !pchassis_->chassisCmd.isAutoCtrl) {
         pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
     }
 }
 
 void CSystemCore::ControlFromEsp32_() {
+    if (g_useBoardLinkChassis) {
+        if (pchassis_ && !pchassis_->chassisCmd.isAutoCtrl) {
+            ApplyBoardLinkChassisControl(pchassis_);
+        }
+        return;
+    }
     if (pchassis_ && !pchassis_->chassisCmd.isAutoCtrl) {
         pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
     }
