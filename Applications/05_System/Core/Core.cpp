@@ -83,7 +83,7 @@ void CSystemCore::UpdateHandler_() {
     if (coreStatus == APP_RESET) return;
 
     // 检查遥控器系统状态
-    if (SysBoardLink.ctrlInfos.remote_is_online == APP_RESET) return;
+    if (SysBoardLink.ctrlInfos.remote_is_online == APP_ERROR) return;
 
         // 左下右上键盘控制
         if (SysRemote.remoteInfo.remote.switch_L == 2
@@ -119,7 +119,7 @@ void CSystemCore::HeartbeatHandler_() {
     auto currentRemoteState = SysBoardLink.ctrlInfos.remote_is_online;
 
     // 遥控器掉线
-    if (lastRemoteState == APP_OK && currentRemoteState != APP_OK) {
+    if (currentRemoteState != APP_OK) {
         // 停止所有自动操作
         StopAutoCtrlTask_();
         

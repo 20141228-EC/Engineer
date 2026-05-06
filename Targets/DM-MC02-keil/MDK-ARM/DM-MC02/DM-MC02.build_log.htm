@@ -17,7 +17,7 @@ Library Manager: ArmAr.exe V6.24
 Hex Converter:   FromElf.exe V6.24
 CPU DLL:         SARMCM3.DLL V5.43.0.0
 Dialog DLL:      DCM.DLL V1.17.5.0
-Target DLL:      Segger\JL2CM3.dll V2.99.45.0
+Target DLL:      CMSIS_AGDI.dll V1.33.24.0
 Dialog DLL:      TCM.DLL V1.56.6.0
  
 <h2>Project:</h2>
@@ -27,45 +27,12 @@ Project File Date:  05/06/2026
 <h2>Output:</h2>
 *** Using Compiler 'V6.24', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'DM-MC02'
-compiling utils.cpp...
-../../../Applications/00_Algorithm/robotics.cpp(17): warning: In file included from...
-../../../Applications/00_Algorithm/Include\robotics.h(303): warning: use of infinity via a macro is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
-  303 |         if (dq[0][0] == INFINITY)  // J'*J 奇异
-      |                         ^
-../../../Applications/00_Algorithm/Include\robotics.h(303): warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
-  303 |         if (dq[0][0] == INFINITY)  // J'*J 奇异
-      |                         ^~~~~~~~
-C:\Keil_v5\ARM\ARMCLANG\bin\..\include\math.h(271): note: expanded from macro 'INFINITY'
-  271 | #   define INFINITY __builtin_inff()
-      |                     ^~~~~~~~~~~~~~~~
-2 warnings generated.
-compiling robotics.cpp...
-compiling kalman_fliter.c...
-compiling bmi_ekf.c...
-compiling matrix.cpp...
-compiling sys_board_link.cpp...
-compiling algo_power_control.cpp...
-compiling algo_ave_filter.cpp...
-compiling dev_board_link.cpp...
-compiling conf_algo.cpp...
-compiling algo_imu_ekf.cpp...
+compiling control.cpp...
 compiling Core.cpp...
-compiling Algorithm.cpp...
-../../../Applications/00_Algorithm/algo_kf_filter.cpp(203): warning: use of NaN via a macro is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
-  203 |     std::fill(measured_vector_.get_data(), measured_vector_.get_data() + measured_vector_.size(), NAN);
-      |                                                                                                   ^
-../../../Applications/00_Algorithm/algo_kf_filter.cpp(203): warning: use of NaN is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
-  203 |     std::fill(measured_vector_.get_data(), measured_vector_.get_data() + measured_vector_.size(), NAN);
-      |                                                                                                   ^~~
-C:\Keil_v5\ARM\ARMCLANG\bin\..\include\math.h(272): note: expanded from macro 'NAN'
-  272 | #   define NAN __builtin_nanf("")
-      |                ^~~~~~~~~~~~~~~~~~
-2 warnings generated.
-compiling algo_kf_filter.cpp...
 linking...
-Program Size: Code=279256 RO-data=5796 RW-data=712 ZI-data=400624  
+Program Size: Code=279184 RO-data=5796 RW-data=712 ZI-data=400624  
 FromELF: creating hex file...
-"DM-MC02\DM-MC02.axf" - 0 Error(s), 4 Warning(s).
+"DM-MC02\DM-MC02.axf" - 0 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -88,7 +55,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE@6.1.1
       Include file:  CMSIS/Core/Include/tz_context.h
-Build Time Elapsed:  00:00:09
+Build Time Elapsed:  00:00:08
 </pre>
 </body>
 </html>

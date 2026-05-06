@@ -31,7 +31,7 @@ EAppStatus CDevBoardLink::InitDevice(const SDevInitParam_Base *pStructInitParam)
 	timeoutParam_.offlineTimeout = boardLinkParam.offlineTimeout;
 
 	// 初始化CAN接收节点
-    constexpr uint32_t kCanRxID = 0x302;
+    constexpr uint32_t kCanRxID = 0x300;
     rxNode_.InitRxNode(boardLinkParam.interfaceID, kCanRxID,
                                 CInfCAN::ECanFrameType::DATA, 
                                 CInfCAN::ECanFrameDlc::DLC_8);
@@ -74,7 +74,7 @@ EAppStatus CDevBoardLink::SendPackage(){
 
     memcpy(data_buf.data(), &feedbackPack_, sizeof(feedbackPack_));
 	Modify_CanTxData(data_buf.data());
-	txNode_.Transmit(); ///< 发送反馈数据
+	// txNode_.Transmit(); ///< 发送反馈数据
 
 	return APP_OK;
 }

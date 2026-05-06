@@ -38,9 +38,9 @@ public:
      * @note  pack_id位于每个数据包的第一个字节
      */
     enum EPacketID : uint8_t {
-        PKT_CTRL_INFOS = 1,  ///< 控制信息包
-        PKT_JOINT_INFOS = 2, ///< 云台朝向、臂关节角度
-        PKT_OTHER_INFOS = 3, ///< 其他数据
+        PKT_CTRL_INFOS = 0,  ///< 控制信息包
+        PKT_JOINT_INFOS = 1, ///< 云台朝向、臂关节角度
+        PKT_OTHER_INFOS = 2, ///< 其他数据
         PKT_COUNT,
         PKT_FEEDBACK   = 0xFE,  ///< 反馈包（副板发送给主板）
     };

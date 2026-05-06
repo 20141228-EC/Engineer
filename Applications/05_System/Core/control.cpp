@@ -18,7 +18,7 @@ namespace {
 
 static bool g_useBoardLinkChassis = true;
 
-inline void ApplyBoardLinkChassisControl(CModChassis *chassis) {
+void ApplyBoardLinkChassisControl(CModChassis *chassis) {
     if (!chassis) {
         return;
     }
@@ -30,9 +30,7 @@ inline void ApplyBoardLinkChassisControl(CModChassis *chassis) {
         chassis->chassisCmd.speed_Y = static_cast<float>(SysBoardLink.ctrlInfos.speed_y);
         chassis->chassisCmd.speed_W = static_cast<float>(SysBoardLink.ctrlInfos.speed_w);
     } else {
-        chassis->chassisCmd.speed_X = 0.0f;
-        chassis->chassisCmd.speed_Y = 0.0f;
-        chassis->chassisCmd.speed_W = 0.0f;
+        
     }
 }
 
