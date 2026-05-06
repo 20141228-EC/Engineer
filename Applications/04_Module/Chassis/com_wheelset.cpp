@@ -185,6 +185,156 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
     }
 }
 
+// /**
+//  * @brief 更新输出（舵轮解算）
+//  * @param speed_X 
+//  * @param speed_Y 
+//  * @param speed_W 
+//  * @return EAppStatus 
+//  */
+// EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y, float speed_W){
+
+//     // 从底盘电机中读取当前速度存入缓冲区
+//     DataBuffer<float_t> wheelSpdMeasure = {
+//         static_cast<float_t>(motor[LF]->motorData[CDevMtr::DATA_SPEED]),
+//         static_cast<float_t>(motor[RF]->motorData[CDevMtr::DATA_SPEED]),
+//         static_cast<float_t>(motor[LB]->motorData[CDevMtr::DATA_SPEED]),
+//         static_cast<float_t>(motor[RB]->motorData[CDevMtr::DATA_SPEED]),
+//     };
+//     DataBuffer<float_t> steerSpdMeasure = {
+//         static_cast<float_t>(steerMotor[LF]->motorData[CDevMtr::DATA_SPEED]),
+//         static_cast<float_t>(steerMotor[RF]->motorData[CDevMtr::DATA_SPEED]),
+//         static_cast<float_t>(steerMotor[LB]->motorData[CDevMtr::DATA_SPEED]),
+//         static_cast<float_t>(steerMotor[RB]->motorData[CDevMtr::DATA_SPEED]),
+//     };
+//     DataBuffer<float_t> steerPosMeasure = {
+//         static_cast<float_t>(steerMotor[LF]->motorData[CDevMtr::DATA_ANGLE]),
+//         static_cast<float_t>(steerMotor[RF]->motorData[CDevMtr::DATA_ANGLE]),
+//         static_cast<float_t>(steerMotor[LB]->motorData[CDevMtr::DATA_ANGLE]),
+//         static_cast<float_t>(steerMotor[RB]->motorData[CDevMtr::DATA_ANGLE]),
+//     };
+//     DataBuffer<float_t> steerPos_last_Target(4, 0.f);
+
+//     // 几何约定：X向右，Y向前，W逆时针为正；轮序：LF, RF, LB, RB
+//     // 计算每个轮子的 X/Y 速度分量
+// 		float sqrt2_2 = 0.70710678;
+		
+//     float vx1 = (float)speed_Y - (float)speed_W * sqrt2_2;
+//     float vy1 = (float)speed_X + (float)speed_W * sqrt2_2;
+//     float vx2 = (float)speed_Y + (float)speed_W * sqrt2_2;
+//     float vy2 = (float)speed_X + (float)speed_W * sqrt2_2;
+//     float vx3 = (float)speed_Y - (float)speed_W * sqrt2_2;
+//     float vy3 = (float)speed_X - (float)speed_W * sqrt2_2;
+//     float vx4 = (float)speed_Y + (float)speed_W * sqrt2_2;
+//     float vy4 = (float)speed_X - (float)speed_W * sqrt2_2;
+
+//     arm_atan2_f32(vy2, vx2, &debug_);
+// 		debug_ = debug_ / 3.1415926f * 4096.f;
+
+//     // 计算目标舵角
+//     DataBuffer<float_t> steerPosTarget = {
+//         atan2(vy1, vx1) / 3.1415926f * 4096.f,
+//         atan2(vy2, vx2) / 3.1415926f * 4096.f,
+//         atan2(vy3, vx3) / 3.1415926f * 4096.f,
+//         atan2(vy4, vx4) / 3.1415926f * 4096.f,
+//     };
+
+//     steerPosTarget_debug[0] = steerPosTarget[0];
+//     steerPosTarget_debug[1] = steerPosTarget[1];
+//     steerPosTarget_debug[2] = steerPosTarget[2];
+//     steerPosTarget_debug[3] = steerPosTarget[3];
+
+//     // 计算舵向当前相对角度 [-4096, 4096]
+//     DataBuffer<float_t> steerPosRelative = {
+//         steerPosMeasure[LF] - STEER_MECH_MID[LF],
+//         steerPosMeasure[RF] - STEER_MECH_MID[RF],
+//         steerPosMeasure[LB] - STEER_MECH_MID[LB],
+//         steerPosMeasure[RB] - STEER_MECH_MID[RB],
+//     };
+//     for(int i = 0; i < 4; i++) {
+//         if (steerPosRelative[i] > 4096) steerPosRelative[i] -= 8192;
+//         if (steerPosRelative[i] < -4096) steerPosRelative[i] += 8192;
+//     }
+
+//     // 计算目标轮速
+//     DataBuffer<float_t> SpdTarget = {
+//         sqrtf(vx1*vx1 + vy1*vy1),
+//         sqrtf(vx2*vx2 + vy2*vy2),
+//         sqrtf(vx3*vx3 + vy3*vy3),
+//         sqrtf(vx4*vx4 + vy4*vy4),
+//     };
+
+//     // 半圈处理
+//     for(int i = 0; i < 4; i++){
+    
+//         float err = steerPosTarget[i] - steerPosRelative[i];
+        
+//         // 半圈处理，保证误差在[-4096, 4096]之间
+//         if (err > 4096) err -= 8192;
+//         else if (err < -4096) err += 8192;
+
+//         if (err > 2048) {
+//             steerPosTarget[i] -= 4096;
+//             SpdTarget[i] *= static_cast<float_t>(pow(cos(err * PI / 4096),11));  // 轮速反向
+//         }
+//         else if (err < -2048) {
+//             steerPosTarget[i] += 4096;
+//             SpdTarget[i] *= static_cast<float_t>(pow(cos(err * PI / 4096),11));  // 轮速反向
+//         }
+
+//         // 规范化target到[-4096, 4096]
+//         if (steerPosTarget[i] > 4096) steerPosTarget[i] -= 8192;
+//         else if (steerPosTarget[i] < -4096) steerPosTarget[i] += 8192;
+//     }
+
+//     // 计算轮毂输出
+//     DataBuffer<float_t> output_wheelset(4,0.0f);
+//     for (int i = 0; i < 4; i++) {
+//         DataBuffer<float_t> wheelSpd_i = {SpdTarget[i]};    // 目标值
+//         DataBuffer<float_t> wheelSpdMeasure_i = {wheelSpdMeasure[i]};   // 测量值
+//         output_wheelset[i] = pidSpdCtrl[i].UpdatePidController(wheelSpd_i, wheelSpdMeasure_i)[0];
+//     }
+
+//     // 计算舵向输出
+//     DataBuffer<float_t> spd_target(4,0.f);  // 速度目标值
+//     DataBuffer<float_t> output_steer(4,0.0f);   // 舵向最终输出
+//     for (int i = 0; i < 4; i++) {
+//         DataBuffer<float_t> steerPos_i = {steerPosTarget[i] + STEER_MECH_MID[i]};    // 位置目标值
+//         // DataBuffer<float_t> steerPos_i = {steerPosTarget[i]};    // 位置目标值
+//         DataBuffer<float_t> steerPosMeasure_i = {steerPosMeasure[i]};   // 位置测量值
+//         DataBuffer<float_t> steerSpdMeasure_i = {steerSpdMeasure[i]};   // 速度测量值
+
+//         if(speed_X == 0 && speed_Y == 0 && speed_W == 0){
+//             steerPos_i = {0};       // 保持上次角度
+//         }
+
+//         spd_target[i] = pidSteerPosCtrl[i].UpdatePidController(steerPos_i, steerPosMeasure_i)[0];
+
+//         output_steer[i] = pidSteerSpdCtrl[i].UpdatePidController({spd_target[i]}, steerSpdMeasure_i)[0];
+//     }
+
+//     // 轮毂电机输出
+//     mtrOutputBuffer = {
+//         static_cast<int16_t>(output_wheelset[LF]),
+//         static_cast<int16_t>(output_wheelset[RF]),
+//         static_cast<int16_t>(output_wheelset[LB]),
+//         static_cast<int16_t>(output_wheelset[RB]), ///< 轮毂电机输出
+//     };
+
+//     // 舵向电机输出
+//     mtrSteerOutputBuffer = {
+//         static_cast<int16_t>(output_steer[LF]),
+//         static_cast<int16_t>(output_steer[RF]),
+//         static_cast<int16_t>(output_steer[LB]),
+//         static_cast<int16_t>(output_steer[RB]), ///< 舵向电机输出
+//     };
+
+
+
+//     return APP_OK;
+
+// }
+
 /**
  * @brief 更新输出（舵轮解算）
  * @param speed_X 
@@ -194,7 +344,6 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
  */
 EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y, float speed_W){
 
-    // 从底盘电机中读取当前速度存入缓冲区
     DataBuffer<float_t> wheelSpdMeasure = {
         static_cast<float_t>(motor[LF]->motorData[CDevMtr::DATA_SPEED]),
         static_cast<float_t>(motor[RF]->motorData[CDevMtr::DATA_SPEED]),
@@ -214,36 +363,58 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
         static_cast<float_t>(steerMotor[RB]->motorData[CDevMtr::DATA_ANGLE]),
     };
 
-    // 几何约定：X向右，Y向前，W逆时针为正；轮序：LF, RF, LB, RB
-    // 计算每个轮子的 X/Y 速度分量
-		float sqrt2_2 = 0.70710678;
+    // 保存上次目标角度
+    static DataBuffer<float_t> last_steerPosTarget = {0,0,0,0};
+
+    float sqrt2_2 = 0.70710678;
 		
-    float vx1 = (float)speed_Y - (float)speed_W*sqrt2_2;
-    float vy1 = (float)speed_X + (float)speed_W*sqrt2_2;
-    float vx2 = (float)speed_Y + (float)speed_W*sqrt2_2;
-    float vy2 = (float)speed_X + (float)speed_W*sqrt2_2;
-    float vx3 = (float)speed_Y - (float)speed_W*sqrt2_2;
-    float vy3 = (float)speed_X - (float)speed_W*sqrt2_2;
-    float vx4 = (float)speed_Y + (float)speed_W*sqrt2_2;
-    float vy4 = (float)speed_X - (float)speed_W*sqrt2_2;
+    float vx1 = (float)speed_Y - (float)speed_W * sqrt2_2;
+    float vy1 = (float)speed_X + (float)speed_W * sqrt2_2;
+    float vx2 = (float)speed_Y + (float)speed_W * sqrt2_2;
+    float vy2 = (float)speed_X + (float)speed_W * sqrt2_2;
+    float vx3 = (float)speed_Y - (float)speed_W * sqrt2_2;
+    float vy3 = (float)speed_X - (float)speed_W * sqrt2_2;
+    float vx4 = (float)speed_Y + (float)speed_W * sqrt2_2;
+    float vy4 = (float)speed_X - (float)speed_W * sqrt2_2;
 
-    arm_atan2_f32(vy2, vx2, &debug_);
-		debug_ = debug_ / 3.1415926f * 4096.f;
+    // ===================== 核心逻辑：停止时保持上次角度 =====================
+    const float EPS = 1e-6f;
+    bool is_stop = (fabsf(speed_X) < EPS && 
+                    fabsf(speed_Y) < EPS && 
+                    fabsf(speed_W) < EPS);
 
-    // 计算目标舵角
-    DataBuffer<float_t> steerPosTarget = {
-        atan2(vy1, vx1) / 3.1415926f * 4096.f,
-        atan2(vy2, vx2) / 3.1415926f * 4096.f,
-        atan2(vy3, vx3) / 3.1415926f * 4096.f,
-        atan2(vy4, vx4) / 3.1415926f * 4096.f,
-    };
+    DataBuffer<float_t> steerPosTarget;
+
+    if(is_stop)
+    {
+        // 🟢 停止：使用上一次的角度，不跳0
+        steerPosTarget = last_steerPosTarget;
+    }
+    else
+    {
+        steerPosTarget = {
+            atan2(vy1, vx1) / 3.1415926f * 4096.f,
+            atan2(vy2, vx2) / 3.1415926f * 4096.f,
+            atan2(vy3, vx3) / 3.1415926f * 4096.f,
+            atan2(vy4, vx4) / 3.1415926f * 4096.f,
+        };
+
+        // 保存当前角度到“上次值”
+        last_steerPosTarget = steerPosTarget;
+    }
+    // ======================================================================
+
+    // debug 角度也同样处理
+    if(!is_stop){
+        arm_atan2_f32(vy2, vx2, &debug_);
+        debug_ = debug_ / 3.1415926f * 4096.f;
+    }
 
     steerPosTarget_debug[0] = steerPosTarget[0];
     steerPosTarget_debug[1] = steerPosTarget[1];
     steerPosTarget_debug[2] = steerPosTarget[2];
     steerPosTarget_debug[3] = steerPosTarget[3];
 
-    // 计算舵向当前相对角度 [-4096, 4096]
     DataBuffer<float_t> steerPosRelative = {
         steerPosMeasure[LF] - STEER_MECH_MID[LF],
         steerPosMeasure[RF] - STEER_MECH_MID[RF],
@@ -255,7 +426,6 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
         if (steerPosRelative[i] < -4096) steerPosRelative[i] += 8192;
     }
 
-    // 计算目标轮速
     DataBuffer<float_t> SpdTarget = {
         sqrtf(vx1*vx1 + vy1*vy1),
         sqrtf(vx2*vx2 + vy2*vy2),
@@ -265,23 +435,20 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
 
     // 半圈处理
     for(int i = 0; i < 4; i++){
-    
         float err = steerPosTarget[i] - steerPosRelative[i];
         
-        // 半圈处理，保证误差在[-4096, 4096]之间
         if (err > 4096) err -= 8192;
         else if (err < -4096) err += 8192;
 
         if (err > 2048) {
             steerPosTarget[i] -= 4096;
-            SpdTarget[i] *= static_cast<float_t>(pow(cos(err * PI / 4096),11));  // 轮速反向
+            SpdTarget[i] *= static_cast<float_t>(pow(cos(err * PI / 4096),11));
         }
         else if (err < -2048) {
             steerPosTarget[i] += 4096;
-            SpdTarget[i] *= static_cast<float_t>(pow(cos(err * PI / 4096),11));  // 轮速反向
+            SpdTarget[i] *= static_cast<float_t>(pow(cos(err * PI / 4096),11));
         }
 
-        // 规范化target到[-4096, 4096]
         if (steerPosTarget[i] > 4096) steerPosTarget[i] -= 8192;
         else if (steerPosTarget[i] < -4096) steerPosTarget[i] += 8192;
     }
@@ -289,43 +456,38 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     // 计算轮毂输出
     DataBuffer<float_t> output_wheelset(4,0.0f);
     for (int i = 0; i < 4; i++) {
-        DataBuffer<float_t> wheelSpd_i = {SpdTarget[i]};    // 目标值
-        DataBuffer<float_t> wheelSpdMeasure_i = {wheelSpdMeasure[i]};   // 测量值
+        DataBuffer<float_t> wheelSpd_i = {SpdTarget[i]};
+        DataBuffer<float_t> wheelSpdMeasure_i = {wheelSpdMeasure[i]};
         output_wheelset[i] = pidSpdCtrl[i].UpdatePidController(wheelSpd_i, wheelSpdMeasure_i)[0];
     }
 
     // 计算舵向输出
-    DataBuffer<float_t> spd_target(4,0.f);  // 速度目标值
-    DataBuffer<float_t> output_steer(4,0.0f);   // 舵向最终输出
+    DataBuffer<float_t> spd_target(4,0.f);
+    DataBuffer<float_t> output_steer(4,0.0f);
     for (int i = 0; i < 4; i++) {
-        DataBuffer<float_t> steerPos_i = {steerPosTarget[i] + STEER_MECH_MID[i]};    // 位置目标值
-        // DataBuffer<float_t> steerPos_i = {steerPosTarget[i]};    // 位置目标值
-        DataBuffer<float_t> steerPosMeasure_i = {steerPosMeasure[i]};   // 位置测量值
-        DataBuffer<float_t> steerSpdMeasure_i = {steerSpdMeasure[i]};   // 速度测量值
+        DataBuffer<float_t> steerPos_i = {steerPosTarget[i] + STEER_MECH_MID[i]};
+        DataBuffer<float_t> steerPosMeasure_i = {steerPosMeasure[i]};
+        DataBuffer<float_t> steerSpdMeasure_i = {steerSpdMeasure[i]};
 
         spd_target[i] = pidSteerPosCtrl[i].UpdatePidController(steerPos_i, steerPosMeasure_i)[0];
-
         output_steer[i] = pidSteerSpdCtrl[i].UpdatePidController({spd_target[i]}, steerSpdMeasure_i)[0];
     }
 
-    // 轮毂电机输出
     mtrOutputBuffer = {
         static_cast<int16_t>(output_wheelset[LF]),
         static_cast<int16_t>(output_wheelset[RF]),
         static_cast<int16_t>(output_wheelset[LB]),
-        static_cast<int16_t>(output_wheelset[RB]), ///< 轮毂电机输出
+        static_cast<int16_t>(output_wheelset[RB]),
     };
 
-    // 舵向电机输出
     mtrSteerOutputBuffer = {
         static_cast<int16_t>(output_steer[LF]),
         static_cast<int16_t>(output_steer[RF]),
         static_cast<int16_t>(output_steer[LB]),
-        static_cast<int16_t>(output_steer[RB]), ///< 舵向电机输出
+        static_cast<int16_t>(output_steer[RB]),
     };
 
     return APP_OK;
-
 }
 
 
