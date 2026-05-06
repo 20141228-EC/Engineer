@@ -82,7 +82,9 @@ dm-mc02/proc_chassis.o: \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_pid.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_power_control.hpp \
   ..\..\..\Applications\02_Interface\Include\Interface.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_common.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_uart.hpp \
@@ -105,6 +107,7 @@ dm-mc02/proc_chassis.o: \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_dji.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_m2006.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_m3508.hpp \
+  ..\..\..\Applications\03_Device\Include\mtr\mtr_rm6020.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_kt.hpp \
   ..\..\..\Applications\03_Device\Include\mems\mems.hpp \
   ..\..\..\Applications\03_Device\Include\mems\mems_common.hpp \
@@ -120,6 +123,9 @@ dm-mc02/proc_chassis.o: \
   ..\..\..\Applications\03_Device\Include\dev_controller_link.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp \
   ..\..\..\Applications\03_Device\Include\dev_esp32.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_board_link.hpp \
   ..\..\..\Applications\03_Device\Include\dev_vision.hpp \
   ..\..\..\Applications\03_Device\Include\dev_referee.hpp \
-  ..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp
+  ..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_ave_filter.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_filter_common.hpp

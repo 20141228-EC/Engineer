@@ -99,11 +99,6 @@ private:
 
     // 模块指针
     CModChassis *pchassis_ = nullptr;
-    CModGimbal *pgimbal_ = nullptr;
-    // CModGantry *pgantry_ = nullptr;
-    // CModClimber *pclimber_ = nullptr;
-    // CModSubGantry *psubgantry_ = nullptr; // 已删除子龙门模块
-    CModArm *parm_ = nullptr;
 
     // 系统指针
     CSystemBoardLink *pboardlink_ = nullptr;  ///< 板间通信系统指针

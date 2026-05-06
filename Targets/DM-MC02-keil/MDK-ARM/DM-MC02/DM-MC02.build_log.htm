@@ -5,11 +5,11 @@
 <h2>Tool Versions:</h2>
 IDE-Version: ��Vision V5.43.1.0
 Copyright (C) 2025 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: 1 1318116658@qq.com, 1, LIC=JL28G-VZPTJ-8T13P-MMGZH-0RQ7I-DCX5Y
+License Information: no 2997708711@qq.com, nono, LIC=76F5U-S0N7L-GK2BG-VWUYI-ZMP32-6M9LR
  
 Tool Versions:
 Toolchain:       MDK-ARM Plus  Version: 5.43.0.0
-Toolchain Path:  F:\Keil_v5\ARM\ARMCLANG\Bin
+Toolchain Path:  C:\Keil_v5\ARM\ARMCLANG\Bin
 C Compiler:      ArmClang.exe V6.24
 Assembler:       Armasm.exe V6.24
 Linker/Locator:  ArmLink.exe V6.24
@@ -21,17 +21,51 @@ Target DLL:      Segger\JL2CM3.dll V2.99.45.0
 Dialog DLL:      TCM.DLL V1.56.6.0
  
 <h2>Project:</h2>
-E:\engineer_fork\Engineer_deletesubtary\Targets\DM-MC02-keil\MDK-ARM\DM-MC02.uvprojx
-Project File Date:  12/05/2025
+D:\RobotPilots\C_FILE\RP__C_FILE\C_FILE\RP2026_Engineer\Targets\DM-MC02-keil\MDK-ARM\DM-MC02.uvprojx
+Project File Date:  05/06/2026
 
 <h2>Output:</h2>
-*** Using Compiler 'V6.24', folder: 'F:\Keil_v5\ARM\ARMCLANG\Bin'
+*** Using Compiler 'V6.24', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'DM-MC02'
-compiling proc_arm.cpp...
+compiling utils.cpp...
+../../../Applications/00_Algorithm/robotics.cpp(17): warning: In file included from...
+../../../Applications/00_Algorithm/Include\robotics.h(303): warning: use of infinity via a macro is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+  303 |         if (dq[0][0] == INFINITY)  // J'*J 奇异
+      |                         ^
+../../../Applications/00_Algorithm/Include\robotics.h(303): warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+  303 |         if (dq[0][0] == INFINITY)  // J'*J 奇异
+      |                         ^~~~~~~~
+C:\Keil_v5\ARM\ARMCLANG\bin\..\include\math.h(271): note: expanded from macro 'INFINITY'
+  271 | #   define INFINITY __builtin_inff()
+      |                     ^~~~~~~~~~~~~~~~
+2 warnings generated.
+compiling robotics.cpp...
+compiling kalman_fliter.c...
+compiling bmi_ekf.c...
+compiling matrix.cpp...
+compiling sys_board_link.cpp...
+compiling algo_power_control.cpp...
+compiling algo_ave_filter.cpp...
+compiling dev_board_link.cpp...
+compiling conf_algo.cpp...
+compiling algo_imu_ekf.cpp...
+compiling Core.cpp...
+compiling Algorithm.cpp...
+../../../Applications/00_Algorithm/algo_kf_filter.cpp(203): warning: use of NaN via a macro is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+  203 |     std::fill(measured_vector_.get_data(), measured_vector_.get_data() + measured_vector_.size(), NAN);
+      |                                                                                                   ^
+../../../Applications/00_Algorithm/algo_kf_filter.cpp(203): warning: use of NaN is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+  203 |     std::fill(measured_vector_.get_data(), measured_vector_.get_data() + measured_vector_.size(), NAN);
+      |                                                                                                   ^~~
+C:\Keil_v5\ARM\ARMCLANG\bin\..\include\math.h(272): note: expanded from macro 'NAN'
+  272 | #   define NAN __builtin_nanf("")
+      |                ^~~~~~~~~~~~~~~~~~
+2 warnings generated.
+compiling algo_kf_filter.cpp...
 linking...
-Program Size: Code=255532 RO-data=5888 RW-data=576 ZI-data=399496  
+Program Size: Code=279256 RO-data=5796 RW-data=712 ZI-data=400624  
 FromELF: creating hex file...
-"DM-MC02\DM-MC02.axf" - 0 Error(s), 0 Warning(s).
+"DM-MC02\DM-MC02.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -42,19 +76,19 @@ Package Vendor: ARM
    * Component: CORE Version: 6.1.1
 
 Package Vendor: Keil
-                https://www.keil.com/pack/Keil.STM32H7xx_DFP.4.1.3.pack
-                Keil::STM32H7xx_DFP@4.1.3
+                https://www.keil.com/pack/Keil.STM32H7xx_DFP.4.1.2.pack
+                Keil::STM32H7xx_DFP@4.1.2
                 STMicroelectronics STM32H7 Series Device Support
 
 <h2>Collection of Component include folders:</h2>
   ./RTE/_DM-MC02
-  F:/Keil_v5/ARM/Packs/ARM/CMSIS/6.2.0/CMSIS/Core/Include
+  C:/Keil_v5/ARM/PACK/ARM/CMSIS/6.2.0/CMSIS/Core/Include
 
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE@6.1.1
       Include file:  CMSIS/Core/Include/tz_context.h
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:09
 </pre>
 </body>
 </html>

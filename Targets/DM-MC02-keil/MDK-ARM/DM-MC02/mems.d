@@ -82,6 +82,7 @@ dm-mc02/mems.o: ..\..\..\Applications\03_Device\MEMS\mems.cpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\03_Device\Include\mems\mems_bmi088.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_spi.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_common.hpp \

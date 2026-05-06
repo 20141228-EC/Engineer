@@ -50,10 +50,10 @@ EAppStatus CSystemCore::InitSystemCore() {
     controllerLinkInitParam.controllerLinkDevID = EDeviceID::DEV_CONTROLLER_LINK;
     SysControllerLink.InitSystem(&controllerLinkInitParam);
 
-    CSystemESP32::SSystemInitParam_ESP32 esp32InitParam;
-    esp32InitParam.systemID = ESystemID::SYS_ESP32;
-    esp32InitParam.esp32DevID = EDeviceID::DEV_ESP32;
-    SysESP32.InitSystem(&esp32InitParam);
+    // CSystemESP32::SSystemInitParam_ESP32 esp32InitParam;
+    // esp32InitParam.systemID = ESystemID::SYS_ESP32;
+    // esp32InitParam.esp32DevID = EDeviceID::DEV_ESP32;
+    // SysESP32.InitSystem(&esp32InitParam);
 
     CSystemBoardLink::SSystemInitParam_BoardLink boardLinkInitParam;
     boardLinkInitParam.systemID = ESystemID::SYS_BOARD_LINK;
@@ -64,11 +64,6 @@ EAppStatus CSystemCore::InitSystemCore() {
     auto it_chassis = ModuleIDMap.find(EModuleID::MOD_CHASSIS);
     if (it_chassis != ModuleIDMap.end() && it_chassis->second != nullptr) {
         pchassis_ = reinterpret_cast<CModChassis *>(it_chassis->second);
-    }
-
-    auto it_arm = ModuleIDMap.find(EModuleID::MOD_ARM);
-    if (it_arm != ModuleIDMap.end() && it_arm->second != nullptr) {
-        parm_ = reinterpret_cast<CModArm *>(it_arm->second);
     }
 
     proc_waitMs(1200); // 等待系统初始化完成
@@ -88,98 +83,8 @@ void CSystemCore::UpdateHandler_() {
     if (coreStatus == APP_RESET) return;
 
     // 检查遥控器系统状态
-    if (SysRemote.systemStatus == APP_RESET) return;
+    if (SysBoardLink.ctrlInfos.remote_is_online == APP_RESET) return;
 
-    static bool last_use_Controller = false;
-    static uint8_t zx_count = 0;
-    static bool zx_flag = false;
-
-    // 遥控离线时持续执行熄火保护，避免沿用上一帧指令导致车辆继续运动。
-    if (SysRemote.systemStatus != APP_OK) {
-        remoteWasOffline_ = true;
-        if (pchassis_) {
-            pchassis_->chassisCmd.speed_X = 0.0f;
-            pchassis_->chassisCmd.speed_Y = 0.0f;
-            pchassis_->chassisCmd.speed_W = 0.0f;
-            pchassis_->crawler_on = 0;
-            pchassis_->chassisCmd.isAutoCtrl = false;
-            pchassis_->StopModule();
-        }
-        if (parm_) {
-            parm_->armCmd.isAutoCtrl = false;
-            parm_->StopModule();
-        }
-        return;
-    }
-
-    static uint8_t print_cnt = 0;
-    if (print_cnt-- == 0) {
-        print_cnt = 200;
-        Print("------------------------------\n");
-        if (parm_) {
-            Print("Arm_Yaw_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_Yaw), static_cast<int>(parm_->armInfo.angle_Yaw),
-                  static_cast<int>(parm_->armInfo.angle_Yaw - parm_->armCmd.set_angle_Yaw));
-            Print("Arm_Pitch1_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_Pitch1), static_cast<int>(parm_->armInfo.angle_Pitch1),
-                  static_cast<int>(parm_->armInfo.angle_Pitch1 - parm_->armCmd.set_angle_Pitch1));
-            Print("Arm_Pitch2_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_Pitch2), static_cast<int>(parm_->armInfo.angle_Pitch2),
-                  static_cast<int>(parm_->armInfo.angle_Pitch2 - parm_->armCmd.set_angle_Pitch2));
-            Print("Arm_Roll_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_Roll), static_cast<int>(parm_->armInfo.angle_Roll),
-                  static_cast<int>(parm_->armInfo.angle_Roll - parm_->armCmd.set_angle_Roll));
-            Print("Arm_EndPitch_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_end_pitch), static_cast<int>(parm_->armInfo.angle_end_pitch),
-                  static_cast<int>(parm_->armInfo.angle_end_pitch - parm_->armCmd.set_angle_end_pitch));
-            Print("Arm_EndRoll_Cmd: %d, Info: %d, Err: %d\n",
-                  static_cast<int>(parm_->armCmd.set_angle_end_roll), static_cast<int>(parm_->armInfo.angle_end_roll),
-                  static_cast<int>(parm_->armInfo.angle_end_roll - parm_->armCmd.set_angle_end_roll));
-        }
-
-    }
-
-    bool zx = SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X; ///< 如果同时按下z和x
-    if (SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X) {
-        zx_count++;
-    }
-    // 全部松开之后才清零计数器，否则会因为按下状态的抖动导致自定义控制器模式连续进出
-    else if (SysRemote.remoteInfo.keyboard.key_Z || SysRemote.remoteInfo.keyboard.key_X == false) {
-        zx_count = 0;
-        zx_flag = false;
-    }
-
-    if (zx_count > 20 && zx_flag == false) {
-        zx_flag = true;
-        zx_count = 0;
-        use_Controller_ = !use_Controller_;
-        if (use_Controller_ == true) {
-            // 根据当前在哪个自动任务中调整臂的初始角度
-            if (currentAutoCtrlProcess_ == EAutoCtrlProcess::EXCHANGE_ORE) {
-
-            }
-            else {
-
-            }
-            SysControllerLink.robotInfo.controlled_by_controller = true;
-            SysControllerLink.robotInfo.ask_reset_flag = true;
-            StopAutoCtrlTask_(); // 停止自动任务运行
-        }
-        if (use_Controller_ == false) {
-            // StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE); // 已删除此自动流程
-            // TODO: 决定切换出自定义控制器模式后的行为
-        }
-    }
-    
-    ControlFromEsp32_(); // ESP32控制
-
-    if (use_Controller_ == true)
-    {
-        ControlFromController_();
-        ctrlmode_ = ECtrlMode::CONTROLLER_CTRL; ///< 自定义控制器控制
-    }
-    else
-    {
         // 左下右上键盘控制
         if (SysRemote.remoteInfo.remote.switch_L == 2
         && SysRemote.remoteInfo.remote.switch_R == 1)
@@ -192,11 +97,8 @@ void CSystemCore::UpdateHandler_() {
             ControlFromRemote_();
             ctrlmode_ = ECtrlMode::RC_CTRL; ///< 遥控器控制
         }
-    }
 
     BoardLink_Info_Update_(); ///< 更新板间通信数据包
-    
-    last_use_Controller = use_Controller_;
     
     if (SysRemote.ResetFlag)
     {
@@ -213,8 +115,8 @@ void CSystemCore::HeartbeatHandler_() {
     // 检查系统核心状态
     if (coreStatus == APP_RESET) return;
 
-    static auto lastRemoteState = APP_RESET;
-    auto currentRemoteState = SysRemote.systemStatus;
+    EVarStatus lastRemoteState = false;
+    auto currentRemoteState = SysBoardLink.ctrlInfos.remote_is_online;
 
     // 遥控器掉线
     if (lastRemoteState == APP_OK && currentRemoteState != APP_OK) {
@@ -223,8 +125,6 @@ void CSystemCore::HeartbeatHandler_() {
         
         // 停止所有模块（添加空指针检查）
         if (pchassis_) pchassis_->StopModule();
-        // if (psubgantry_) psubgantry_->StopModule(); // 已删除
-        if (parm_) parm_->StopModule();
         
     }
 
@@ -235,7 +135,6 @@ void CSystemCore::HeartbeatHandler_() {
 void CSystemCore::RESET_SYSTEM() {
 
     if (pchassis_) pchassis_->StopModule();
-    if (parm_) parm_->StopModule();
 
     // 给段延迟让电机收到停止指令
     static uint16_t resetCnt = 200;
@@ -259,76 +158,7 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
 
     StopAutoCtrlTask_();    ///< 停止当前任务
 
-    // 设置机械臂yaw轴限位（添加空指针检查）
-    if (parm_) {
-        parm_->should_limit_yaw = 0;
-    }
-
-    switch (process)
-    {
-        case EAutoCtrlProcess::NONE: {
-            return APP_ERROR;
-        }
-
-//        case EAutoCtrlProcess::RETURN_ORIGIN: {
-//            currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_ORIGIN;
-//            xTaskCreate(StartReturnOriginTask, "Return Origin Task",
-//                        512, this, proc_ModuleTaskPriority,
-//                        &autoCtrlTaskHandle_);
-//            return APP_OK;
-//        }
-
-//        case EAutoCtrlProcess::CLIMBING: {
-//            currentAutoCtrlProcess_ = EAutoCtrlProcess::CLIMBING;
-//            xTaskCreate(StartClimbingTask, "Climbing Task",
-//                        512, this, proc_ModuleTaskPriority,
-//                        &autoCtrlTaskHandle_);
-//            return APP_OK;
-//        }
-
-//        case EAutoCtrlProcess::ENERGY_UNIT: {
-//            currentAutoCtrlProcess_ = EAutoCtrlProcess::ENERGY_UNIT;
-//            xTaskCreate(StartEnergyUnitTask, "Grab Energy Unit Task",
-//                        512, this, proc_ModuleTaskPriority,
-//                        &autoCtrlTaskHandle_);
-//            return APP_OK;
-//        }
-
-//        case EAutoCtrlProcess::EXCHANGE_ORE: {
-//            currentAutoCtrlProcess_ = EAutoCtrlProcess::EXCHANGE_ORE;
-//            xTaskCreate(StartExchangeOreTask, "Exchange Ore Task",
-//                        512, this, proc_ModuleTaskPriority,
-//                        &autoCtrlTaskHandle_);
-//            return APP_OK;
-//        }
-
-//        case EAutoCtrlProcess::SAVE_ORE: {
-//            currentAutoCtrlProcess_ = EAutoCtrlProcess::SAVE_ORE;
-//            xTaskCreate(StartSaveOreTask, "Save Ore Task",
-//                        512, this, proc_ModuleTaskPriority,
-//                        &autoCtrlTaskHandle_);
-//            return APP_OK;
-//        }
-
-//        case EAutoCtrlProcess::GROUND_ORE: {
-//            currentAutoCtrlProcess_ = EAutoCtrlProcess::GROUND_ORE;
-//            xTaskCreate(StartGroundOreTask, "Ground Ore Task",
-//                        512, this, proc_ModuleTaskPriority,
-//                        &autoCtrlTaskHandle_);
-//            return APP_OK;
-//        }
-
-        // 下面这些是待删的，为了编译通过才加上
-        case EAutoCtrlProcess::RETURN_DRIVE:return APP_ERROR;
-        case EAutoCtrlProcess::DOGHOLE:return APP_ERROR;
-        case EAutoCtrlProcess::SILVER_ORE:return APP_ERROR;
-        case EAutoCtrlProcess::GOLD_ORE:return APP_ERROR;
-        case EAutoCtrlProcess::EXCHANGE:return APP_ERROR;
-        case EAutoCtrlProcess::PUSH_ORE:return APP_ERROR;
-        case EAutoCtrlProcess::POP_ORE:return APP_ERROR;
-
-        default: return APP_ERROR;
-    }
+    return APP_OK;
 }
 
 /**
@@ -345,7 +175,6 @@ EAppStatus CSystemCore::StopAutoCtrlTask_() {
 
     // 清除所有模块的自动控制标志（添加空指针检查）
     if (pchassis_) pchassis_->chassisCmd.isAutoCtrl = false;
-    if (parm_) parm_->armCmd.isAutoCtrl = false;
 
     return APP_OK;
 }

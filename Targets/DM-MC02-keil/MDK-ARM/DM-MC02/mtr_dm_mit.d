@@ -82,6 +82,7 @@ dm-mc02/mtr_dm_mit.o: ..\..\..\Applications\03_Device\MTR\mtr_dm_mit.cpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_can.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_common.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp \

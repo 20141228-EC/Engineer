@@ -16,89 +16,6 @@ namespace my_engineer {
 
 EAppStatus InitAllModule() {
 
-    /******初始化机械臂模块******/
-    CModArm::SModInitParam_Arm armInitParam;
-    armInitParam.moduleID = EModuleID::MOD_ARM;
-    armInitParam.MotorID_Yaw = EDeviceID::DEV_ARM_MTR_YAW;
-    armInitParam.MotorID_Pitch1 = EDeviceID::DEV_ARM_MTR_PITCH1;
-    armInitParam.MotorID_Pitch2 = EDeviceID::DEV_ARM_MTR_PITCH2;
-    armInitParam.MotorID_Roll = EDeviceID::DEV_ARM_MTR_ROLL;
-    armInitParam.MotorID_End_L = EDeviceID::DEV_ARM_MTR_END_L;
-    armInitParam.MotorID_End_R = EDeviceID::DEV_ARM_MTR_END_R;
-    armInitParam.MotorID_Grip = EDeviceID::DEV_ARM_MTR_GRIP;
-    // 设置can发送节点
-    armInitParam.MotorTxNode_Yaw = &TxNode_Can3_280;
-    armInitParam.MotorTxNode_Pitch1 = &TxNode_Can3_280;
-    armInitParam.MotorTxNode_Pitch2 = &TxNode_Can3_280;
-    armInitParam.MotorTxNode_End_L = &TxNode_Can2_1FF;
-    armInitParam.MotorTxNode_End_R = &TxNode_Can2_1FF;
-    armInitParam.MotorTxNode_Grip = &TxNode_Can2_1FF;
-    // 初始化 YawPosPidParam 的成员
-   armInitParam.YawPosPidParam.kp = 0.5;
-   armInitParam.YawPosPidParam.ki = 0.0f;
-   armInitParam.YawPosPidParam.kd = 0.0f;
-   armInitParam.YawPosPidParam.maxIntegral = 3000.0f;
-   armInitParam.YawPosPidParam.maxOutput = 3000.0f;
-   // 初始化 YawSpdPidParam 的成员
-   armInitParam.YawSpdPidParam.kp = 0.1f;
-   armInitParam.YawSpdPidParam.ki = 0.0f;
-   armInitParam.YawSpdPidParam.kd = 0.0f;
-   armInitParam.YawSpdPidParam.maxIntegral = 1000.0f;
-   armInitParam.YawSpdPidParam.maxOutput = 2000.0f;
-    // 初始化 Pitch1PosPidParam 的成员
-   armInitParam.Pitch1PosPidParam.kp = 3.3f;
-   armInitParam.Pitch1PosPidParam.ki = 0.0f;
-   armInitParam.Pitch1PosPidParam.kd = 0.0f;
-   armInitParam.Pitch1PosPidParam.maxIntegral = 3000.0f;
-   armInitParam.Pitch1PosPidParam.maxOutput = 3000.0f;
-   // 初始化 Pitch1SpdPidParam 的成员
-   armInitParam.Pitch1SpdPidParam.kp = 0.1f;
-   armInitParam.Pitch1SpdPidParam.ki = 0.05f;
-   armInitParam.Pitch1SpdPidParam.kd = 0.0f;
-   armInitParam.Pitch1SpdPidParam.maxIntegral = 2000.0f;
-   armInitParam.Pitch1SpdPidParam.maxOutput = 2000.0f;
-   // 初始化 Pitch2PosPidParam 的成员
-   armInitParam.Pitch2PosPidParam.kp = 2.7f;
-   armInitParam.Pitch2PosPidParam.ki = 0.0f;
-   armInitParam.Pitch2PosPidParam.kd = 0.0f;
-   armInitParam.Pitch2PosPidParam.maxIntegral = 3000.0f;
-   armInitParam.Pitch2PosPidParam.maxOutput = 3000.0f;
-   // 初始化 Pitch2SpdPidParam 的成员
-   armInitParam.Pitch2SpdPidParam.kp = 0.1f;
-   armInitParam.Pitch2SpdPidParam.ki = 0.05f;
-   armInitParam.Pitch2SpdPidParam.kd = 0.0f;
-   armInitParam.Pitch2SpdPidParam.maxIntegral = 2000.0f;
-   armInitParam.Pitch2SpdPidParam.maxOutput = 2000.0f;
-   // 初始化 mitCtrl_Roll 的成员
-   armInitParam.MIT_Roll_kp = 20.0f;
-   armInitParam.MIT_Roll_kd = 1.0f;
-//    armInitParam.Pitch1PosPidParam.Grav_Load_Mode = CAlgoPid::EGravLoadMode::END_ROLL_G; ///< 末端roll的重补模式
-   // 初始化 endPosPidParam 的成员
-   armInitParam.endPosPidParam.kp = 0.18f;
-   armInitParam.endPosPidParam.ki = 0.0f;
-   armInitParam.endPosPidParam.kd = 0.0f;
-   armInitParam.endPosPidParam.maxOutput = 4000.0f;
-   // 初始化 endSpdPidParam 的成员
-   armInitParam.endSpdPidParam.kp = 4.0f;
-   armInitParam.endSpdPidParam.ki = 0.8f;
-   armInitParam.endSpdPidParam.kd = 0.0f;
-   armInitParam.endSpdPidParam.maxIntegral = 4000.0f;
-   armInitParam.endSpdPidParam.maxOutput = 4500.0f;
-   // 初始化 GripPosPidParam 的成员
-   armInitParam.GripPosPidParam.kp = 0.35f;
-    armInitParam.GripPosPidParam.ki = 0.0f;
-    armInitParam.GripPosPidParam.kd = 0.0f;
-    armInitParam.GripPosPidParam.maxOutput = 3000.0f;
-    // 初始化 GripSpdPidParam 的成员
-    armInitParam.GripSpdPidParam.kp = 23.f;
-    armInitParam.GripSpdPidParam.ki = 0.0f;
-    armInitParam.GripSpdPidParam.kd = 0.0f;
-    armInitParam.GripSpdPidParam.maxIntegral = 1500.0f;
-    armInitParam.GripSpdPidParam.maxOutput = 4000.0f;
-    // armInitParam.Need_Grav_Compensation = false;
-    // 使用初始化后的参数创建 armModule 实例 
-    static auto armModule = CModArm(armInitParam);
-
     /******初始化底盘模块******/
     CModChassis::SModInitParam_Chassis chassisInitParam;
     chassisInitParam.moduleID = EModuleID::MOD_CHASSIS;
@@ -112,10 +29,7 @@ EAppStatus InitAllModule() {
     chassisInitParam.steerMotorID_RF = EDeviceID::DEV_CHAS_STEER_RF;
     chassisInitParam.steerMotorID_LB = EDeviceID::DEV_CHAS_STEER_LB;
     chassisInitParam.steerMotorID_RB = EDeviceID::DEV_CHAS_STEER_RB;
-    chassisInitParam.hipMotorID_L_L = EDeviceID::DEV_CHAS_L_HIP;
-    chassisInitParam.hipMotorID_L_R = EDeviceID::DEV_CHAS_R_HIP;
-    chassisInitParam.crawlerMotorID_L = EDeviceID::DEV_CHAS_CRAWLER_L;
-    chassisInitParam.crawlerMotorID_R = EDeviceID::DEV_CHAS_CRAWLER_R;
+
     // 设置can发送节点
     chassisInitParam.wheelsetMotorTxNode_LF = &TxNode_Can2_200;
     chassisInitParam.wheelsetMotorTxNode_RF = &TxNode_Can2_200;
@@ -125,8 +39,7 @@ EAppStatus InitAllModule() {
     chassisInitParam.steerMotorTxNode_RF = &TxNode_Can1_1FF;
     chassisInitParam.steerMotorTxNode_LB = &TxNode_Can1_1FF;
     chassisInitParam.steerMotorTxNode_RB = &TxNode_Can1_1FF;
-    chassisInitParam.crawlerMotorTxNodeID_L = &TxNode_Can3_200;
-    chassisInitParam.crawlerMotorTxNodeID_R = &TxNode_Can3_200;
+
     // 设置PID参数
     chassisInitParam.yawCorrectionPidParam.kp = 10.0f;
     chassisInitParam.yawCorrectionPidParam.ki = 0.0f;
@@ -221,74 +134,12 @@ EAppStatus InitAllModule() {
     chassisInitParam.steerSpdPidParam[3].maxIntegral = 10000.0f;
     chassisInitParam.steerSpdPidParam[3].maxOutput = 16000.0f;
 
-    // 髋关节组件pid
-    chassisInitParam.rollCorrectionPidParam.kp = 0.03f;
-    chassisInitParam.rollCorrectionPidParam.ki = 0.005f;
-    chassisInitParam.rollCorrectionPidParam.kd = 0.0f;
-    chassisInitParam.rollCorrectionPidParam.Input_deadband = 1.0f;
-    chassisInitParam.rollCorrectionPidParam.maxIntegral = 50.0f;
-    chassisInitParam.rollCorrectionPidParam.maxOutput = 1000.0f; ///< roll轴pid待调
-    chassisInitParam.MIT_L_kp = 85.f;//15.0f;
-    chassisInitParam.MIT_L_kd = 1.f;//1.0f; // mit参数待调
-    chassisInitParam.MIT_L_tau = 1.f;
-    chassisInitParam.MIT_R_kp = 375.f;
-    chassisInitParam.MIT_R_kd = 1.f;
-    chassisInitParam.MIT_R_tau = -5.f;
-
-    chassisInitParam.HipPosPidParam_L.kp = 0.f;
-    chassisInitParam.HipPosPidParam_L.ki = 0.f;
-    chassisInitParam.HipPosPidParam_L.kd = 0.f;
-    chassisInitParam.HipPosPidParam_L.maxIntegral = 1000.f;
-    chassisInitParam.HipPosPidParam_L.maxOutput = 10000.f;
-    chassisInitParam.HipPosPidParam_L.MachineModeErrorRange = 65535;
-    chassisInitParam.HipPosPidParam_L.kp = 0.f;
-    chassisInitParam.HipPosPidParam_L.ki = 0.f;
-    chassisInitParam.HipPosPidParam_L.kd = 0.f;
-    chassisInitParam.HipPosPidParam_L.maxIntegral = 1000.f;
-    chassisInitParam.HipPosPidParam_L.maxOutput = 10000.f;
-    chassisInitParam.HipSpdPidParam_L.kp = 0.f;
-    chassisInitParam.HipSpdPidParam_L.ki = 0.f;
-    chassisInitParam.HipSpdPidParam_L.kd = 0.f;
-    chassisInitParam.HipSpdPidParam_L.maxIntegral = 1000.f;
-    chassisInitParam.HipSpdPidParam_L.maxOutput = 10000.f;
-    chassisInitParam.HipPosPidParam_R.MachineModeErrorRange = 65535;
-    chassisInitParam.HipSpdPidParam_R.kp = 0.f;
-    chassisInitParam.HipSpdPidParam_R.ki = 0.f;
-    chassisInitParam.HipSpdPidParam_R.kd = 0.f;
-    chassisInitParam.HipSpdPidParam_R.maxIntegral = 1000.f;
-    chassisInitParam.HipSpdPidParam_R.maxOutput = 10000.f;
-
-    chassisInitParam.CrawlerSpdPidParam.kp = 8.0f;
-    chassisInitParam.CrawlerSpdPidParam.ki = 1.0f;
-    chassisInitParam.CrawlerSpdPidParam.kd = 0.f;
-    chassisInitParam.CrawlerSpdPidParam.maxIntegral = 4000.f;
-    chassisInitParam.CrawlerSpdPidParam.maxOutput = 15000.f;
-
-    // chassisInitParam.powerParamLF.kDefaultMaxPower = 30;
-    // chassisInitParam.powerParamLF.kTorqueCoeff  = 1.996889994401361e-06f;
-    // chassisInitParam.powerParamLF.k1 = 2.0194700553517952e-07f;
-    // chassisInitParam.powerParamLF.k2 = 1.6677144615631449e-07f;
-    // chassisInitParam.powerParamLF.kConstant = 1.7961569592046123f;
-    // chassisInitParam.powerParamLF.kMotorOutputMax = 16000;
-
-    // chassisInitParam.powerParamLF.kDefaultMaxPower = 30;
-    // chassisInitParam.powerParamLF.kTorqueCoeff  = 1.7186108961163208e-06f;
-    // chassisInitParam.powerParamLF.k1 = 2.434096875335387e-07f;
-    // chassisInitParam.powerParamLF.k2 = 1.747070234706869e-07f;
-    // chassisInitParam.powerParamLF.kConstant = 1.7961569592046123f;
-    // chassisInitParam.powerParamLF.kMotorOutputMax = 16000;
     chassisInitParam.powerParamLF.kDefaultMaxPower = 30;
     chassisInitParam.powerParamLF.kTorqueCoeff  = 1.1172101083651914e-06f;
     chassisInitParam.powerParamLF.k1 = 2.217009924016037e-07f;
     chassisInitParam.powerParamLF.k2 = 1.9290809050850713e-07f;
     chassisInitParam.powerParamLF.kConstant = 2.7857962849067786f;
     chassisInitParam.powerParamLF.kMotorOutputMax = 16000;
-    // chassisInitParam.powerParamLF.kDefaultMaxPower = 30;
-    // chassisInitParam.powerParamLF.kTorqueCoeff  = 2.126569888336043e-06f;
-    // chassisInitParam.powerParamLF.k1 = 1.039516398407314e-07f;
-    // chassisInitParam.powerParamLF.k2 = 2.654917462546597e-09f;
-    // chassisInitParam.powerParamLF.kConstant = 6.944830400516169f;
-    // chassisInitParam.powerParamLF.kMotorOutputMax = 16000;
 
     chassisInitParam.powerParamRF.kDefaultMaxPower = 30;
     chassisInitParam.powerParamRF.kTorqueCoeff  = 1.1172101083651914e-06f;

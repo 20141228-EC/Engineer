@@ -14,7 +14,6 @@
 
 #include "mod_common.hpp"
 #include "mod_chassis.hpp"
-#include "mod_arm.hpp"
 
 namespace my_engineer {
 

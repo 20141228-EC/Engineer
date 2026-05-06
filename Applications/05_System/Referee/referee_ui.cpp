@@ -746,8 +746,7 @@ void CSystemReferee::UI_UpdateStateFigureDrawing_() {
 	static auto &chassis = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->chassisInfo;
   stateFigureMsg.message.figureConfig[0].operate = 2;
   const bool boardSpinValid = (SysBoardLink.otherInfo.pack_id == CDevBoardLink::PKT_OTHER_INFOS);
-  const bool spinOn = boardSpinValid ? (SysBoardLink.otherInfo.is_spin_on != 0)
-                                     : (reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->spin_on);
+  const bool spinOn = boardSpinValid && (SysBoardLink.otherInfo.is_spin_on);
   stateFigureMsg.message.figureConfig[0].color = spinOn ? 3 : 7;
 
 	stateFigureMsg.message.figureConfig[0].operate = 2;

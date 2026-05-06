@@ -107,11 +107,6 @@ public:
         std::array<CAlgoPid::SAlgoInitParam_Pid, 4> steerPosPidParam;
         std::array<CAlgoPid::SAlgoInitParam_Pid, 4> steerSpdPidParam;
         CAlgoPid::SAlgoInitParam_Pid rollCorrectionPidParam; ///< roll轴控制pid
-        CAlgoPid::SAlgoInitParam_Pid HipPosPidParam_L;
-        CAlgoPid::SAlgoInitParam_Pid HipPosPidParam_R;
-        CAlgoPid::SAlgoInitParam_Pid HipSpdPidParam_L;
-        CAlgoPid::SAlgoInitParam_Pid HipSpdPidParam_R;
-        CAlgoPid::SAlgoInitParam_Pid CrawlerSpdPidParam;    ///< 履带电机用同一套pid
         CAlgoPowerControl::SAlgoInitParamPower powerParamLF;  // 左前电机功率参数
         CAlgoPowerControl::SAlgoInitParamPower powerParamRF;  // 右前电机功率参数
         CAlgoPowerControl::SAlgoInitParamPower powerParamLB;  // 左后电机功率参数
@@ -172,18 +167,6 @@ public:
 
     // 初始化模块
     EAppStatus InitModule(SModInitParam_Base &param) final;
-
-    // 面向模块的运动模式标志位
-    EmovMode MovMode = EmovMode::NORMAL;
-
-    // 复位腿的标志位
-    EVarStatus reset_hip = false;
-
-    // 启动履带的标志位
-    EVarStatus crawler_on = false;
-
-    // 小陀螺开关标志位
-    EVarStatus spin_on = false;
 
 private:
 
@@ -268,110 +251,6 @@ private:
         EVarStatus enableSwerve = false;
 
     } comWheelset_;
-
-    // 定义髋关节组件并实例化
-    class CComHip final: public CComponentBase{
-
-    public:
-        enum{LL = 0,LR = 1};
-
-        // 定义底盘髋关节信息结构体并实例化
-        struct SHipInfo {                                   
-            float_t pos_L_L = 0.0f; ///< 定义了组件用于底层驱动
-            float_t pos_L_R = 0.0f; ///< 后腿电机编码器值
-        } HipInfo;
-
-        // 定义底盘髋关节控制命令结构体并实例化
-        struct SHipCommand {
-            float_t L_Set_Angle = 0.0f; ///< 左腿腿长（编码器值）
-            float_t R_Set_Angle = 0.0f; ///< 右腿腿长（编码器值）        
-        } HipCmd;
-
-        // MIT控制结构体
-		struct SMitCtrl {
-			float_t kp = 0.0f;
-			float_t kd = 0.0f;
-			float_t q = 0.0f;
-			float_t dq = 0.0f;
-			float_t tau = 0.0f;
-		} mitCtrl[2];
-
-        // 传感器实例指针
-        CMemsBase *mems = nullptr;
-
-        // 电机实例指针数组
-        CDevMtr *motor[2] = {nullptr};
-
-        // 底盘类父类指针，用于访问髋关节复位标志位
-        CModChassis *parent = nullptr;
-
-        // 定义髋关节PID控制器
-        CAlgoPid HipPosPid[2];
-        CAlgoPid HipSpdPid[2];
-        CAlgoPid pidRollCtrl;                  ///< 整车roll轴控制
-
-        // 电机数据输出缓冲区
-        std::array<float_t, 2> mtrOutputBuffer = {0};
-
-        // 初始化组件
-        EAppStatus InitComponent(SModInitParam_Base &param) final;
-
-        // 重写组件更新函数
-        EAppStatus UpdateComponent() final;
-
-        // 声明组件输出更新函数(负责根据控制量进行解算，以及进行PID运算，最后得到输出值)
-        EAppStatus _UpdateOutput(float_t posit_L, float_t posit_R);
-    
-        // 电机can发送节点
-        std::array<CInfCAN::CCanTxNode*, 2> mtrCanTxNode;
-
-        // 面向髋关节组件的运动模式标志位
-        EmovMode MovMode_ = EmovMode::NORMAL;
-    }comHip_;
-
-    // 定义履带组件并实例化
-    class CComCrawler final: public CComponentBase{
-     public:
-        enum{L = 0, R = 1};
-
-        // 定义底盘履带信息结构体并实例化
-        struct SCrawlerInfo {                                   
-            float_t speed_L = 0.0f;
-            float_t speed_R = 0.0f;
-        } CrawlerInfo;
-
-        // 定义底盘履带控制命令结构体并实例化
-        struct SCrawlerCommand {
-            float_t speed_crawler = 0.f;    ///< 履带转速       
-        } CrawlerCmd;
-
-        // 电机实例指针数组
-        CDevMtr *motor[2] = {nullptr};
-
-        // 底盘类父类指针，用于访问启停履带标志位
-        CModChassis *parent = nullptr;
-
-        // 定义履带PID控制器
-        CAlgoPid PidCrawlerSpdCtrl;
-
-        // 电机数据输出缓冲区
-        std::array<int16_t, 2> mtrOutputBuffer = {0};
-
-        // 初始化组件
-        EAppStatus InitComponent(SModInitParam_Base &param) final;
-
-        // 重写组件更新函数
-        EAppStatus UpdateComponent() final;
-
-        // 声明组件输出更新函数(负责根据控制量进行解算，以及进行PID运算，最后得到输出值)
-        EAppStatus _UpdateOutput(float_t speed);
-    
-        // 电机can发送节点
-        std::array<CInfCAN::CCanTxNode*, 2> mtrCanTxNode;
-
-        // 面向履带组件的运动模式标志位
-        EmovMode MovMode_ = EmovMode::NORMAL;
-    }comCrawler_;
 
     // 重写基类函数
     void UpdateHandler_() final;

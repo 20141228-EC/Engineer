@@ -42,8 +42,6 @@ void CModChassis::StartChassisModuleTask(void *argument) {
 
                 chassis.chassisInfo.isModuleAvailable = false;
                 chassis.comWheelset_.StopComponent();
-                chassis.comHip_.StopComponent();
-                chassis.comCrawler_.StopComponent();
 
                 proc_waitMs(20);
                 lastWakeTime = xTaskGetTickCount();
@@ -54,8 +52,6 @@ void CModChassis::StartChassisModuleTask(void *argument) {
             case FSM_INIT: {
 
                 chassis.comWheelset_.StartComponent();
-                chassis.comHip_.StartComponent();
-                chassis.comCrawler_.StartComponent();
 
                 chassis.chassisCmd = SChassisCmd();
                 chassis.chassisInfo.isModuleAvailable = true;
@@ -117,11 +113,6 @@ void CModChassis::StartChassisModuleTask(void *argument) {
                 chassis.comWheelset_.wheelsetCmd.speed_X = chassis.chassisCmd.speed_X * 80;
                 chassis.comWheelset_.wheelsetCmd.speed_Y = chassis.chassisCmd.speed_Y * 80;
                 chassis.comWheelset_.wheelsetCmd.speed_W = chassis.chassisCmd.speed_W * 40;
-                chassis.comHip_.HipCmd.L_Set_Angle = std::clamp(CHASSIS_HIP_INIT_ECD_L + chassis.chassisCmd.L_length * ECD_LENGTH_RATIO * L_LIFT_MOTOR_DIR, 
-                                                                CHASSIS_HIP_ECD_MIN_L,CHASSIS_HIP_ECD_MAX_L);
-                chassis.comHip_.HipCmd.R_Set_Angle = std::clamp(CHASSIS_HIP_INIT_ECD_R + chassis.chassisCmd.L_length * ECD_LENGTH_RATIO * R_LIFT_MOTOR_DIR,
-                                                                CHASSIS_HIP_ECD_MIN_R,CHASSIS_HIP_ECD_MAX_R);                                 
-                // 根据电机初始化编码器值加上目标腿长所需要改变的编码器值 得出目标位置
 
                 uint32_t nowMs = HAL_GetTick();
                 g_chassis_loop_dt_ms = nowMs - lastLoopTickMs;

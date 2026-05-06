@@ -86,40 +86,6 @@ EAppStatus InitAllDevice(){
     boardLink.InitDevice(&boardLink_Initparam);
 
     /******************************************
-    * 机械臂末端电机
-    ******************************************/
-
-    // static CDevMtrM2006 subGantryMotor_Lift_L;
-    // CDevMtrM2006::SMtrInitParam_M2006 subGantryMotor_Lift_L_initparam;
-    // subGantryMotor_Lift_L_initparam.deviceID = EDeviceID::DEV_SUBGANTRY_MTR_LIFT_L;
-    // subGantryMotor_Lift_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    // subGantryMotor_Lift_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_1;
-    // subGantryMotor_Lift_L_initparam.useAngleToPosit = true;
-    // subGantryMotor_Lift_L_initparam.useStallMonit = true;
-    // subGantryMotor_Lift_L_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    // subGantryMotor_Lift_L.InitDevice(&subGantryMotor_Lift_L_initparam);
-
-    // static CDevMtrM2006 subGantryMotor_Lift_R;
-    // CDevMtrM2006::SMtrInitParam_M2006 subGantryMotor_Lift_R_initparam;
-    // subGantryMotor_Lift_R_initparam.deviceID = EDeviceID::DEV_SUBGANTRY_MTR_LIFT_R;
-    // subGantryMotor_Lift_R_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    // subGantryMotor_Lift_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_2;
-    // subGantryMotor_Lift_R_initparam.useAngleToPosit = true;
-    // subGantryMotor_Lift_R_initparam.useStallMonit = true;
-    // subGantryMotor_Lift_R_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    // subGantryMotor_Lift_R.InitDevice(&subGantryMotor_Lift_R_initparam);
-
-    // static CDevMtrM2006 subGantryMotor_Stretch_L;
-    // CDevMtrM2006::SMtrInitParam_M2006 subGantryMotor_Stretch_L_initparam;
-    // subGantryMotor_Stretch_L_initparam.deviceID = EDeviceID::DEV_SUBGANTRY_MTR_STRETCH_L;
-    // subGantryMotor_Stretch_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    // subGantryMotor_Stretch_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_3;
-    // subGantryMotor_Stretch_L_initparam.useAngleToPosit = true;
-    // subGantryMotor_Stretch_L_initparam.useStallMonit = true;
-    // subGantryMotor_Stretch_L_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    // subGantryMotor_Stretch_L.InitDevice(&subGantryMotor_Stretch_L_initparam);
-
-    /******************************************
     * 底盘电机
     ******************************************/
     static CDevMtrM3508 chassisMotor_LF;
@@ -221,93 +187,6 @@ EAppStatus InitAllDevice(){
     chassisMotor_R_Crawler_initparam.interfaceID = EInterfaceID::INF_CAN3;
     chassisMotor_R_Crawler_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_2;
     chassisMotor_R_CRAWLER.InitDevice(&chassisMotor_R_Crawler_initparam);
-
-    /******************************************
-     * 机械臂电机
-     *****************************************/
-    static CDevMtrM2006 armMotor_End_L;
-    CDevMtrM2006::SMtrInitParam_M2006 armMotor_End_L_initparam;
-    armMotor_End_L_initparam.deviceID = EDeviceID::DEV_ARM_MTR_END_L;
-    armMotor_End_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    armMotor_End_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
-    armMotor_End_L_initparam.useAngleToPosit = true;
-    armMotor_End_L_initparam.useStallMonit = true;
-    armMotor_End_L_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
-    armMotor_End_L_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    armMotor_End_L.InitDevice(&armMotor_End_L_initparam);
-
-    static CDevMtrM2006 armMotor_End_R;
-    CDevMtrM2006::SMtrInitParam_M2006 armMotor_End_R_initparam;
-    armMotor_End_R_initparam.deviceID = EDeviceID::DEV_ARM_MTR_END_R;
-    armMotor_End_R_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    armMotor_End_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_7;
-    armMotor_End_R_initparam.useAngleToPosit = true;
-    armMotor_End_R_initparam.useStallMonit = true;
-    armMotor_End_R_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
-    armMotor_End_R_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
-    armMotor_End_R.InitDevice(&armMotor_End_R_initparam);
-
-    static CDevMtrM2006 armMotor_Grip;
-    CDevMtrM2006::SMtrInitParam_M2006 armMotor_Grip_initparam;
-    armMotor_Grip_initparam.deviceID = EDeviceID::DEV_ARM_MTR_GRIP;
-    armMotor_Grip_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    armMotor_Grip_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_8;//暂时使用can2的ID8
-    armMotor_Grip_initparam.useAngleToPosit = true;
-    armMotor_Grip_initparam.useStallMonit = true;
-    armMotor_Grip_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
-    armMotor_Grip_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE; //堵转的选项设置为电流
-    armMotor_Grip.InitDevice(&armMotor_Grip_initparam);
-
-    static CDevMtrKT armMotor_Yaw;
-    CDevMtrKT::SMtrInitParam_KT armMotor_Yaw_initparam;
-    armMotor_Yaw_initparam.deviceID = EDeviceID::DEV_ARM_MTR_YAW;
-    armMotor_Yaw_initparam.interfaceID = EInterfaceID::INF_CAN3;
-    armMotor_Yaw_initparam.ktMtrID = CDevMtrKT::EKtMtrID::ID_1;
-    armMotor_Yaw_initparam.encoderResolution = 65535;
-    armMotor_Yaw_initparam.useAngleToPosit = true;
-    armMotor_Yaw_initparam.useStallMonit = true;
-    armMotor_Yaw_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
-    armMotor_Yaw_initparam.stallThreshold = 200;
-    armMotor_Yaw_initparam.stallTime = 200;
-    armMotor_Yaw.InitDevice(&armMotor_Yaw_initparam);
-
-    static CDevMtrKT armMotor_Pitch1;
-    CDevMtrKT::SMtrInitParam_KT armMotor_Pitch1_initparam;
-    armMotor_Pitch1_initparam.deviceID = EDeviceID::DEV_ARM_MTR_PITCH1;
-    armMotor_Pitch1_initparam.interfaceID = EInterfaceID::INF_CAN3;
-    armMotor_Pitch1_initparam.ktMtrID = CDevMtrKT::EKtMtrID::ID_2;
-    armMotor_Pitch1_initparam.encoderResolution = 65535;
-    armMotor_Pitch1_initparam.useAngleToPosit = true;
-    armMotor_Pitch1_initparam.useStallMonit = true;
-    armMotor_Pitch1_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
-    armMotor_Pitch1_initparam.stallThreshold = 200;
-    armMotor_Pitch1_initparam.stallTime = 200;
-    armMotor_Pitch1.InitDevice(&armMotor_Pitch1_initparam);
-
-    static CDevMtrKT armMotor_Pitch2;
-    CDevMtrKT::SMtrInitParam_KT armMotor_Pitch2_initparam;
-    armMotor_Pitch2_initparam.deviceID = EDeviceID::DEV_ARM_MTR_PITCH2;
-    armMotor_Pitch2_initparam.interfaceID = EInterfaceID::INF_CAN3;
-    armMotor_Pitch2_initparam.ktMtrID = CDevMtrKT::EKtMtrID::ID_3;
-    armMotor_Pitch2_initparam.encoderResolution = 65535;
-    armMotor_Pitch2_initparam.useAngleToPosit = true;
-    armMotor_Pitch2_initparam.useStallMonit = true;
-    armMotor_Pitch2_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
-    armMotor_Pitch2_initparam.stallThreshold = 200;
-    armMotor_Pitch2_initparam.stallTime = 200;
-    armMotor_Pitch2.InitDevice(&armMotor_Pitch2_initparam);
-
-    static CDevMtrDM_MIT armMotor_Roll;
-    CDevMtrDM_MIT::SMtrInitParam_DM_MIT armMotor_Roll_initparam;
-    armMotor_Roll_initparam.deviceID = EDeviceID::DEV_ARM_MTR_ROLL;
-    armMotor_Roll_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    armMotor_Roll_initparam.MasterID = 0x30;
-    armMotor_Roll_initparam.SlaveID = 0x31;
-    armMotor_Roll_initparam.Q_MAX = 3.1416f;
-    armMotor_Roll_initparam.DQ_MAX = 30.0f;
-    armMotor_Roll_initparam.TAU_MAX = 10.0f;
-    armMotor_Roll_initparam.useAngleToPosit = true;
-    armMotor_Roll.InitDevice(&armMotor_Roll_initparam);
 
     return APP_OK;
 }

@@ -80,6 +80,7 @@ dm-mc02/configuration.o: \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\03_Device\Include\Device.hpp \
   ..\..\..\Applications\03_Device\Include\dev_common.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\motor.hpp \
@@ -91,6 +92,7 @@ dm-mc02/configuration.o: \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_dji.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_m2006.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_m3508.hpp \
+  ..\..\..\Applications\03_Device\Include\mtr\mtr_rm6020.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_kt.hpp \
   ..\..\..\Applications\03_Device\Include\mems\mems.hpp \
   ..\..\..\Applications\03_Device\Include\mems\mems_common.hpp \
@@ -109,6 +111,7 @@ dm-mc02/configuration.o: \
   ..\..\..\Applications\03_Device\Include\dev_controller_link.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp \
   ..\..\..\Applications\03_Device\Include\dev_esp32.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_board_link.hpp \
   ..\..\..\Applications\03_Device\Include\dev_vision.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_usb_cdc.hpp \
   ..\USB_DEVICE\App\usb_device.h \
@@ -118,4 +121,13 @@ dm-mc02/configuration.o: \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ioreq.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_core.h \
   ..\Middlewares\ST\STM32_USB_Device_Library\Core\Inc\usbd_ctlreq.h \
-  ..\..\..\Applications\03_Device\Include\dev_referee.hpp
+  ..\..\..\Applications\03_Device\Include\dev_referee.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\Algorithm.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_ave_filter.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_filter_common.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_kf_filter.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\rp_matrix.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_imu_ekf.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\bmi_ekf.h \
+  ..\..\..\Applications\00_Algorithm\Include\kalman_fliter.h \
+  ..\..\..\Applications\00_Algorithm\Include\matrix.h

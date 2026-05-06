@@ -83,6 +83,7 @@ dm-mc02/conf_cantxnode.o: \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_uart.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_can.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_spi.hpp \

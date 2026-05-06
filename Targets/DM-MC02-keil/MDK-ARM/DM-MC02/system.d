@@ -81,6 +81,7 @@ dm-mc02/system.o: ..\..\..\Applications\05_System\System.cpp \
   ..\..\..\Applications\01_Configuration\Include\conf_interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_module.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_device.hpp \
+  ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\05_System\Include\RTT_DEBUG.h \
   ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT.h \
   ..\..\..\Middlewares\SEGGER_RTT\SEGGER_RTT_Conf.h \
@@ -96,6 +97,7 @@ dm-mc02/system.o: ..\..\..\Applications\05_System\System.cpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_dji.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_m2006.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_m3508.hpp \
+  ..\..\..\Applications\03_Device\Include\mtr\mtr_rm6020.hpp \
   ..\..\..\Applications\03_Device\Include\mtr\mtr_kt.hpp \
   ..\..\..\Applications\03_Device\Include\mems\mems.hpp \
   ..\..\..\Applications\03_Device\Include\mems\mems_common.hpp \
@@ -114,6 +116,7 @@ dm-mc02/system.o: ..\..\..\Applications\05_System\System.cpp \
   ..\..\..\Applications\03_Device\Include\dev_controller_link.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_crc.hpp \
   ..\..\..\Applications\03_Device\Include\dev_esp32.hpp \
+  ..\..\..\Applications\03_Device\Include\dev_board_link.hpp \
   ..\..\..\Applications\03_Device\Include\dev_vision.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_usb_cdc.hpp \
   ..\USB_DEVICE\App\usb_device.h \
@@ -126,12 +129,14 @@ dm-mc02/system.o: ..\..\..\Applications\05_System\System.cpp \
   ..\..\..\Applications\03_Device\Include\dev_referee.hpp \
   ..\..\..\Applications\05_System\Include\sys_vision.hpp \
   ..\..\..\Applications\05_System\Include\sys_referee.hpp \
-  ..\..\..\Applications\05_System\Include\sys_controller_link.hpp \
-  ..\..\..\Applications\05_System\Include\sys_esp32.hpp \
   ..\..\..\Applications\04_Module\Include\Module.hpp \
   ..\..\..\Applications\04_Module\Include\mod_common.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_power_control.hpp \
   ..\..\..\Applications\02_Interface\Include\Interface.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp \
   ..\..\..\Applications\04_Module\Include\mod_chassis.hpp \
-  ..\..\..\Applications\04_Module\Include\mod_gimbal.hpp \
-  ..\..\..\Applications\04_Module\Include\mod_arm.hpp
+  ..\..\..\Applications\00_Algorithm\Include\algo_ave_filter.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_filter_common.hpp \
+  ..\..\..\Applications\05_System\Include\sys_controller_link.hpp \
+  ..\..\..\Applications\05_System\Include\sys_esp32.hpp \
+  ..\..\..\Applications\05_System\Include\sys_board_link.hpp
