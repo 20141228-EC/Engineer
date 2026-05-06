@@ -42,9 +42,9 @@ public:
     struct SCtrlFlags {
         uint8_t remote_is_online;   // 遥控器是否在线
 
-        int16_t speed_x;    // 底盘x轴速度
-        int16_t speed_y;    // 底盘y轴速度
-        int16_t speed_w;    // 底盘旋转速度
+        int8_t speed_x;    // 底盘x轴速度
+        int8_t speed_y;    // 底盘y轴速度
+        float_t speed_w;    // 底盘旋转速度
     } __packed ctrlInfos = {};
 
     /**
