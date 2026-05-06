@@ -571,14 +571,14 @@ void CModChassis::UpdateHandler_(){
     power_total = power_cmd_total;
 
     // 更新最终转矩到输出缓冲区
-    comWheelset_.mtrOutputBuffer[CComWheelset::LF] = finalTorque[0];
-    comWheelset_.mtrOutputBuffer[CComWheelset::RF] = finalTorque[1];
-    comWheelset_.mtrOutputBuffer[CComWheelset::LB] = finalTorque[2];
-    comWheelset_.mtrOutputBuffer[CComWheelset::RB] = finalTorque[3];
-    comWheelset_.mtrSteerOutputBuffer[CComWheelset::LF] = finalSteerTorque[0];
-    comWheelset_.mtrSteerOutputBuffer[CComWheelset::RF] = finalSteerTorque[1];
-    comWheelset_.mtrSteerOutputBuffer[CComWheelset::LB] = finalSteerTorque[2];
-    comWheelset_.mtrSteerOutputBuffer[CComWheelset::RB] = finalSteerTorque[3];
+    // comWheelset_.mtrOutputBuffer[CComWheelset::LF] = finalTorque[0];
+    // comWheelset_.mtrOutputBuffer[CComWheelset::RF] = finalTorque[1];
+    // comWheelset_.mtrOutputBuffer[CComWheelset::LB] = finalTorque[2];
+    // comWheelset_.mtrOutputBuffer[CComWheelset::RB] = finalTorque[3];
+    // comWheelset_.mtrSteerOutputBuffer[CComWheelset::LF] = finalSteerTorque[0];
+    // comWheelset_.mtrSteerOutputBuffer[CComWheelset::RF] = finalSteerTorque[1];
+    // comWheelset_.mtrSteerOutputBuffer[CComWheelset::LB] = finalSteerTorque[2];
+    // comWheelset_.mtrSteerOutputBuffer[CComWheelset::RB] = finalSteerTorque[3];
 
 
     // 填充电机发送缓冲区
@@ -597,23 +597,16 @@ void CModChassis::UpdateHandler_(){
 
     CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[CComWheelset::LF],
                                 comWheelset_.mtrSteerCanTxNode[CComWheelset::LF]->dataBuffer,
-                                comWheelset_.mtrSteerOutputBuffer[CComWheelset::LF]);
+                                0);
     CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[CComWheelset::RF],
                                 comWheelset_.mtrSteerCanTxNode[CComWheelset::RF]->dataBuffer,
-                                comWheelset_.mtrSteerOutputBuffer[CComWheelset::RF]);
+                                0);
     CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[CComWheelset::LB],
                                 comWheelset_.mtrSteerCanTxNode[CComWheelset::LB]->dataBuffer,
                                 comWheelset_.mtrSteerOutputBuffer[CComWheelset::LB]);
     CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[CComWheelset::RB],
                                 comWheelset_.mtrSteerCanTxNode[CComWheelset::RB]->dataBuffer,
-                                comWheelset_.mtrSteerOutputBuffer[CComWheelset::RB]);
-
-    // CDevMtrDJI::FillCanTxBuffer(comCrawler_.motor[CComCrawler::L],
-    //                             comCrawler_.mtrCanTxNode[CComCrawler::L]->dataBuffer,
-    //                             comCrawler_.mtrOutputBuffer[CComCrawler::L]);
-    // CDevMtrDJI::FillCanTxBuffer(comCrawler_.motor[CComCrawler::R],
-    //                             comCrawler_.mtrCanTxNode[CComCrawler::R]->dataBuffer,
-    //                             comCrawler_.mtrOutputBuffer[CComCrawler::R]);
+                                0);
 
 }
 

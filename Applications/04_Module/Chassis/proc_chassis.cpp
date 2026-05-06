@@ -110,8 +110,8 @@ void CModChassis::StartChassisModuleTask(void *argument) {
 
                 // 从上层更新底盘控制量
                 // 乘以一个较大值方便调参
-                chassis.comWheelset_.wheelsetCmd.speed_X = chassis.chassisCmd.speed_X * 80;
-                chassis.comWheelset_.wheelsetCmd.speed_Y = chassis.chassisCmd.speed_Y * 80;
+                chassis.comWheelset_.wheelsetCmd.speed_X = chassis.chassisCmd.speed_X * 25;
+                chassis.comWheelset_.wheelsetCmd.speed_Y = chassis.chassisCmd.speed_Y * 25;
                 chassis.comWheelset_.wheelsetCmd.speed_W = chassis.chassisCmd.speed_W * 40;
 
                 uint32_t nowMs = HAL_GetTick();

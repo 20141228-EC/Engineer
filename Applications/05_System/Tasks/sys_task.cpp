@@ -75,7 +75,7 @@ void StartUpdateTask(void *argument) {
 
         // 执行can发送
             
-        TxNode_Can2_200.Transmit(); ///< 底盘轮向电机(0x201~0x204)
+        // TxNode_Can2_200.Transmit(); ///< 底盘轮向电机(0x201~0x204)
         TxNode_Can1_1FF.Transmit(); ///< 底盘舵向电机(0x205~0x208)
 
         proc_waitMs(1); // 1000Hz
