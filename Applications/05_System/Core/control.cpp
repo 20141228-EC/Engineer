@@ -107,11 +107,10 @@ void CSystemCore::ControlFromRemote_() {
         SysRemote.SetRemoteDeadZone(10.f);
             chassisCmd.speed_x = remote.joystick_LX / 2;
             chassisCmd.speed_y = remote.joystick_LY;
-            chassisCmd.speed_w = remote.joystick_RX;
 
         if(pgimbal_){
             pgimbal_->gimbalCmd.set_posit_yaw += 
-                (remote.joystick_RY / 100.f) * 90.f / freq;
+                (remote.joystick_RX / 100.f) * 90.f / freq;
         }
         
     }

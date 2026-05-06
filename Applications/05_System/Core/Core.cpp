@@ -308,6 +308,7 @@ void CSystemCore::UpdateHandler_() {
         }
     }
 
+    Chassis_UpdateHandler_();
     BoardLink_Info_Update_(); ///< 更新板间通信数据包
     
     last_use_Controller = use_Controller_;
