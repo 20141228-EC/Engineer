@@ -11,6 +11,7 @@
  ******************************************************************************/
 
 #include "proc_common.hpp"
+#include "System.hpp"
 
 namespace my_engineer {
 
@@ -22,9 +23,12 @@ namespace my_engineer {
 
         auto &core = *reinterpret_cast<CSystemCore *>(arg);
         auto &keyboard = SysRemote.remoteInfo.keyboard;
+        auto &edge = SysRemote.remoteInfo.keyboard_edge;
         auto &arm  = *core.parm_;
 
         CAlgoTrajPlayback player;
+        float_t endRollOffset = STORE_ROLL_DOWN_OFFSET;
+        core.storeEndRollPose_ = EStoreEndRollPose::DOWN;//默认是向下的
 
         // 循环等待鼠标左键/右键选择轨迹
         ETrajID trajId;
@@ -48,8 +52,17 @@ namespace my_engineer {
         /* Roll 手动标定：F/G 键微调末端 Roll（与控制器模式一致），鼠标左键确认 */
         {
             arm.armCmd.isAutoCtrl = true;    ///< 阻止外部ControlFromKeyboard_干扰
+
             while(!keyboard.key_Ctrl){
-                arm.armCmd.set_angle_end_roll += static_cast<float_t>(keyboard.key_F - keyboard.key_G) * 60.0f / 1000.f;
+                if(edge.key_R == CSystemRemote::ERemoteEdge::Rising) {
+                    if(core.storeEndRollPose_ == EStoreEndRollPose::DOWN) {
+                        core.storeEndRollPose_ = EStoreEndRollPose::UP;
+                        endRollOffset = STORE_ROLL_UP_OFFSET;
+                    } else {
+                        core.storeEndRollPose_ = EStoreEndRollPose::DOWN;
+                        endRollOffset = STORE_ROLL_DOWN_OFFSET;
+                    }
+                }
                 proc_waitMs(1);
             }
             // 左键确认: 当前电机Roll位置设为零点偏移
@@ -59,16 +72,23 @@ namespace my_engineer {
         {
             const auto Traj = it->second; // 取到轨迹帧
             arm.armCmd.isAutoCtrl = true;
-    
-            /*step 1 :臂先到达固定的起始位姿*/
 
-            if(!PlayFrameSegment(arm, Traj.frame, 0, player, true)) goto proc_exit;//夹爪的当前状态时夹紧
+            // 从第二段开始用它作为规划起点，避免每次反馈起点漂移
+            float_t lastTarget[J::COUNT];
+
+            /*step 1 :臂先到达固定的起始位姿*/
+            if(!PlayFrameSegment(arm, Traj.frame, 0, player, true, endRollOffset, nullptr)) goto proc_exit;
+            Extrarow(Traj.frame, 0, lastTarget);
+            lastTarget[J::J_ENDR] += endRollOffset;
             proc_waitMs(50);    //等待夹爪收缩
-    
+
             /*step 2 :逐段播放轨迹*/
             for(int seg = 1; seg < Traj.frameCount; seg++){
-                if(!PlayFrameSegment(arm, Traj.frame, seg, player, true)) goto proc_exit;
-//                if(Traj.frame[8] == 1){
+                if(!PlayFrameSegment(arm, Traj.frame, seg, player, true, endRollOffset, lastTarget)) goto proc_exit;
+                // 更新 lastTarget 为当前段的 target
+                Extrarow(Traj.frame, seg, lastTarget);
+                lastTarget[J::J_ENDR] += endRollOffset;
+//                if(Traj.frame[seg][FC_GRIP] == 1){
 //                    proc_waitMs(0);
 //                }
             }
@@ -79,7 +99,11 @@ namespace my_engineer {
         core.parm_->armCmd.isAutoCtrl = false;
         core.autoCtrlTaskHandle_ = nullptr;
         core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
+        arm.armCmd.set_angle_end_roll = 0.f; //末端Roll回正
+        SysControllerLink.robotInfo.controlled_by_controller = true;
         core.armmode_ = EArmMode::NORMAL;   //没有任务的状态
+        core.storeEndRollPose_ = EStoreEndRollPose::DOWN;
+        core.use_Controller_ = true;
         proc_return();
     }
 }

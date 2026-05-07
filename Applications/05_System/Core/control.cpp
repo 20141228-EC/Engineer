@@ -398,9 +398,18 @@ void CSystemCore::ControlFromController_() {
         pchassis_->chassisCmd.speed_W *= 0.92f;
         if (abs(pchassis_->chassisCmd.speed_W) < 0.3f) pchassis_->chassisCmd.speed_W = 0.0f;//处理旋转前停留的w速度避免自旋
 
-        pchassis_->chassisCmd.speed_W = pchassis_->chassisCmd.speed_W +
-            0.03f*(keyboard.mouse_X - pchassis_->chassisCmd.speed_W);
-        std::clamp(pchassis_->chassisCmd.speed_W, -15.0f, 15.0f);
+        pchassis_->chassisCmd.speed_W += static_cast<float_t>(keyboard.key_E - keyboard.key_Q) * 15.0f;
+        pchassis_->chassisCmd.speed_W = std::clamp(pchassis_->chassisCmd.speed_W, -20.0f, 20.0f);
+        
+        static int16_t last_mouse_X = 0;
+        static int16_t count = 0;
+        if(abs(keyboard.mouse_X) - abs(last_mouse_X) > 200 && count > 100) { //鼠标移动过快则认为是误操作，切换回底盘控制
+            use_Controller_ = false;
+            SysControllerLink.robotInfo.controlled_by_controller = false;//当在自定义控制器模式的时候鼠标移动的速度快速移动则会切换回底盘的控制
+            return;
+        }
+        last_mouse_X = keyboard.mouse_X ;
+        count++;
 
         if (!pchassis_->chassisCmd.isAutoCtrl)
         {
@@ -539,7 +548,7 @@ void CSystemCore::ControlFromController_() {
         //     last_rocker_key_status == CSystemControllerLink::KEY_STATUS::RELEASE) {
         //     psubgantry_->subGantryCmd.setPumpOn_Gantry = !psubgantry_->subGantryCmd.setPumpOn_Gantry;
         // }
-        if(keyboard_edge.key_Q == CSystemRemote::ERemoteEdge::Rising){
+        if(keyboard_edge.key_B == CSystemRemote::ERemoteEdge::Rising){
             robotdata.p3_lock = !robotdata.p3_lock;
         }
 

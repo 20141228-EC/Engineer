@@ -248,6 +248,30 @@ void CSystemCore::UpdateHandler_() {
     
     ControlFromEsp32_(); // ESP32控制
 
+    // 由于自动任务会出现莫名的残留现象直接杀死任务会出现残留标志位没有同步，所以在此处做后续的处理
+    static EAutoCtrlProcess lastAutoCtrlProcess = EAutoCtrlProcess::NONE;
+    if (lastAutoCtrlProcess != EAutoCtrlProcess::NONE
+        && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
+        // 夹爪恢复
+        if (parm_) {
+            gripKeyboardCmd_ = parm_->armInfo.isGripped ? EGripKeyboardCmd::CLOSE : EGripKeyboardCmd::OPEN;
+            parm_->armCmd.set_speed_grip = 0.0f;
+            parm_->armCmd.set_angle_end_roll = 0.f; //末端Roll回正
+        }
+        // 图传强制回正
+        if (pgimbal_) {
+            pgimbal_->gimbalCmd.set_visualyaw = GIMBAL_VISUAL_MOTOR_INIT_ANGLE;
+        }
+        gimbal_auto_ctrl = false;
+        //pgimbal_->gimbalCmd.isAutoCtrl = false; 
+        // 底盘回到正常的控制
+        if (pchassis_) {
+            pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
+        }
+        movemode_ = EMoveMode::NONE;
+    }
+    lastAutoCtrlProcess = currentAutoCtrlProcess_;
+
     // 每周期重置手动夹爪标志，由对应控制函数按需设置
     if (parm_ && !parm_->armCmd.isAutoCtrl) {
         parm_->armCmd.gripClose = false;

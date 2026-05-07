@@ -1,4 +1,4 @@
-/********************************************************************************
+﻿/********************************************************************************
  * @brief        单轴梯形速度曲线规划器
  * @file         algo_traj_playback.hpp
  * @author       ciallo (1002046597@qq.com)
@@ -48,6 +48,18 @@ public:
     void TrapezoidalSpeedPlanner(float_t _startpoint, float_t _endpoint, float_t _vMax, float_t _acc) ;
 
     /**
+     * @brief 同相位规划：给定起止位置和关节帧的(tAcc, tConst, tDec)，
+     *        反推 vPeak/aMax，使本关节与领头关节同时启动、同时匀速、同时到达。
+     * @param _startpoint 起始位置 (度)
+     * @param _endpoint   目标位置 (度)
+     * @param _tAcc       加速段时长 (s)
+     * @param _tConst     匀速段时长 (s)
+     * @param _tDec       减速段时长 (s)
+     */
+    void SetSynchronized(float_t _startpoint, float_t _endpoint,
+                         float_t _tAcc, float_t _tConst, float_t _tDec);
+
+    /**
      * @brief 位置查询函数
      * @param t 从运动开始经过的时间 (s)
      * @return 当前位置
@@ -93,11 +105,13 @@ public:
     float_t speedScale = 1.0f; ///< 速度比例系数，>1加速，<1减速
 
     /**
-     * @brief 规划从 current 到 target 的运动
+     * @brief 规划从 current 到 target 的运动（同相位多轴协调）
      * @param current 7个关节当前角度
      * @param target  7个关节目标角度
      */
-    void PlanMultiAxisTraj(const float_t current[JointId::COUNT], const float_t target[JointId::COUNT]) ;
+    void PlanMultiAxisTraj(const float_t current[JointId::COUNT],
+                           const float_t target[JointId::COUNT],
+                           float_t minTime = 0.0f);
     
     /**
      * @brief 在时刻 t 计算 7 个关节位置

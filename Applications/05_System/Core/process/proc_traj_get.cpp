@@ -60,13 +60,21 @@ namespace my_engineer {
             const auto Traj = it->second; // 取到轨迹帧
             arm.armCmd.isAutoCtrl = true;
 
+            //从第二段开始用它作为规划起点，避免反馈起点漂移
+            float_t lastTarget[J::COUNT];
+
             /*step 1 :臂先到达固定的起始位姿*/
-            if(!PlayFrameSegment(arm, Traj.frame, 0, player, true)) goto proc_exit;
+            if(!PlayFrameSegment(arm, Traj.frame, 0, player, true, 0.0f, nullptr)) goto proc_exit;
+            Extrarow(Traj.frame, 0, lastTarget);
             proc_waitMs(50);    //等待夹爪收缩
 
             /*step 2 :逐段播放轨迹*/
             for(int seg = 1; seg < Traj.frameCount; seg++){
-                if(!PlayFrameSegment(arm, Traj.frame, seg, player, true)) goto proc_exit;
+                if(!PlayFrameSegment(arm, Traj.frame, seg, player, true, 0.0f, lastTarget)) goto proc_exit;
+                Extrarow(Traj.frame, seg, lastTarget);
+            //     if(Traj.frame[seg][FC_GRIP] == 1){
+            //        proc_waitMs(0);
+            //    }
             }
         }
 
@@ -75,7 +83,9 @@ namespace my_engineer {
         core.parm_->armCmd.isAutoCtrl = false;
         core.autoCtrlTaskHandle_ = nullptr;
         core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
+        SysControllerLink.robotInfo.controlled_by_controller = true;
         core.armmode_ = EArmMode::NORMAL;   //没有任务的状态
+        core.use_Controller_ = true;
         proc_return();
     }
 }

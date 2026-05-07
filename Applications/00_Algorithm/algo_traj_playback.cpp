@@ -57,6 +57,41 @@ namespace my_engineer{
     };
 
     /**
+     * @brief 给定 (tAcc, tConst, tDec)，反推 vPeak / aMax
+     */
+    void CAlgoTrajPlayback::STrapezoidalSpeed::SetSynchronized(
+        float_t _startpoint, float_t _endpoint,
+        float_t _tAcc, float_t _tConst, float_t _tDec) {
+
+        startpoint = _startpoint;
+        endpoint   = _endpoint;
+        totalDist  = endpoint - startpoint;
+        absDist    = fabsf(totalDist);
+
+        tAcc   = _tAcc;
+        tConst = _tConst;
+        tDec   = _tDec;
+        tTotal = tAcc + tConst + tDec;
+
+        // 静止关节或时长为零：所有运动量清零，但保留 tTotal
+        // 让 GetPosition 在 t<=0 / t>=tTotal 分支正确返回 start/endpoint
+        if (absDist < 1e-3f || tTotal < 1e-6f) {
+            vMax = aMax = vPeak = 0.0f;
+            sAcc = sDec = sConst = 0.0f;
+            return;
+        }
+
+        const float_t denom = 0.5f * tAcc + tConst + 0.5f * tDec;
+        vPeak  = (denom > 1e-6f) ? (absDist / denom) : 0.0f;
+        aMax   = (tAcc  > 1e-6f) ? (vPeak / tAcc)    : 0.0f;
+        vMax   = vPeak;   // 兼容
+
+        sAcc   = 0.5f * vPeak * tAcc;
+        sConst = vPeak * tConst;
+        sDec   = 0.5f * vPeak * tDec;
+    }
+
+    /**
      * @brief 位置查询函数
      * @param t 从运动开始经过的时间 (s)
      * @return 当前位置
@@ -82,29 +117,62 @@ namespace my_engineer{
 
     /**
      * @brief 多轴协调轨迹播放器
+     *
+     * minTime: 默认 0 = 纯按物理参数规划（正常播放都用这个）
+     *          > 0    = 强制最小总时长，把整段拖慢到 minTime（仅用于安全慢速/调试）
      */
-    
-    void CAlgoTrajPlayback::PlanMultiAxisTraj(const float_t current[JointId::COUNT], const float_t target[JointId::COUNT]) {
-        maxTime_ = 0; //用于记录最大速度
-        // 速度比例系数应用到各关节
+    void CAlgoTrajPlayback::PlanMultiAxisTraj(const float_t current[JointId::COUNT],
+                                              const float_t target[JointId::COUNT],
+                                              float_t minTime) {
+        // ---------- 第一遍：用各关节物理参数算各自的梯形 tTotal ----------
+        STrapezoidalSpeed tmp[JointId::COUNT];
+        int     leadIdx = -1;
+        float_t leadT   = 0.0f;
+
         for (int i = 0; i < JointId::COUNT; i++) {
-            float_t vel = TrajConfig.jointParams[i].velMax * speedScale;
-            float_t acc = TrajConfig.jointParams[i].accMax * speedScale;
-            jointTrajs[i].TrapezoidalSpeedPlanner(current[i], target[i], vel, acc);//求出相应的时间和距离
-            if (jointTrajs[i].tTotal > maxTime_) {
-                maxTime_ = jointTrajs[i].tTotal;//选择排序找到最大的时间
+            const float_t vel = TrajConfig.jointParams[i].velMax * speedScale;
+            const float_t acc = TrajConfig.jointParams[i].accMax * speedScale;
+            tmp[i].TrapezoidalSpeedPlanner(current[i], target[i], vel, acc);
+
+            if (tmp[i].tTotal > leadT) {
+                leadT   = tmp[i].tTotal;
+                leadIdx = i;
             }
         }
-        // 各轴协调速度同步
-        if(maxTime_ > 1e-3f){
-            for(int i = 0; i < JointId::COUNT; i++){
-                if(jointTrajs[i].tTotal > 1e-3f && jointTrajs[i].tTotal < maxTime_ * 0.95f ){
-                    float_t scale = jointTrajs[i].tTotal / maxTime_;
-                    float_t vel = TrajConfig.jointParams[i].velMax * speedScale;
-                    float_t acc = TrajConfig.jointParams[i].accMax * speedScale;
-                    jointTrajs[i].TrapezoidalSpeedPlanner(current[i], target[i], vel * scale, acc * scale * scale);//降速并将时间同步到maxTime_
-                }
+
+        // ---------- 决定整段总时长：max(物理 leadT, minTime) ----------
+        maxTime_ = (minTime > leadT) ? minTime : leadT;
+
+        // 全部静止（包括 minTime <= 0 的极端情况）：直接拷贝原规划，所有关节都是零运动
+        if (maxTime_ < 1e-6f || leadIdx < 0) {
+            for (int i = 0; i < JointId::COUNT; i++) {
+                jointTrajs[i] = tmp[i];
+                jointTrajs[i].tTotal = maxTime_;   // 让 IsFinished 一致
             }
+            return;
+        }
+
+        // ---------- 取头关节的 (tAcc, tConst, tDec) 作为同相位模板 ----------
+        float_t leadTAcc, leadTConst, leadTDec;
+        if (tmp[leadIdx].tTotal > 1e-6f) {
+            // 若 minTime 拉伸了 maxTime_，把领头的三段等比例放大
+            const float_t k = (minTime > tmp[leadIdx].tTotal)
+                              ? (maxTime_ / tmp[leadIdx].tTotal)
+                              : 1.0f;
+            leadTAcc   = tmp[leadIdx].tAcc   * k;
+            leadTConst = tmp[leadIdx].tConst * k;
+            leadTDec   = tmp[leadIdx].tDec   * k;
+        } else {
+            // 极端情况：所有关节几乎不动但 minTime > 0，构造 1:8:1 的对称梯形作为兜底
+            leadTAcc   = maxTime_ * 0.1f;
+            leadTDec   = maxTime_ * 0.1f;
+            leadTConst = maxTime_ - leadTAcc - leadTDec;
+        }
+
+        // ---------- 第二遍：所有关节同相位规划 ----------
+        for (int i = 0; i < JointId::COUNT; i++) {
+            jointTrajs[i].SetSynchronized(current[i], target[i],
+                                          leadTAcc, leadTConst, leadTDec);
         }
     }
 

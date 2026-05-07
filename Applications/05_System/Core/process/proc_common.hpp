@@ -16,6 +16,9 @@
 #include <map>
 #include <cmath>
 
+#define STORE_ROLL_UP_OFFSET  -160.0f  //标定的时候出现偏差导致末端并不是水平
+#define STORE_ROLL_DOWN_OFFSET 0.0f
+
 namespace my_engineer{
     
     using J = CAlgoTrajPlayback::JointId;
@@ -51,10 +54,10 @@ namespace my_engineer{
     };
 
     struct SArrivalCheckConfig {
-        float_t toleranceDeg = 5.0f;     ///< 关节到位容差，单位：度
-        uint32_t stableMs = 200;          ///< 每个关节进入容差后需要连续稳定的时间
+        float_t toleranceDeg = 3.0f;     ///< 关节到位容差，单位：度
+        uint32_t stableMs = 100;          ///< 每个关节进入容差后需要连续稳定的时间
         uint32_t timeoutMs = 1000;        ///< 本帧目标指令到达后，等待真实反馈到位的报警时间
-        uint32_t hardTimeoutMs = 5000;    ///< 本帧目标指令到达后，等待真实反馈到位的硬超时时间
+        uint32_t hardTimeoutMs = 8000;    ///< 本帧目标指令到达后，等待真实反馈到位的硬超时时间
         uint32_t gripTimeoutMs = 3000;   ///< 本帧目标指令到达后，等待夹爪到位的超时时间
     };
     //轨迹外部声明
@@ -84,12 +87,25 @@ namespace my_engineer{
     float_t ExtractSpeed(const float_t traj[][FC_COUNT], int row);
     
     //梯形减速播放器
-    bool PlaySegment(CModArm &arm, const float_t target[J::COUNT],float_t speedScale,
-          bool gripClose,CAlgoTrajPlayback &player, bool checkctrl );
+    //  gripDuringMotion : 关节运动过程中保持的夹爪状态（true=夹紧, false=松开）
+    //  gripAfter        : 关节到位之后才切换的夹爪状态（即本段目标）
+    //  startOverride 非空时，使用其作为规划起点（避免每段用反馈起点导致路径漂移）
+    //  minTimeS      可选最小总时长(秒)，0 = 按物理参数自由规划（默认）；
+    //                 仅用于"安全慢速模式"等强制拖慢场景，正常播放不应使用，
+    //                 否则物理上能更快完成的段会被无谓拖长。
+    bool PlaySegment(CModArm &arm, const float_t target[J::COUNT], float_t speedScale,
+                     bool gripDuringMotion, bool gripAfter,
+                     CAlgoTrajPlayback &player, bool checkctrl,
+                     const float_t *startOverride = nullptr,
+                     float_t minTimeS = 0.0f);
 
     //完整的封装
-    bool PlayFrameSegment(CModArm &arm,const float_t traj[][FC_COUNT], int seg,
-                                CAlgoTrajPlayback &player, bool checkctrl);
+    //  prevTarget 非空：用上一段 target 做起点
+    //  prevTarget 为空：用实时反馈做起点
+    bool PlayFrameSegment(CModArm &arm, const float_t traj[][FC_COUNT], int seg,
+                          CAlgoTrajPlayback &player, bool checkctrl,
+                          float_t endRollOffset = 0.0f,
+                          const float_t *prevTarget = nullptr);
 }
 
-#endif // PROC_TRAJ_COMMON_HP
+#endif // PROC_TRAJ_COMMON_HPP

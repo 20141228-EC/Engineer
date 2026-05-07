@@ -13,8 +13,8 @@
 #define MOD_ARM_HPP
 
 /*-------------------------------------物理限位---------------------------------------------------*/
-#define ARM_YAW_PHYSICAL_RANGE_MIN -165.f
-#define ARM_YAW_PHYSICAL_RANGE_MAX 173.f
+#define ARM_YAW_PHYSICAL_RANGE_MIN -115.3f
+#define ARM_YAW_PHYSICAL_RANGE_MAX 222.7f
 #define ARM_PITCH1_PHYSICAL_RANGE_MIN 0.0f
 #define ARM_PITCH1_PHYSICAL_RANGE_MAX 96.f
 #define ARM_PITCH2_PHYSICAL_RANGE_MIN 1.f
@@ -83,7 +83,7 @@
 #define ARM_INIT_SAFE_PITCH2_ANGLE 70.0f
 #define ARM_INIT_SAFE_PITCH3_ANGLE -11.0f
 
-#define POSIT_JOINT1_YAW_MACH 43920
+#define POSIT_JOINT1_YAW_MACH 53902
 #define POSIT_JOINT1_YAW_MACH_PHY 0.f
 #define ARM_YAW_MOTOR_RANGE_LHK 61551
 
@@ -112,6 +112,21 @@
 
 #define deg2rad(x) ((x) * 0.017453292519943295769236907684886)
 #define rad2deg(x) ((x) * 57.295779513082320876798154814105)
+/*------------------------------------- 夹爪的相关参数------------------------------------------*/
+/// 自动控制速度常量（电机的转速rpm）
+#define GRIP_OPEN_SPEED  12000.0f
+#define GRIP_OPEN_SPEED_MIN  4000.0f
+#define GRIP_CLOSE_SPEED  12000.0f
+
+#define GRIP_OPEN_Stop_distance  2.0f
+#define GRIP_CLOSE_Stop_distance  2.0f
+#define GRIP_OPEN_Slow_distance 37.0f//减速的物理范围
+#define GRIP_CLOSE_Slow_distance 28.0f//减速的范围
+
+#define gripOpenStopPosit  (ARM_END_GRIP_MOTOR_RANGE - PhyPositToMtrPosit(GRIP_OPEN_Stop_distance))//刹车距离
+#define gripOpenSlowPosit  (ARM_END_GRIP_MOTOR_RANGE - PhyPositToMtrPosit(GRIP_OPEN_Slow_distance))
+#define gripCloseStopPosit (PhyPositToMtrPosit(GRIP_CLOSE_Stop_distance))
+#define gripCloseSlowPosit (PhyPositToMtrPosit(GRIP_CLOSE_Slow_distance))//减速的编码范围
 /*-------------------------------------重力补偿数据--------------------------------------------------------*/
 #define PITCH1     0
 #define PITCH2 	   1
@@ -473,7 +488,7 @@ private:
 		struct SGripinitParam {
 			float_t initSpeedMax_     = 6000.0f;   ///< 初始化最大速度
 			float_t initSpeedMin_     = 2300.0f;   ///< 保底最低速度
-			float_t initTorqueThresh_ = 2000.0f;   ///< 力矩开始减速的阈值
+			float_t initTorqueThresh_ = 1000.0f;   ///< 力矩开始减速的阈值
 			float_t initTorqueRange_  = 2000.0f;   ///< 从全速减到最低速的力矩区间
 		} GripinitParam_;
 
@@ -482,7 +497,7 @@ private:
 			float_t filteredTorque  = 0.0f;     ///< IIR滤波后的力矩值
 			float_t closeTorqueThresh = 1700.0f;///< 滤波力矩开始减速的阈值
 			float_t closeTorqueRange  = 1100.0f;///< 从全速减到最低速的滤波力矩区间
-			float_t closeSpeedMin     = 1000.0f;///< 闭合时保底最低速度
+			float_t closeSpeedMin     = 5000.0f;///< 闭合时保底最低速度
 			float_t detectTorque      = 2800.0f;///< 滤波力矩超过此值即判定夹取成功
 			float_t filterAlpha       = 0.95f;  ///< LowPassFilter滤波系数α
 		} gripDetect_;
@@ -506,6 +521,9 @@ private:
 
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
+
+
+		float_t CalcGripSlowSpeed(float_t maxSpeed, float_t minSpeed, int32_t remainToStop, int32_t slowBand);
 
 		// 更新组件
 		EAppStatus UpdateComponent() final;
