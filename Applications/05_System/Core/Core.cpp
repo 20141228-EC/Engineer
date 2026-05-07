@@ -523,7 +523,7 @@ void CSystemCore::Chassis_UpdateHandler_(){
         float_t right = chassisCmd.speed_x;
         float_t cycle = chassisCmd.speed_w;
 
-        float_t yaw_angle = pgimbal_->gimbalInfo.encoder_yaw / 32768.f * 3.1415926;     // 归一到-pi~pi之间
+        float_t yaw_angle =  -pgimbal_->gimbalInfo.encoder_yaw / 32768.f * 3.1415926;     // 归一到-pi~pi之间
         if(chassisCmd.is_spin_on){
             cycle = fabs(sin(HAL_GetTick() / 1000.f * 3.1415926) * 30);
             cycle = std::clamp(cycle, 10.f, 30.f);     // 变速小陀螺，但是限制最低速度
