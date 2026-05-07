@@ -142,9 +142,9 @@ private:
     // 底盘控制指令(根据转系处理之后最终发给下板)
     struct Core
     {
-        int16_t speed_x_ = 0;
-        int16_t speed_y_ = 0;
-        int16_t speed_w_ = 0;
+        float_t speed_x_ = 0;
+        float_t speed_y_ = 0;
+        float_t speed_w_ = 0;
     }chassisCmd_;
     
 

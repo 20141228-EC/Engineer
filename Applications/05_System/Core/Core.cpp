@@ -488,9 +488,9 @@ void CSystemCore::BoardLink_Info_Update_(){
 
     // 数据更新
     SysBoardLink.ctrlInfos.remote_is_online = SysRemote.systemStatus;
-    SysBoardLink.ctrlInfos.speed_x = static_cast<int16_t>(CSystemCore::chassisCmd_.speed_x_ * 80);
-    SysBoardLink.ctrlInfos.speed_y = static_cast<int16_t>(CSystemCore::chassisCmd_.speed_y_ * 80);
-    SysBoardLink.ctrlInfos.speed_w = static_cast<int16_t>(CSystemCore::chassisCmd_.speed_w_ * 40);
+    SysBoardLink.ctrlInfos.speed_x = static_cast<int16_t>(CSystemCore::chassisCmd_.speed_x_);
+    SysBoardLink.ctrlInfos.speed_y = static_cast<int16_t>(CSystemCore::chassisCmd_.speed_y_);
+    SysBoardLink.ctrlInfos.speed_w = static_cast<int16_t>(CSystemCore::chassisCmd_.speed_w_);
 
     SysBoardLink.angleInfos.grip_close = parm_->armCmd.gripClose;
     SysBoardLink.angleInfos.pitch1 = parm_->armCmd.set_angle_Pitch1;
@@ -511,12 +511,12 @@ void CSystemCore::BoardLink_Info_Update_(){
 void CSystemCore::Chassis_UpdateHandler_(){
 
     // 操作手指令限幅
-    CSystemCore::chassisCmd.speed_x = 
-        std::clamp<float_t >(CSystemCore::chassisCmd.speed_x, -660.f, 660.f);
-    CSystemCore::chassisCmd.speed_y = 
-        std::clamp<float_t >(CSystemCore::chassisCmd.speed_y, -660.f, 660.f);
-    CSystemCore::chassisCmd.speed_w = 
-        std::clamp<float_t >(CSystemCore::chassisCmd.speed_w, -660.f, 660.f);
+    // CSystemCore::chassisCmd.speed_x = 
+    //     std::clamp<float_t >(CSystemCore::chassisCmd.speed_x, -660.f, 660.f);
+    // CSystemCore::chassisCmd.speed_y = 
+    //     std::clamp<float_t >(CSystemCore::chassisCmd.speed_y, -660.f, 660.f);
+    // CSystemCore::chassisCmd.speed_w = 
+    //     std::clamp<float_t >(CSystemCore::chassisCmd.speed_w, -660.f, 660.f);
 
     if(pgimbal_->gimbalInfo.isModuleAvailable){
         float_t front = chassisCmd.speed_y;
@@ -569,12 +569,12 @@ float uint_to_float(int x_int, float x_min, float x_max, int bits)
 void CSystemCore::RestrictChassisCmd_(){
 
     // 最终发送指令限幅
-    CSystemCore::chassisCmd_.speed_x_ = 
-        float_to_uint(CSystemCore::chassisCmd.speed_x, -660, 660, 16);
-    CSystemCore::chassisCmd_.speed_y_ = 
-        float_to_uint(CSystemCore::chassisCmd.speed_y, -660, 660, 16);
-    CSystemCore::chassisCmd_.speed_w_ = 
-        float_to_uint(CSystemCore::chassisCmd.speed_w, -660, 660, 16);
+    CSystemCore::chassisCmd_.speed_x_ = (int16_t)chassisCmd_.speed_x_;
+        // float_to_uint(CSystemCore::chassisCmd.speed_x, -660, 660, 16);
+    CSystemCore::chassisCmd_.speed_y_ = (int16_t)chassisCmd_.speed_y_;
+        // float_to_uint(CSystemCore::chassisCmd.speed_y, -660, 660, 16);
+    CSystemCore::chassisCmd_.speed_w_ = (int16_t)chassisCmd_.speed_w_;
+        // float_to_uint(CSystemCore::chassisCmd.speed_w, -660, 660, 16);
 
 }
 
