@@ -105,8 +105,8 @@ void CSystemCore::ControlFromRemote_() {
     // LOW + MID 底盘控制
     if (remote.switch_L == LOW && remote.switch_R == MID) {
         SysRemote.SetRemoteDeadZone(10.f);
-            chassisCmd.speed_x = remote.joystick_LX / 2;
-            chassisCmd.speed_y = remote.joystick_LY;
+            chassisCmd.speed_x = remote.joystick_LX / 2 * 660 / 100;
+            chassisCmd.speed_y = remote.joystick_LY * 660 / 100;
 
         if(pgimbal_){
             pgimbal_->gimbalCmd.set_posit_yaw += 

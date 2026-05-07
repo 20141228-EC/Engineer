@@ -492,15 +492,20 @@
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\04_Module\Module.cpp</FilePath>
             </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Application/Module/Arm</GroupName>
-          <Files>
             <File>
               <FileName>com_end.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\04_Module\Arm\com_end.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>com_grip.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\04_Module\Arm\com_grip.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>com_joint.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\04_Module\Arm\com_joint.cpp</FilePath>
             </File>
             <File>
               <FileName>com_roll.cpp</FileName>
@@ -518,20 +523,30 @@
               <FilePath>..\..\..\Applications\04_Module\Arm\proc_arm.cpp</FilePath>
             </File>
             <File>
-              <FileName>com_joint.cpp</FileName>
+              <FileName>com_horizontal.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\..\..\Applications\04_Module\Arm\com_joint.cpp</FilePath>
+              <FilePath>..\..\..\Applications\04_Module\Gimbal\com_horizontal.cpp</FilePath>
             </File>
             <File>
-              <FileName>com_grip.cpp</FileName>
+              <FileName>com_lift.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\..\..\Applications\04_Module\Arm\com_grip.cpp</FilePath>
+              <FilePath>..\..\..\Applications\04_Module\Gimbal\com_lift.cpp</FilePath>
             </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Application/Module/Gimbal</GroupName>
-          <Files>
+            <File>
+              <FileName>com_pitch.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\04_Module\Gimbal\com_pitch.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>com_storage.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\04_Module\Gimbal\com_storage.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>com_yaw.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\04_Module\Gimbal\com_yaw.cpp</FilePath>
+            </File>
             <File>
               <FileName>mod_gimbal.cpp</FileName>
               <FileType>8</FileType>
@@ -541,11 +556,6 @@
               <FileName>proc_gimbal.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\04_Module\Gimbal\proc_gimbal.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>com_yaw.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\Applications\04_Module\Gimbal\com_yaw.cpp</FilePath>
             </File>
           </Files>
         </Group>

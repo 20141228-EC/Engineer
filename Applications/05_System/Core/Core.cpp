@@ -509,6 +509,15 @@ void CSystemCore::BoardLink_Info_Update_(){
  * 
  */
 void CSystemCore::Chassis_UpdateHandler_(){
+
+    // 操作手指令限幅
+    CSystemCore::chassisCmd.speed_x = 
+        std::clamp<float_t >(CSystemCore::chassisCmd.speed_x, -660.f, 660.f);
+    CSystemCore::chassisCmd.speed_y = 
+        std::clamp<float_t >(CSystemCore::chassisCmd.speed_y, -660.f, 660.f);
+    CSystemCore::chassisCmd.speed_w = 
+        std::clamp<float_t >(CSystemCore::chassisCmd.speed_w, -660.f, 660.f);
+
     if(pgimbal_->gimbalInfo.isModuleAvailable){
         float_t front = chassisCmd.speed_y;
         float_t right = chassisCmd.speed_x;
@@ -534,27 +543,38 @@ void CSystemCore::Chassis_UpdateHandler_(){
 
 }
 
+/*浮点数线性映射成整数*/
+int float_to_uint(float x, float x_min, float x_max, int bits)
+{
+    /// Converts a float to an unsigned int, given range and number of bits
+    ///
+    float span = x_max - x_min;
+    float offset = x_min;
+    return (int)((x - offset) * ((float)((1 << bits) - 1)) / span);
+}
+
+/*整数线性映射成浮点数*/
+float uint_to_float(int x_int, float x_min, float x_max, int bits)
+{
+    /// converts unsigned int to float, given range and number of bits ///
+    float span = x_max - x_min;
+    float offset = x_min;
+    return ((float)x_int) * span / ((float)((1 << bits) - 1)) + offset;
+}
+
 /**
  * @brief 限制底盘控制指令
  * 
  */
 void CSystemCore::RestrictChassisCmd_(){
 
-    // 操作手指令限幅
-    CSystemCore::chassisCmd.speed_x = 
-        std::clamp<float_t >(CSystemCore::chassisCmd.speed_x, -100.f, 100.f);
-    CSystemCore::chassisCmd.speed_y = 
-        std::clamp<float_t >(CSystemCore::chassisCmd.speed_y, -100.f, 100.f);
-    CSystemCore::chassisCmd.speed_w = 
-        std::clamp<float_t >(CSystemCore::chassisCmd.speed_w, -100.f, 100.f);
-
     // 最终发送指令限幅
     CSystemCore::chassisCmd_.speed_x_ = 
-        std::clamp<float_t >(CSystemCore::chassisCmd_.speed_x_, -100.f, 100.f);
+        float_to_uint(CSystemCore::chassisCmd.speed_x, -660, 660, 16);
     CSystemCore::chassisCmd_.speed_y_ = 
-        std::clamp<float_t >(CSystemCore::chassisCmd_.speed_y_, -100.f, 100.f);
+        float_to_uint(CSystemCore::chassisCmd.speed_y, -660, 660, 16);
     CSystemCore::chassisCmd_.speed_w_ = 
-        std::clamp<float_t >(CSystemCore::chassisCmd_.speed_w_, -100.f, 100.f);
+        float_to_uint(CSystemCore::chassisCmd.speed_w, -660, 660, 16);
 
 }
 
