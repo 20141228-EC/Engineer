@@ -522,9 +522,8 @@ void CSystemCore::Chassis_UpdateHandler_(){
         else{
             cycle = std::clamp(yaw_angle * 4, -100.f, 100.f);    // 50是magic number,后续需要调整
         }   // 开小陀螺与否
-        // chassisCmd_.speed_y_ = front * cos(yaw_angle) - right * sin(yaw_angle);
-        chassisCmd_.speed_y_ = -(right * cos(yaw_angle) + front * sin(yaw_angle));
-        chassisCmd_.speed_x_ = (front * cos(yaw_angle) - right * sin(yaw_angle));   // 根据云台角度计算底盘运动正方向
+        chassisCmd_.speed_y_ = front * cos(yaw_angle) - right * sin(yaw_angle);
+        chassisCmd_.speed_x_ = right * cos(yaw_angle) + front * sin(yaw_angle); // 根据云台角度计算底盘运动正方向
         chassisCmd_.speed_w_ = cycle;
     }
     else{
