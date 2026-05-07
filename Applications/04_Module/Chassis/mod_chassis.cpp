@@ -651,8 +651,8 @@ EAppStatus CModChassis::RestrictChassisCommand_() {
     }
 
     // 限制底盘模块的控制命令大小
-    chassisCmd.speed_X = std::clamp(chassisCmd.speed_X, -100.0f, 100.0f);
-    chassisCmd.speed_Y = std::clamp(chassisCmd.speed_Y, -100.0f, 100.0f);
+    // chassisCmd.speed_X = std::clamp(chassisCmd.speed_X, -100.0f, 100.0f);
+    // chassisCmd.speed_Y = std::clamp(chassisCmd.speed_Y, -100.0f, 100.0f);
     // // 平面速度圆限幅：避免斜向输入时合速度超过100%
     // {
     //     const float planarMag = std::sqrt(chassisCmd.speed_X * chassisCmd.speed_X +
@@ -663,7 +663,7 @@ EAppStatus CModChassis::RestrictChassisCommand_() {
     //         chassisCmd.speed_Y *= scale;
     //     }
     // }
-    chassisCmd.speed_W = std::clamp(chassisCmd.speed_W, -100.0f, 100.0f);
+    // chassisCmd.speed_W = std::clamp(chassisCmd.speed_W, -100.0f, 100.0f);
 
     // 自动控制启用，则不继续做限制
     if (chassisCmd.isAutoCtrl) return APP_OK;
