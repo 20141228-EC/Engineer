@@ -18,6 +18,25 @@ namespace {
 
 static bool g_useBoardLinkChassis = true;
 
+/*浮点数线性映射成整数*/
+int float_to_uint(float x, float x_min, float x_max, int bits)
+{
+    /// Converts a float to an unsigned int, given range and number of bits
+    ///
+    float span = x_max - x_min;
+    float offset = x_min;
+    return (int)((x - offset) * ((float)((1 << bits) - 1)) / span);
+}
+
+/*整数线性映射成浮点数*/
+float uint_to_float(int x_int, float x_min, float x_max, int bits)
+{
+    /// converts unsigned int to float, given range and number of bits ///
+    float span = x_max - x_min;
+    float offset = x_min;
+    return ((float)x_int) * span / ((float)((1 << bits) - 1)) + offset;
+}
+
 void ApplyBoardLinkChassisControl(CModChassis *chassis) {
     if (!chassis) {
         return;
@@ -26,9 +45,12 @@ void ApplyBoardLinkChassisControl(CModChassis *chassis) {
     const bool ctrlValid = (SysBoardLink.ctrlInfos.pack_id == CDevBoardLink::PKT_CTRL_INFOS)
         && (SysBoardLink.ctrlInfos.remote_is_online == 1);
     if (ctrlValid) {
-        chassis->chassisCmd.speed_X = static_cast<float>(SysBoardLink.ctrlInfos.speed_x);
-        chassis->chassisCmd.speed_Y = static_cast<float>(SysBoardLink.ctrlInfos.speed_y);
-        chassis->chassisCmd.speed_W = static_cast<float>(SysBoardLink.ctrlInfos.speed_w);
+        // chassis->chassisCmd.speed_X = uint_to_float(SysBoardLink.ctrlInfos.speed_x, -660, 660, 16);
+        // chassis->chassisCmd.speed_Y = uint_to_float(SysBoardLink.ctrlInfos.speed_y, -660, 660, 16);
+        // chassis->chassisCmd.speed_W = uint_to_float(SysBoardLink.ctrlInfos.speed_w, -660, 660, 16);
+        chassis->chassisCmd.speed_X = static_cast<float_t>(SysBoardLink.ctrlInfos.speed_x);
+        chassis->chassisCmd.speed_Y = static_cast<float_t>(SysBoardLink.ctrlInfos.speed_y);
+        chassis->chassisCmd.speed_W = static_cast<float_t>(SysBoardLink.ctrlInfos.speed_w);
     } else {
         
     }
