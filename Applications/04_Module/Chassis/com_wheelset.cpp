@@ -4,9 +4,9 @@
  * @brief 底盘轮组
  * @version 1.0
  * @date 2024-11-05
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #include "mod_chassis.hpp"
@@ -16,21 +16,32 @@
 namespace my_engineer {
 
 // 舵轮零位补偿和方向（如需反向可将1改为-1）
-constexpr int STEER_MECH_MID[4] = {6726, 5421, 6710, 1357}; // LF, RF, LB, RB
+constexpr int STEER_MECH_MID[4] = {6726, 5258, 6949, 1266}; // LF, RF, LB, RB
     // -668 -53 -1946 2815
-constexpr int STEER_DIR[4]      = {1, 1, 1, 1};
 uint8_t steer_error_dir = 1;
 float_t steerPosTarget_debug[4] = {0};
 float_t debug_ = 0.f;
+constexpr int WHEEL_DIR[4] = {
+    -1,  // LF
+    1,  // RF
+    -1,  // LB
+    1   // RB
+};
+constexpr int STEER_DIR[4] = {
+    1,   // LF 正向
+    1,   // RF 反向
+    1,   // LB 正向
+    1    // RB 反向
+};
 
 CMemsBase *pmems_wheel_test = nullptr;
 
 
 /**
  * @brief 初始化底盘轮组组件
- * 
+ *
  * @param param
- * @return EAppStatus 
+ * @return EAppStatus
  */
 EAppStatus CModChassis::CComWheelset::InitComponent(SModInitParam_Base &param){
     // 检查param是否正确
@@ -115,7 +126,7 @@ EAppStatus CModChassis::CComWheelset::InitComponent(SModInitParam_Base &param){
 
 /**
  * @brief 更新组件
- * 
+ *
  */
 EAppStatus CModChassis::CComWheelset::UpdateComponent(){
     // 检查组件状态
@@ -174,10 +185,10 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
             auto output_yaw = pidYawCtrl.UpdatePidController(yawSpd, yawSpdMeasure);
 
             return _UpdateOutput(wheelsetCmd.speed_X, wheelsetCmd.speed_Y, output_yaw[0]);
-            
+
         }
-    
-    
+
+
         default: {
             Component_FSMFlag_ = FSM_RESET;
             return APP_ERROR;
@@ -187,10 +198,10 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
 
 // /**
 //  * @brief 更新输出（舵轮解算）
-//  * @param speed_X 
-//  * @param speed_Y 
-//  * @param speed_W 
-//  * @return EAppStatus 
+//  * @param speed_X
+//  * @param speed_Y
+//  * @param speed_W
+//  * @return EAppStatus
 //  */
 // EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y, float speed_W){
 
@@ -218,7 +229,7 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
 //     // 几何约定：X向右，Y向前，W逆时针为正；轮序：LF, RF, LB, RB
 //     // 计算每个轮子的 X/Y 速度分量
 // 		float sqrt2_2 = 0.70710678;
-		
+
 //     float vx1 = (float)speed_Y - (float)speed_W * sqrt2_2;
 //     float vy1 = (float)speed_X + (float)speed_W * sqrt2_2;
 //     float vx2 = (float)speed_Y + (float)speed_W * sqrt2_2;
@@ -266,9 +277,9 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
 
 //     // 半圈处理
 //     for(int i = 0; i < 4; i++){
-    
+
 //         float err = steerPosTarget[i] - steerPosRelative[i];
-        
+
 //         // 半圈处理，保证误差在[-4096, 4096]之间
 //         if (err > 4096) err -= 8192;
 //         else if (err < -4096) err += 8192;
@@ -335,12 +346,21 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
 
 // }
 
+float vx1 = 0.f;
+float vy1 = 0.f;
+float vx2 = 0.f;
+float vy2 = 0.f;
+float vx3 = 0.f;
+float vy3 = 0.f;
+float vx4 = 0.f;
+float vy4 = 0.f;
+
 /**
  * @brief 更新输出（舵轮解算）
- * @param speed_X 
- * @param speed_Y 
- * @param speed_W 
- * @return EAppStatus 
+ * @param speed_X
+ * @param speed_Y
+ * @param speed_W
+ * @return EAppStatus
  */
 EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y, float speed_W){
 
@@ -367,27 +387,48 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     static DataBuffer<float_t> last_steerPosTarget = {0,0,0,0};
 
     float sqrt2_2 = 0.70710678;
-		
-    float vx1 = (float)speed_Y - (float)speed_W * sqrt2_2;
-    float vy1 = (float)speed_X + (float)speed_W * sqrt2_2;
-    float vx2 = (float)speed_Y + (float)speed_W * sqrt2_2;
-    float vy2 = (float)speed_X + (float)speed_W * sqrt2_2;
-    float vx3 = (float)speed_Y - (float)speed_W * sqrt2_2;
-    float vy3 = (float)speed_X - (float)speed_W * sqrt2_2;
-    float vx4 = (float)speed_Y + (float)speed_W * sqrt2_2;
-    float vy4 = (float)speed_X - (float)speed_W * sqrt2_2;
+
+    //旋转对但前后错
+    vx1 =  speed_X;
+    vy1 =  speed_Y;
+    vx2 =  speed_X;
+    vy2 =  speed_Y;
+    vx3 =  speed_X;
+    vy3 =  speed_Y;
+    vx4 =  speed_X;
+    vy4 =  speed_Y;
+
+    // float vx1 = (float)speed_Y - (float)speed_W * sqrt2_2;
+    // float vy1 = (float)speed_X + (float)speed_W * sqrt2_2;
+    // float vx2 = (float)speed_Y + (float)speed_W * sqrt2_2;
+    // float vy2 = (float)speed_X + (float)speed_W * sqrt2_2;
+    // float vx3 = (float)speed_Y - (float)speed_W * sqrt2_2;
+    // float vy3 = (float)speed_X - (float)speed_W * sqrt2_2;
+    // float vx4 = (float)speed_Y + (float)speed_W * sqrt2_2;
+    // float vy4 = (float)speed_X - (float)speed_W * sqrt2_2;
+
+    // x型
+    // float chassis_vx = speed_X; // 前后
+    // float chassis_vy = speed_Y; // 左右
+    // float vx1 = speed_X - speed_W * sqrt2_2;
+    // float vy1 = speed_Y - speed_W * sqrt2_2;
+    // float vx2 = speed_X - speed_W * sqrt2_2;
+    // float vy2 = speed_Y + speed_W * sqrt2_2;
+    // float vx3 = speed_X + speed_W * sqrt2_2;
+    // float vy3 = speed_Y + speed_W * sqrt2_2;
+    // float vx4 = speed_X + speed_W * sqrt2_2;
+    // float vy4 = speed_Y - speed_W * sqrt2_2;
 
     // ===================== 核心逻辑：停止时保持上次角度 =====================
     const float EPS = 1e-6f;
-    bool is_stop = (fabsf(speed_X) < EPS && 
-                    fabsf(speed_Y) < EPS && 
+    bool is_stop = (fabsf(speed_X) < EPS &&
+                    fabsf(speed_Y) < EPS &&
                     fabsf(speed_W) < EPS);
 
     DataBuffer<float_t> steerPosTarget;
 
     if(is_stop)
     {
-        // 🟢 停止：使用上一次的角度，不跳0
         steerPosTarget = last_steerPosTarget;
     }
     else
@@ -399,12 +440,11 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
             atan2(vy4, vx4) / 3.1415926f * 4096.f,
         };
 
-        // 保存当前角度到“上次值”
+        // 保存当前角度到上次值
         last_steerPosTarget = steerPosTarget;
     }
     // ======================================================================
 
-    // debug 角度也同样处理
     if(!is_stop){
         arm_atan2_f32(vy2, vx2, &debug_);
         debug_ = debug_ / 3.1415926f * 4096.f;
@@ -416,10 +456,10 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     steerPosTarget_debug[3] = steerPosTarget[3];
 
     DataBuffer<float_t> steerPosRelative = {
-        steerPosMeasure[LF] - STEER_MECH_MID[LF],
-        steerPosMeasure[RF] - STEER_MECH_MID[RF],
-        steerPosMeasure[LB] - STEER_MECH_MID[LB],
-        steerPosMeasure[RB] - STEER_MECH_MID[RB],
+        (steerPosMeasure[LF] - STEER_MECH_MID[LF]) * STEER_DIR[LF],
+        (steerPosMeasure[RF] - STEER_MECH_MID[RF]) * STEER_DIR[RF],
+        (steerPosMeasure[LB] - STEER_MECH_MID[LB]) * STEER_DIR[LB],
+        (steerPosMeasure[RB] - STEER_MECH_MID[RB]) * STEER_DIR[RB],
     };
     for(int i = 0; i < 4; i++) {
         if (steerPosRelative[i] > 4096) steerPosRelative[i] -= 8192;
@@ -427,16 +467,16 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     }
 
     DataBuffer<float_t> SpdTarget = {
-        sqrtf(vx1*vx1 + vy1*vy1),
-        sqrtf(vx2*vx2 + vy2*vy2),
-        sqrtf(vx3*vx3 + vy3*vy3),
-        sqrtf(vx4*vx4 + vy4*vy4),
-    };
+        sqrtf(vx1*vx1 + vy1*vy1) * WHEEL_DIR[LF],
+        sqrtf(vx2*vx2 + vy2*vy2) * WHEEL_DIR[RF],
+        sqrtf(vx3*vx3 + vy3*vy3) * WHEEL_DIR[LB],
+        sqrtf(vx4*vx4 + vy4*vy4) * WHEEL_DIR[RB],
+};
 
     // 半圈处理
     for(int i = 0; i < 4; i++){
         float err = steerPosTarget[i] - steerPosRelative[i];
-        
+
         if (err > 4096) err -= 8192;
         else if (err < -4096) err += 8192;
 
@@ -489,6 +529,8 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
 
     return APP_OK;
 }
+
+
 
 
 } // namespace my_engineer

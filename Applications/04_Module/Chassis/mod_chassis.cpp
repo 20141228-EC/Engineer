@@ -597,16 +597,16 @@ void CModChassis::UpdateHandler_(){
 
     CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[CComWheelset::LF],
                                 comWheelset_.mtrSteerCanTxNode[CComWheelset::LF]->dataBuffer,
-                                0);
+                                comWheelset_.mtrSteerOutputBuffer[CComWheelset::LF]);
     CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[CComWheelset::RF],
                                 comWheelset_.mtrSteerCanTxNode[CComWheelset::RF]->dataBuffer,
-                                0);
+                                comWheelset_.mtrSteerOutputBuffer[CComWheelset::RF]);
     CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[CComWheelset::LB],
                                 comWheelset_.mtrSteerCanTxNode[CComWheelset::LB]->dataBuffer,
                                 comWheelset_.mtrSteerOutputBuffer[CComWheelset::LB]);
     CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[CComWheelset::RB],
                                 comWheelset_.mtrSteerCanTxNode[CComWheelset::RB]->dataBuffer,
-                                0);
+                                comWheelset_.mtrSteerOutputBuffer[CComWheelset::RB]);
 
 }
 
@@ -653,16 +653,16 @@ EAppStatus CModChassis::RestrictChassisCommand_() {
     // 限制底盘模块的控制命令大小
     chassisCmd.speed_X = std::clamp(chassisCmd.speed_X, -100.0f, 100.0f);
     chassisCmd.speed_Y = std::clamp(chassisCmd.speed_Y, -100.0f, 100.0f);
-    // 平面速度圆限幅：避免斜向输入时合速度超过100%
-    {
-        const float planarMag = std::sqrt(chassisCmd.speed_X * chassisCmd.speed_X +
-                                          chassisCmd.speed_Y * chassisCmd.speed_Y);
-        if (planarMag > 100.0f) {
-            const float scale = 100.0f / planarMag;
-            chassisCmd.speed_X *= scale;
-            chassisCmd.speed_Y *= scale;
-        }
-    }
+    // // 平面速度圆限幅：避免斜向输入时合速度超过100%
+    // {
+    //     const float planarMag = std::sqrt(chassisCmd.speed_X * chassisCmd.speed_X +
+    //                                       chassisCmd.speed_Y * chassisCmd.speed_Y);
+    //     if (planarMag > 100.0f) {
+    //         const float scale = 100.0f / planarMag;
+    //         chassisCmd.speed_X *= scale;
+    //         chassisCmd.speed_Y *= scale;
+    //     }
+    // }
     chassisCmd.speed_W = std::clamp(chassisCmd.speed_W, -100.0f, 100.0f);
 
     // 自动控制启用，则不继续做限制
