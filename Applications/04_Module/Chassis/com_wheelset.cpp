@@ -389,14 +389,23 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     float sqrt2_2 = 0.70710678;
 
     //旋转对但前后错
-    vx1 =  speed_X;
-    vy1 =  speed_Y;
-    vx2 =  speed_X;
-    vy2 =  speed_Y;
-    vx3 =  speed_X;
-    vy3 =  speed_Y;
-    vx4 =  speed_X;
-    vy4 =  speed_Y;
+    vx1 =  -speed_X- speed_W  ; //  LB
+    vy1 =  speed_Y - speed_W ;
+    vx2 =  -speed_X+ speed_W  ; // LF
+    vy2 =  speed_Y - speed_W ;
+    vx3 =  -speed_X- speed_W  ; // RB
+    vy3 =  speed_Y + speed_W ;
+    vx4 =  -speed_X+ speed_W  ; // RF
+    vy4 =  speed_Y + speed_W ;
+
+    // * sqrt2_2
+    // * sqrt2_2
+    // * sqrt2_2
+    // * sqrt2_2
+    // * sqrt2_2
+    // * sqrt2_2
+    // * sqrt2_2
+    // * sqrt2_2
 
     // float vx1 = (float)speed_Y - (float)speed_W * sqrt2_2;
     // float vy1 = (float)speed_X + (float)speed_W * sqrt2_2;
