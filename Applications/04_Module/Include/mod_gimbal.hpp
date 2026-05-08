@@ -19,7 +19,7 @@
 // -------------------- 大yaw组件参数 ---------------------
 #define GIMBAL_YAW_MOTOR_GYRO_DIR -1		///< 陀螺仪模式输出方向
 #define GIMBAL_YAW_MOTOR_MEC_DIR  -1		///< 机械模式输出方向
-#define GINBAL_FRONT_MOTOR_ANGLE 1429	///< 目前给0 后续改成朝前时的编码器值
+#define GINBAL_FRONT_MOTOR_ANGLE 34132	///< 目前给0 后续改成朝前时的编码器值
 #define GIMBAL_YAW_INIT_ANGLE	GINBAL_FRONT_MOTOR_ANGLE	///< 初始化编码器值（朝前）
 
 // -------------------- 升降组件参数 ---------------------
