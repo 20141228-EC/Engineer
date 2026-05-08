@@ -30,6 +30,15 @@ namespace my_engineer {
         float_t endRollOffset = STORE_ROLL_DOWN_OFFSET;
         core.storeEndRollPose_ = EStoreEndRollPose::DOWN;//默认是向下的
 
+        // 防止上次任务残留的 armCmd 值导致机械臂跳动 / 起点漂移
+        arm.armCmd.set_angle_Yaw       = arm.armInfo.angle_Yaw;
+        arm.armCmd.set_angle_Pitch1    = arm.armInfo.angle_Pitch1;
+        arm.armCmd.set_angle_Pitch2    = arm.armInfo.angle_Pitch2;
+        arm.armCmd.set_angle_Pitch3    = arm.armInfo.angle_Pitch3;
+        arm.armCmd.set_angle_Roll      = arm.armInfo.angle_Roll;
+        arm.armCmd.set_angle_end_pitch = arm.armInfo.angle_end_pitch;
+        arm.armCmd.set_angle_end_roll  = arm.armInfo.angle_end_roll;
+
         // 循环等待鼠标左键/右键选择轨迹
         ETrajID trajId;
         while(true){
@@ -73,6 +82,24 @@ namespace my_engineer {
             const auto Traj = it->second; // 取到轨迹帧
             arm.armCmd.isAutoCtrl = true;
 
+            //对齐末端的roll
+            {
+                float_t firstFrameTarget[J::COUNT];
+                Extrarow(Traj.frame, 0, firstFrameTarget);
+
+                float_t preAlignTarget[J::COUNT];
+                ReadArmjoint(arm, preAlignTarget);                              // 当前位置作为起点
+                preAlignTarget[J::J_ENDR] = firstFrameTarget[J::J_ENDR] + endRollOffset; // 仅修改 end_roll
+
+                const bool gripNow = (arm.armInfo.gripState == CModArm::SArmInfo::EGripState::HOLD);
+                // minTimeS=0.5s 强制慢速平滑过渡，避免大角度突变
+                if (!PlaySegment(arm, preAlignTarget, 1.0f,
+                                 gripNow, gripNow,
+                                 player, true, nullptr, 0.5f)) {
+                    goto proc_exit;
+                }
+            }
+
             // 从第二段开始用它作为规划起点，避免每次反馈起点漂移
             float_t lastTarget[J::COUNT];
 
@@ -99,11 +126,28 @@ namespace my_engineer {
         core.parm_->armCmd.isAutoCtrl = false;
         core.autoCtrlTaskHandle_ = nullptr;
         core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
-        arm.armCmd.set_angle_end_roll = 0.f; //末端Roll回正
-        SysControllerLink.robotInfo.controlled_by_controller = true;
+
+        //退出时把 armCmd 同步到当前实际位姿
+        arm.armCmd.set_angle_Yaw       = arm.armInfo.angle_Yaw;
+        arm.armCmd.set_angle_Pitch1    = arm.armInfo.angle_Pitch1;
+        arm.armCmd.set_angle_Pitch2    = arm.armInfo.angle_Pitch2;
+        arm.armCmd.set_angle_Pitch3    = arm.armInfo.angle_Pitch3;
+        arm.armCmd.set_angle_Roll      = arm.armInfo.angle_Roll;
+        arm.armCmd.set_angle_end_pitch = arm.armInfo.angle_end_pitch;
+        arm.armCmd.set_angle_end_roll  = arm.armInfo.angle_end_roll;
+
+        // 任务结束默认进入自定义控制器模式
+        if (SysControllerLink.IsControllerOnline()) {
+            SysControllerLink.robotInfo.controlled_by_controller = true;
+            core.use_Controller_ = true;
+            arm.armCmd.isCustomCtrl = true;     ///< 同步标志位，避免下个周期的窗口期行为异常
+        } else {
+            SysControllerLink.robotInfo.controlled_by_controller = false;
+            core.use_Controller_ = false;
+            arm.armCmd.isCustomCtrl = false;
+        }
         core.armmode_ = EArmMode::NORMAL;   //没有任务的状态
         core.storeEndRollPose_ = EStoreEndRollPose::DOWN;
-        core.use_Controller_ = true;
         proc_return();
     }
 }

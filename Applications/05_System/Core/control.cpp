@@ -401,15 +401,12 @@ void CSystemCore::ControlFromController_() {
         pchassis_->chassisCmd.speed_W += static_cast<float_t>(keyboard.key_E - keyboard.key_Q) * 15.0f;
         pchassis_->chassisCmd.speed_W = std::clamp(pchassis_->chassisCmd.speed_W, -20.0f, 20.0f);
         
-        static int16_t last_mouse_X = 0;
-        static int16_t count = 0;
-        if(abs(keyboard.mouse_X) - abs(last_mouse_X) > 200 && count > 100) { //鼠标移动过快则认为是误操作，切换回底盘控制
+        // 鼠标移动过快则认为是误操作，切换回键盘控制
+        if(abs(keyboard.mouse_X) > 350) {
             use_Controller_ = false;
-            SysControllerLink.robotInfo.controlled_by_controller = false;//当在自定义控制器模式的时候鼠标移动的速度快速移动则会切换回底盘的控制
+            SysControllerLink.robotInfo.controlled_by_controller = false;
             return;
         }
-        last_mouse_X = keyboard.mouse_X ;
-        count++;
 
         if (!pchassis_->chassisCmd.isAutoCtrl)
         {

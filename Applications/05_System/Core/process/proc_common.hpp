@@ -54,7 +54,7 @@ namespace my_engineer{
     };
 
     struct SArrivalCheckConfig {
-        float_t toleranceDeg = 3.0f;     ///< 关节到位容差，单位：度
+        float_t toleranceDeg = 5.0f;     ///< 关节到位容差，单位：度
         uint32_t stableMs = 100;          ///< 每个关节进入容差后需要连续稳定的时间
         uint32_t timeoutMs = 1000;        ///< 本帧目标指令到达后，等待真实反馈到位的报警时间
         uint32_t hardTimeoutMs = 8000;    ///< 本帧目标指令到达后，等待真实反馈到位的硬超时时间

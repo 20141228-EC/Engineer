@@ -37,7 +37,7 @@
 #define ARM_PITCH1_MOTOR_RANGE 17098
 #define ARM_PITCH2_MOTOR_RANGE 65535
 #define ARM_END_PITCH_MOTOR_RANGE 325993
-#define ARM_END_GRIP_MOTOR_RANGE 1974934     ///(8192*22+10240+11000)
+#define ARM_END_GRIP_MOTOR_RANGE 1870274     ///(8192*22+10240+11000)
 
 //与物理角度的映射关系
 #define ARM_PITCH1_MOTOR_RATIO (ARM_PITCH1_MOTOR_RANGE / (ARM_PITCH1_PHYSICAL_RANGE_MAX - ARM_PITCH1_PHYSICAL_RANGE_MIN))
@@ -118,8 +118,8 @@
 #define GRIP_OPEN_SPEED_MIN  4000.0f
 #define GRIP_CLOSE_SPEED  12000.0f
 
-#define GRIP_OPEN_Stop_distance  2.0f
-#define GRIP_CLOSE_Stop_distance  2.0f
+#define GRIP_OPEN_Stop_distance  1.0f
+#define GRIP_CLOSE_Stop_distance  1.0f
 #define GRIP_OPEN_Slow_distance 37.0f//减速的物理范围
 #define GRIP_CLOSE_Slow_distance 28.0f//减速的范围
 
@@ -469,18 +469,22 @@ private:
 		const int32_t rangeLimit_Grip = ARM_END_GRIP_MOTOR_RANGE; ///< 夹爪电机位置范围限制
 		// 定义夹爪信息结构体
 		struct SGripInfo {
-			enum class EGripState : uint8_t { RELEASE = 0, HOLD = 1 };
+			enum class EGripState : uint8_t { RELEASE = 0, HOLD = 1,RELEASE_MAX = 3};
 			EGripState state = EGripState::RELEASE;	///< 夹爪控制子状态
 			int32_t posit_grip = 0;           	///< 夹爪当前位置
 			int32_t holdPosit_Grip = 0;			///< 记忆夹持位置
 			bool isGripped = false; 			///< 是否夹住
+			bool repeatInit = false;              ///< 重复标定
 		} gripInfo;
 
 		// 定义夹爪控制命令结构体
 		struct SGripCmd {
 			int32_t setPosit_grip = 0;        ///< 夹爪目标位置（编码器），位置环模式使用
+			int32_t outTime_tick = 0;         ///< 二次夹紧脉冲起始 tick
+			int32_t regripStableCnt = 0;      ///< 二次夹紧稳定计数
 			float_t setSpeed_grip = 0.0f;     ///< 夹爪目标速度（正=张开，负=闭合），速度环模式使用
-			bool cmdReGrip = false;           ///< 二次夹紧
+			bool regripPulse = false;         ///< 二次夹紧脉冲进行中（HOLD 状态下的内部子状态）
+			bool cmdReGrip = false;           ///< 二次夹紧请求（边沿脉冲，由上层写入，下层消费后清零）
 			bool cmdClose = false;            ///< 手动闭合标志（Core层设置）
 			bool cmdOpen = false;             ///< 手动张开标志（Core层设置）
 		} gripCmd;
@@ -501,6 +505,14 @@ private:
 			float_t detectTorque      = 2800.0f;///< 滤波力矩超过此值即判定夹取成功
 			float_t filterAlpha       = 0.95f;  ///< LowPassFilter滤波系数α
 		} gripDetect_;
+
+		struct SGripMotorDetect {
+			int32_t cntstable  = 0;            ///<稳定计数器
+			int32_t Torque     = 0;            ///<当前力矩
+			int32_t SpeedLimit = 0;            ///<速度限制值
+			enum class EGripMotorState : uint8_t { STALL = 0, RUNNING = 1 };
+			EGripMotorState state = EGripMotorState::RUNNING;	///< 夹爪控制子状态
+		} griGripMotor_;
 
 		// PID控制器
 		CAlgoPid pidPosCtrl;

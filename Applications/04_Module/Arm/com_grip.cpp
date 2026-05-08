@@ -138,63 +138,106 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                 gripDetect_.filteredTorque = LowPassFilter(
                     gripDetect_.filteredTorque, getAbsTorque(), gripDetect_.filterAlpha);
 
-                // cmdClose/cmdOpen
+                // griGripMotor_.Torque = motor->motorData[CDevMtr::DATA_TORQUE];
+                // griGripMotor_.SpeedLimit = abs(motor->motorData[CDevMtr::DATA_SPEED]);
+                // if(griGripMotor_.Torque > 2000 && griGripMotor_.SpeedLimit < 250){
+                //     griGripMotor_.cntstable++;
+                // }
+                // if(griGripMotor_.cntstable > 50){
+                //     griGripMotor_.cntstable = 0;
+                //     griGripMotor_.state = SGripMotorDetect::EGripMotorState::STALL;
+                // }
+                // else {
+                //     griGripMotor_.state = SGripMotorDetect::EGripMotorState::RUNNING;
+                // }
+
+                // cmdClose/cmdOpen核心层的写入控制张开和闭合
                 if (gripCmd.cmdClose) {
-                    gripCmd.setSpeed_grip = -GRIP_CLOSE_SPEED;
+                    if (gripInfo.posit_grip <= gripCloseStopPosit) {
+                        // 已到/超出闭合停止位：保底速度，切HOLD，堵转标定零点
+                        gripCmd.setSpeed_grip = -gripDetect_.closeSpeedMin;
+                        if (gripInfo.state != SGripInfo::EGripState::HOLD) {
+                            gripInfo.state = SGripInfo::EGripState::HOLD;
+                            gripInfo.isGripped = true;
+                            gripInfo.holdPosit_Grip = gripInfo.posit_grip;
+                            gripDetect_.edgeReady = false;
+                            gripInfo.repeatInit = false;
+                        }
+                        // if (griGripMotor_.state == SGripMotorDetect::EGripMotorState::STALL) {
+                        //     motor->motorData[CDevMtr::DATA_POSIT] = 0;
+                        //     gripCmd = SGripCmd();
+                        //     gripInfo.state = SGripInfo::EGripState::HOLD;
+                        //     gripInfo.isGripped = true;
+                        //     gripInfo.holdPosit_Grip = 0;
+                        //     gripDetect_.edgeReady = false;
+                        //     pidSpdCtrl.ResetPidController();
+                        //     return _UpdateOutputSpd(0);
+                        // }感觉闭合状态的时候是不用堵转的
+                    } else if (gripInfo.posit_grip <= gripCloseSlowPosit) {
+                        // 处于闭合减速区：按距离线性减速
+                        gripCmd.setSpeed_grip = -CalcGripSlowSpeed(
+                            GRIP_CLOSE_SPEED, gripDetect_.closeSpeedMin,
+                            gripInfo.posit_grip - gripCloseStopPosit,
+                            gripCloseSlowPosit - gripCloseStopPosit);
+                    } else {
+                        gripCmd.setSpeed_grip = -GRIP_CLOSE_SPEED;
+                    }
                 } else if (gripCmd.cmdOpen) {
-                    gripCmd.setSpeed_grip = GRIP_OPEN_SPEED;
+                    if (gripInfo.posit_grip >= gripOpenStopPosit) {
+                        // 初始化的时候只是标定一次
+                        if(gripInfo.repeatInit == false){
+                            gripCmd.setSpeed_grip = GRIP_OPEN_SPEED_MIN;
+                        }
+                        else gripCmd.setSpeed_grip = 0;//后续直接通过丝杆的位置来实现锁定，直接电机卸力
+
+                        if (motor->motorStatus == CDevMtr::EMotorStatus::STALL) {
+                            motor->motorData[CDevMtr::DATA_POSIT] =
+                                static_cast<int32_t>(0.1f * 8192 + rangeLimit_Grip) * ARM_GRIP_MOTOR_DIR;
+                            gripCmd = SGripCmd(); // 全部命令清零，避免下一周期继续顶限位
+                            gripInfo.state = SGripInfo::EGripState::RELEASE;
+                            gripInfo.isGripped = false;
+                            gripInfo.holdPosit_Grip = 0;
+                            gripDetect_.edgeReady = false;
+                            gripInfo.repeatInit = true;
+                            pidSpdCtrl.ResetPidController();
+                            mtrOutputBuffer = 0;
+                            return _UpdateOutputSpd(0);//堵转的时候直接设置速度0
+                        }
+                    } else if (gripInfo.posit_grip >= gripOpenSlowPosit && gripInfo.posit_grip < gripOpenStopPosit) {
+                        // 处于张开减速区：按距离线性减速
+                        gripCmd.setSpeed_grip = CalcGripSlowSpeed(
+                            GRIP_OPEN_SPEED, GRIP_OPEN_SPEED_MIN,
+                            gripOpenStopPosit - gripInfo.posit_grip,
+                            gripOpenStopPosit - gripOpenSlowPosit);
+                    } else {
+                        gripCmd.setSpeed_grip = GRIP_OPEN_SPEED;
+                    }
                 }
 
-                /* ---- 二次夹紧：从当前位置重新闭合（任何状态均可触发）---- */
+                /* ---- 二次夹紧 ---- */
                 if(gripCmd.cmdReGrip){
                     gripCmd.cmdReGrip = false;
-                    gripInfo.state = SGripInfo::EGripState::RELEASE;
-                    gripInfo.isGripped = false;
                     gripCmd.cmdClose = false;
-                    gripCmd.cmdOpen = false;
-                    gripCmd.setSpeed_grip = -GRIP_CLOSE_SPEED; ///< 闭合方向
+                    gripCmd.cmdOpen  = false;
+                    gripInfo.repeatInit = false;//夹紧的时候直接清零重置
+                    gripCmd.setSpeed_grip = 0.0f; 
                     pidSpdCtrl.ResetPidController();
-                }
 
-                // 软件限位：基于编码器位置防止超出机械行程
-                const bool isClosingCommand = gripCmd.setSpeed_grip < 0;
-                const bool isOpeningCommand = gripCmd.setSpeed_grip > 0;    
-                if (gripInfo.posit_grip <= 0 && isClosingCommand) {
-                    gripInfo.state = SGripInfo::EGripState::HOLD;
-                    gripInfo.holdPosit_Grip = gripInfo.posit_grip;
-                    gripInfo.isGripped = true;
-                    gripDetect_.edgeReady = false;
-                    gripCmd.setSpeed_grip = 0;  ///< 已到闭合极限，禁止继续闭合
-                }
-
-                if (gripInfo.posit_grip >= gripOpenStopPosit && isOpeningCommand) {
-                    gripInfo.state = SGripInfo::EGripState::RELEASE;
-                    gripInfo.isGripped = false;
-                    gripCmd.setSpeed_grip = 0;  ///< 接近张开极限，提前停止防止撞限位
-                }
-
-                if (gripInfo.posit_grip >= gripOpenSlowPosit && isOpeningCommand && gripInfo.posit_grip < gripOpenStopPosit) {
-                    gripCmd.setSpeed_grip = CalcGripSlowSpeed( GRIP_OPEN_SPEED, GRIP_OPEN_SPEED_MIN, gripOpenStopPosit - gripInfo.posit_grip, gripOpenStopPosit - gripOpenSlowPosit);
-                    if(motor->motorStatus == CDevMtr::EMotorStatus::STALL){
-                        gripCmd = SGripCmd();///<堵转之后设置目标值
-                        motor->motorData[CDevMtr::DATA_POSIT] = static_cast<int32_t> (0.1*8192 + rangeLimit_Grip) * ARM_GRIP_MOTOR_DIR;///<堵转零点超量标定
-                        gripInfo.state = SGripInfo::EGripState::RELEASE;
-                        gripInfo.isGripped = false;
-                        gripInfo.holdPosit_Grip = 0;
+                    if (gripInfo.state == SGripInfo::EGripState::HOLD) {
+                        // 已夹住直接启动hold
+                        // 这样 gripState 对上层始终为 HOLD，存矿轨迹首段不会误判为松开
+                        gripCmd.regripPulse = true;
+                        gripCmd.outTime_tick = HAL_GetTick();
+                        gripCmd.regripStableCnt = 0;
+                    } else {
+                        // 未夹住：当作普通闭合命令，走 RELEASE 分支正常流程
+                        gripCmd.setSpeed_grip = -6000;
                     }
-                
-                }//张开减速
-
-                if (gripInfo.posit_grip <= gripCloseSlowPosit && isClosingCommand && gripInfo.posit_grip > gripCloseStopPosit) {
-                    gripCmd.setSpeed_grip = -CalcGripSlowSpeed( GRIP_CLOSE_SPEED, gripDetect_.closeSpeedMin, gripInfo.posit_grip - gripCloseStopPosit, gripCloseSlowPosit - gripCloseStopPosit);
-                }//闭合减速
-                if(gripInfo.posit_grip <= gripCloseStopPosit && isClosingCommand) {
-                    gripInfo.state = SGripInfo::EGripState::HOLD;
-                    gripDetect_.edgeReady = false;
-                    gripInfo.isGripped = true;
-                    gripInfo.holdPosit_Grip = gripInfo.posit_grip;
-                    gripCmd.setSpeed_grip = 0;  ///< 接近张开极限，提前停止防止撞限位
                 }
+
+                // 命令方向设置
+                const bool isClosingCommand = gripCmd.setSpeed_grip < 0;
+                const bool isOpeningCommand = gripCmd.setSpeed_grip > 0;
 
                 /* ---- 双状态控制 ---- */
                 switch(gripInfo.state) {
@@ -207,7 +250,7 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                             return _UpdateOutputSpd(0);
                         }
 
-                        // 力矩边沿检测：低->高 边沿判定夹取成功
+                        // 通过检测由低到高的边沿判定夹取成功
                         if (gripDetect_.filteredTorque < gripDetect_.detectTorque) {
                             gripDetect_.edgeReady = true;
                         } else if (gripDetect_.edgeReady && gripDetect_.filteredTorque > gripDetect_.detectTorque) {
@@ -237,9 +280,51 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                         if(isOpeningCommand){   //如果夹爪保持夹持的状态的时候如果改变速度指令会改变夹爪的闭合状态
                             gripInfo.state = SGripInfo::EGripState::RELEASE;
                             gripInfo.isGripped = false;
+                            gripCmd.regripPulse = false;
+                            gripCmd.regripStableCnt = 0;
                             pidSpdCtrl.ResetPidController();
                             return _UpdateOutputSpd(gripCmd.setSpeed_grip);
                         }
+
+                        // HOLD 状态下处理二次夹紧的组件的脉冲，同时这个状态始终保持抓紧的状态不要立刻松开
+                        if (gripCmd.regripPulse) {
+                            // 防止异常情况无限闭合
+                            if (HAL_GetTick() - static_cast<uint32_t>(gripCmd.outTime_tick) > 500) {
+                                gripCmd.regripPulse = false;
+                                gripCmd.regripStableCnt = 0;
+                                gripInfo.holdPosit_Grip = gripInfo.posit_grip;
+                                return _UpdateOutputSpd(0);
+                            }
+
+                            // 输出闭合速度，复用 RELEASE 分支同款的力矩反馈减速逻辑
+                            float_t spd = -GRIP_CLOSE_SPEED;
+                            if (gripDetect_.filteredTorque > gripDetect_.closeTorqueThresh) {
+                                spd *= (gripDetect_.filteredTorque - gripDetect_.closeTorqueThresh < gripDetect_.closeTorqueRange)
+                                     ? (1.0f - (gripDetect_.filteredTorque - gripDetect_.closeTorqueThresh) / gripDetect_.closeTorqueRange)
+                                     : 0.0f;
+                                if (spd > -gripDetect_.closeSpeedMin) {
+                                    spd = -gripDetect_.closeSpeedMin;
+                                }
+                            }
+
+                            // 当速度被力矩压到下限附近并且力矩很高，连续 20ms 视为压紧到位
+                            const bool spdAtFloor = (spd >= -gripDetect_.closeSpeedMin * 1.05f);
+                            const bool torqueHigh = (gripDetect_.filteredTorque > gripDetect_.closeTorqueThresh);
+                            if (spdAtFloor && torqueHigh) {
+                                gripCmd.regripStableCnt++;
+                                if (gripCmd.regripStableCnt >= 20) { // 20 × 1ms = 20ms 稳定即视为完成
+                                    gripCmd.regripPulse = false;
+                                    gripCmd.regripStableCnt = 0;
+                                    gripInfo.holdPosit_Grip = gripInfo.posit_grip;
+                                    return _UpdateOutputSpd(0);
+                                }
+                            } else {
+                                gripCmd.regripStableCnt = 0;
+                            }
+
+                            return _UpdateOutputSpd(spd);
+                        }
+
                         // 保持夹持：速度归零，丝杆自锁保持位置
                         return _UpdateOutputSpd(0);
                     }

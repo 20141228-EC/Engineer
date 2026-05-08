@@ -83,9 +83,27 @@ namespace my_engineer {
         core.parm_->armCmd.isAutoCtrl = false;
         core.autoCtrlTaskHandle_ = nullptr;
         core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
-        SysControllerLink.robotInfo.controlled_by_controller = true;
+
+        // 退出时把 armCmd 同步到当前实际位姿
+        arm.armCmd.set_angle_Yaw       = arm.armInfo.angle_Yaw;
+        arm.armCmd.set_angle_Pitch1    = arm.armInfo.angle_Pitch1;
+        arm.armCmd.set_angle_Pitch2    = arm.armInfo.angle_Pitch2;
+        arm.armCmd.set_angle_Pitch3    = arm.armInfo.angle_Pitch3;
+        arm.armCmd.set_angle_Roll      = arm.armInfo.angle_Roll;
+        arm.armCmd.set_angle_end_pitch = arm.armInfo.angle_end_pitch;
+        arm.armCmd.set_angle_end_roll  = arm.armInfo.angle_end_roll;
+
+        // 任务结束默认进入自定义控制器模式（仅在控制器在线时切换，否则保留键盘模式避免立刻被自动退出）
+        if (SysControllerLink.IsControllerOnline()) {
+            SysControllerLink.robotInfo.controlled_by_controller = true;
+            core.use_Controller_ = true;
+            arm.armCmd.isCustomCtrl = true;     ///< 同步标志位，避免下个周期的窗口期行为异常
+        } else {
+            SysControllerLink.robotInfo.controlled_by_controller = false;
+            core.use_Controller_ = false;
+            arm.armCmd.isCustomCtrl = false;
+        }
         core.armmode_ = EArmMode::NORMAL;   //没有任务的状态
-        core.use_Controller_ = true;
         proc_return();
     }
 }
