@@ -128,6 +128,7 @@ EAppStatus CModChassis::CComWheelset::InitComponent(SModInitParam_Base &param){
  * @brief 更新组件
  *
  */
+float k_w=-1.f;
 EAppStatus CModChassis::CComWheelset::UpdateComponent(){
     // 检查组件状态
     if (componentStatus == APP_RESET) return APP_ERROR;
@@ -175,7 +176,7 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
                 Component_FSMFlag_ = FSM_CTRL;
                 componentStatus = APP_OK;
             }
-            return _UpdateOutput(wheelsetCmd.speed_X, wheelsetCmd.speed_Y, wheelsetCmd.speed_W);
+            return _UpdateOutput(wheelsetCmd.speed_X, wheelsetCmd.speed_Y,k_w*wheelsetCmd.speed_W);
         }
         case FSM_CTRL: {
             DataBuffer<float_t> yawSpd = {wheelsetCmd.speed_W / 10.0f};
@@ -184,7 +185,7 @@ EAppStatus CModChassis::CComWheelset::UpdateComponent(){
             // 底盘角速度是一个双环控制，外环输入为目标真实角速度，输出一个映射到电机速度的目标速度
             auto output_yaw = pidYawCtrl.UpdatePidController(yawSpd, yawSpdMeasure);
 
-            return _UpdateOutput(wheelsetCmd.speed_X, wheelsetCmd.speed_Y, output_yaw[0]);
+            return _UpdateOutput(wheelsetCmd.speed_X, wheelsetCmd.speed_Y, k_w*wheelsetCmd.speed_W);
 
         }
 
