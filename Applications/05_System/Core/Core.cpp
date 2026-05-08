@@ -558,7 +558,7 @@ void CSystemCore::Chassis_UpdateHandler_(){
         float_t right = chassisCmd.speed_x;
         float_t cycle = chassisCmd.speed_w;
 
-        float_t yaw_angle = -pgimbal_->gimbalInfo.encoder_yaw / 32768.f * 3.1415926;     // 归一到-pi~pi之间
+        float_t yaw_angle = pgimbal_->gimbalInfo.encoder_yaw / 32768.f * 3.1415926;     // 归一到-pi~pi之间
 
         DataBuffer<float_t> target = {0.0f};          // 目标误差为0
         DataBuffer<float_t> measure = {yaw_angle};    // 测量值为云台角度
@@ -568,7 +568,7 @@ void CSystemCore::Chassis_UpdateHandler_(){
             cycle = 1.5f;     // 小陀螺，但是限制最低速度
         }
         else{
-            cycle = yaw_angle * 1.f;    // 50是magic number,后续需要调整
+            cycle = yaw_angle * 1000.f;    // 50是magic number,后续需要调整
         }   // 开小陀螺与否
         chassisCmd_.speed_y_ = front * cos(yaw_angle) - right * sin(yaw_angle);
         chassisCmd_.speed_x_ = right * cos(yaw_angle) + front * sin(yaw_angle); // 根据云台角度计算底盘运动正方向
