@@ -583,8 +583,8 @@ void CSystemCore::Chassis_UpdateHandler_(){
             }   // 就近归位
             cycle = yaw_angle * 800.f;    // 50是magic number,后续需要调整
         }   // 开小陀螺与否
-        chassisCmd_.speed_y_ = (right * cos(yaw_angle) + front * sin(yaw_angle));
-        chassisCmd_.speed_x_ = -(front * cos(yaw_angle) - right * sin(yaw_angle));// 根据云台角度计算底盘运动正方向
+        chassisCmd_.speed_y_ = (front * cos(yaw_angle) - right * sin(yaw_angle));
+        chassisCmd_.speed_x_ = (right * cos(yaw_angle) + front * sin(yaw_angle));// 根据云台角度计算底盘运动正方向
         chassisCmd_.speed_w_ = cycle;
     }
     else if(timeout && !(pgimbal_->gimbalInfo.isModuleAvailable)){         // 云台没到位且没超时      
