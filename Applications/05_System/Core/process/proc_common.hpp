@@ -87,12 +87,6 @@ namespace my_engineer{
     float_t ExtractSpeed(const float_t traj[][FC_COUNT], int row);
     
     //梯形减速播放器
-    //  gripDuringMotion : 关节运动过程中保持的夹爪状态（true=夹紧, false=松开）
-    //  gripAfter        : 关节到位之后才切换的夹爪状态（即本段目标）
-    //  startOverride 非空时，使用其作为规划起点（避免每段用反馈起点导致路径漂移）
-    //  minTimeS      可选最小总时长(秒)，0 = 按物理参数自由规划（默认）；
-    //                 仅用于"安全慢速模式"等强制拖慢场景，正常播放不应使用，
-    //                 否则物理上能更快完成的段会被无谓拖长。
     bool PlaySegment(CModArm &arm, const float_t target[J::COUNT], float_t speedScale,
                      bool gripDuringMotion, bool gripAfter,
                      CAlgoTrajPlayback &player, bool checkctrl,
@@ -100,8 +94,6 @@ namespace my_engineer{
                      float_t minTimeS = 0.0f);
 
     //完整的封装
-    //  prevTarget 非空：用上一段 target 做起点
-    //  prevTarget 为空：用实时反馈做起点
     bool PlayFrameSegment(CModArm &arm, const float_t traj[][FC_COUNT], int seg,
                           CAlgoTrajPlayback &player, bool checkctrl,
                           float_t endRollOffset = 0.0f,
