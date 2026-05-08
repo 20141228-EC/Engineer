@@ -65,7 +65,7 @@ inline constexpr float STEER_CMD_DEADBAND = 80.0f;
  */
 class CModChassis final: public CModBase{
 public:
-    static constexpr uint16_t kDefaultChassisMaxPower = 120;
+    static constexpr uint16_t kDefaultChassisMaxPower = 115;
 
     // 定义底盘模块初始化参数结构体
     struct SModInitParam_Chassis: public SModInitParam_Base{

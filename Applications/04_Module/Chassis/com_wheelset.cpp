@@ -16,23 +16,25 @@
 namespace my_engineer {
 
 // 舵轮零位补偿和方向（如需反向可将1改为-1）
-constexpr int STEER_MECH_MID[4] = {4692, 7463, 502, 242}; // LF, RF, LB, RB
+int16_t STEER_MECH_MID[4] = {6752, 5219, 6752, 1407}; // LF, RF, LB, RB
     // -668 -53 -1946 2815
 uint8_t steer_error_dir = 1;
 float_t steerPosTarget_debug[4] = {0};
 float_t debug_ = 0.f;
-constexpr int WHEEL_DIR[4] = {
-    -1,  // LF
+int16_t WHEEL_DIR[4] = {
+    1,  // LF
     1,  // RF
     -1,  // LB
-    1   // RB
+    -1   // RB
 };
-constexpr int STEER_DIR[4] = {
+int16_t STEER_DIR[4] = {
     1,   // LF 正向
     1,   // RF 反向
     1,   // LB 正向
     1    // RB 反向
 };
+
+int16_t DEBUG_W_DIR[8] = {1,1,1,1,1,1,1,1};
 
 CMemsBase *pmems_wheel_test = nullptr;
 
@@ -389,15 +391,33 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
 
     float sqrt2_2 = 0.70710678;
 
-    //旋转对但前后错
-    vx1 =  -speed_X- speed_W  ; //  LB
-    vy1 =  speed_Y - speed_W ;
-    vx2 =  -speed_X+ speed_W  ; // LF
-    vy2 =  speed_Y - speed_W ;
-    vx3 =  -speed_X- speed_W  ; // RB
-    vy3 =  speed_Y + speed_W ;
-    vx4 =  -speed_X+ speed_W  ; // RF
-    vy4 =  speed_Y + speed_W ;
+    // 对于vx vy 采用左正右负  speed_W 逆时针为正
+    vx1 = -speed_X + speed_W * sqrt2_2;
+    vy1 = speed_Y  -speed_W * sqrt2_2;
+    vx2 = -speed_X +speed_W * sqrt2_2;
+    vy2 = speed_Y  +speed_W * sqrt2_2;
+    vx3 = -speed_X -speed_W * sqrt2_2;
+    vy3 = speed_Y  -speed_W * sqrt2_2;
+    vx4 = -speed_X -speed_W * sqrt2_2;
+    vy4 = speed_Y  +speed_W * sqrt2_2;
+
+    // vx1 =  speed_X- speed_W  ; //  LF
+    // vy1 =  speed_Y - speed_W ;
+    // vx2 =  speed_X- speed_W  ; // RF
+    // vy2 =  speed_Y + speed_W ;
+    // vx3 =  speed_X+ speed_W  ; // LB
+    // vy3 =  speed_Y - speed_W ;
+    // vx4 =  speed_X+ speed_W  ; // RB
+    // vy4 =  speed_Y + speed_W ;
+
+    // -speed_X
+    // speed_Y 
+    // -speed_X
+    // speed_Y 
+    // -speed_X
+    // speed_Y 
+    // -speed_X
+    // speed_Y 
 
     // * sqrt2_2
     // * sqrt2_2
