@@ -27,7 +27,7 @@ void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠
 
         for (const auto &item : SystemIDMap) {
                 item.second->UpdateHandler_();
-        proc_waitMs(4); // 250Hz
+        proc_waitMs(1); // 1000Hz
     }
     }
 }
@@ -70,7 +70,7 @@ void StartUpdateTask(void *argument) {
 
         // 执行can发送
 		// TxNode_Can1_200.Transmit();
-        // TxNode_Can1_1FF.Transmit();         ///< 板2: 末端电机(End_L/R) + 夹爪(Grip)
+        TxNode_Can2_1FF.Transmit();         ///< 板2: 末端电机(End_L/R) + 夹爪(Grip)
         // TxNode_Can2_200.Transmit();
 		// TxNode_Can2_1FF.Transmit();         ///< 云台电机
         TxNode_Can1_280.Transmit();          ///< 瓴控一拖四(臂关节四轴)

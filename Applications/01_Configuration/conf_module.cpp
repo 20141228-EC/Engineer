@@ -121,13 +121,13 @@ EAppStatus InitAllModule() {
     gimbalInitParam.memsDevID = EDeviceID::DEV_MEMS_BMI088;
     gimbalInitParam.MotorTxNode_Yaw = &TxNode_Can3_280;
 
-    gimbalInitParam.YawPosPidParam_Gyro.kp = 8.3f;
+    gimbalInitParam.YawPosPidParam_Gyro.kp = 9.f;
     gimbalInitParam.YawPosPidParam_Gyro.ki = 0.f;
     gimbalInitParam.YawPosPidParam_Gyro.kd = 0.f;
     gimbalInitParam.YawPosPidParam_Gyro.maxIntegral = 4000.f;
     gimbalInitParam.YawPosPidParam_Gyro.maxOutput = 5000.f;
 
-    gimbalInitParam.YawSpdPidParam_Gyro.kp = 3.5f;
+    gimbalInitParam.YawSpdPidParam_Gyro.kp = 3.6f;
     gimbalInitParam.YawSpdPidParam_Gyro.ki = 0.01f;
     gimbalInitParam.YawSpdPidParam_Gyro.kd = 0.0f;
     gimbalInitParam.YawSpdPidParam_Gyro.maxIntegral = 2000.f;

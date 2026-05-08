@@ -78,6 +78,7 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
     }
     
 }
+uint8_t test = 0;
 
 /**
  * @brief 遥控器操作
@@ -109,8 +110,12 @@ void CSystemCore::ControlFromRemote_() {
             chassisCmd.speed_y = remote.joystick_LY * 660 / 100;
 
         if(pgimbal_){
-            pgimbal_->gimbalCmd.set_posit_yaw += 
+            pgimbal_->gimbalCmd.set_posit_yaw -= 
                 (remote.joystick_RX / 100.f) * 90.f / freq;
+        }
+
+        if(SysRemote.pRemoteDev_->remoteData[CRcDR16::CH_TW].chEdge == ERcChannelEdge::Falling){
+            chassisCmd.is_spin_on = !chassisCmd.is_spin_on;
         }
         
     }
@@ -151,6 +156,10 @@ void CSystemCore::ControlFromRemote_() {
             chassisCmd.speed_x = 0.f;
             chassisCmd.speed_y = 0.f;
             chassisCmd.speed_w = 0.f;
+    }
+
+    if(remote.thumbWheel < -50){
+        test++;
     }
 }
 
@@ -203,7 +212,7 @@ void CSystemCore::ControlFromKeyboard_() {
     // 小陀螺  (G键)
         if (keyboard.key_G
             && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
-            chassisCmd.is_spin_on = true;
+            chassisCmd.is_spin_on = !chassisCmd.is_spin_on;
         }
 
     /******************* 云台手动控制 *******************/
@@ -342,7 +351,7 @@ void CSystemCore::ControlFromController_() {
     // 小陀螺  (G键)
         if (keyboard.key_G
             && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
-            chassisCmd.is_spin_on = true;
+            chassisCmd.is_spin_on = !chassisCmd.is_spin_on;
         }
 
 

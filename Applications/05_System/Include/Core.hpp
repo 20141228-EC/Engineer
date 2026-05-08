@@ -140,13 +140,17 @@ private:
     }chassisCmd;
 
     // 底盘控制指令(根据转系处理之后最终发给下板)
-    struct Core
-    {
+    struct SChassisCMd_ {
         float_t speed_x_ = 0;
         float_t speed_y_ = 0;
         float_t speed_w_ = 0;
     }chassisCmd_;
+
+    // 底盘跟云台pid初始化参数
+    CAlgoPid::SAlgoInitParam_Pid FollowYawPidParam;
     
+    // 底盘跟云台pid
+    CAlgoPid PidFollowYaw;
 
     // 定义系统核心的更新处理
     void UpdateHandler_();

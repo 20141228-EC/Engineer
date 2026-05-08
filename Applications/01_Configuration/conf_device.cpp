@@ -187,7 +187,7 @@ EAppStatus InitAllDevice(){
     CDevMtrM2006::SMtrInitParam_M2006 armMotor_End_L_initparam;
     armMotor_End_L_initparam.deviceID = EDeviceID::DEV_ARM_MTR_END_L;
     armMotor_End_L_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    armMotor_End_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
+    armMotor_End_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
     armMotor_End_L_initparam.useAngleToPosit = true;
     armMotor_End_L_initparam.useStallMonit = true;
     armMotor_End_L_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
@@ -198,7 +198,7 @@ EAppStatus InitAllDevice(){
     CDevMtrM2006::SMtrInitParam_M2006 armMotor_End_R_initparam;
     armMotor_End_R_initparam.deviceID = EDeviceID::DEV_ARM_MTR_END_R;
     armMotor_End_R_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    armMotor_End_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_7;
+    armMotor_End_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
     armMotor_End_R_initparam.useAngleToPosit = true;
     armMotor_End_R_initparam.useStallMonit = true;
     armMotor_End_R_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
@@ -276,7 +276,7 @@ EAppStatus InitAllDevice(){
     CDevMtrM2006::SMtrInitParam_M2006 armMotor_Grip_initparam;
     armMotor_Grip_initparam.deviceID = EDeviceID::DEV_ARM_MTR_GRIP;
     armMotor_Grip_initparam.interfaceID = EInterfaceID::INF_CAN2;
-    armMotor_Grip_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_8;//暂时使用can2的ID8
+    armMotor_Grip_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_7;//暂时使用can2的ID8
     armMotor_Grip_initparam.useAngleToPosit = true;
     armMotor_Grip_initparam.useStallMonit = true;
     armMotor_Grip_initparam.stallThreshold = 1000.0f; // 设置堵转阈值

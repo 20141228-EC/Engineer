@@ -146,6 +146,9 @@ private:
 		CAlgoPid pidSpdCtrl_Gyro;
 		CAlgoPid pidPosCtrl_Mec;
 		CAlgoPid pidSpdCtrl_Mec;
+		// 底盘跟云台pid
+		CAlgoPid pidFollowGimbal_Pos;
+		CAlgoPid pidFollowGimbal_Spd;
 		int16_t mtrOutputBuffer = 0;	// 电机输出缓冲区
 		CInfCAN::CCanTxNode* mtrCanTxNode = nullptr;
 

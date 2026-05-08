@@ -126,10 +126,10 @@ public:
     // 复位标志
     bool ResetFlag = false;
 
-private:
-
     // 遥控器设备指针
     CRcBase *pRemoteDev_ = nullptr;
+
+private:
 
     // 裁判系统设备指针
     // CDevReferee *pRefereeDev_ = nullptr;
