@@ -145,7 +145,7 @@ EAppStatus InitAllDevice(){
     gimbalMotor_Yaw_initparam.useStallMonit = true;
     gimbalMotor_Yaw_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
     gimbalMotor_Yaw_initparam.stallThreshold = 200;
-    gimbalMotor_Yaw_initparam.stallTime = 200;
+    gimbalMotor_Yaw_initparam.stallTime = 500;
     gimbalMotor_Yaw.InitDevice(&gimbalMotor_Yaw_initparam);
 
     // // 云台存矿电机 - 前
@@ -190,7 +190,7 @@ EAppStatus InitAllDevice(){
     armMotor_End_L_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_5;
     armMotor_End_L_initparam.useAngleToPosit = true;
     armMotor_End_L_initparam.useStallMonit = true;
-    armMotor_End_L_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
+    armMotor_End_L_initparam.stallThreshold = 900.0f; // 设置堵转阈值
     armMotor_End_L_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
     armMotor_End_L.InitDevice(&armMotor_End_L_initparam);
 
@@ -201,7 +201,7 @@ EAppStatus InitAllDevice(){
     armMotor_End_R_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
     armMotor_End_R_initparam.useAngleToPosit = true;
     armMotor_End_R_initparam.useStallMonit = true;
-    armMotor_End_R_initparam.stallThreshold = 1000.0f; // 设置堵转阈值
+    armMotor_End_R_initparam.stallThreshold = 900.0f; // 设置堵转阈值
     armMotor_End_R_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;
     armMotor_End_R.InitDevice(&armMotor_End_R_initparam);
 
