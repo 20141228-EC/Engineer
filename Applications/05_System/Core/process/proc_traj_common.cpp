@@ -104,7 +104,7 @@ volatile float traj_dbg_grip_info = 0.0f;
         {  2000,   70.8f, 40.32f,  47.438f,   -67.920f,  185.179f,  45.427f,       1.8f,        0 ,      4.f},  // 
         //{  3000,   61.8f,  38.32f,  40.438f,   -64.920f,  185.179f,  10.427f,       0.f,        1 ,      1.f},  //
 
-         {  3000,  70.8f,  20.32f,  23.438f,   -46.920f,  184.179f,  5.573f,       1.8f,        0 ,      4.f},  //
+         {  3000,  70.8f,  20.32f,  23.438f,   -46.920f,  184.179f,  8.573f,       1.8f,        0 ,      4.f},  //这里有点问题需要调整一下
          {  4000,   70.8f,  19.32f,  23.438f,   -46.920f,  184.179f,  11.427f,       3.f,        0 ,      2.f},  //
 
          {  6000,   70.8f,  27.32f,  26.438f,   -50.920f,  184.179f,  0.427f,       3.f,        1 ,      2.f},  //
@@ -303,10 +303,10 @@ volatile float traj_dbg_grip_info = 0.0f;
     /** @brief 轨迹播放器
      *  @param arm 臂的控制和信息参数
      *  @param target 目标关节角度
-     *  @param gripDuringMotion 关节运动过程中夹爪保持的状态
+     *  @param gripDuringMotion 关节运动过程中夹爪保持的状态，关节运动过程中保持的夹爪状态（true=夹紧, false=松开）
      *  @param gripAfter        关节到位之后才切换的夹爪状态
      *  @param player 播放器的内部速度参数定义
-     *  @param startOverride 非空：用其作为规划起点（避免起点漂移）
+     *  @param startOverride 非空：用其作为规划起点
      *  @param minTimeS 可选最小总时长(秒)
      */
     bool PlaySegment(CModArm &arm, const float_t target[J::COUNT],
@@ -414,6 +414,8 @@ volatile float traj_dbg_grip_info = 0.0f;
 
 
     //再原来的播放器的基础上再封装一个速度读取的函数
+    //  prevTarget 非空：用上一段 target 做起点
+    //  prevTarget 为空：用实时反馈做起点
     bool PlayFrameSegment(CModArm &arm,
                                 const float_t traj[][FC_COUNT], int seg,
                                 CAlgoTrajPlayback &player, bool checkctrl,
