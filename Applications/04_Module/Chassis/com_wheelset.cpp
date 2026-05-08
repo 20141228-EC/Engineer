@@ -16,7 +16,7 @@
 namespace my_engineer {
 
 // 舵轮零位补偿和方向（如需反向可将1改为-1）
-constexpr int STEER_MECH_MID[4] = {4787, 7317, 677, 7404}; // LF, RF, LB, RB
+constexpr int STEER_MECH_MID[4] = {4692, 7463, 502, 242}; // LF, RF, LB, RB
     // -668 -53 -1946 2815
 uint8_t steer_error_dir = 1;
 float_t steerPosTarget_debug[4] = {0};
