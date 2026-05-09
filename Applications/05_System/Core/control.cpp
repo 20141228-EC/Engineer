@@ -45,7 +45,7 @@ void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) 
         if (parm_) {
             if (!parm_->armInfo.isModuleAvailable
                 && parm_->moduleStatus == APP_OK
-                && keyboard.key_Ctrl && keyboard.key_R) {
+                && keyboard.key_Ctrl && keyboard.key_Shift && keyboard.key_F) { ///< ctrl+shift+f 初始化臂
                 parm_->StartModule();
             }
         }
@@ -183,9 +183,6 @@ void CSystemCore::ControlFromKeyboard_() {
     // parm_->should_limit_yaw = 1;
 
     /******************* 底盘控制 *******************/
-    // 平滑更新角速度
-        chassisCmd.speed_w = chassisCmd.speed_w +
-        0.03f*(keyboard.mouse_X - chassisCmd.speed_w);
 
         chassisCmd.speed_x *= 0.97f;
         chassisCmd.speed_y *= 0.98f;
@@ -193,19 +190,19 @@ void CSystemCore::ControlFromKeyboard_() {
         if (abs(chassisCmd.speed_y) < 0.5f) chassisCmd.speed_y = 0.0f;
 
         if (keyboard.key_Shift) {
-            chassisCmd.speed_x += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 5.0f;   ///<通过差值来实现一行代码实现左右转弯
-            chassisCmd.speed_y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 5.0f;
+            chassisCmd.speed_x += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 660.f;   ///<通过差值来实现一行代码实现左右转弯
+            chassisCmd.speed_y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 330.f;
             chassisCmd.speed_x =
-            std::clamp(chassisCmd.speed_x, -50.0f, 50.0f);
+            std::clamp(chassisCmd.speed_x, -330.0f, 330.0f);
             chassisCmd.speed_y =
-            std::clamp(chassisCmd.speed_y, -100.0f, 100.0f);
+            std::clamp(chassisCmd.speed_y, -165.0f, 165.0f);
         } else {
-            chassisCmd.speed_x += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 1.0f;
-            chassisCmd.speed_y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 1.0f;
+            chassisCmd.speed_x += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 660.0f;
+            chassisCmd.speed_y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 330.0f;
             chassisCmd.speed_x =
-            std::clamp(chassisCmd.speed_x, -20.0f, 20.0f);
+            std::clamp(chassisCmd.speed_x, -660.0f, 660.0f);
             chassisCmd.speed_y =
-            std::clamp(chassisCmd.speed_y, -50.0f, 50.0f);
+            std::clamp(chassisCmd.speed_y, -330.0f, 330.0f);
         }    
 
 
@@ -221,13 +218,7 @@ void CSystemCore::ControlFromKeyboard_() {
 
     /******************* 云台手动控制 *******************/
     if (pgimbal_) {
-        if (!keyboard.key_Ctrl &&       // 未按下ctrl
-            !pgimbal_->gimbalCmd.isAutoCtrl) {
-            // (F键)
-            if (keyboard.key_F) {
-                pgimbal_->gimbalCmd.set_posit_yaw -= static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 100.0f / freq;
-            }
-        }
+                pgimbal_->gimbalCmd.set_posit_yaw -= static_cast<float_t>(keyboard.mouse_X - keyboard.mouse_Y) * 1.0f / freq;
     }
 
     /******************* 机械臂手动控制 *******************/

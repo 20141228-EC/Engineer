@@ -510,6 +510,7 @@ void CSystemCore::BoardLink_Info_Update_(){
     SysBoardLink.otherInfos.is_spin_on = chassisCmd.is_spin_on;
     SysBoardLink.otherInfos.yaw_gyro = static_cast<int16_t>(pgimbal_->gimbalInfo.encoder_yaw / 32768.f * 180.f);    // 转成±180再发出去
     SysBoardLink.otherInfos.autoTask = static_cast<uint8_t>(currentAutoCtrlProcess_);
+    SysBoardLink.otherInfos.use_controller = use_Controller_;
 
 }
 
@@ -557,7 +558,7 @@ void CSystemCore::Chassis_UpdateHandler_(){
 
     static uint16_t timeout = 5000;     // 等五秒
 
-    if(pgimbal_->gimbalInfo.isModuleAvailable || (!timeout)){     // 云台到位或超时就正常控底盘
+    if(pgimbal_->gimbalInfo.isModuleAvailable || (!timeout) ){     // 云台到位或超时就正常控底盘
 
         timeout = 5000;     // 重装填超时值
 
@@ -565,14 +566,14 @@ void CSystemCore::Chassis_UpdateHandler_(){
         float_t right = chassisCmd.speed_x;
         float_t cycle = chassisCmd.speed_w;
 
-        float_t yaw_angle = pgimbal_->gimbalInfo.encoder_yaw / 32768.f * PI;     // 归一到-pi~pi之间
+        float_t yaw_angle = (pgimbal_->gimbalInfo.encoder_yaw / 32768.f * PI);     // 归一到-pi~pi之间，同时融合臂的yaw
 
         DataBuffer<float_t> target = {0.0f};          // 目标误差为0
         DataBuffer<float_t> measure = {yaw_angle};    // 测量值为云台角度
         float follow_output = PidFollowYaw.UpdatePidController(target, measure)[0];
 
         if(chassisCmd.is_spin_on){
-            cycle = 1000.f;     // 小陀螺
+            cycle = 200.f;     // 小陀螺
         }
         else{
             if(yaw_angle > (PI / 2.f)){

@@ -12,6 +12,8 @@
 
 #include "mod_gimbal.hpp"
 
+int16_t debug_torque = 0.f;
+
 namespace my_engineer {
 
     CMemsBase *pmems_test = nullptr;
@@ -151,6 +153,8 @@ EAppStatus CModGimbal::CComYaw::_UpdateOutput_Gyro(float_t posit){
 	auto output = pidSpdCtrl_Gyro.UpdatePidController(spd_Yaw, spd_measure);
 
 	mtrOutputBuffer = output[0] * GIMBAL_YAW_MOTOR_GYRO_DIR;
+
+	debug_torque = mtrOutputBuffer * 0.175;
 
     return APP_OK;
 }

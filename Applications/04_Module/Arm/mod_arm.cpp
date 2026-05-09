@@ -168,69 +168,43 @@ EAppStatus CModArm::RestrictArmCommand_() {
 		return APP_ERROR;
 	}
 	// 自动控制模式下跳过后续更复杂的动态限位
-	static float_t prevPitch1 = ARM_PITCH1_INIT_ANGLE;
-	if (armCmd.isAutoCtrl) {
-		prevPitch1 = armCmd.set_angle_Pitch1;  ///< 保持追踪，防止退出自动模式时P1-P2耦合跳变
-        return APP_OK;	
-    }
-    // 物理限位
+    // 物理限位start
     armCmd.set_angle_Yaw =
         std::clamp(armCmd.set_angle_Yaw, ARM_YAW_PHYSICAL_RANGE_MIN, ARM_YAW_PHYSICAL_RANGE_MAX);
-
-	if(armCmd.set_angle_Pitch2 < 13.f && armCmd.set_angle_Roll < 90.f ) { 
-		armCmd.set_angle_end_pitch = std::clamp(armCmd.set_angle_end_pitch, 0.f, 90.f);
-	}
 
     armCmd.set_angle_Pitch1 =
         std::clamp(armCmd.set_angle_Pitch1,
                    ARM_PITCH1_PHYSICAL_RANGE_MIN, ARM_PITCH1_PHYSICAL_RANGE_MAX);
-	
-	if(!armCmd.isCustomCtrl){  //非自定义控制器模式
-		armCmd.set_angle_Pitch2 += (armCmd.set_angle_Pitch1 - prevPitch1) * 1;
-		prevPitch1 = armCmd.set_angle_Pitch1;
-		
-		float_t p2UpperLimit = std::min(ARM_P2_MAX_WHEN_P1_MIN + armCmd.set_angle_Pitch1,
-														ARM_PITCH2_PHYSICAL_RANGE_MAX);//p2的动态限位受到p1的影响
-		
-		armCmd.set_angle_Pitch2 =
-			std::clamp(armCmd.set_angle_Pitch2, ARM_PITCH2_PHYSICAL_RANGE_MIN, p2UpperLimit);
 
-		float_t p3LowerLimit = std::max(-(armCmd.set_angle_Pitch2 + armCmd.set_angle_Pitch1), ARM_PITCH3_PHYSICAL_RANGE_MIN);//p3动态限位受到p1和p2的影响，因为p3的角度是朝下的所以是负的
+	armCmd.set_angle_Pitch2 = 
+		std::clamp(armCmd.set_angle_Pitch2,
+				   ARM_PITCH2_PHYSICAL_RANGE_MIN, ARM_PITCH2_PHYSICAL_RANGE_MAX);
 
-		armCmd.set_angle_Pitch3 =
-			std::clamp(armCmd.set_angle_Pitch3,
-							p3LowerLimit, ARM_PITCH3_PHYSICAL_RANGE_MAX);
-	}
+	armCmd.set_angle_Pitch3 = 
+		std::clamp(armCmd.set_angle_Pitch3,
+				   ARM_PITCH3_PHYSICAL_RANGE_MIN, ARM_PITCH3_PHYSICAL_RANGE_MAX);
 
-	else{ //自定义控制器模式下
-		armCmd.set_angle_Pitch2 =
-			std::clamp(armCmd.set_angle_Pitch2,
-						ARM_PITCH2_PHYSICAL_RANGE_MIN, ARM_PITCH2_PHYSICAL_RANGE_MAX);
-		armCmd.set_angle_Pitch3 =
-			std::clamp(armCmd.set_angle_Pitch3,
-						ARM_PITCH3_PHYSICAL_RANGE_MIN, ARM_PITCH3_PHYSICAL_RANGE_MAX);
-	}
-	prevPitch1 = armCmd.set_angle_Pitch1; //避免切换的跳变
+	armCmd.set_angle_Roll = 
+		std::clamp(armCmd.set_angle_Roll,
+				   ARM_ROLL_PHYSICAL_RANGE_MIN, ARM_ROLL_PHYSICAL_RANGE_MAX);
 
-    armCmd.set_angle_Roll =
-        std::clamp(armCmd.set_angle_Roll,
-                   ARM_ROLL_PHYSICAL_RANGE_MIN, ARM_ROLL_PHYSICAL_RANGE_MAX);
-    armCmd.set_angle_end_pitch =
-        std::clamp(armCmd.set_angle_end_pitch,
-                   ARM_END_PITCH_PHYSICAL_RANGE_MIN, ARM_END_PITCH_PHYSICAL_RANGE_MAX);
-    armCmd.set_length_grip = 
+	armCmd.set_angle_end_pitch = 
+		std::clamp(armCmd.set_angle_end_pitch,
+				   ARM_END_PITCH_PHYSICAL_RANGE_MIN, ARM_END_PITCH_PHYSICAL_RANGE_MAX);
+
+	armCmd.set_angle_end_roll = 
+		std::clamp(armCmd.set_angle_end_roll,
+				   ARM_END_ROLL_PHYSICAL_RANGE_MIN, ARM_END_ROLL_PHYSICAL_RANGE_MAX);
+
+	armCmd.set_length_grip = 
         std::clamp(armCmd.set_length_grip,
             ARM_END_GRIP_PHYSICAL_RANGE_MIN, ARM_END_GRIP_PHYSICAL_RANGE_MAX);
-	armCmd.set_angle_end_roll =
-        std::clamp(armCmd.set_angle_end_roll,
-            ARM_END_ROLL_PHYSICAL_RANGE_MIN, ARM_END_ROLL_PHYSICAL_RANGE_MAX);//限制末端roll
+	// 物理限位end
 
-    // 自定义控制器限制
-    // if(armCmd.isCustomCtrl) {
-    //     armCmd.set_angle_Pitch1 =
-    //         std::clamp(armCmd.set_angle_Pitch1,
-    //                    18.0f, ARM_PITCH1_PHYSICAL_RANGE_MAX);
-    // }
+	// 动态限位start
+	if(armCmd.set_angle_Pitch1 < 15.f){		// 防止存矿干涉
+		armCmd.set_angle_Yaw = std::clamp(armCmd.set_angle_Yaw, -9.f, 9.f);
+	}
 
 
     // // 动态关联限位
@@ -257,11 +231,6 @@ EAppStatus CModArm::RestrictArmCommand_() {
     //         -40.f, 40.f);
     // }
 
-    // 最高优先级的限位
-    if (should_limit_yaw) {
-        armCmd.set_angle_Yaw = std::clamp(armCmd.set_angle_Yaw,
-            -12.0f, 6.0f);
-    }
 		return APP_OK;
 }
 
