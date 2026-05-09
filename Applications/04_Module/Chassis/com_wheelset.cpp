@@ -130,7 +130,7 @@ EAppStatus CModChassis::CComWheelset::InitComponent(SModInitParam_Base &param){
  * @brief 更新组件
  *
  */
-float k_w=-1.f;
+float k_w=-0.4f;
 EAppStatus CModChassis::CComWheelset::UpdateComponent(){
     // 检查组件状态
     if (componentStatus == APP_RESET) return APP_ERROR;
@@ -392,7 +392,7 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     float sqrt2_2 = 0.70710678;
 
     // 对于vx vy 采用左正右负  speed_W 逆时针为正
-    vx1 = -speed_X + speed_W * sqrt2_2;
+    vx1 = -speed_X +speed_W * sqrt2_2;
     vy1 = speed_Y  -speed_W * sqrt2_2;
     vx2 = -speed_X +speed_W * sqrt2_2;
     vy2 = speed_Y  +speed_W * sqrt2_2;

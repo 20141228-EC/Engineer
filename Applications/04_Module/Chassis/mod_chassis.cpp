@@ -48,6 +48,9 @@ float actual_torque_LL = 0.0f;
 float actual_torque_LR = 0.0f;
 float_t raw_speed_LL = 0.0f;
 int16_t max_power = 0.0f;
+float_t power_demand_steer_total = 0.f;
+float_t power_demand_wheel_total = 0.f;
+
 namespace my_engineer {
 
 CModChassis *pChassis_test = nullptr;
@@ -153,40 +156,35 @@ float CModChassis::CalcTotalDemandPower(const CComWheelset& wheelset, float whee
     return totalDemand;
 }
 
-/**
- * @brief 动态功率分配
- * 
- * 
- */
 void CModChassis::AllocDynamicPower(const CComWheelset& wheelset, float targetWheelPower[4], float targetSteerPower[4]) {
     float wheelDemand[4] = {0.0f};
     float steerDemand[4] = {0.0f};
     CalcTotalDemandPower(wheelset, wheelDemand, steerDemand);
 
-    float wheelDemandTotal = 0.0f;
-    float steerDemandTotal = 0.0f;
+    // 舵向电机直接给需求功率，不做限制
     for (int i = 0; i < 4; i++) {
-        wheelDemandTotal += wheelDemand[i];
-        steerDemandTotal += steerDemand[i];
+        targetSteerPower[i] = steerDemand[i];
     }
 
-    constexpr float eps = 1e-6f;
-    float wheelLimitCoe = 1.0f;
-    float steerLimitCoe = 1.0f;
+    // 总功率限制115W，减去舵向电机功率
+    constexpr float kTotalWheelPower = 115.0f;
+    float totalSteerDemand = 0.0f;
+    for (int i = 0; i < 4; i++) totalSteerDemand += steerDemand[i];
 
-    // 轮向电机分配105W，内部动态分配
-    if (wheelDemandTotal > 105.0f + eps) {
-        wheelLimitCoe = 105.0f / wheelDemandTotal;
-    }
+    float remainingWheelPower = kTotalWheelPower - totalSteerDemand;    // 减去舵向后剩余功率
+    if (remainingWheelPower < 0.0f) remainingWheelPower = 0.0f;
 
-    // 舵向电机分配10W，内部动态分配
-    if (steerDemandTotal > 10.0f + eps) {
-        steerLimitCoe = 10.0f / steerDemandTotal;
-    }
+    // 按比例分配给轮向电机
+    float totalWheelDemand = 0.0f;
+    for (int i = 0; i < 4; i++) totalWheelDemand += wheelDemand[i];
 
-    for (int i = 0; i < 4; i++) {
-        targetWheelPower[i] = wheelDemand[i] * wheelLimitCoe;
-        targetSteerPower[i] = steerDemand[i] * steerLimitCoe;
+    if (totalWheelDemand > 1e-6f) {
+        float wheelScale = remainingWheelPower / totalWheelDemand;
+        for (int i = 0; i < 4; i++) {
+            targetWheelPower[i] = wheelDemand[i] * wheelScale;      // 对每个轮毂作比例缩放
+        }
+    } else {
+        for (int i = 0; i < 4; i++) targetWheelPower[i] = 0.0f;
     }
 }
 
@@ -214,28 +212,28 @@ void CModChassis::UpdatePowerBudget_() {
  * 
  * @return EAppStatus 
  */
-void CModChassis::UpdateHandler_(){
+void CModChassis::UpdateHandler_() {
 
     // 检查模块状态
     if (moduleStatus == APP_RESET) return;
 
-    // 读取功率计反馈值
+    // ------------------ 读取功率计 ------------------
     if (powerMeterRxNode_.timestamp > powerMeterLastTimestamp_ &&
         powerMeterRxNode_.dataBuffer.size() >= sizeof(float)) {
         std::memcpy(&powermeter, powerMeterRxNode_.dataBuffer.data(), sizeof(float));
         powerMeterLastTimestamp_ = powerMeterRxNode_.timestamp;
     }
 
+    // 根据电机速度和发送电流计算预测功率
     auto calcFeedbackPower = [](CAlgoPowerControl &powerCtrl, CDevMtr *motor) -> float {
-        if (motor == nullptr) {
-            return 0.0f;
-        }
-
+        if (!motor) return 0.0f;
         return std::max(0.0f, powerCtrl.CalcMotorPower(
             static_cast<float>(motor->motorData[CDevMtr::DATA_SPEED]),
-            static_cast<float>(motor->motorData[CDevMtr::DATA_CURRENT])));
+            static_cast<float>(motor->motorData[CDevMtr::DATA_CURRENT])
+        ));
     };
 
+    // 总预测功率
     const float feedbackPowerRaw =
         calcFeedbackPower(powerCtrlLF_, comWheelset_.motor[CComWheelset::LF]) +
         calcFeedbackPower(powerCtrlRF_, comWheelset_.motor[CComWheelset::RF]) +
@@ -245,180 +243,99 @@ void CModChassis::UpdateHandler_(){
         calcFeedbackPower(powerCtrlSteerRF_, comWheelset_.steerMotor[CComWheelset::RF]) +
         calcFeedbackPower(powerCtrlSteerLB_, comWheelset_.steerMotor[CComWheelset::LB]) +
         calcFeedbackPower(powerCtrlSteerRB_, comWheelset_.steerMotor[CComWheelset::RB]);
+
     feedbackMeasuredPowerRaw_ = feedbackPowerRaw;
+    // 做一个低通滤波 避免预测功率抖动而频繁限制
     constexpr float kFeedbackPowerLpfAlpha = 0.18f;
     feedbackMeasuredPower_ += kFeedbackPowerLpfAlpha * (feedbackPowerRaw - feedbackMeasuredPower_);
-    power_feedback_est = feedbackMeasuredPower_;
+    power_feedback_est = feedbackMeasuredPower_;    // 低通滤波后的预测功率
 
+    // ------------------ 更新功率预算 ------------------
     UpdatePowerBudget_();
 
-    // 更新底盘轮组
+    // ------------------ 更新底盘轮组 ------------------
     comWheelset_.UpdateComponent();
 
-    // 功率分配
+    // ------------------ 动态功率分配 ------------------
     float dynamicTargetWheelPower[4] = {0.0f};
     float dynamicTargetSteerPower[4] = {0.0f};
-    AllocDynamicPower(comWheelset_, dynamicTargetWheelPower, dynamicTargetSteerPower); // 内部基于统一数据源计算
+    AllocDynamicPower(comWheelset_, dynamicTargetWheelPower, dynamicTargetSteerPower);
 
     auto toPowerUInt = [](float power) -> uint16_t {
         return static_cast<uint16_t>(std::lround(std::max(0.0f, power)));
     };
 
-    // 设置电机功率上限
+    // ------------------ 设置轮向电机功率上限 ------------------
     powerCtrlLF_.SetDefaultMaxPower(toPowerUInt(dynamicTargetWheelPower[CComWheelset::LF]));
     powerCtrlRF_.SetDefaultMaxPower(toPowerUInt(dynamicTargetWheelPower[CComWheelset::RF]));
     powerCtrlLB_.SetDefaultMaxPower(toPowerUInt(dynamicTargetWheelPower[CComWheelset::LB]));
     powerCtrlRB_.SetDefaultMaxPower(toPowerUInt(dynamicTargetWheelPower[CComWheelset::RB]));
 
-    powerCtrlSteerLF_.SetDefaultMaxPower(toPowerUInt(dynamicTargetSteerPower[CComWheelset::LF]));
-    powerCtrlSteerRF_.SetDefaultMaxPower(toPowerUInt(dynamicTargetSteerPower[CComWheelset::RF]));
-    powerCtrlSteerLB_.SetDefaultMaxPower(toPowerUInt(dynamicTargetSteerPower[CComWheelset::LB]));
-    powerCtrlSteerRB_.SetDefaultMaxPower(toPowerUInt(dynamicTargetSteerPower[CComWheelset::RB]));
+    // // 舵向电机不限制功率，不再设置限制
+    // for (int i = 0; i < 4; i++) {
+    //     comWheelset_.mtrSteerOutputBuffer[i] = static_cast<int16_t>(dynamicTargetSteerPower[i]);
+    // }
 
+    // ------------------ 轮向电机限幅 ------------------
     int16_t limitedTorque[4];
-    int16_t limitedSteerTorque[4];
-    // LF电机
-    {
-        float speedLF = static_cast<float>(comWheelset_.motor[CComWheelset::LF]->motorData[CDevMtr::DATA_SPEED]);
-        limitedTorque[0] = powerCtrlLF_.UpdatePowerLimit(speedLF, comWheelset_.mtrOutputBuffer[CComWheelset::LF]); 
-    }
-    // RF电机
-    {
-        float speedRF = static_cast<float>(comWheelset_.motor[CComWheelset::RF]->motorData[CDevMtr::DATA_SPEED]);
-        limitedTorque[1] = powerCtrlRF_.UpdatePowerLimit(speedRF, comWheelset_.mtrOutputBuffer[CComWheelset::RF]); 
-    }
-    // LB电机
-    {
-        float speedLB = static_cast<float>(comWheelset_.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_SPEED]);
-        limitedTorque[2] = powerCtrlLB_.UpdatePowerLimit(speedLB, comWheelset_.mtrOutputBuffer[CComWheelset::LB]); 
-    }
-    // RB电机
-    {
-        float speedRB = static_cast<float>(comWheelset_.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_SPEED]);
-        limitedTorque[3] = powerCtrlRB_.UpdatePowerLimit(speedRB, comWheelset_.mtrOutputBuffer[CComWheelset::RB]); 
+    for (int i = 0; i < 4; i++) {
+        float wheelSpeed = static_cast<float>(comWheelset_.motor[i]->motorData[CDevMtr::DATA_SPEED]);
+        limitedTorque[i] = (&powerCtrlLF_ + i)->UpdatePowerLimit(wheelSpeed, comWheelset_.mtrOutputBuffer[i]);
+        comWheelset_.mtrOutputBuffer[i] = limitedTorque[i];  // 更新输出缓冲区
     }
 
-    // LF舵向电机
-    {
-        float speedLF = static_cast<float>(comWheelset_.steerMotor[CComWheelset::LF]->motorData[CDevMtr::DATA_SPEED]);
-        limitedSteerTorque[0] = powerCtrlSteerLF_.UpdatePowerLimit(speedLF, comWheelset_.mtrSteerOutputBuffer[CComWheelset::LF]);
-    }
-    // RF舵向电机
-    {
-        float speedRF = static_cast<float>(comWheelset_.steerMotor[CComWheelset::RF]->motorData[CDevMtr::DATA_SPEED]);
-        limitedSteerTorque[1] = powerCtrlSteerRF_.UpdatePowerLimit(speedRF, comWheelset_.mtrSteerOutputBuffer[CComWheelset::RF]);
-    }
-    // LB舵向电机
-    {
-        float speedLB = static_cast<float>(comWheelset_.steerMotor[CComWheelset::LB]->motorData[CDevMtr::DATA_SPEED]);
-        limitedSteerTorque[2] = powerCtrlSteerLB_.UpdatePowerLimit(speedLB, comWheelset_.mtrSteerOutputBuffer[CComWheelset::LB]);
-    }
-    // RB舵向电机
-    {
-        float speedRB = static_cast<float>(comWheelset_.steerMotor[CComWheelset::RB]->motorData[CDevMtr::DATA_SPEED]);
-        limitedSteerTorque[3] = powerCtrlSteerRB_.UpdatePowerLimit(speedRB, comWheelset_.mtrSteerOutputBuffer[CComWheelset::RB]);
-    }
-
-    /**********************用于debug start*****************************/
-    // 更新全局变量以供调试
-    const float wheel_power_lf_raw = powerCtrlLF_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::LF]->motorData[CDevMtr::DATA_SPEED]),
-                                                                 static_cast<float>(comWheelset_.mtrOutputBuffer[CComWheelset::LF]));
-    const float wheel_power_rf_raw = powerCtrlRF_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::RF]->motorData[CDevMtr::DATA_SPEED]),
-                                                                 static_cast<float>(comWheelset_.mtrOutputBuffer[CComWheelset::RF]));
-    const float wheel_power_lb_raw = powerCtrlLB_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_SPEED]),
-                                                                 static_cast<float>(comWheelset_.mtrOutputBuffer[CComWheelset::LB]));
-    const float wheel_power_rb_raw = powerCtrlRB_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_SPEED]),
-                                                                 static_cast<float>(comWheelset_.mtrOutputBuffer[CComWheelset::RB]));
-
+    // debug变量开始
     constexpr float kWheelPowerLpfAlpha = 0.08f;
-    wheel_power_lf += kWheelPowerLpfAlpha * (wheel_power_lf_raw - wheel_power_lf);
-    wheel_power_rf += kWheelPowerLpfAlpha * (wheel_power_rf_raw - wheel_power_rf);
-    wheel_power_lb += kWheelPowerLpfAlpha * (wheel_power_lb_raw - wheel_power_lb);
-    wheel_power_rb += kWheelPowerLpfAlpha * (wheel_power_rb_raw - wheel_power_rb);
-
-    steer_power_lf = powerCtrlSteerLF_.CalcMotorPower(static_cast<float>(comWheelset_.steerMotor[CComWheelset::LF]->motorData[CDevMtr::DATA_SPEED]),
-                                                      static_cast<float>(comWheelset_.mtrSteerOutputBuffer[CComWheelset::LF]));
-    steer_power_rf = powerCtrlSteerRF_.CalcMotorPower(static_cast<float>(comWheelset_.steerMotor[CComWheelset::RF]->motorData[CDevMtr::DATA_SPEED]),
-                                                      static_cast<float>(comWheelset_.mtrSteerOutputBuffer[CComWheelset::RF]));
-    steer_power_lb = powerCtrlSteerLB_.CalcMotorPower(static_cast<float>(comWheelset_.steerMotor[CComWheelset::LB]->motorData[CDevMtr::DATA_SPEED]),
-                                                      static_cast<float>(comWheelset_.mtrSteerOutputBuffer[CComWheelset::LB]));
-    steer_power_rb = powerCtrlSteerRB_.CalcMotorPower(static_cast<float>(comWheelset_.steerMotor[CComWheelset::RB]->motorData[CDevMtr::DATA_SPEED]),
-                                                      static_cast<float>(comWheelset_.mtrSteerOutputBuffer[CComWheelset::RB]));
-    power_demand_total = std::max(0.0f, wheel_power_lf_raw) + std::max(0.0f, wheel_power_rf_raw) + std::max(0.0f, wheel_power_lb_raw) + std::max(0.0f, wheel_power_rb_raw) +
-                         std::max(0.0f, steer_power_lf) + std::max(0.0f, steer_power_rf) + std::max(0.0f, steer_power_lb) + std::max(0.0f, steer_power_rb);
-
-    // 应用全局缩放，得到最终发送转矩
-    int16_t finalTorque[4] = {
-        static_cast<int16_t>(limitedTorque[0]),
-        static_cast<int16_t>(limitedTorque[1]),
-        static_cast<int16_t>(limitedTorque[2]), 
-        static_cast<int16_t>(limitedTorque[3])
-    };
-    int16_t finalSteerTorque[4] = {
-        static_cast<int16_t>(limitedSteerTorque[0]),
-        static_cast<int16_t>(limitedSteerTorque[1]),
-        static_cast<int16_t>(limitedSteerTorque[2]), 
-        static_cast<int16_t>(limitedSteerTorque[3])
+    float wheelPowerRaw[4] = {
+        powerCtrlLF_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::LF]->motorData[CDevMtr::DATA_SPEED]),
+                                    static_cast<float>(comWheelset_.mtrOutputBuffer[CComWheelset::LF])),
+        powerCtrlRF_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::RF]->motorData[CDevMtr::DATA_SPEED]),
+                                    static_cast<float>(comWheelset_.mtrOutputBuffer[CComWheelset::RF])),
+        powerCtrlLB_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_SPEED]),
+                                    static_cast<float>(comWheelset_.mtrOutputBuffer[CComWheelset::LB])),
+        powerCtrlRB_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_SPEED]),
+                                    static_cast<float>(comWheelset_.mtrOutputBuffer[CComWheelset::RB]))
     };
 
-    const float wheel_power_lf_cmd = powerCtrlLF_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::LF]->motorData[CDevMtr::DATA_SPEED]),
-                                                                 static_cast<float>(comWheelset_.motor[CComWheelset::LF]->motorData[CDevMtr::DATA_CURRENT]));
-    const float wheel_power_rf_cmd = powerCtrlRF_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::RF]->motorData[CDevMtr::DATA_SPEED]),
-                                                                 static_cast<float>(comWheelset_.motor[CComWheelset::RF]->motorData[CDevMtr::DATA_CURRENT]));
-    const float wheel_power_lb_cmd = powerCtrlLB_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_SPEED]),
-                                                                 static_cast<float>(comWheelset_.motor[CComWheelset::LB]->motorData[CDevMtr::DATA_CURRENT]));
-    const float wheel_power_rb_cmd = powerCtrlRB_.CalcMotorPower(static_cast<float>(comWheelset_.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_SPEED]),
-                                                                 static_cast<float>(comWheelset_.motor[CComWheelset::RB]->motorData[CDevMtr::DATA_CURRENT]));
-    const float steer_power_lf_cmd = powerCtrlSteerLF_.CalcMotorPower(static_cast<float>(comWheelset_.steerMotor[CComWheelset::LF]->motorData[CDevMtr::DATA_SPEED]),
-                                                                      static_cast<float>(finalSteerTorque[0]));
-    const float steer_power_rf_cmd = powerCtrlSteerRF_.CalcMotorPower(static_cast<float>(comWheelset_.steerMotor[CComWheelset::RF]->motorData[CDevMtr::DATA_SPEED]),
-                                                                      static_cast<float>(finalSteerTorque[1]));
-    const float steer_power_lb_cmd = powerCtrlSteerLB_.CalcMotorPower(static_cast<float>(comWheelset_.steerMotor[CComWheelset::LB]->motorData[CDevMtr::DATA_SPEED]),
-                                                                      static_cast<float>(finalSteerTorque[2]));
-    const float steer_power_rb_cmd = powerCtrlSteerRB_.CalcMotorPower(static_cast<float>(comWheelset_.steerMotor[CComWheelset::RB]->motorData[CDevMtr::DATA_SPEED]),
-                                                                      static_cast<float>(finalSteerTorque[3]));
-    power_cmd_total = std::max(0.0f, wheel_power_lf_cmd) + std::max(0.0f, wheel_power_rf_cmd) + std::max(0.0f, wheel_power_lb_cmd) + std::max(0.0f, wheel_power_rb_cmd) +
-                      std::max(0.0f, steer_power_lf_cmd) + std::max(0.0f, steer_power_rf_cmd) + std::max(0.0f, steer_power_lb_cmd) + std::max(0.0f, steer_power_rb_cmd);
+    // 这里同样作滤波处理
+    wheel_power_lf += kWheelPowerLpfAlpha * (wheelPowerRaw[0] - wheel_power_lf);
+    wheel_power_rf += kWheelPowerLpfAlpha * (wheelPowerRaw[1] - wheel_power_rf);
+    wheel_power_lb += kWheelPowerLpfAlpha * (wheelPowerRaw[2] - wheel_power_lb);
+    wheel_power_rb += kWheelPowerLpfAlpha * (wheelPowerRaw[3] - wheel_power_rb);
+
+    // 舵向功率直接取预测值
+    steer_power_lf = dynamicTargetSteerPower[CComWheelset::LF];
+    steer_power_rf = dynamicTargetSteerPower[CComWheelset::RF];
+    steer_power_lb = dynamicTargetSteerPower[CComWheelset::LB];
+    steer_power_rb = dynamicTargetSteerPower[CComWheelset::RB];
+
+    // ------------------ 功率统计 ------------------
+    power_demand_steer_total = steer_power_lf + steer_power_rf + steer_power_lb + steer_power_rb;
+    power_demand_wheel_total = wheelPowerRaw[0] + wheelPowerRaw[1] + wheelPowerRaw[2] + wheelPowerRaw[3];
+    power_demand_total = wheelPowerRaw[0] + wheelPowerRaw[1] + wheelPowerRaw[2] + wheelPowerRaw[3] +
+                         steer_power_lf + steer_power_rf + steer_power_lb + steer_power_rb;
+
+    // debug变量结束
+
+    // ------------------ 填充 CAN 发送缓冲区 ------------------
+    for (int i = 0; i < 4; i++) {
+        CDevMtrDJI::FillCanTxBuffer(comWheelset_.motor[i],
+                                    comWheelset_.mtrCanTxNode[i]->dataBuffer,
+                                    comWheelset_.mtrOutputBuffer[i]);
+        CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[i],
+                                    comWheelset_.mtrSteerCanTxNode[i]->dataBuffer,
+                                    comWheelset_.mtrSteerOutputBuffer[i]);
+    }
+
+    // ------------------ 最终总功率命令 ------------------
+    power_cmd_total = 0.0f;
+    for (int i = 0; i < 4; i++) {
+        power_cmd_total += powerCtrlLF_.CalcMotorPower(
+            static_cast<float>(comWheelset_.motor[i]->motorData[CDevMtr::DATA_SPEED]),
+            static_cast<float>(comWheelset_.motor[i]->motorData[CDevMtr::DATA_CURRENT])
+        );
+    }
     power_total = power_cmd_total;
-
-    // 更新最终转矩到输出缓冲区
-    comWheelset_.mtrOutputBuffer[CComWheelset::LF] = finalTorque[0];
-    comWheelset_.mtrOutputBuffer[CComWheelset::RF] = finalTorque[1];
-    comWheelset_.mtrOutputBuffer[CComWheelset::LB] = finalTorque[2];
-    comWheelset_.mtrOutputBuffer[CComWheelset::RB] = finalTorque[3];
-    comWheelset_.mtrSteerOutputBuffer[CComWheelset::LF] = finalSteerTorque[0];
-    comWheelset_.mtrSteerOutputBuffer[CComWheelset::RF] = finalSteerTorque[1];
-    comWheelset_.mtrSteerOutputBuffer[CComWheelset::LB] = finalSteerTorque[2];
-    comWheelset_.mtrSteerOutputBuffer[CComWheelset::RB] = finalSteerTorque[3];
-
-
-    // 填充电机发送缓冲区
-    CDevMtrDJI::FillCanTxBuffer(comWheelset_.motor[CComWheelset::LF],
-                                comWheelset_.mtrCanTxNode[CComWheelset::LF]->dataBuffer,
-                                comWheelset_.mtrOutputBuffer[CComWheelset::LF]);
-    CDevMtrDJI::FillCanTxBuffer(comWheelset_.motor[CComWheelset::RF],
-                                comWheelset_.mtrCanTxNode[CComWheelset::RF]->dataBuffer,
-                                comWheelset_.mtrOutputBuffer[CComWheelset::RF]);
-    CDevMtrDJI::FillCanTxBuffer(comWheelset_.motor[CComWheelset::LB],
-                                comWheelset_.mtrCanTxNode[CComWheelset::LB]->dataBuffer,
-                                comWheelset_.mtrOutputBuffer[CComWheelset::LB]);
-    CDevMtrDJI::FillCanTxBuffer(comWheelset_.motor[CComWheelset::RB],
-                                comWheelset_.mtrCanTxNode[CComWheelset::RB]->dataBuffer,
-                                comWheelset_.mtrOutputBuffer[CComWheelset::RB]);            
-
-    CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[CComWheelset::LF],
-                                comWheelset_.mtrSteerCanTxNode[CComWheelset::LF]->dataBuffer,
-                                comWheelset_.mtrSteerOutputBuffer[CComWheelset::LF]);
-    CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[CComWheelset::RF],
-                                comWheelset_.mtrSteerCanTxNode[CComWheelset::RF]->dataBuffer,
-                                comWheelset_.mtrSteerOutputBuffer[CComWheelset::RF]);
-    CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[CComWheelset::LB],
-                                comWheelset_.mtrSteerCanTxNode[CComWheelset::LB]->dataBuffer,
-                                comWheelset_.mtrSteerOutputBuffer[CComWheelset::LB]);
-    CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[CComWheelset::RB],
-                                comWheelset_.mtrSteerCanTxNode[CComWheelset::RB]->dataBuffer,
-                                comWheelset_.mtrSteerOutputBuffer[CComWheelset::RB]);
-
 }
 
 /**
@@ -461,20 +378,16 @@ EAppStatus CModChassis::RestrictChassisCommand_() {
         return APP_ERROR;
     }
 
-    // 限制底盘模块的控制命令大小
-    // chassisCmd.speed_X = std::clamp(chassisCmd.speed_X, -100.0f, 100.0f);
-    // chassisCmd.speed_Y = std::clamp(chassisCmd.speed_Y, -100.0f, 100.0f);
-    // // 平面速度圆限幅：避免斜向输入时合速度超过100%
-    // {
-    //     const float planarMag = std::sqrt(chassisCmd.speed_X * chassisCmd.speed_X +
-    //                                       chassisCmd.speed_Y * chassisCmd.speed_Y);
-    //     if (planarMag > 100.0f) {
-    //         const float scale = 100.0f / planarMag;
-    //         chassisCmd.speed_X *= scale;
-    //         chassisCmd.speed_Y *= scale;
-    //     }
-    // }
-    // chassisCmd.speed_W = std::clamp(chassisCmd.speed_W, -100.0f, 100.0f);
+    // 平面速度圆限幅：避免斜向输入时合速度超过100%
+    {
+        const float planarMag = std::sqrt(chassisCmd.speed_X * chassisCmd.speed_X +
+                                          chassisCmd.speed_Y * chassisCmd.speed_Y);
+        if (planarMag > 440.0f) {
+            const float scale = 440.0f / planarMag;
+            chassisCmd.speed_X *= scale;
+            chassisCmd.speed_Y *= scale;
+        }
+    }
 
     // 自动控制启用，则不继续做限制
     if (chassisCmd.isAutoCtrl) return APP_OK;

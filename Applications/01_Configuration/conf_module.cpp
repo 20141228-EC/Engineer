@@ -114,28 +114,28 @@ EAppStatus InitAllModule() {
     chassisInitParam.steerPosPidParam[3].errorMode = CAlgoPid::EPidErrorMode::MACHINE;
     chassisInitParam.steerPosPidParam[3].MachineModeErrorRange = 8192;
 
-    chassisInitParam.steerSpdPidParam[0].kp = 100.f;
+    chassisInitParam.steerSpdPidParam[0].kp = 85.f;
     chassisInitParam.steerSpdPidParam[0].ki = 0.0f;
     chassisInitParam.steerSpdPidParam[0].kd = 0.f;
     chassisInitParam.steerSpdPidParam[0].Input_deadband = 0.0f;
     chassisInitParam.steerSpdPidParam[0].maxIntegral = 10000.0f;
     chassisInitParam.steerSpdPidParam[0].maxOutput = 16000.0f;
 
-    chassisInitParam.steerSpdPidParam[1].kp = 100.f;
+    chassisInitParam.steerSpdPidParam[1].kp = 85.f;
     chassisInitParam.steerSpdPidParam[1].ki = 0.0f;
     chassisInitParam.steerSpdPidParam[1].kd = 0.f;
     chassisInitParam.steerSpdPidParam[1].Input_deadband = 0.0f;
     chassisInitParam.steerSpdPidParam[1].maxIntegral = 10000.0f;
     chassisInitParam.steerSpdPidParam[1].maxOutput = 16000.0f;
 
-    chassisInitParam.steerSpdPidParam[2].kp = 100.f;
+    chassisInitParam.steerSpdPidParam[2].kp = 85.f;
     chassisInitParam.steerSpdPidParam[2].ki = 0.0f;
     chassisInitParam.steerSpdPidParam[2].kd = 0.f;
     chassisInitParam.steerSpdPidParam[2].Input_deadband = 0.0f;
     chassisInitParam.steerSpdPidParam[2].maxIntegral = 10000.0f;
     chassisInitParam.steerSpdPidParam[2].maxOutput = 16000.0f;
 
-    chassisInitParam.steerSpdPidParam[3].kp = 100.0f;
+    chassisInitParam.steerSpdPidParam[3].kp = 85.0f;
     chassisInitParam.steerSpdPidParam[3].ki = 0.0f;
     chassisInitParam.steerSpdPidParam[3].kd = 0.f;
     chassisInitParam.steerSpdPidParam[3].Input_deadband = 0.0f;
