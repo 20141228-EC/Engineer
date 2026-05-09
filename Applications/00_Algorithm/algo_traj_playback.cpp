@@ -147,12 +147,12 @@ namespace my_engineer{
         if (maxTime_ < 1e-6f || leadIdx < 0) {
             for (int i = 0; i < JointId::COUNT; i++) {
                 jointTrajs[i] = tmp[i];
-                jointTrajs[i].tTotal = maxTime_;   // 让 IsFinished 一致
+                jointTrajs[i].tTotal = maxTime_;   
             }
             return;
         }
 
-        // ---------- 取头关节的 (tAcc, tConst, tDec) 作为同相位模板 ----------
+        // ---------- 取最开头的 (tAcc, tConst, tDec) 作为同相位模板 ----------
         float_t leadTAcc, leadTConst, leadTDec;
         if (tmp[leadIdx].tTotal > 1e-6f) {
             // 若 minTime 拉伸了 maxTime_，把领头的三段等比例放大

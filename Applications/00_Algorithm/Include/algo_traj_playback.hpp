@@ -48,7 +48,7 @@ public:
     void TrapezoidalSpeedPlanner(float_t _startpoint, float_t _endpoint, float_t _vMax, float_t _acc) ;
 
     /**
-     * @brief 同相位规划：给定起止位置和关节帧的(tAcc, tConst, tDec)，
+     * @brief 同步规划：给定起止位置和关节帧的(tAcc, tConst, tDec)，
      *        反推 vPeak/aMax，使本关节与领头关节同时启动、同时匀速、同时到达。
      * @param _startpoint 起始位置 (度)
      * @param _endpoint   目标位置 (度)

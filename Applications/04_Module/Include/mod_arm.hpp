@@ -117,6 +117,7 @@
 #define GRIP_OPEN_SPEED  12000.0f
 #define GRIP_OPEN_SPEED_MIN  4000.0f
 #define GRIP_CLOSE_SPEED  12000.0f
+#define GRIP_OUTPUT_LIMIT 4500       ///< 正常模式输出限幅
 
 #define GRIP_OPEN_Stop_distance  1.0f
 #define GRIP_CLOSE_Stop_distance  1.0f
@@ -217,6 +218,8 @@ public:
 		bool isAngleArrived_End_Roll = false; ///< 机械臂末端Roll角度是否到达
 		bool isAngleArrived_Grip = false; ///< 机械臂夹爪角度是否夹取
 		bool isGripped = false; ///< 夹爪是否处于堵转夹持状态
+		bool resetEndPitch = false; ///< 是否重置末端Pitch角度
+		bool endPitchCalibrating = false; ///< 末端Pitch是否正在标定中
 		float_t holdLength_grip = 0.0f; ///< 夹取保持位置（物理距离 mm）
 		enum class EGripState : uint8_t { RELEASE = 0, HOLD = 1 };
 		EGripState gripState = EGripState::RELEASE;
@@ -238,6 +241,8 @@ public:
 		float_t set_speed_grip = 0.0f; ///< 机械臂夹爪速度设定（速度环模式）
 		bool gripClose = false;           ///< 手动闭合标志（Core层设置）
 		bool gripOpen = false;            ///< 手动张开标志（Core层设置）
+		bool resetEndPitch = false; ///< 是否重置末端Pitch角度
+		bool resetEndAll = false; ///< 是否完整重初始化末端
 	} armCmd;
 
 	CModArm() = default;
@@ -413,12 +418,15 @@ private:
 			int32_t posit_Roll = 0;    ///< End Posit Roll
 			bool isPositArrived_Pitch = false; ///< End Posit Arrived Pitch
 			bool isPositArrived_Roll = false; ///< End Posit Arrived Roll
+			// bool resetEndPitch = false; ///< Reset End Pitch Flag
 		} endInfo;
 
 		// 定义机械臂末端控制命令结构体并实例化
 		struct SEndCmd {
 			int32_t setPosit_Pitch = 0;    ///< End Posit Set Pitch
 			int32_t setPosit_Roll = 0;    ///< End Posit Set Roll
+			bool resetEndPitch = false; ///< Reset End Pitch Flag
+			bool resetEndAll = false; ///< Reset End All Flag
 		} endCmd;
 
 		// 电机实例指针数组
@@ -469,7 +477,7 @@ private:
 		const int32_t rangeLimit_Grip = ARM_END_GRIP_MOTOR_RANGE; ///< 夹爪电机位置范围限制
 		// 定义夹爪信息结构体
 		struct SGripInfo {
-			enum class EGripState : uint8_t { RELEASE = 0, HOLD = 1,RELEASE_MAX = 3};
+			enum class EGripState : uint8_t { RELEASE = 0, HOLD = 1,RELEASE_MAX = 3, SAVE = 4};//松开、张开、张开最大、自救
 			EGripState state = EGripState::RELEASE;	///< 夹爪控制子状态
 			int32_t posit_grip = 0;           	///< 夹爪当前位置
 			int32_t holdPosit_Grip = 0;			///< 记忆夹持位置
@@ -512,7 +520,19 @@ private:
 			int32_t SpeedLimit = 0;            ///<速度限制值
 			enum class EGripMotorState : uint8_t { STALL = 0, RUNNING = 1 };
 			EGripMotorState state = EGripMotorState::RUNNING;	///< 夹爪控制子状态
-		} griGripMotor_;
+		} griGripMotor_;//这一部分暂时没有用
+
+		struct SRescueParam {
+			float_t speedThresh   = 8000.0f;  ///< 触发检测的目标速度阈值 (rpm)这里的选择的依据就是在模块层中设置的高转速
+			float_t stuckThresh   = 500.0f;   ///< 实际速度低于此值视为卡死 (rpm)
+			uint16_t triggerTime  = 100;       ///< 卡死持续触发时间 
+			float_t distancePhy   = 3.0f;     ///< 自救移动物理距离 (mm)
+			int32_t distanceEnc   = 0;        ///< 自救移动编码器距离
+			uint16_t timeout      = 600;      ///< 自救超时 (ticks)
+			uint16_t detectCnt    = 0;        ///< 检测计数器
+			int32_t targetPosit   = 0;        ///< 自救目标位置
+			uint16_t elapsedTick  = 0;        ///< 自救已用时间
+		} rescueParam_;
 
 		// PID控制器
 		CAlgoPid pidPosCtrl;

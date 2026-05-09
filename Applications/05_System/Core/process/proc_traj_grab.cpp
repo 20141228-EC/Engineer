@@ -39,6 +39,12 @@ namespace my_engineer {
         arm.armCmd.set_angle_end_pitch = arm.armInfo.angle_end_pitch;
         arm.armCmd.set_angle_end_roll  = arm.armInfo.angle_end_roll;
 
+        // 重新标定末端
+        arm.armCmd.resetEndAll = true;
+        while(arm.comEnd_.initState_ ==  CModArm::CComEnd::EEndInitState::DONE){
+            proc_waitMs(1);
+        }
+
         // 循环等待鼠标左键/右键选择轨迹
         ETrajID trajId;
         while(true){

@@ -4,9 +4,11 @@
  * @brief 机械臂夹爪组件
  * @version 2.0
  * @date 2025-12-11
- * @lastedit：2026-04-30
- * @details V2.0: 机械结构更换为2006丝杆直驱，移除Roll轴耦合补偿
- *          速度环控制 + 力矩反馈检测 + RELEASE/HOLD 双状态机
+ * @lastedit：2026-05-09
+ * @details V3.0: 
+ * 1. 速度环控制：由于丝杆的导程过长，为了提高夹爪的移动速度
+ * 2. 力矩反馈检测：为了防止丝杆夹爪的完全卡死的情况要在靠近上次的位置的时候开始减速，在闭合的时候重置初始化标志位 
+ * 3. RELEASE/HOLD/SAVE 多状态机，为了防止丝杆的自锁现象导致完全的卡死情况加入了自救挣脱模式，通过提高目标位置瞬间输出超大扭矩掰回来
  *
  * @copyright Copyright (c) 2025
  *
@@ -49,6 +51,9 @@ EAppStatus CModArm::CComGrip::InitComponent(SModInitParam_Base &param) {
     gripDetect_.detectTorque      = armParam.GripDetectParam.detectTorque;
     gripDetect_.filterAlpha       = armParam.GripDetectParam.filterAlpha;
 
+    // 自救距离计算
+    rescueParam_.distanceEnc = static_cast<int32_t>(rescueParam_.distancePhy * ARM_END_GRIP_MOTOR_RATIO);
+
     //输出缓冲区清零
     mtrOutputBuffer = 0;
 
@@ -67,14 +72,6 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
         return APP_ERROR;
     }
 
-    // 获取力矩绝对值
-    auto getAbsTorque = [this]() -> float_t {
-        return static_cast<float_t>(
-            motor->motorData[CDevMtr::DATA_TORQUE] < 0
-                ? -motor->motorData[CDevMtr::DATA_TORQUE]
-                :  motor->motorData[CDevMtr::DATA_TORQUE]);
-    };
-
     // 更新夹爪当前位置
     gripInfo.posit_grip = motor->motorData[CDevMtr::DATA_POSIT] * ARM_GRIP_MOTOR_DIR;
 
@@ -86,6 +83,8 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                 speedTargetFiltered_ = 0.0f;
                 speedMeasuredFiltered_ = 0.0f;
                 initTick_ = 0;
+                rescueParam_.detectCnt = 0;
+                rescueParam_.elapsedTick = 0;
                 pidPosCtrl.ResetPidController();
                 pidSpdCtrl.ResetPidController();
                 return APP_OK;
@@ -96,6 +95,8 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                 speedTargetFiltered_ = 0.0f;
                 speedMeasuredFiltered_ = 0.0f;
                 initTick_ = 0;
+                rescueParam_.detectCnt = 0;
+                rescueParam_.elapsedTick = 0;
                 motor->motorData[CDevMtr::DATA_POSIT] = 0;
                 pidPosCtrl.ResetPidController();
                 pidSpdCtrl.ResetPidController();
@@ -123,7 +124,7 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                 }
 
                 // 力矩反馈线性减速
-                gripDetect_.filteredTorque = getAbsTorque();
+                gripDetect_.filteredTorque = fabsf(static_cast<float_t>(motor->motorData[CDevMtr::DATA_TORQUE]));
                 if (gripDetect_.filteredTorque > GripinitParam_.initTorqueThresh_) {
                     gripCmd.setSpeed_grip = GripinitParam_.initSpeedMax_  * (1.0f - (gripDetect_.filteredTorque - GripinitParam_.initTorqueThresh_) / GripinitParam_.initTorqueRange_);
                     if (gripCmd.setSpeed_grip < GripinitParam_.initSpeedMin_) gripCmd.setSpeed_grip = GripinitParam_.initSpeedMin_;
@@ -136,8 +137,9 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
 
                 // 力矩低通滤波
                 gripDetect_.filteredTorque = LowPassFilter(
-                    gripDetect_.filteredTorque, getAbsTorque(), gripDetect_.filterAlpha);
+                    gripDetect_.filteredTorque, fabsf(static_cast<float_t>(motor->motorData[CDevMtr::DATA_TORQUE])), gripDetect_.filterAlpha);
 
+                /*底层的电机包的堵转检测感觉有点问题*/
                 // griGripMotor_.Torque = motor->motorData[CDevMtr::DATA_TORQUE];
                 // griGripMotor_.SpeedLimit = abs(motor->motorData[CDevMtr::DATA_SPEED]);
                 // if(griGripMotor_.Torque > 2000 && griGripMotor_.SpeedLimit < 250){
@@ -204,7 +206,7 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                             return _UpdateOutputSpd(0);//堵转的时候直接设置速度0
                         }
                     } else if (gripInfo.posit_grip >= gripOpenSlowPosit && gripInfo.posit_grip < gripOpenStopPosit) {
-                        // 处于张开减速区：按距离线性减速
+                        // 处于张开减速区，按距离线性减速
                         gripCmd.setSpeed_grip = CalcGripSlowSpeed(
                             GRIP_OPEN_SPEED, GRIP_OPEN_SPEED_MIN,
                             gripOpenStopPosit - gripInfo.posit_grip,
@@ -231,7 +233,7 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                         gripCmd.regripStableCnt = 0;
                     } else {
                         // 未夹住：当作普通闭合命令，走 RELEASE 分支正常流程
-                        gripCmd.setSpeed_grip = -6000;
+                        gripCmd.setSpeed_grip = -6000;//整个速度按照实际的情况修改
                     }
                 }
 
@@ -239,22 +241,46 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                 const bool isClosingCommand = gripCmd.setSpeed_grip < 0;
                 const bool isOpeningCommand = gripCmd.setSpeed_grip > 0;
 
+                /* ---- 自锁自救检测 ---- */
+                // 特别注意：仅在张开限位附近检测，自锁只发生在这个位置，中段不可能自锁，但是还有一个情况就是如果在多次夹紧闭合的过程中没有完全闭合而清除init标志位会出现夹爪的偏移的情况
+                // 这个时候可能会出现gripInfo.posit_grip <= gripCloseSlowPosit自锁的情况
+                if (gripInfo.posit_grip >= gripOpenSlowPosit) {
+                    float_t absMeasuredSpd = fabsf(static_cast<float_t>(motor->motorData[CDevMtr::DATA_SPEED]));
+                    float_t absTargetSpd = fabsf(gripCmd.setSpeed_grip);
+                    if (absTargetSpd > rescueParam_.speedThresh && absMeasuredSpd < rescueParam_.stuckThresh) {
+                        if (++rescueParam_.detectCnt >= rescueParam_.triggerTime) {
+                            rescueParam_.targetPosit = gripInfo.posit_grip
+                                + (isClosingCommand ? -1 : 1) * rescueParam_.distanceEnc;
+                            gripInfo.state = SGripInfo::EGripState::SAVE;
+                            rescueParam_.detectCnt = 0;
+                            rescueParam_.elapsedTick = 0;
+                            pidPosCtrl.ResetPidController();
+                            pidSpdCtrl.ResetPidController();
+                            return APP_OK;
+                        }
+                    } else {
+                        rescueParam_.detectCnt = 0;
+                    }
+                }
+
                 /* ---- 双状态控制 ---- */
                 switch(gripInfo.state) {
                     case SGripInfo::EGripState::RELEASE: {
-                        if (gripInfo.posit_grip <= 0 && isClosingCommand) {
+                        if (gripInfo.posit_grip <= 0 && isClosingCommand ){
+                            //&& griGripMotor_.cntstable > 100) { //这个定时器要慎重加
                             gripInfo.state = SGripInfo::EGripState::HOLD;
                             gripInfo.holdPosit_Grip = gripInfo.posit_grip;
+                            //griGripMotor_.cntstable = 0;
                             gripInfo.isGripped = true;
                             gripDetect_.edgeReady = false;
                             return _UpdateOutputSpd(0);
                         }
-
+                        //griGripMotor_.cntstable ++ ;
                         // 通过检测由低到高的边沿判定夹取成功
                         if (gripDetect_.filteredTorque < gripDetect_.detectTorque) {
                             gripDetect_.edgeReady = true;
                         } else if (gripDetect_.edgeReady && gripDetect_.filteredTorque > gripDetect_.detectTorque) {
-                            if (gripCmd.setSpeed_grip < 0) { ///< 仅闭合方向触发
+                            if (gripCmd.setSpeed_grip < 0 ) { ///< 仅闭合方向触发
                                 gripInfo.state = SGripInfo::EGripState::HOLD;
                                 gripInfo.holdPosit_Grip = gripInfo.posit_grip;
                                 gripInfo.isGripped = true;
@@ -281,6 +307,7 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                             gripInfo.state = SGripInfo::EGripState::RELEASE;
                             gripInfo.isGripped = false;
                             gripCmd.regripPulse = false;
+                            gripInfo.repeatInit = false;//夹紧的时候直接清零重置
                             gripCmd.regripStableCnt = 0;
                             pidSpdCtrl.ResetPidController();
                             return _UpdateOutputSpd(gripCmd.setSpeed_grip);
@@ -296,7 +323,7 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                                 return _UpdateOutputSpd(0);
                             }
 
-                            // 输出闭合速度，复用 RELEASE 分支同款的力矩反馈减速逻辑
+                            // 输出闭合速度，复用 RELEASE 分支相同的力矩反馈减速逻辑
                             float_t spd = -GRIP_CLOSE_SPEED;
                             if (gripDetect_.filteredTorque > gripDetect_.closeTorqueThresh) {
                                 spd *= (gripDetect_.filteredTorque - gripDetect_.closeTorqueThresh < gripDetect_.closeTorqueRange)
@@ -308,8 +335,8 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                             }
 
                             // 当速度被力矩压到下限附近并且力矩很高，连续 20ms 视为压紧到位
-                            const bool spdAtFloor = (spd >= -gripDetect_.closeSpeedMin * 1.05f);
-                            const bool torqueHigh = (gripDetect_.filteredTorque > gripDetect_.closeTorqueThresh);
+                            bool spdAtFloor = (spd >= -gripDetect_.closeSpeedMin * 1.05f);
+                            bool torqueHigh = (gripDetect_.filteredTorque > gripDetect_.closeTorqueThresh);
                             if (spdAtFloor && torqueHigh) {
                                 gripCmd.regripStableCnt++;
                                 if (gripCmd.regripStableCnt >= 20) { // 20 × 1ms = 20ms 稳定即视为完成
@@ -328,6 +355,33 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                         // 保持夹持：速度归零，丝杆自锁保持位置
                         return _UpdateOutputSpd(0);
                     }
+
+                    case SGripInfo::EGripState::SAVE: {
+                        // 位置环驱动自救，利用位置环PID干爆丝杆自锁摩擦力
+                        _UpdateOutput(static_cast<float_t>(rescueParam_.targetPosit) * ARM_GRIP_MOTOR_DIR);
+
+                        // 位置到达判定
+                        const int32_t posError = gripInfo.posit_grip - rescueParam_.targetPosit;
+                        const int32_t absPosError = posError < 0 ? -posError : posError;
+                        if (absPosError < static_cast<int32_t>(ARM_END_GRIP_MOTOR_RATIO * 1.f)) { //误差超过1的时候说明已经脱离的自锁的状态
+                            gripInfo.state = SGripInfo::EGripState::RELEASE;
+                            pidPosCtrl.ResetPidController();
+                            pidSpdCtrl.ResetPidController();
+                            rescueParam_.elapsedTick = 0;
+                            return _UpdateOutputSpd(gripCmd.setSpeed_grip);
+                        }
+
+                        // 超时保护
+                        if (++rescueParam_.elapsedTick > rescueParam_.timeout) { //500tick的自救超时保护
+                            gripInfo.state = SGripInfo::EGripState::RELEASE;
+                            pidPosCtrl.ResetPidController();
+                            pidSpdCtrl.ResetPidController();
+                            rescueParam_.elapsedTick = 0;
+                            return _UpdateOutputSpd(gripCmd.setSpeed_grip);
+                        }
+
+                        return APP_OK;
+                    }
                 }
             }
             default:{
@@ -336,6 +390,8 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                 speedTargetFiltered_ = 0.0f;
                 speedMeasuredFiltered_ = 0.0f;
                 initTick_ = 0;
+                rescueParam_.detectCnt = 0;
+                rescueParam_.elapsedTick = 0;
                 pidPosCtrl.ResetPidController();
                 pidSpdCtrl.ResetPidController();
                 componentStatus = APP_ERROR;
@@ -388,6 +444,10 @@ EAppStatus CModArm::CComGrip::_UpdateOutputSpd(float_t speedTarget) {
     auto output = pidSpdCtrl.UpdatePidController(spdRef, spdMeasured);
 
     mtrOutputBuffer = static_cast<int16_t>(output[0]);
+
+    if (mtrOutputBuffer > GRIP_OUTPUT_LIMIT && (gripInfo.state != SGripInfo::EGripState::SAVE)) mtrOutputBuffer = GRIP_OUTPUT_LIMIT;
+    else if (mtrOutputBuffer < -GRIP_OUTPUT_LIMIT && (gripInfo.state != SGripInfo::EGripState::SAVE)) mtrOutputBuffer = -GRIP_OUTPUT_LIMIT;
+    //这里的限幅感觉在自锁的时候也没有办法释放最大的性能
 
     return APP_OK;
 }

@@ -28,7 +28,7 @@ volatile float traj_dbg_grip_info = 0.0f;
     /*-----------------------------------存矿石--------------------------------------*/
 
     // 存左矿轨迹帧, 夹爪 0夹紧 1松开
-    // 夹爪在第95帧松开 (约23秒处)
+    // 这里的取矿的路径还是有点问题2026/5/9
     
     const float_t Traj_Grab_L[][FC_COUNT] = {
         // time      yaw        p1          p2       p3       roll        endP        endR       grip       speed
@@ -77,11 +77,11 @@ volatile float traj_dbg_grip_info = 0.0f;
     // 存右矿石：右手 YAW 使用原实测值，其余关节复用左手存矿轨迹特征。
     const float_t Traj_Grab_R[][FC_COUNT] = {
         // time      yaw        p1          p2       p3       roll        endP        endR       grip       speed
-        {      0,   -79.31f,   47.62f,  51.35f,   -73.62f,   190.18f,   -106.33f,      1.f,      0 ,      4.1f},
-        {  1000,   -79.8f,    39.32f,  45.438f,  -73.620f,  189.179f,  -106.427f,     1.f,      0 ,      4.f},
-        {  2000,   -79.8f,    38.81f,  56.34f,   -71.484f,  186.2f,    -35.427f,      1.f,      0,       2.5f},
-        {  3000,   -79.8f,    49.34f,  37.35f,   -71.86f,   186.248f,  -38.427f,      1.f,      0 ,      2.5f},
-        {  4000,   -79.8f,    49.34f,  37.35f,   -71.86f,   186.248f,  -38.427f,      1.f,      0 ,      2.5f},
+        {      0,   -79.31f,   36.62f,  51.35f,   -77.62f,   190.18f,   -106.33f,      1.f,      0 ,      4.1f},
+        {  1000,   -79.8f,    35.32f,  49.438f,  -68.620f,  189.179f,  -106.427f,     1.f,      0 ,      4.f},
+        {  2000,   -79.8f,    40.81f,  56.34f,   -67.484f,  186.2f,    -29.427f,      1.f,      0,       2.5f},
+        {  3000,   -79.8f,    49.34f,  37.35f,   -68.86f,   186.248f,  -45.427f,      1.f,      0 ,      2.5f},
+        {  4000,   -79.8f,    49.34f,  37.35f,   -68.86f,   186.248f,  -38.427f,      1.f,      0 ,      2.5f},
         {  5000,   -79.8f,    51.34f,  31.35f,   -61.86f,   184.248f,  -38.427f,      1.f,      0 ,      2.5f},
         {  6000,   -79.8f,    61.24f,  37.52f,   -67.86f,   184.248f,  -38.427f,      1.f,      0 ,      2.5f},
         {  7000,   -79.8f,    65.24f,  37.52f,   -67.86f,   184.248f,  -45.427f,      1.f,      1 ,      2.5f},
@@ -261,11 +261,10 @@ volatile float traj_dbg_grip_info = 0.0f;
     bool CheckGripArrived(const CModArm &arm, bool close) {
         const auto state = arm.armInfo.gripState;
         if (close) {
-            return state == CModArm::SArmInfo::EGripState::HOLD;
+            return state == CModArm::SArmInfo::EGripState::HOLD && arm.armInfo.length_grip <=  ARM_END_GRIP_PHYSICAL_RANGE_MAX - GRIP_CLOSE_Stop_distance;//增强判断依据防止夹爪的状态误判
         }
 
-        return state == CModArm::SArmInfo::EGripState::RELEASE
-            && arm.armInfo.length_grip >= ARM_END_GRIP_PHYSICAL_RANGE_MAX - GRIP_OPEN_Stop_distance;
+        return state == CModArm::SArmInfo::EGripState::RELEASE && arm.armInfo.length_grip >= ARM_END_GRIP_PHYSICAL_RANGE_MAX - GRIP_OPEN_Stop_distance;
     }
 
     //辅助debug夹爪函数

@@ -147,7 +147,11 @@ void CSystemCore::UpdateHandler_() {
     if (zx_count > 20 && zx_flag == false) {
         zx_flag = true;
         zx_count = 0;
-        if (!use_Controller_ && !SysControllerLink.IsControllerOnline()) {
+        // 自动任务执行期间禁止切换控制模式，避免出现切换的bug
+        if (currentAutoCtrlProcess_ != EAutoCtrlProcess::NONE) {
+            // 任务进行中，忽略切换请求
+        }
+        else if (!use_Controller_ && !SysControllerLink.IsControllerOnline()) {
             // 自定义控制器不在线同时不是自定义控制器控制的时候无法切换
             pgimbal_->gimbalInfo.isIntoControll = false;//切换出来清空云台标志位
         } else {

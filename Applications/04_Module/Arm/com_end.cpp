@@ -4,10 +4,10 @@
  * @brief 机械臂末端组件
  * @version 1.1
  * @date 2025-01-14
- * @lastedit：2026-04-30
+ * @lastedit：2026-05-09
  * @details V1.1: 两阶段初始化：先标定Pitch（堵转），再标定Roll（堵转）
  *
- * @copyright Copyright (c) 2025
+ * @copyright Copyright (c) 2026
  *
  */
 
@@ -98,8 +98,10 @@ EAppStatus CModArm::CComEnd::UpdateComponent() {
 					if (!pitchCalibrated_) {
 						if ((motor[L]->motorStatus == CDevMtr::EMotorStatus::STALL) &&
 							(motor[R]->motorStatus == CDevMtr::EMotorStatus::STALL)) {
+							int32_t old_posit_Roll = endInfo.posit_Roll; 
 							motor[L]->motorData[CDevMtr::DATA_POSIT] = -(static_cast<int32_t>(0.5f * 8192) + rangeLimit_Pitch);
 							motor[R]->motorData[CDevMtr::DATA_POSIT] = (static_cast<int32_t>(0.5f * 8192) + rangeLimit_Pitch);
+							rollZeroOffset -= old_posit_Roll;	//用来记录末端的roll的实际的零偏，方便后续的初始化任务中避免丢失roll的差速器信息
 							mtrOutputBuffer.fill(0);
 							pidPosCtrl.ResetPidController();
 							pidSpdCtrl.ResetPidController();
@@ -108,7 +110,7 @@ EAppStatus CModArm::CComEnd::UpdateComponent() {
 							return APP_OK;
 						}
 
-						endCmd.setPosit_Pitch += 200;
+						endCmd.setPosit_Pitch += 800;
 						return _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch),
 											static_cast<float_t>(endCmd.setPosit_Roll));
 					}
@@ -131,7 +133,7 @@ EAppStatus CModArm::CComEnd::UpdateComponent() {
 				case EEndInitState::ROLL: {//末端roll的标定
 					endCmd.setPosit_Pitch = PhyPositToMtrPosit_Pitch(ARM_END_PITCH_INIT_ANGLE);
 					if (!rollCalibrated_) {
-						endCmd.setPosit_Roll += 200;
+						endCmd.setPosit_Roll += 2000;//这里的速度貌似已经到大差速器的极限了，感觉再大一点好像没有什么区别
 						if (initStateTick_ < 150) {
 							++initStateTick_;			//避免pitch轴堵转标定的残留
 							return _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch),
@@ -181,6 +183,28 @@ EAppStatus CModArm::CComEnd::UpdateComponent() {
 		}
 
 		case FSM_CTRL: {
+
+			//用来初始化末端pitch和末端的roll，因为每一次取矿之后的大力形变导致末端的差速器的位置丢失，所以需要重新标定
+			if(endCmd.resetEndPitch){
+				Component_FSMFlag_ = FSM_INIT;
+				endCmd.resetEndPitch = false;
+				pitchCalibrated_ = false;
+				initStateTick_ = 0;
+				initState_ = EEndInitState::PITCH;
+				return APP_OK;
+			}//这里只是重置了末端的pitch
+
+			else if(endCmd.resetEndAll){
+				Component_FSMFlag_ = FSM_INIT;
+				endCmd.resetEndAll = false;
+				pitchCalibrated_ = false;
+				rollCalibrated_ = false;
+				initStateTick_ = 0;
+				initState_ = EEndInitState::PITCH;
+				return APP_OK;
+			}//这里重置整个末端
+
+			
 			end_l_test = motor[L]->motorData[CDevMtr::DATA_TORQUE];
 			end_r_test = motor[R]->motorData[CDevMtr::DATA_TORQUE];
 			return _UpdateOutput(static_cast<float_t>(endCmd.setPosit_Pitch),
