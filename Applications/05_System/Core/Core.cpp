@@ -572,7 +572,7 @@ void CSystemCore::Chassis_UpdateHandler_(){
         float follow_output = PidFollowYaw.UpdatePidController(target, measure)[0];
 
         if(chassisCmd.is_spin_on){
-            cycle = 200.f;     // 小陀螺，但是限制最低速度
+            cycle = 1000.f;     // 小陀螺
         }
         else{
             if(yaw_angle > (PI / 2.f)){
