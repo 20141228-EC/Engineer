@@ -106,7 +106,7 @@ void CSystemCore::ControlFromRemote_() {
     // LOW + MID 底盘控制
     if (remote.switch_L == LOW && remote.switch_R == MID) {
         SysRemote.SetRemoteDeadZone(10.f);
-            chassisCmd.speed_x = remote.joystick_LX / 2 * 660 / 100;
+            chassisCmd.speed_x = remote.joystick_LX / 2 * 660 / 100;    // 归一到±100之间
             chassisCmd.speed_y = remote.joystick_LY * 660 / 100;
 
         if(pgimbal_){
@@ -215,16 +215,20 @@ void CSystemCore::ControlFromKeyboard_() {
             chassisCmd.is_spin_on = !chassisCmd.is_spin_on;
         }
 
+        if(SysRemote.pRemoteDev_->remoteData[CRcDR16::CH_KEY_G].chEdge == ERcChannelEdge::Falling){
+            chassisCmd.is_spin_on = !chassisCmd.is_spin_on;
+        }
+
     /******************* 云台手动控制 *******************/
-    // if (pgimbal_) {
-    //     if (!keyboard.key_Ctrl &&
-    //         !pgimbal_->gimbalCmd.isAutoCtrl) {
-    //         // (F键)
-    //         if (keyboard.key_F) {
-    //             pgimbal_->gimbalCmd.set_posit_lift += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 120.0f / freq;
-    //         }
-    //     }
-    // }
+    if (pgimbal_) {
+        if (!keyboard.key_Ctrl &&       // 未按下ctrl
+            !pgimbal_->gimbalCmd.isAutoCtrl) {
+            // (F键)
+            if (keyboard.key_F) {
+                pgimbal_->gimbalCmd.set_posit_yaw -= static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 100.0f / freq;
+            }
+        }
+    }
 
     /******************* 机械臂手动控制 *******************/
     if (parm_) {
@@ -267,12 +271,14 @@ void CSystemCore::ControlFromKeyboard_() {
         if (keyboard.key_Ctrl
         && parm_->armInfo.isModuleAvailable)
         {
-            if(keyboard.key_Z)
+            if(keyboard.key_Z)      // Z键退任务
             {
                 StopAutoCtrlTask_();
+            }
+            if(keyboard.key_R)      // 全部复位任务
+            {
                 StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);
             }
-            
     
         }
         if(keyboard.key_Shift &&

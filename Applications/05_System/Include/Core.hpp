@@ -21,6 +21,7 @@
 #define I_AM_CONTROLLER 0 // 当前板子是控制器
 
 /* ----------------------存矿------------------------*/
+// 待改
 #define STORE_ORE_YAW_ANGLE_PHASE1        1.0f
 #define STORE_ORE_PITCH1_ANGLE_PHASE1     1.0f
 #define STORE_ORE_PITCH2_ANGLE_PHASE1     1.0f
@@ -38,7 +39,17 @@
 #define STORE_ORE_END_PITCH_ANGLE_PHASE2  1.0f
 #define STORE_ORE_END_ROLL_ANGLE_PHASE2   1.0f
 #define STORE_ORE_GRIP_LENGTH_PHASE2      1.0f
-// 待改
+// 第二阶段
+
+/* -----------------------全部复位----------------------- */
+#define RETURN_ORIGIN_YAW_ANGLE        ARM_YAW_INIT_ANGLE
+#define RETURN_ORIGIN_PITCH1_ANGLE     ARM_PITCH1_INIT_ANGLE
+#define RETURN_ORIGIN_PITCH2_ANGLE     ARM_PITCH2_INIT_ANGLE
+#define RETURN_ORIGIN_ROLL_ANGLE       ARM_ROLL_INIT_ANGLE
+#define RETURN_ORIGIN_END_PITCH_ANGLE  ARM_END_PITCH_INIT_ANGLE
+#define RETURN_ORIGIN_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
+#define RETURN_ORIGIN_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
+
 
 namespace my_engineer {
 
@@ -55,16 +66,9 @@ class CSystemCore final {
 public:
     // 定义自动操作的任务类型并实例化表示当前任务类型
     enum class EAutoCtrlProcess {
-        NONE,
-        RETURN_ORIGIN,
-        RETURN_DRIVE,
-        DOGHOLE,
-        GROUND_ORE,
-        SILVER_ORE,
-        GOLD_ORE,
-        EXCHANGE,
-        PUSH_ORE,
-        POP_ORE,
+        NONE = 0,
+        RETURN_ORIGIN = 1,      // 全部复位
+        STORE = 2,              // 存矿
     } currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
     // 面向系统层的控制模式枚举
@@ -184,19 +188,7 @@ private:
 
     // 声明自动操作的任务函数
     static void StartStoreOreTask(void *arg);
-    // 以下任务函数已注释（对应流程文件已删除）
-    // static void StartReturnOriginTask(void *arg);
-    // static void StartReturnDriveTask(void *arg);
-    // static void StartDogHoleTask(void *arg);
-    // static void StartGroundOreTask(void *arg);
-    // static void StartSilverOreTask(void *arg);
-    // static void StartGoldOreTask(void *arg);
-    // static void StartExchangeTask(void *arg);
-    // static void StartPopOreTask(void *arg);
-    // static void StartPushOreTask(void *arg);
-    // static void StartVisionExchangeTask(void *arg);
-    // static void StartTurnoverTask(void *arg);
-
+    static void StartReturnOriginTask(void *arg);
 };
 
 void JointAngleToEulerAngle(const float_t *jointAngle, float_t *eulerAngle);

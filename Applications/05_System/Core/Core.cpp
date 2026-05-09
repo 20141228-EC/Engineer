@@ -508,7 +508,7 @@ void CSystemCore::BoardLink_Info_Update_(){
     SysBoardLink.angleInfos.pitch3 = parm_->armCmd.set_angle_Pitch3;
 
     SysBoardLink.otherInfos.is_spin_on = chassisCmd.is_spin_on;
-    SysBoardLink.otherInfos.yaw_gyro = static_cast<int16_t>(pgimbal_->gimbalInfo.posit_yaw);
+    SysBoardLink.otherInfos.yaw_gyro = static_cast<int16_t>(pgimbal_->gimbalInfo.encoder_yaw / 32768.f * 180.f);    // 转成±180再发出去
     SysBoardLink.otherInfos.autoTask = static_cast<uint8_t>(currentAutoCtrlProcess_);
 
 }

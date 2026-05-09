@@ -338,126 +338,126 @@ void CSystemReferee::UI_StartVisionFigureDrawing_() {
 
 void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
 
-	std::fill(&curModeTextMsg.message.text[0], &curModeTextMsg.message.text[29], 0);
-  if (SystemCore.use_Controller_) {
-    curModeTextMsg.message.figureConfig.details_2 = 6;
-    curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
-    curModeTextMsg.message.figureConfig.posit_Y = 780;
-    strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CUSTOM");
-  }
-  else {
-    switch (SystemCore.currentAutoCtrlProcess_) {
+// 	std::fill(&curModeTextMsg.message.text[0], &curModeTextMsg.message.text[29], 0);
+//   if (SystemCore.use_Controller_) {
+//     curModeTextMsg.message.figureConfig.details_2 = 6;
+//     curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
+//     curModeTextMsg.message.figureConfig.posit_Y = 780;
+//     strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CUSTOM");
+//   }
+//   else {
+//     switch (SystemCore.currentAutoCtrlProcess_) {
 
-      case CSystemCore::EAutoCtrlProcess::NONE: {
-        curModeTextMsg.message.figureConfig.details_2 = 4;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "NONE");
-        break;
-      }
+//       case CSystemCore::EAutoCtrlProcess::NONE: {
+//         curModeTextMsg.message.figureConfig.details_2 = 4;
+//         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2);
+//         curModeTextMsg.message.figureConfig.posit_Y = 780;
+//         strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "NONE");
+//         break;
+//       }
 
-      case CSystemCore::EAutoCtrlProcess::RETURN_ORIGIN: {
-        curModeTextMsg.message.figureConfig.details_2 = 6;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "ORIGIN");
-        break;
-      }
+//       case CSystemCore::EAutoCtrlProcess::RETURN_ORIGIN: {
+//         curModeTextMsg.message.figureConfig.details_2 = 6;
+//         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
+//         curModeTextMsg.message.figureConfig.posit_Y = 780;
+//         strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "ORIGIN");
+//         break;
+//       }
 
-      case CSystemCore::EAutoCtrlProcess::RETURN_DRIVE: {
-        curModeTextMsg.message.figureConfig.details_2 = 5;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2.5);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "DRIVE");
-        break;
-      }
+//       case CSystemCore::EAutoCtrlProcess::RETURN_DRIVE: {
+//         curModeTextMsg.message.figureConfig.details_2 = 5;
+//         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2.5);
+//         curModeTextMsg.message.figureConfig.posit_Y = 780;
+//         strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "DRIVE");
+//         break;
+//       }
 
-      case CSystemCore::EAutoCtrlProcess::GROUND_ORE: {
-        curModeTextMsg.message.figureConfig.details_2 = 6;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "GROUND");
-        break;
-      }
-
-
-      case CSystemCore::EAutoCtrlProcess::GOLD_ORE: {
-        curModeTextMsg.message.figureConfig.details_2 = 4;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "GOLD");
-        break;
-      }
-
-      case CSystemCore::EAutoCtrlProcess::EXCHANGE: {
-        curModeTextMsg.message.figureConfig.details_2 = 8;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 5.5);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "EXCHANGE");
-        break;
-      }
+//       case CSystemCore::EAutoCtrlProcess::GROUND_ORE: {
+//         curModeTextMsg.message.figureConfig.details_2 = 6;
+//         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
+//         curModeTextMsg.message.figureConfig.posit_Y = 780;
+//         strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "GROUND");
+//         break;
+//       }
 
 
-      case CSystemCore::EAutoCtrlProcess::DOGHOLE: {
-        curModeTextMsg.message.figureConfig.details_2 = 7;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3.5);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "DOGHOLE");
-        break;
-      }
+//       case CSystemCore::EAutoCtrlProcess::GOLD_ORE: {
+//         curModeTextMsg.message.figureConfig.details_2 = 4;
+//         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2);
+//         curModeTextMsg.message.figureConfig.posit_Y = 780;
+//         strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "GOLD");
+//         break;
+//       }
 
-      case CSystemCore::EAutoCtrlProcess::PUSH_ORE: {
-        curModeTextMsg.message.figureConfig.details_2 = 4;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "PUSH");
-        break;
-      }
+//       case CSystemCore::EAutoCtrlProcess::EXCHANGE: {
+//         curModeTextMsg.message.figureConfig.details_2 = 8;
+//         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 5.5);
+//         curModeTextMsg.message.figureConfig.posit_Y = 780;
+//         strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "EXCHANGE");
+//         break;
+//       }
 
-      case CSystemCore::EAutoCtrlProcess::POP_ORE: {
-        curModeTextMsg.message.figureConfig.details_2 = 3;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 1.5);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "POP");
-        break;
-      }
 
-      case CSystemCore::EAutoCtrlProcess::SILVER_ORE: {
-        curModeTextMsg.message.figureConfig.details_2 = 6;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "SILVER");
-        break;
-      }
-    }
-  }
+//       case CSystemCore::EAutoCtrlProcess::DOGHOLE: {
+//         curModeTextMsg.message.figureConfig.details_2 = 7;
+//         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3.5);
+//         curModeTextMsg.message.figureConfig.posit_Y = 780;
+//         strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "DOGHOLE");
+//         break;
+//       }
 
-	curModeTextMsg.message.figureConfig.operate = 2;
-	curModeTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&curModeTextMsg), sizeof(curModeTextMsg) - 2);
-	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&curModeTextMsg), sizeof(curModeTextMsg));
-}
+//       case CSystemCore::EAutoCtrlProcess::PUSH_ORE: {
+//         curModeTextMsg.message.figureConfig.details_2 = 4;
+//         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2);
+//         curModeTextMsg.message.figureConfig.posit_Y = 780;
+//         strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "PUSH");
+//         break;
+//       }
 
-void CSystemReferee::UI_UpdateStateFigureDrawing_() {
+//       case CSystemCore::EAutoCtrlProcess::POP_ORE: {
+//         curModeTextMsg.message.figureConfig.details_2 = 3;
+//         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 1.5);
+//         curModeTextMsg.message.figureConfig.posit_Y = 780;
+//         strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "POP");
+//         break;
+//       }
 
-	// 删除子龙门气泵状态显示代码
-	// static auto &subgantry = reinterpret_cast<CModSubGantry *>(ModuleIDMap.at(EModuleID::MOD_SUBGANTRY))->subGantryInfo;
-	// stateFigureMsg.message.figureConfig[0].operate = 2;
-	// stateFigureMsg.message.figureConfig[0].color = (subgantry.isPumpOn_Arm) ? 2 : 7;
-	// stateFigureMsg.message.figureConfig[1].operate = 2;
-	// stateFigureMsg.message.figureConfig[1].color = (subgantry.isPumpOn_Left) ? 2 : 7;
-	// stateFigureMsg.message.figureConfig[2].operate = 2;
-	// stateFigureMsg.message.figureConfig[2].color = (subgantry.isPumpOn_Right) ? 2 : 7;
+//       case CSystemCore::EAutoCtrlProcess::SILVER_ORE: {
+//         curModeTextMsg.message.figureConfig.details_2 = 6;
+//         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
+//         curModeTextMsg.message.figureConfig.posit_Y = 780;
+//         strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "SILVER");
+//         break;
+//       }
+//     }
+//   }
 
-	stateFigureMsg.message.figureConfig[0].operate = 2;
-	stateFigureMsg.message.figureConfig[1].operate = 2;
-	stateFigureMsg.message.figureConfig[2].operate = 2;
-	stateFigureMsg.message.figureConfig[3].operate = 2;
-	stateFigureMsg.message.figureConfig[4].operate = 2;
-	stateFigureMsg.message.figureConfig[5].operate = 2;
-	stateFigureMsg.message.figureConfig[6].operate = 2;
+// 	curModeTextMsg.message.figureConfig.operate = 2;
+// 	curModeTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&curModeTextMsg), sizeof(curModeTextMsg) - 2);
+// 	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&curModeTextMsg), sizeof(curModeTextMsg));
+// }
 
-	stateFigureMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&stateFigureMsg), sizeof(stateFigureMsg) - 2);
-	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&stateFigureMsg), sizeof(stateFigureMsg));
+// void CSystemReferee::UI_UpdateStateFigureDrawing_() {
+
+// 	// 删除子龙门气泵状态显示代码
+// 	// static auto &subgantry = reinterpret_cast<CModSubGantry *>(ModuleIDMap.at(EModuleID::MOD_SUBGANTRY))->subGantryInfo;
+// 	// stateFigureMsg.message.figureConfig[0].operate = 2;
+// 	// stateFigureMsg.message.figureConfig[0].color = (subgantry.isPumpOn_Arm) ? 2 : 7;
+// 	// stateFigureMsg.message.figureConfig[1].operate = 2;
+// 	// stateFigureMsg.message.figureConfig[1].color = (subgantry.isPumpOn_Left) ? 2 : 7;
+// 	// stateFigureMsg.message.figureConfig[2].operate = 2;
+// 	// stateFigureMsg.message.figureConfig[2].color = (subgantry.isPumpOn_Right) ? 2 : 7;
+
+// 	stateFigureMsg.message.figureConfig[0].operate = 2;
+// 	stateFigureMsg.message.figureConfig[1].operate = 2;
+// 	stateFigureMsg.message.figureConfig[2].operate = 2;
+// 	stateFigureMsg.message.figureConfig[3].operate = 2;
+// 	stateFigureMsg.message.figureConfig[4].operate = 2;
+// 	stateFigureMsg.message.figureConfig[5].operate = 2;
+// 	stateFigureMsg.message.figureConfig[6].operate = 2;
+
+// 	stateFigureMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&stateFigureMsg), sizeof(stateFigureMsg) - 2);
+// 	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&stateFigureMsg), sizeof(stateFigureMsg));
 }
 
 void CSystemReferee::UI_UpdateVisionFigureDrawing_() {
@@ -547,7 +547,7 @@ void CSystemReferee::StartSysRefereeUiTask(void *arg) {
 		// SysReferee.UI_UpdateVisionFigureDrawing_();
 		// proc_waitMs(100);
 
-		SysReferee.UI_UpdateStateFigureDrawing_();
+		// SysReferee.UI_UpdateStateFigureDrawing_();
 		proc_waitMs(100);
 
 		// SysReferee.UI_UpdateVisionFigureDrawing_();
