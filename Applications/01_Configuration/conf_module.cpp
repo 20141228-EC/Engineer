@@ -37,7 +37,7 @@ EAppStatus InitAllModule() {
     armInitParam.MotorTxNode_Grip = &TxNode_Can2_1FF;
     // 初始化 YawPosPidParam 的成员
    armInitParam.YawPosPidParam.kp = 2.5f;
-   armInitParam.YawPosPidParam.ki = 0.05f;
+   armInitParam.YawPosPidParam.ki = 0.1f;
    armInitParam.YawPosPidParam.kd = 0.0f;
    armInitParam.YawPosPidParam.maxIntegral = 3000.0f;
    armInitParam.YawPosPidParam.maxOutput = 5000.0f;
@@ -48,20 +48,20 @@ EAppStatus InitAllModule() {
    armInitParam.YawSpdPidParam.maxIntegral = 3000.0f;
    armInitParam.YawSpdPidParam.maxOutput = 3000.0f;
     // 初始化 Pitch1PosPidParam 的成员
-   armInitParam.Pitch1PosPidParam.kp = 3.f;
-   armInitParam.Pitch1PosPidParam.ki = 0.0f;
+   armInitParam.Pitch1PosPidParam.kp = 5.f;
+   armInitParam.Pitch1PosPidParam.ki = 0.15f;
    armInitParam.Pitch1PosPidParam.kd = 0.0f;
    armInitParam.Pitch1PosPidParam.maxIntegral = 3000.0f;
    armInitParam.Pitch1PosPidParam.maxOutput = 4000.0f;
    // 初始化 Pitch1SpdPidParam 的成员
-   armInitParam.Pitch1SpdPidParam.kp = 0.06f;
+   armInitParam.Pitch1SpdPidParam.kp = 0.061f;
    armInitParam.Pitch1SpdPidParam.ki = 0.05f;
    armInitParam.Pitch1SpdPidParam.kd = 0.0f;
    armInitParam.Pitch1SpdPidParam.maxIntegral = 2000.0f;
    armInitParam.Pitch1SpdPidParam.maxOutput = 2000.0f;
    // 初始化 Pitch2PosPidParam 的成员
    armInitParam.Pitch2PosPidParam.kp = 3.f;
-   armInitParam.Pitch2PosPidParam.ki = 0.01f;
+   armInitParam.Pitch2PosPidParam.ki = 0.5f;
    armInitParam.Pitch2PosPidParam.kd = 0.0f;
    armInitParam.Pitch2PosPidParam.maxIntegral = 4000.0f;
    armInitParam.Pitch2PosPidParam.maxOutput = 5000.0f;
@@ -84,8 +84,8 @@ EAppStatus InitAllModule() {
    armInitParam.Pitch3SpdPidParam.maxIntegral = 2000.0f;
    armInitParam.Pitch3SpdPidParam.maxOutput = 2000.0f;
    // 初始化 mitCtrl_Roll 的成员
-   armInitParam.MIT_Roll_kp = 15.0f;
-   armInitParam.MIT_Roll_kd = 1.0f;
+   armInitParam.MIT_Roll_kp = 25.0f;
+   armInitParam.MIT_Roll_kd = 2.0f;
 //    armInitParam.Pitch1PosPidParam.Grav_Load_Mode = CAlgoPid::EGravLoadMode::END_ROLL_G; ///< 末端roll的重补模式
    // 初始化 endPosPidParam 的成员
    armInitParam.endPosPidParam.kp = 0.18f;
@@ -99,16 +99,16 @@ EAppStatus InitAllModule() {
    armInitParam.endSpdPidParam.maxIntegral = 4000.0f;
    armInitParam.endSpdPidParam.maxOutput = 4500.0f;
    // 初始化 GripPosPidParam 的成员
-   armInitParam.GripPosPidParam.kp = 0.3f;
+   armInitParam.GripPosPidParam.kp = 5.3f;
     armInitParam.GripPosPidParam.ki = 0.15f;
     armInitParam.GripPosPidParam.kd = 0.0f;
     armInitParam.GripPosPidParam.maxOutput = 3000.0f;
     // 初始化 GripSpdPidParam 的成员
     armInitParam.GripSpdPidParam.kp = 5.15f;
-    armInitParam.GripSpdPidParam.ki = 0.4f;
+    armInitParam.GripSpdPidParam.ki = 1.4f;
     armInitParam.GripSpdPidParam.kd = 0.0f;
     armInitParam.GripSpdPidParam.maxIntegral = 3000.0f;
-    armInitParam.GripSpdPidParam.maxOutput = 4000.0f;
+    armInitParam.GripSpdPidParam.maxOutput = 5500.0f;
     armInitParam.GripInitParam.initSpeedMax_     = 6000.0f;   ///< 初始化最大速度
     armInitParam.GripInitParam.initSpeedMin_     = 1500.0f;   ///< 保底最低速度
     armInitParam.GripInitParam.initTorqueThresh_ = 1200.0f;   ///< 力矩开始减速的阈值

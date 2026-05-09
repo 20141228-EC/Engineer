@@ -164,6 +164,11 @@ public:
         OPEN,
     };
 
+    enum class EStoreEndRollPose : uint8_t {
+        DOWN,
+        UP,
+    } storeEndRollPose_ = EStoreEndRollPose::DOWN;
+
     EVarStatus use_Controller_ = false; ///< 是否使用控制器
 
     EVarStatus gimbal_auto_ctrl = false;   ///< 云台是否自动控制

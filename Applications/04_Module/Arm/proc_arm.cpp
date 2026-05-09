@@ -119,10 +119,24 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 					CComJoint::PhyPositToMtrPosit_pitch3(arm.armCmd.set_angle_Pitch3);
 				arm.comRoll_.rollCmd.setAngle =
 					CComRoll::PhyAngleToMtrAngle(arm.armCmd.set_angle_Roll);
-				arm.comEnd_.endCmd.setPosit_Pitch =
-					CComEnd::PhyPositToMtrPosit_Pitch(arm.armCmd.set_angle_end_pitch);
-				arm.comEnd_.endCmd.setPosit_Roll =
-					arm.comEnd_.PhyPositToMtrPosit_Roll(arm.armCmd.set_angle_end_roll);
+
+				//作为条件来判断避免末端的差速器的数值的重新覆盖
+				if(arm.armCmd.resetEndPitch){
+					arm.armCmd.resetEndPitch = false;
+					arm.comEnd_.endCmd.resetEndPitch = true;//这里只是重新初始化末端pitch 
+					// arm.comEnd_.rollCalibrated_ = true;
+				}
+				else if(arm.armCmd.resetEndAll){
+					arm.armCmd.resetEndAll = false;
+					//arm.comEnd_.endCmd.resetEndAll = true;
+					arm.comEnd_.StartComponent();  // 重新启动末端组件以重置所有状态
+				}
+				else if(arm.comEnd_.componentStatus != APP_BUSY) {//防止标志位被清零止呕没有覆盖到初始化的过程
+					arm.comEnd_.endCmd.setPosit_Pitch =
+						CComEnd::PhyPositToMtrPosit_Pitch(arm.armCmd.set_angle_end_pitch);
+					arm.comEnd_.endCmd.setPosit_Roll =
+						arm.comEnd_.PhyPositToMtrPosit_Roll(arm.armCmd.set_angle_end_roll);
+				}
 
 				// 夹爪命令传递：开合标志优先，否则透传遥控器拨轮速度
 				const bool gripCommand = arm.armCmd.gripClose || arm.armCmd.gripOpen;

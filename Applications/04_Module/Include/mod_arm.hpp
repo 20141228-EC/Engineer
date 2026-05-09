@@ -13,8 +13,8 @@
 #define MOD_ARM_HPP
 
 /*-------------------------------------物理限位---------------------------------------------------*/
-#define ARM_YAW_PHYSICAL_RANGE_MIN -165.f
-#define ARM_YAW_PHYSICAL_RANGE_MAX 173.f
+#define ARM_YAW_PHYSICAL_RANGE_MIN -115.3f
+#define ARM_YAW_PHYSICAL_RANGE_MAX 222.7f
 #define ARM_PITCH1_PHYSICAL_RANGE_MIN 0.0f
 #define ARM_PITCH1_PHYSICAL_RANGE_MAX 96.f
 #define ARM_PITCH2_PHYSICAL_RANGE_MIN 1.f
@@ -37,7 +37,7 @@
 #define ARM_PITCH1_MOTOR_RANGE 17098
 #define ARM_PITCH2_MOTOR_RANGE 65535
 #define ARM_END_PITCH_MOTOR_RANGE 325993
-#define ARM_END_GRIP_MOTOR_RANGE 1974934     ///(8192*22+10240+11000)
+#define ARM_END_GRIP_MOTOR_RANGE 1870274     ///(8192*22+10240+11000)
 
 //与物理角度的映射关系
 #define ARM_PITCH1_MOTOR_RATIO (ARM_PITCH1_MOTOR_RANGE / (ARM_PITCH1_PHYSICAL_RANGE_MAX - ARM_PITCH1_PHYSICAL_RANGE_MIN))
@@ -83,7 +83,7 @@
 #define ARM_INIT_SAFE_PITCH2_ANGLE 70.0f
 #define ARM_INIT_SAFE_PITCH3_ANGLE -11.0f
 
-#define POSIT_JOINT1_YAW_MACH 43920
+#define POSIT_JOINT1_YAW_MACH 53902
 #define POSIT_JOINT1_YAW_MACH_PHY 0.f
 #define ARM_YAW_MOTOR_RANGE_LHK 61551
 
@@ -112,6 +112,22 @@
 
 #define deg2rad(x) ((x) * 0.017453292519943295769236907684886)
 #define rad2deg(x) ((x) * 57.295779513082320876798154814105)
+/*------------------------------------- 夹爪的相关参数------------------------------------------*/
+/// 自动控制速度常量（电机的转速rpm）
+#define GRIP_OPEN_SPEED  12000.0f
+#define GRIP_OPEN_SPEED_MIN  4000.0f
+#define GRIP_CLOSE_SPEED  12000.0f
+#define GRIP_OUTPUT_LIMIT 4500       ///< 正常模式输出限幅
+
+#define GRIP_OPEN_Stop_distance  1.0f
+#define GRIP_CLOSE_Stop_distance  1.0f
+#define GRIP_OPEN_Slow_distance 37.0f//减速的物理范围
+#define GRIP_CLOSE_Slow_distance 28.0f//减速的范围
+
+#define gripOpenStopPosit  (ARM_END_GRIP_MOTOR_RANGE - PhyPositToMtrPosit(GRIP_OPEN_Stop_distance))//刹车距离
+#define gripOpenSlowPosit  (ARM_END_GRIP_MOTOR_RANGE - PhyPositToMtrPosit(GRIP_OPEN_Slow_distance))
+#define gripCloseStopPosit (PhyPositToMtrPosit(GRIP_CLOSE_Stop_distance))
+#define gripCloseSlowPosit (PhyPositToMtrPosit(GRIP_CLOSE_Slow_distance))//减速的编码范围
 /*-------------------------------------重力补偿数据--------------------------------------------------------*/
 #define PITCH1     0
 #define PITCH2 	   1
@@ -202,6 +218,8 @@ public:
 		bool isAngleArrived_End_Roll = false; ///< 机械臂末端Roll角度是否到达
 		bool isAngleArrived_Grip = false; ///< 机械臂夹爪角度是否夹取
 		bool isGripped = false; ///< 夹爪是否处于堵转夹持状态
+		bool resetEndPitch = false; ///< 是否重置末端Pitch角度
+		bool endPitchCalibrating = false; ///< 末端Pitch是否正在标定中
 		float_t holdLength_grip = 0.0f; ///< 夹取保持位置（物理距离 mm）
 		enum class EGripState : uint8_t { RELEASE = 0, HOLD = 1 };
 		EGripState gripState = EGripState::RELEASE;
@@ -223,6 +241,8 @@ public:
 		float_t set_speed_grip = 0.0f; ///< 机械臂夹爪速度设定（速度环模式）
 		bool gripClose = false;           ///< 手动闭合标志（Core层设置）
 		bool gripOpen = false;            ///< 手动张开标志（Core层设置）
+		bool resetEndPitch = false; ///< 是否重置末端Pitch角度
+		bool resetEndAll = false; ///< 是否完整重初始化末端
 	} armCmd;
 
 	CModArm() = default;
@@ -398,12 +418,15 @@ private:
 			int32_t posit_Roll = 0;    ///< End Posit Roll
 			bool isPositArrived_Pitch = false; ///< End Posit Arrived Pitch
 			bool isPositArrived_Roll = false; ///< End Posit Arrived Roll
+			// bool resetEndPitch = false; ///< Reset End Pitch Flag
 		} endInfo;
 
 		// 定义机械臂末端控制命令结构体并实例化
 		struct SEndCmd {
 			int32_t setPosit_Pitch = 0;    ///< End Posit Set Pitch
 			int32_t setPosit_Roll = 0;    ///< End Posit Set Roll
+			bool resetEndPitch = false; ///< Reset End Pitch Flag
+			bool resetEndAll = false; ///< Reset End All Flag
 		} endCmd;
 
 		// 电机实例指针数组
@@ -454,18 +477,22 @@ private:
 		const int32_t rangeLimit_Grip = ARM_END_GRIP_MOTOR_RANGE; ///< 夹爪电机位置范围限制
 		// 定义夹爪信息结构体
 		struct SGripInfo {
-			enum class EGripState : uint8_t { RELEASE = 0, HOLD = 1 };
+			enum class EGripState : uint8_t { RELEASE = 0, HOLD = 1,RELEASE_MAX = 3, SAVE = 4};//松开、张开、张开最大、自救
 			EGripState state = EGripState::RELEASE;	///< 夹爪控制子状态
 			int32_t posit_grip = 0;           	///< 夹爪当前位置
 			int32_t holdPosit_Grip = 0;			///< 记忆夹持位置
 			bool isGripped = false; 			///< 是否夹住
+			bool repeatInit = false;              ///< 重复标定
 		} gripInfo;
 
 		// 定义夹爪控制命令结构体
 		struct SGripCmd {
 			int32_t setPosit_grip = 0;        ///< 夹爪目标位置（编码器），位置环模式使用
+			int32_t outTime_tick = 0;         ///< 二次夹紧脉冲起始 tick
+			int32_t regripStableCnt = 0;      ///< 二次夹紧稳定计数
 			float_t setSpeed_grip = 0.0f;     ///< 夹爪目标速度（正=张开，负=闭合），速度环模式使用
-			bool cmdReGrip = false;           ///< 二次夹紧
+			bool regripPulse = false;         ///< 二次夹紧脉冲进行中（HOLD 状态下的内部子状态）
+			bool cmdReGrip = false;           ///< 二次夹紧请求（边沿脉冲，由上层写入，下层消费后清零）
 			bool cmdClose = false;            ///< 手动闭合标志（Core层设置）
 			bool cmdOpen = false;             ///< 手动张开标志（Core层设置）
 		} gripCmd;
@@ -473,7 +500,7 @@ private:
 		struct SGripinitParam {
 			float_t initSpeedMax_     = 6000.0f;   ///< 初始化最大速度
 			float_t initSpeedMin_     = 2300.0f;   ///< 保底最低速度
-			float_t initTorqueThresh_ = 2000.0f;   ///< 力矩开始减速的阈值
+			float_t initTorqueThresh_ = 1000.0f;   ///< 力矩开始减速的阈值
 			float_t initTorqueRange_  = 2000.0f;   ///< 从全速减到最低速的力矩区间
 		} GripinitParam_;
 
@@ -482,10 +509,30 @@ private:
 			float_t filteredTorque  = 0.0f;     ///< IIR滤波后的力矩值
 			float_t closeTorqueThresh = 1700.0f;///< 滤波力矩开始减速的阈值
 			float_t closeTorqueRange  = 1100.0f;///< 从全速减到最低速的滤波力矩区间
-			float_t closeSpeedMin     = 1000.0f;///< 闭合时保底最低速度
+			float_t closeSpeedMin     = 5000.0f;///< 闭合时保底最低速度
 			float_t detectTorque      = 2800.0f;///< 滤波力矩超过此值即判定夹取成功
 			float_t filterAlpha       = 0.95f;  ///< LowPassFilter滤波系数α
 		} gripDetect_;
+
+		struct SGripMotorDetect {
+			int32_t cntstable  = 0;            ///<稳定计数器
+			int32_t Torque     = 0;            ///<当前力矩
+			int32_t SpeedLimit = 0;            ///<速度限制值
+			enum class EGripMotorState : uint8_t { STALL = 0, RUNNING = 1 };
+			EGripMotorState state = EGripMotorState::RUNNING;	///< 夹爪控制子状态
+		} griGripMotor_;//这一部分暂时没有用
+
+		struct SRescueParam {
+			float_t speedThresh   = 8000.0f;  ///< 触发检测的目标速度阈值 (rpm)这里的选择的依据就是在模块层中设置的高转速
+			float_t stuckThresh   = 500.0f;   ///< 实际速度低于此值视为卡死 (rpm)
+			uint16_t triggerTime  = 100;       ///< 卡死持续触发时间 
+			float_t distancePhy   = 3.0f;     ///< 自救移动物理距离 (mm)
+			int32_t distanceEnc   = 0;        ///< 自救移动编码器距离
+			uint16_t timeout      = 600;      ///< 自救超时 (ticks)
+			uint16_t detectCnt    = 0;        ///< 检测计数器
+			int32_t targetPosit   = 0;        ///< 自救目标位置
+			uint16_t elapsedTick  = 0;        ///< 自救已用时间
+		} rescueParam_;
 
 		// PID控制器
 		CAlgoPid pidPosCtrl;
@@ -506,6 +553,9 @@ private:
 
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
+
+
+		float_t CalcGripSlowSpeed(float_t maxSpeed, float_t minSpeed, int32_t remainToStop, int32_t slowBand);
 
 		// 更新组件
 		EAppStatus UpdateComponent() final;

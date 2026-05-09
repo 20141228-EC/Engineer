@@ -853,10 +853,15 @@ void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
       }
 
       case CSystemCore::EAutoCtrlProcess::STORE_ORE: {
-        curModeTextMsg.message.figureConfig.details_2 = 5;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2.5);
+        curModeTextMsg.message.figureConfig.details_2 = 7;
+        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3.5);
         curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "STORE");
+        if(SystemCore.storeEndRollPose_ == CSystemCore::EStoreEndRollPose::UP) {
+          strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "STORE ^");
+        }
+        else {
+          strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "STORE v");
+        }
         break;
       }
 

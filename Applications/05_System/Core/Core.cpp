@@ -147,7 +147,11 @@ void CSystemCore::UpdateHandler_() {
     if (zx_count > 20 && zx_flag == false) {
         zx_flag = true;
         zx_count = 0;
-        if (!use_Controller_ && !SysControllerLink.IsControllerOnline()) {
+        // 自动任务执行期间禁止切换控制模式，避免出现切换的bug
+        if (currentAutoCtrlProcess_ != EAutoCtrlProcess::NONE) {
+            // 任务进行中，忽略切换请求
+        }
+        else if (!use_Controller_ && !SysControllerLink.IsControllerOnline()) {
             // 自定义控制器不在线同时不是自定义控制器控制的时候无法切换
             pgimbal_->gimbalInfo.isIntoControll = false;//切换出来清空云台标志位
         } else {
@@ -247,6 +251,30 @@ void CSystemCore::UpdateHandler_() {
         // }
     
     ControlFromEsp32_(); // ESP32控制
+
+    // 由于自动任务会出现莫名的残留现象直接杀死任务会出现残留标志位没有同步，所以在此处做后续的处理
+    static EAutoCtrlProcess lastAutoCtrlProcess = EAutoCtrlProcess::NONE;
+    if (lastAutoCtrlProcess != EAutoCtrlProcess::NONE
+        && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
+        // 夹爪恢复
+        if (parm_) {
+            gripKeyboardCmd_ = parm_->armInfo.isGripped ? EGripKeyboardCmd::CLOSE : EGripKeyboardCmd::OPEN;
+            parm_->armCmd.set_speed_grip = 0.0f;
+            parm_->armCmd.set_angle_end_roll = 0.f; //末端Roll回正
+        }
+        // 图传强制回正
+        if (pgimbal_) {
+            pgimbal_->gimbalCmd.set_visualyaw = GIMBAL_VISUAL_MOTOR_INIT_ANGLE;
+        }
+        gimbal_auto_ctrl = false;
+        //pgimbal_->gimbalCmd.isAutoCtrl = false; 
+        // 底盘回到正常的控制
+        if (pchassis_) {
+            pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
+        }
+        movemode_ = EMoveMode::NONE;
+    }
+    lastAutoCtrlProcess = currentAutoCtrlProcess_;
 
     // 每周期重置手动夹爪标志，由对应控制函数按需设置
     if (parm_ && !parm_->armCmd.isAutoCtrl) {
@@ -368,9 +396,9 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
         parm_->should_limit_yaw = 0;
     }
 
-    // if(!parm_->armInfo.isModuleAvailable){
-    //     return APP_ERROR;
-    // }
+    if(!parm_->armInfo.isModuleAvailable){
+        return APP_ERROR;
+    }
 
     switch (process)
     {

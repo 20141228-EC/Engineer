@@ -25,7 +25,10 @@ namespace my_engineer {
         auto &arm  = *core.parm_;
 
         CAlgoTrajPlayback player;
-
+        arm.armCmd.resetEndAll = true;
+        while(arm.comEnd_.initState_ ==  CModArm::CComEnd::EEndInitState::DONE){//如果没有初始化完成直接堵死在这里防止后续操作手手速过快
+            proc_waitMs(1);
+        }
         // 循环等待鼠标左键/右键选择轨迹
         ETrajID trajId;
         while(true){
@@ -60,13 +63,21 @@ namespace my_engineer {
             const auto Traj = it->second; // 取到轨迹帧
             arm.armCmd.isAutoCtrl = true;
 
+            //从第二段开始用它作为规划起点，避免反馈起点漂移
+            float_t lastTarget[J::COUNT];
+
             /*step 1 :臂先到达固定的起始位姿*/
-            if(!PlayFrameSegment(arm, Traj.frame, 0, player, true)) goto proc_exit;
+            if(!PlayFrameSegment(arm, Traj.frame, 0, player, true, 0.0f, nullptr)) goto proc_exit;
+            Extrarow(Traj.frame, 0, lastTarget);
             proc_waitMs(50);    //等待夹爪收缩
 
             /*step 2 :逐段播放轨迹*/
             for(int seg = 1; seg < Traj.frameCount; seg++){
-                if(!PlayFrameSegment(arm, Traj.frame, seg, player, true)) goto proc_exit;
+                if(!PlayFrameSegment(arm, Traj.frame, seg, player, true, 0.0f, lastTarget)) goto proc_exit;
+                Extrarow(Traj.frame, seg, lastTarget);
+            //     if(Traj.frame[seg][FC_GRIP] == 1){
+            //        proc_waitMs(0);
+            //    }
             }
         }
 
@@ -75,6 +86,26 @@ namespace my_engineer {
         core.parm_->armCmd.isAutoCtrl = false;
         core.autoCtrlTaskHandle_ = nullptr;
         core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
+
+        // 退出时把 armCmd 同步到当前实际位姿
+        arm.armCmd.set_angle_Yaw       = arm.armInfo.angle_Yaw;
+        arm.armCmd.set_angle_Pitch1    = arm.armInfo.angle_Pitch1;
+        arm.armCmd.set_angle_Pitch2    = arm.armInfo.angle_Pitch2;
+        arm.armCmd.set_angle_Pitch3    = arm.armInfo.angle_Pitch3;
+        arm.armCmd.set_angle_Roll      = arm.armInfo.angle_Roll;
+        arm.armCmd.set_angle_end_pitch = arm.armInfo.angle_end_pitch;
+        arm.armCmd.set_angle_end_roll  = arm.armInfo.angle_end_roll;
+
+        // 任务结束默认进入自定义控制器模式（仅在控制器在线时切换，否则保留键盘模式避免立刻被自动退出）
+        if (SysControllerLink.IsControllerOnline()) {
+            SysControllerLink.robotInfo.controlled_by_controller = true;
+            core.use_Controller_ = true;
+            arm.armCmd.isCustomCtrl = true;     ///< 同步标志位，避免下个周期的窗口期行为异常
+        } else {
+            SysControllerLink.robotInfo.controlled_by_controller = false;
+            core.use_Controller_ = false;
+            arm.armCmd.isCustomCtrl = false;
+        }
         core.armmode_ = EArmMode::NORMAL;   //没有任务的状态
         proc_return();
     }
