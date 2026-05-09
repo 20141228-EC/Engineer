@@ -661,16 +661,16 @@ void CSystemReferee::UI_StartPositionFigureDrawing_() {
 void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
 
 	std::fill(&curModeTextMsg.message.text[0], &curModeTextMsg.message.text[29], 0);
-  if (SystemCore.use_Controller_) {
+  if (SysBoardLink.otherInfo.use_controller) {
     curModeTextMsg.message.figureConfig.details_2 = 6;
     curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
     curModeTextMsg.message.figureConfig.posit_Y = 780;
     strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CUSTOM");
   }
   else {
-    switch (SystemCore.currentAutoCtrlProcess_) {
+    switch (SysBoardLink.otherInfo.autoTask) {
 
-      case CSystemCore::EAutoCtrlProcess::NONE: {
+      case static_cast<uint8_t>(CSystemCore::EAutoCtrlProcess::NONE): {
         curModeTextMsg.message.figureConfig.details_2 = 4;
         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2);
         curModeTextMsg.message.figureConfig.posit_Y = 780;
@@ -678,7 +678,7 @@ void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
         break;
       }
 
-      case CSystemCore::EAutoCtrlProcess::RETURN_ORIGIN: {
+      case static_cast<uint8_t>(CSystemCore::EAutoCtrlProcess::RETURN_ORIGIN): {
         curModeTextMsg.message.figureConfig.details_2 = 6;
         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
         curModeTextMsg.message.figureConfig.posit_Y = 780;
@@ -686,53 +686,13 @@ void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
         break;
       }
 
-      case CSystemCore::EAutoCtrlProcess::CLIMBING: {
-        curModeTextMsg.message.figureConfig.details_2 = 8;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3.5);
+      case static_cast<uint8_t>(CSystemCore::EAutoCtrlProcess::STORE_ORE): {
+        curModeTextMsg.message.figureConfig.details_2 = 5;
+        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2.5);
         curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CLIMBING");
+        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "STORE");
         break;
       }
-
-      case CSystemCore::EAutoCtrlProcess::GROUND_ORE: {
-        curModeTextMsg.message.figureConfig.details_2 = 6;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "GROUND");
-        break;
-      }
-
-      // case CSystemCore::EAutoCtrlProcess::STORE_ORE: {
-      //   curModeTextMsg.message.figureConfig.details_2 = 5;
-      //   curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2.5);
-      //   curModeTextMsg.message.figureConfig.posit_Y = 780;
-      //   strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "STORE");
-      //   break;
-      // }
-
-      case CSystemCore::EAutoCtrlProcess::EXCHANGE_ORE: {
-        curModeTextMsg.message.figureConfig.details_2 = 8;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 5.5);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "EXCHANGE");
-        break;
-      }
-
-      case CSystemCore::EAutoCtrlProcess::ENERGY_UNIT: {
-        curModeTextMsg.message.figureConfig.details_2 = 7;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3.5);
-        curModeTextMsg.message.figureConfig.posit_Y = 780;
-        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "GET ORE");
-        break;
-      }
-
-      // case CSystemCore::EAutoCtrlProcess::DOWN_STAIR: {
-      //   curModeTextMsg.message.figureConfig.details_2 = 7;
-      //   curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3.5);
-      //   curModeTextMsg.message.figureConfig.posit_Y = 780;
-      //   strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "DOWNSTAIR");
-      //   break;
-      // }
     }
   }
 

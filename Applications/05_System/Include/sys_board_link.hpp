@@ -60,7 +60,9 @@ public:
         uint8_t pack_id = CDevBoardLink::PKT_OTHER_INFOS;
         int16_t yaw_gyro;
         uint8_t is_spin_on;
-        uint8_t reserved[4];
+        uint8_t autoTask;
+        uint8_t use_controller;
+        uint8_t reserved[2];
     } __packed otherInfo = {};
     /**
      * @brief 检查板间通信是否在线
