@@ -70,7 +70,7 @@ EAppStatus CModGimbal::CComVisualyaw::UpdateComponent(){
 		return APP_OK;
     }  
 	case FSM_CTRL: {
-			pMtr->Control_MIT(mitCtrl.kp, mitCtrl.kd, deg2rad(LowPassFilter(VisuallyawInfo.angle,VisuallyawCmd.setAngle,0.7)), 0.0f, 0.0f);//低通滤波控制角度
+			pMtr->Control_MIT(mitCtrl.kp, mitCtrl.kd, deg2rad(VisuallyawCmd.setAngle), 0.0f, 0.0f);//低通滤波控制角度
 			return APP_OK;
 		}
 

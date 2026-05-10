@@ -98,10 +98,10 @@ namespace my_engineer {
                 preAlignTarget[J::J_ENDR] = firstFrameTarget[J::J_ENDR] + endRollOffset; // 仅修改 end_roll
 
                 const bool gripNow = (arm.armInfo.gripState == CModArm::SArmInfo::EGripState::HOLD);
-                // minTimeS=0.5s 强制慢速平滑过渡，避免大角度突变
-                if (!PlaySegment(arm, preAlignTarget, 1.0f,
+                // 提高末端roll转速猛转、注意限位块不要撞坏了
+                if (!PlaySegment(arm, preAlignTarget, 10.0f,
                                  gripNow, gripNow,
-                                 player, true, nullptr, 0.5f)) {
+                                 player, true, nullptr)) {
                     goto proc_exit;
                 }
             }
