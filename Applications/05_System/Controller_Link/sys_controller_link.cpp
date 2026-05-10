@@ -65,8 +65,8 @@ void CSystemControllerLink::UpdateHandler_() {
 		// 发送：独立限频 10Hz
 		// 系统任务1kHz
 		static uint8_t sendDelay = 100;
-		//sendDelay -= 4;
-		sendDelay -= 1;
+		sendDelay -= 4;
+		//sendDelay -= 1;
 		if (sendDelay == 0) {
 			sendDelay = 100;
 			UpdateRobotDataPkg_();
