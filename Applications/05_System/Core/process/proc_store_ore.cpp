@@ -36,7 +36,7 @@ void CSystemCore::StartStoreOreTask(void *arg) {
         static EVarStatus phase1_is_arrived = false;
         static EVarStatus phase2_is_arrived = false;
 
-        if(keyboard.mouse_L && !phase1_is_arrived && !phase2_is_arrived){   ///< 初次进入本任务，按左键确认后开始执行
+        if(keyboard.mouse_L && !phase1_is_arrived && !phase2_is_arrived){   ///< 初次进入本任务，按左键确认后开始执行左存矿任务
 
             /*Set Arm*/
             core.parm_->armCmd.set_angle_Yaw = STORE_ORE_YAW_ANGLE_PHASE1;
@@ -48,18 +48,12 @@ void CSystemCore::StartStoreOreTask(void *arg) {
             core.parm_->armCmd.set_angle_end_roll = STORE_ORE_END_ROLL_ANGLE_PHASE1;
             core.parm_->armCmd.set_length_grip = STORE_ORE_GRIP_LENGTH_PHASE1;
 
-            proc_waitMs(300);                           ///< 等待各电机到位
+            proc_waitMs(500);                           ///< 等待各电机到位
             phase1_is_arrived = true;
             break;                                      ///< 进入下一个step
         }
-        else if(keyboard.mouse_L && phase1_is_arrived && !phase2_is_arrived){
+        else if(keyboard.mouse_R && phase1_is_arrived && !phase2_is_arrived){   ///< 按右键进入右存矿任务
             // core.parm_->
-        }
-        else if(cnt > 0){
-            cnt--;
-        }
-        else if(cnt <= 0){
-            goto proc_exit;         ///< 超时退出
         }
 
         proc_waitMs(5);

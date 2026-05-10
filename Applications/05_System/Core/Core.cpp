@@ -393,79 +393,21 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
             return APP_ERROR;
         }
 
-        // 删除涉及到子龙门的自动流程，对应的流程文件已备份至 process_subgantry_backup
+        case EAutoCtrlProcess::RETURN_ORIGIN: {
+            currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_ORIGIN;
+            xTaskCreate(StartReturnOriginTask, "Return Origin Task",
+                        512, this, proc_ModuleTaskPriority,
+                        &autoCtrlTaskHandle_);
+            return APP_OK;
+        }
 
-        // case EAutoCtrlProcess::EXCHANGE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::EXCHANGE;
-        //     xTaskCreate(StartExchangeTask, "Exchange Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
-
-        // case EAutoCtrlProcess::RETURN_DRIVE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_DRIVE;
-        //     xTaskCreate(StartReturnDriveTask, "Return Drive Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
-
-        // case EAutoCtrlProcess::RETURN_ORIGIN: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_ORIGIN;
-        //     xTaskCreate(StartReturnOriginTask, "Return Origin Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
-
-        // case EAutoCtrlProcess::DOGHOLE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::DOGHOLE;
-        //     xTaskCreate(StartDogHoleTask, "Dog Hole Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
-
-        // case EAutoCtrlProcess::GROUND_ORE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::GROUND_ORE;
-        //     xTaskCreate(StartGroundOreTask, "Ground Ore Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
-
-        // case EAutoCtrlProcess::GOLD_ORE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::GOLD_ORE;
-        //     xTaskCreate(StartGoldOreTask, "Gold Ore Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
-
-        // case EAutoCtrlProcess::PUSH_ORE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::PUSH_ORE;
-        //     xTaskCreate(StartPushOreTask, "Push Ore Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
-
-        // case EAutoCtrlProcess::POP_ORE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::POP_ORE;
-        //     xTaskCreate(StartPopOreTask, "Pop Ore Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
-
-        // case EAutoCtrlProcess::SILVER_ORE: {
-        //     currentAutoCtrlProcess_ = EAutoCtrlProcess::SILVER_ORE;
-        //     xTaskCreate(StartSilverOreTask, "Silver Ore Task",
-        //                 512, this, proc_ModuleTaskPriority,
-        //                 &autoCtrlTaskHandle_);
-        //     return APP_OK;
-        // }
+        case EAutoCtrlProcess::STORE: {
+            currentAutoCtrlProcess_ = EAutoCtrlProcess::STORE;
+            xTaskCreate(StartStoreOreTask, "Store Task",
+                        512, this, proc_ModuleTaskPriority,
+                        &autoCtrlTaskHandle_);
+            return APP_OK;
+        }
 
         default: return APP_ERROR;
     }
