@@ -16,7 +16,7 @@
 #include "mod_common.hpp"
 
 #define GIMBAL_VISUAL_MOTOR_MOTOR_DIR 1     ///< 图传yaw电机方向 (1=正向, -1=反向)
-#define GIMBAL_VISUAL_MOTOR_INIT_ANGLE 0    ///< 图传yaw初始角度 (度)
+#define GIMBAL_VISUAL_MOTOR_INIT_ANGLE 1    ///< 图传yaw初始角度 (度)
 
 #define deg2rad(x) ((x) * 0.017453292519943295769236907684886)
 #define rad2deg(x) ((x) * 57.295779513082320876798154814105)
