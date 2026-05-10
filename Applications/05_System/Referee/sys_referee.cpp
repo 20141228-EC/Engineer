@@ -72,6 +72,7 @@ void CSystemReferee::UpdateHandler_() {
 	UpdateRaceInfo_();
 	UpdateRobotInfo_();
 	UpdateRadarInfo_();
+	UpdateEnergyInfo_();
 }
 
 /**
@@ -146,6 +147,21 @@ EAppStatus CSystemReferee::UpdateRadarInfo_() {
 
 	refereeInfo.radar.if_dart_comming =
 		pRefereeDev_->radarPkg.message.if_dart_comming;
+
+	return APP_OK;
+}
+
+/**
+ * @brief 更新能量信息
+ *
+ * @return EAppStatus
+ */
+EAppStatus CSystemReferee::UpdateEnergyInfo_() {
+
+	if (!pRefereeDev_) return APP_ERROR;
+
+	refereeInfo.energy.buffer_energy =
+		pRefereeDev_->robotPerfPkg.energyBuffer;
 
 	return APP_OK;
 }

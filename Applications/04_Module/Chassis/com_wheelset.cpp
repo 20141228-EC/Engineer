@@ -392,14 +392,16 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
     float sqrt2_2 = 0.70710678;
 
     // 对于vx vy 采用左正右负  speed_W 逆时针为正
-    vx1 = -speed_X +speed_W * sqrt2_2;
-    vy1 = speed_Y  -speed_W * sqrt2_2;
-    vx2 = -speed_X +speed_W * sqrt2_2;
-    vy2 = speed_Y  +speed_W * sqrt2_2;
-    vx3 = -speed_X -speed_W * sqrt2_2;
-    vy3 = speed_Y  -speed_W * sqrt2_2;
-    vx4 = -speed_X -speed_W * sqrt2_2;
-    vy4 = speed_Y  +speed_W * sqrt2_2;
+    vx1 = speed_X   +speed_W * sqrt2_2 ;
+    vy1 = -speed_Y  -speed_W * sqrt2_2;
+    vx2 = speed_X   +speed_W * sqrt2_2 ;
+    vy2 = -speed_Y  +speed_W * sqrt2_2;
+    vx3 = speed_X   -speed_W * sqrt2_2 ;
+    vy3 = -speed_Y  -speed_W * sqrt2_2;
+    vx4 = speed_X   -speed_W * sqrt2_2 ;
+    vy4 = -speed_Y  +speed_W * sqrt2_2;
+
+    
 
     // vx1 =  speed_X- speed_W  ; //  LF
     // vy1 =  speed_Y - speed_W ;
@@ -512,11 +514,11 @@ EAppStatus CModChassis::CComWheelset::_UpdateOutput(float speed_X, float speed_Y
 
         if (err > 2048) {
             steerPosTarget[i] -= 4096;
-            SpdTarget[i] *= static_cast<float_t>(pow(cos(err * PI / 4096),11));
+            SpdTarget[i] *= static_cast<float_t>(pow(cos(err * PI / 4096),50));
         }
         else if (err < -2048) {
             steerPosTarget[i] += 4096;
-            SpdTarget[i] *= static_cast<float_t>(pow(cos(err * PI / 4096),11));
+            SpdTarget[i] *= static_cast<float_t>(pow(cos(err * PI / 4096),50));
         }
 
         if (steerPosTarget[i] > 4096) steerPosTarget[i] -= 8192;

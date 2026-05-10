@@ -47,11 +47,20 @@ public:
 		bool if_dart_comming = false; ///< 是否有飞镖来袭
 	};
 
+	struct SEnergyInfo {
+		uint16_t reserved_1[2];
+		float_t reserved_2;
+		uint16_t buffer_energy;	// 缓冲能量
+		uint16_t shooter_heat_17mm;
+		uint16_t shooter_heat_42mm;
+	};
+
 	struct SSysRefereeInfo {
 		time_t unixTimestamp;
 		SRaceInfo race;
 		SRobotInfo robot;
 		SRadarInfo radar;
+		SEnergyInfo energy;
 	} refereeInfo;
 
 	// 初始化系统
@@ -94,6 +103,8 @@ private:
 	EAppStatus UpdateRobotInfo_();
 
 	EAppStatus UpdateRadarInfo_();
+
+	EAppStatus UpdateEnergyInfo_();
 
 	EAppStatus UpdateControllerInfo_();
 

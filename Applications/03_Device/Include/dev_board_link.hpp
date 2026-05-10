@@ -79,7 +79,8 @@ public:
         uint8_t is_spin_on;     ///< 是否开小陀螺
         uint8_t autoTask;       ///< 自动任务编号
         uint8_t use_controller; ///< 是否使用控制器
-        uint8_t reserved[3];    ///< 预留
+        uint8_t ResetFlag;     ///< 软件复位
+        uint8_t reserved[2];    ///< 预留
     } __packed otherInfo_ = {};
     
     /**

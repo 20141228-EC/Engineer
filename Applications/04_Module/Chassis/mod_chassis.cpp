@@ -245,10 +245,8 @@ void CModChassis::UpdateHandler_() {
         calcFeedbackPower(powerCtrlSteerRB_, comWheelset_.steerMotor[CComWheelset::RB]);
 
     feedbackMeasuredPowerRaw_ = feedbackPowerRaw;
-    // 做一个低通滤波 避免预测功率抖动而频繁限制
-    constexpr float kFeedbackPowerLpfAlpha = 0.18f;
-    feedbackMeasuredPower_ += kFeedbackPowerLpfAlpha * (feedbackPowerRaw - feedbackMeasuredPower_);
-    power_feedback_est = feedbackMeasuredPower_;    // 低通滤波后的预测功率
+    feedbackMeasuredPower_ = feedbackPowerRaw;  // 去掉低通滤波，直接用原始数据
+    power_feedback_est = feedbackPowerRaw;
 
     // ------------------ 更新功率预算 ------------------
     UpdatePowerBudget_();
@@ -271,10 +269,15 @@ void CModChassis::UpdateHandler_() {
     powerCtrlLB_.SetDefaultMaxPower(toPowerUInt(dynamicTargetWheelPower[CComWheelset::LB]));
     powerCtrlRB_.SetDefaultMaxPower(toPowerUInt(dynamicTargetWheelPower[CComWheelset::RB]));
 
-    // // 舵向电机不限制功率，不再设置限制
-    // for (int i = 0; i < 4; i++) {
-    //     comWheelset_.mtrSteerOutputBuffer[i] = static_cast<int16_t>(dynamicTargetSteerPower[i]);
-    // }
+    powerCtrlSteerLF_.SetDefaultMaxPower(toPowerUInt(dynamicTargetSteerPower[CComWheelset::LF]));
+    powerCtrlSteerRF_.SetDefaultMaxPower(toPowerUInt(dynamicTargetSteerPower[CComWheelset::RF]));
+    powerCtrlSteerLB_.SetDefaultMaxPower(toPowerUInt(dynamicTargetSteerPower[CComWheelset::LB]));
+    powerCtrlSteerRB_.SetDefaultMaxPower(toPowerUInt(dynamicTargetSteerPower[CComWheelset::RB]));
+
+    // 舵向电机不限制功率，不再设置限制
+    for (int i = 0; i < 4; i++) {
+        comWheelset_.mtrSteerOutputBuffer[i] = static_cast<int16_t>(dynamicTargetSteerPower[i]);
+    }
 
     // ------------------ 轮向电机限幅 ------------------
     int16_t limitedTorque[4];
@@ -321,10 +324,12 @@ void CModChassis::UpdateHandler_() {
     for (int i = 0; i < 4; i++) {
         CDevMtrDJI::FillCanTxBuffer(comWheelset_.motor[i],
                                     comWheelset_.mtrCanTxNode[i]->dataBuffer,
-                                    comWheelset_.mtrOutputBuffer[i]);
+                                    // comWheelset_.mtrOutputBuffer[i]);
+                                    0);
         CDevMtrDJI::FillCanTxBuffer(comWheelset_.steerMotor[i],
                                     comWheelset_.mtrSteerCanTxNode[i]->dataBuffer,
-                                    comWheelset_.mtrSteerOutputBuffer[i]);
+                                    0);
+                                    // comWheelset_.mtrSteerOutputBuffer[i]);
     }
 
     // ------------------ 最终总功率命令 ------------------
@@ -379,15 +384,35 @@ EAppStatus CModChassis::RestrictChassisCommand_() {
     }
 
     // 平面速度圆限幅：避免斜向输入时合速度超过100%
-    {
-        const float planarMag = std::sqrt(chassisCmd.speed_X * chassisCmd.speed_X +
+    const float planarMag = std::sqrt(chassisCmd.speed_X * chassisCmd.speed_X +
                                           chassisCmd.speed_Y * chassisCmd.speed_Y);
-        if (planarMag > 440.0f) {
-            const float scale = 440.0f / planarMag;
-            chassisCmd.speed_X *= scale;
-            chassisCmd.speed_Y *= scale;
-        }
+    if (planarMag > 440.0f) {
+        const float scale = 440.0f / planarMag;
+        chassisCmd.speed_X *= scale;
+        chassisCmd.speed_Y *= scale;
     }
+
+    // // 急停的时候晚一点跟云台
+    // static float lastPlanarMag = 0.0f;
+    // static int brakeHoldCnt = 0;
+
+    // constexpr float BRAKE_SPEED_TH = 150.0f;  // 上一瞬间目标速度大于这个，认为之前速度很大
+    // constexpr float STOP_SPEED_TH  = 40.0f;   // 当前目标速度小于这个，认为急停
+    // constexpr int   BRAKE_HOLD_TICK = 200;     // 200ms缓冲
+
+    // bool hardBrake = (lastPlanarMag > BRAKE_SPEED_TH &&
+    //                   planarMag < STOP_SPEED_TH);
+
+    // if (hardBrake) {
+    //     brakeHoldCnt = BRAKE_HOLD_TICK;
+    // }
+
+    // if (brakeHoldCnt > 0) {
+    //     chassisCmd.speed_W = 0.0f;
+    //     brakeHoldCnt--;
+    // }
+
+    // lastPlanarMag = planarMag;
 
     // 自动控制启用，则不继续做限制
     if (chassisCmd.isAutoCtrl) return APP_OK;

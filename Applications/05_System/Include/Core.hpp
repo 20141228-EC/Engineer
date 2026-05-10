@@ -112,6 +112,9 @@ private:
         float_t speed_y_ = 0.f;
         float_t speed_w_ = 0.f;
     }chassisCmd_;
+
+    // 上层发来的软件复位标志
+    EVarStatus ResetFlag = false;
     
 
     // 定义系统核心的更新处理

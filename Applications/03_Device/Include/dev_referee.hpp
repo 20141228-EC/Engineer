@@ -163,6 +163,9 @@ public:
 		uint16_t CRC16;                       ///< CRC16 Checksum
 	} __packed robotPerfPkg = { };
 
+	// using SEnergyMsgPkg = SRobotMsgPkg<SRobotPerfPkg>;
+	// SEnergyMsgPkg energyPkg = {};
+
 	struct SRobotPositPkg {
 		SPkgHeader header;
 		float_t positX;

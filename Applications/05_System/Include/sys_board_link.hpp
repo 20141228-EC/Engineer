@@ -62,6 +62,7 @@ public:
         uint8_t is_spin_on;
         uint8_t autoTask;
         uint8_t use_controller;
+        uint8_t ResetFlag;
         uint8_t reserved[2];
     } __packed otherInfo = {};
     /**

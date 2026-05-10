@@ -99,10 +99,13 @@ void CSystemCore::UpdateHandler_() {
         }
 
     BoardLink_Info_Update_(); ///< 更新板间通信数据包
+
+    ResetFlag = SysBoardLink.otherInfo.ResetFlag;   // 此处获取上板发来的复位指令
     
-    if (SysRemote.ResetFlag)
+    if (ResetFlag)
     {
-        RESET_SYSTEM();
+        RESET_SYSTEM();     // 上板判断跳变沿发来 每次按下只触发一次 因此这里不清除标志位
+        
     }
 
 }

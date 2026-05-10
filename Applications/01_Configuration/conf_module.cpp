@@ -174,32 +174,32 @@ EAppStatus InitAllModule() {
     chassisInitParam.steerPowerParamLF.kTorqueCoeff  = -5.07732860399221e-07f;
     chassisInitParam.steerPowerParamLF.k1 = 1.3080155950307635e-08f;
     chassisInitParam.steerPowerParamLF.k2 = 1.8747301277544523e-05f;
-    chassisInitParam.steerPowerParamLF.kConstant = 1.1027061096343103f;
+    chassisInitParam.steerPowerParamLF.kConstant = 3.1027061096343103f;
     chassisInitParam.steerPowerParamLF.kMotorOutputMax = 10000;
 
     chassisInitParam.steerPowerParamRF.kDefaultMaxPower = 20;
     chassisInitParam.steerPowerParamRF.kTorqueCoeff  = -5.07732860399221e-07f;
     chassisInitParam.steerPowerParamRF.k1 = 1.3080155950307635e-08f;
     chassisInitParam.steerPowerParamRF.k2 = 1.8747301277544523e-05f;
-    chassisInitParam.steerPowerParamRF.kConstant = 1.1027061096343103f;
+    chassisInitParam.steerPowerParamRF.kConstant = 3.1027061096343103f;
     chassisInitParam.steerPowerParamRF.kMotorOutputMax = 10000;
 
     chassisInitParam.steerPowerParamLB.kDefaultMaxPower = 20;
     chassisInitParam.steerPowerParamLB.kTorqueCoeff  = -5.07732860399221e-07f;
     chassisInitParam.steerPowerParamLB.k1 = 1.3080155950307635e-08f;
     chassisInitParam.steerPowerParamLB.k2 = 1.8747301277544523e-05f;
-    chassisInitParam.steerPowerParamLB.kConstant = 1.1027061096343103f;
+    chassisInitParam.steerPowerParamLB.kConstant = 3.1027061096343103f;
     chassisInitParam.steerPowerParamLB.kMotorOutputMax = 10000;
 
     chassisInitParam.steerPowerParamRB.kDefaultMaxPower = 20;
     chassisInitParam.steerPowerParamRB.kTorqueCoeff  = -5.07732860399221e-07f;
     chassisInitParam.steerPowerParamRB.k1 = 1.3080155950307635e-08f;
     chassisInitParam.steerPowerParamRB.k2 = 1.8747301277544523e-05f;
-    chassisInitParam.steerPowerParamRB.kConstant = 1.1027061096343103f;
+    chassisInitParam.steerPowerParamRB.kConstant = 3.1027061096343103f;
     chassisInitParam.steerPowerParamRB.kMotorOutputMax = 10000;
 
     // // 设置功率计CAN参数
-    chassisInitParam.powerMeterCanID = EInterfaceID::INF_CAN1;  // 使用CAN1接口
+    chassisInitParam.powerMeterCanID = EInterfaceID::INF_CAN2;  // 使用CAN1接口
     chassisInitParam.powerMeterStdID = 0x516;                   // 功率计CAN ID
     chassisInitParam.powerMeterFrameDlc = CInfCAN::ECanFrameDlc::DLC_8;
     // 使用初始化后的参数创建 chassisModule 实例

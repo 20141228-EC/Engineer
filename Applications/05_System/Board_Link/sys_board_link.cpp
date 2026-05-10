@@ -152,6 +152,8 @@ EAppStatus CSystemBoardLink::UpdateOtherInfo_() {
     otherInfo.pack_id = pBoardLinkDev_->otherInfo_.pack_id;
     otherInfo.yaw_gyro = pBoardLinkDev_->otherInfo_.yaw_gyro;
     otherInfo.is_spin_on = pBoardLinkDev_->otherInfo_.is_spin_on;
+    otherInfo.autoTask = pBoardLinkDev_->otherInfo_.autoTask;
+    otherInfo.ResetFlag = pBoardLinkDev_->otherInfo_.ResetFlag;
     std::copy(std::begin(pBoardLinkDev_->otherInfo_.reserved), std::end(pBoardLinkDev_->otherInfo_.reserved), std::begin(otherInfo.reserved));
 
     return APP_OK;
