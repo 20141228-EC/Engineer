@@ -148,6 +148,7 @@ EAppStatus CSystemBoardLink::UpdateCtrlInfos_() {
     pBoardLinkDev_->otherInfo_.yaw_gyro = otherInfos.yaw_gyro;
     pBoardLinkDev_->otherInfo_.is_spin_on = otherInfos.is_spin_on;
     pBoardLinkDev_->otherInfo_.autoTask = otherInfos.autoTask;
+    pBoardLinkDev_->otherInfo_.use_controller = otherInfos.use_controller;
 
     return APP_OK;
 }

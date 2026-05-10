@@ -453,6 +453,7 @@ void CSystemCore::BoardLink_Info_Update_(){
     SysBoardLink.otherInfos.yaw_gyro = static_cast<int16_t>(pgimbal_->gimbalInfo.encoder_yaw / 32768.f * 180.f);    // 转成±180再发出去
     SysBoardLink.otherInfos.autoTask = static_cast<uint8_t>(currentAutoCtrlProcess_);
     SysBoardLink.otherInfos.use_controller = use_Controller_;
+    SysBoardLink.otherInfos.ResetFlag = SysRemote.ResetFlag;
 
 }
 
