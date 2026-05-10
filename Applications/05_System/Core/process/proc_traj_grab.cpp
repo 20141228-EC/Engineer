@@ -41,7 +41,7 @@ namespace my_engineer {
 
         // 重新标定末端
         arm.armCmd.resetEndAll = true;
-        while(arm.comEnd_.initState_ ==  CModArm::CComEnd::EEndInitState::DONE){
+        while(arm.comEnd_.initState_ !=  CModArm::CComEnd::EEndInitState::DONE){
             proc_waitMs(1);
         }
 
