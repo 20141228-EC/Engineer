@@ -27,8 +27,9 @@ void StartSystemUpdateTask(void *argument) {        ///<这里更新的是键鼠
 
         for (const auto &item : SystemIDMap) {
                 item.second->UpdateHandler_();
-        proc_waitMs(1); // 1000Hz
-    }
+        }
+
+        proc_waitMs(1); // 1000Hz      2026/5/11：这里曾经修改的时候将proc_waitMs放在循环中导致整个系统堵塞接受不到遥控器的上升沿
     }
 }
 uint32_t sys_test_n = 0;

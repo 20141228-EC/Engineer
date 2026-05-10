@@ -10,7 +10,7 @@
  */
 
 #include "Core.hpp"
-
+uint16_t count = 0;
 namespace my_engineer {
 
 void CSystemCore::StartRobot(bool if_remote_control, bool I_dont_have_a_remote) {
@@ -430,19 +430,26 @@ void CSystemCore::ControlFromController_() {
         // } else {
         //     parm_->armCmd.set_speed_grip = 0;             // 模式切换冻结
         // }
-        if(keyboard_edge.key_C == CSystemRemote::ERemoteEdge::Rising){
-            gripKeyboardcom_ = !gripKeyboardcom_;
+        if(!mode_switching && keyboard_edge.key_C == CSystemRemote::ERemoteEdge::Rising){
+            gripKeyboardCmd_ = (gripKeyboardCmd_ == EGripKeyboardCmd::CLOSE)
+                ? EGripKeyboardCmd::OPEN
+                : EGripKeyboardCmd::CLOSE;
+                count++;
         }
-        const bool grip_close_cmd = controller.gripper_close || gripKeyboardcom_;
-        if (grip_close_cmd) {
+        const bool grip_close_cmd = controller.gripper_close || gripKeyboardCmd_ == EGripKeyboardCmd::CLOSE;
+        const bool grip_open_cmd = gripKeyboardCmd_ == EGripKeyboardCmd::OPEN;
+        if (mode_switching) {
+             // 模式切换期间冻结夹爪，避免 Z+X 切换被解释成张开
+             parm_->armCmd.gripClose = false;
+             parm_->armCmd.gripOpen = false;
+        } else if (grip_close_cmd) {
              parm_->armCmd.gripClose = true;
              parm_->armCmd.gripOpen = false;
              // isGripped 判断由组件层 HOLD 状态自动处理
-         } else if (!mode_switching) {
+        } else if (grip_open_cmd) {
              parm_->armCmd.gripClose = false;
              parm_->armCmd.gripOpen = true;
-         } else {
-             // 模式切换期间冻结，清零标志防止残留
+        } else {
              parm_->armCmd.gripClose = false;
              parm_->armCmd.gripOpen = false;
          }
