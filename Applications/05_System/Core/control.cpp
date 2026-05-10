@@ -254,6 +254,17 @@ void CSystemCore::ControlFromKeyboard_() {
              &&keyboard_edge.key_G == CSystemRemote::ERemoteEdge::Rising) {
                 pchassis_->chassisInfo.crawler_on = !pchassis_->chassisInfo.crawler_on;
             }
+            /*车前进的方向转换为将yaw轴的方向--未测*/
+            // if((keyboard_edge.key_F == CSystemRemote::ERemoteEdge::Rising)){
+            //     float armYawDeg = parm_ ? parm_->armInfo.angle_Yaw : 0.f;
+            //     float_t cos = cosf(armYawDeg * 2.f * PI / 360.f);
+            //     float_t sin = sinf(armYawDeg * 2.f * PI / 360.f);
+            //     pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 1.0f * cos - static_cast<float_t>(keyboard.key_D - keyboard.key_A) * sin;
+            //     pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 1.0f * sin + static_cast<float_t>(keyboard.key_D - keyboard.key_A) * cos;
+            //     std::clamp(pchassis_->chassisCmd.speed_X, -20.0f, 20.0f);
+            //     pchassis_->chassisCmd.speed_Y =
+            //     std::clamp(pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
+            // }
     }
 
     /******************* 云台手动控制 *******************/
@@ -262,7 +273,7 @@ void CSystemCore::ControlFromKeyboard_() {
         if (!pgimbal_->gimbalCmd.isAutoCtrl) {
             if (keyboard.key_G) {
 
-                pgimbal_->gimbalCmd.set_visualyaw += ((keyboard.mouse_L - keyboard.mouse_R) / 100.f) * 100.f / freq;
+                pgimbal_->gimbalCmd.set_visualyaw += ((keyboard.mouse_L - keyboard.mouse_R) / 100.f) * 200.f / freq;
             }
         }
     }
@@ -548,6 +559,17 @@ void CSystemCore::ControlFromController_() {
         if(keyboard_edge.key_B == CSystemRemote::ERemoteEdge::Rising){
             robotdata.p3_lock = !robotdata.p3_lock;
         }
+        // if((keyboard_edge.key_Z == CSystemRemote::ERemoteEdge::Rising 
+        //     && keyboard_edge.key_Ctrl== CSystemRemote::ERemoteEdge::Rising 
+        //     //&& keyboard_edge.key_Shift== CSystemRemote::ERemoteEdge::Rising 
+        //     &&currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE)){
+        //     parm_->armCmd.resetEndPitch = true;
+        // }
+        // if((keyboard.key_Z
+        //     && keyboard.key_Ctrl
+        //     &&currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE)){
+        //     parm_->armCmd.resetEndPitch = true;
+        // }
 
     // 云台yaw
     if (pgimbal_) {
@@ -556,6 +578,28 @@ void CSystemCore::ControlFromController_() {
             pgimbal_->gimbalInfo.isIntoControll = true;
         }
         //pgimbal_->gimbalCmd.set_visualyaw += static_cast<float_t>(keyboard.mouse_Y - keyboard.mouse_X) * 1.0f / freq;
+    }
+
+    // 自定义控制器模式下的自动任务快捷键，但是注意在自定义控制器模式下如果进入了自动任务之后
+    if (parm_ && pchassis_) {
+        if (keyboard.key_Ctrl && !keyboard.key_Shift && parm_->armInfo.isModuleAvailable
+            && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE)
+        {
+            if(keyboard_edge.key_X == CSystemRemote::ERemoteEdge::Rising){
+                StartAutoCtrlTask_(EAutoCtrlProcess::STORE_ORE);
+            }
+            if(keyboard_edge.key_B == CSystemRemote::ERemoteEdge::Rising){
+                StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE);
+            }
+            if(keyboard_edge.key_R == CSystemRemote::ERemoteEdge::Rising){
+                StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);
+            }
+        }
+        // Ctrl + Z: 停止所有自动任务
+        if (keyboard.key_Ctrl && keyboard.key_Z
+            && currentAutoCtrlProcess_ != EAutoCtrlProcess::NONE) {
+            StopAutoCtrlTask_();
+        }
     }
 
 /*删除自定义控制器对应的兑矿操作

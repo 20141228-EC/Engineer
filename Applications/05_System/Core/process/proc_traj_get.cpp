@@ -26,7 +26,7 @@ namespace my_engineer {
 
         CAlgoTrajPlayback player;
         arm.armCmd.resetEndAll = true;
-        while(arm.comEnd_.initState_ ==  CModArm::CComEnd::EEndInitState::DONE){//如果没有初始化完成直接堵死在这里防止后续操作手手速过快
+        while(arm.comEnd_.initState_ !=  CModArm::CComEnd::EEndInitState::DONE){//如果没有初始化完成直接堵死在这里防止后续操作手手速过快
             proc_waitMs(1);
         }
         // 循环等待鼠标左键/右键选择轨迹

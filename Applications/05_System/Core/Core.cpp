@@ -260,10 +260,14 @@ void CSystemCore::UpdateHandler_() {
         if (parm_) {
             gripKeyboardCmd_ = parm_->armInfo.isGripped ? EGripKeyboardCmd::CLOSE : EGripKeyboardCmd::OPEN;
             parm_->armCmd.set_speed_grip = 0.0f;
-            parm_->armCmd.set_angle_end_roll = 0.f; //末端Roll回正
+            // 轨迹任务主动切回控制器模式时，保留末端Roll角度避免跳变
+            // if (!use_Controller_) {
+            //     parm_->armCmd.set_angle_end_roll = 0.f;
+            // }
+            parm_->armCmd.set_angle_end_roll = 0.f;
         }
-        // 图传强制回正
-        if (pgimbal_) {
+        // 轨迹任务切回控制器模式时，图传保留当前位置
+        if (pgimbal_ && !use_Controller_) {
             pgimbal_->gimbalCmd.set_visualyaw = GIMBAL_VISUAL_MOTOR_INIT_ANGLE;
         }
         gimbal_auto_ctrl = false;
@@ -399,6 +403,9 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
     if(!parm_->armInfo.isModuleAvailable){
         return APP_ERROR;
     }
+
+    // 因为现在的自定义控制器添加了自动任务，防止自定义控制器在任务启动前继续修改armCmd
+    if (parm_) parm_->armCmd.isAutoCtrl = true;
 
     switch (process)
     {
