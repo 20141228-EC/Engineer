@@ -330,6 +330,14 @@ EAppStatus CModChassis::CreateModuleTask_(){
     return APP_OK;
 }
 
+    // 限制最大变化值函数
+static float LimitDelta(float target, float current, float maxDelta)
+{
+    if (target > current + maxDelta) return current + maxDelta;
+    if (target < current - maxDelta) return current - maxDelta;
+    return target;
+}
+
 /**
  * @brief 限制底盘模块的控制命令大小
  * 
@@ -337,45 +345,44 @@ EAppStatus CModChassis::CreateModuleTask_(){
  */
 EAppStatus CModChassis::RestrictChassisCommand_() {
 
-    // 检查模块状态
     if (moduleStatus == APP_RESET) {
         chassisCmd = SChassisCmd();
         return APP_ERROR;
     }
 
-    // 平面速度圆限幅：避免斜向输入时合速度超过100%
-    const float planarMag = std::sqrt(chassisCmd.speed_X * chassisCmd.speed_X +
-                                          chassisCmd.speed_Y * chassisCmd.speed_Y);
+    if (chassisCmd.isAutoCtrl) return APP_OK;
+
+    // 保存原始输入
+    float targetX = chassisCmd.speed_X;
+    float targetY = chassisCmd.speed_Y;
+    float targetW = chassisCmd.speed_W;
+
+    // 平面速度圆限幅
+    float_t planarMag = std::sqrt(targetX * targetX + targetY * targetY);
+
     if (planarMag > 440.0f) {
         const float scale = 440.0f / planarMag;
-        chassisCmd.speed_X *= scale;
-        chassisCmd.speed_Y *= scale;
+        targetX *= scale;
+        targetY *= scale;
+        planarMag = 440.0f;
     }
 
-    // 急停的时候晚一点跟云台
-    static float lastPlanarMag = 0.0f;
-    static int brakeHoldCnt = 0;
+    // 速度斜坡限制
+    static float filteredX = 0.0f;
+    static float filteredY = 0.0f;
+    static float filteredW = 0.0f;
 
-    constexpr float BRAKE_SPEED_TH = 150.0f;  // 上一瞬间目标速度大于这个，认为之前速度很大
-    constexpr float STOP_SPEED_TH  = 40.0f;   // 当前目标速度小于这个，认为急停
-    constexpr int   BRAKE_HOLD_TICK = 200;     // 200ms缓冲
+    constexpr float MAX_DELTA_XY = 4.0f;    // 1ms下允许的平动速度最大变化值
+    constexpr float MAX_DELTA_W  = 8.0f;    // 1ms下允许的最大变化值
 
-    bool hardBrake = (lastPlanarMag > BRAKE_SPEED_TH &&
-                      planarMag < STOP_SPEED_TH);
+    filteredX = LimitDelta(targetX, filteredX, MAX_DELTA_XY);
+    filteredY = LimitDelta(targetY, filteredY, MAX_DELTA_XY);
+    filteredW = LimitDelta(targetW, filteredW, MAX_DELTA_W);
 
-    if (hardBrake) {
-        brakeHoldCnt = BRAKE_HOLD_TICK;
-    }
-
-    if (brakeHoldCnt > 0) {
-        chassisCmd.speed_W = 0.0f;
-        brakeHoldCnt--;
-    }
-
-    lastPlanarMag = planarMag;
-
-    // 自动控制启用，则不继续做限制
-    if (chassisCmd.isAutoCtrl) return APP_OK;
+    // 写回底盘指令
+    chassisCmd.speed_X = filteredX;
+    chassisCmd.speed_Y = filteredY;
+    chassisCmd.speed_W = filteredW;
 
     return APP_OK;
 }
