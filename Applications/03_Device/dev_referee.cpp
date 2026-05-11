@@ -149,17 +149,6 @@ EAppStatus CDevReferee::ResolveRxPackage_() {
 				break;
 			}
 
-			case ECommandID::ID_ROBOT_STATUS: {
-				if (i + sizeof(SRobotStatusPkg) > rxBuffer_.size())
-					break;
-				auto pkg = reinterpret_cast<SRobotStatusPkg *>(header);
-				if (CCrcValidator::Crc16Verify(reinterpret_cast<uint8_t *>(pkg), pkg->CRC16, sizeof(SRobotStatusPkg) - 2) != APP_OK)
-					break;
-				robotStatusPkg = *pkg;
-				i += sizeof(SRobotStatusPkg) - 1;
-				break;
-			}
-
 			case ECommandID::ID_ROBOT_PERF: {
 				if (i + sizeof(SRobotPerfPkg) > rxBuffer_.size())
 					break;
@@ -168,6 +157,17 @@ EAppStatus CDevReferee::ResolveRxPackage_() {
 					break;
 				robotPerfPkg = *pkg;
 				i += sizeof(SRobotPerfPkg) - 1;
+				break;
+			}
+
+			case ECommandID::ID_ROBOT_STATUS: {
+				if (i + sizeof(SRobotStatusPkg) > rxBuffer_.size())
+					break;
+				auto pkg = reinterpret_cast<SRobotStatusPkg *>(header);
+				if (CCrcValidator::Crc16Verify(reinterpret_cast<uint8_t *>(pkg), pkg->CRC16, sizeof(SRobotStatusPkg) - 2) != APP_OK)
+					break;
+				robotStatusPkg = *pkg;
+				i += sizeof(SRobotStatusPkg) - 1;
 				break;
 			}
 
