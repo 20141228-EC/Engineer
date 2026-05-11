@@ -103,8 +103,7 @@ void CSystemCore::UpdateHandler_() {
     
     if (ResetFlag)
     {
-        // RESET_SYSTEM();     // 上板判断跳变沿发来 每次按下只触发一次 因此这里不清除标志位
-        ResetFlag = false;  // 清位 防止反复触发
+        RESET_SYSTEM();     // 上板判断跳变沿发来 每次按下只触发一次 因此这里不清除标志位
     }
 
 }

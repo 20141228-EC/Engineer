@@ -352,27 +352,27 @@ EAppStatus CModChassis::RestrictChassisCommand_() {
         chassisCmd.speed_Y *= scale;
     }
 
-    // // 急停的时候晚一点跟云台
-    // static float lastPlanarMag = 0.0f;
-    // static int brakeHoldCnt = 0;
+    // 急停的时候晚一点跟云台
+    static float lastPlanarMag = 0.0f;
+    static int brakeHoldCnt = 0;
 
-    // constexpr float BRAKE_SPEED_TH = 150.0f;  // 上一瞬间目标速度大于这个，认为之前速度很大
-    // constexpr float STOP_SPEED_TH  = 40.0f;   // 当前目标速度小于这个，认为急停
-    // constexpr int   BRAKE_HOLD_TICK = 200;     // 200ms缓冲
+    constexpr float BRAKE_SPEED_TH = 150.0f;  // 上一瞬间目标速度大于这个，认为之前速度很大
+    constexpr float STOP_SPEED_TH  = 40.0f;   // 当前目标速度小于这个，认为急停
+    constexpr int   BRAKE_HOLD_TICK = 200;     // 200ms缓冲
 
-    // bool hardBrake = (lastPlanarMag > BRAKE_SPEED_TH &&
-    //                   planarMag < STOP_SPEED_TH);
+    bool hardBrake = (lastPlanarMag > BRAKE_SPEED_TH &&
+                      planarMag < STOP_SPEED_TH);
 
-    // if (hardBrake) {
-    //     brakeHoldCnt = BRAKE_HOLD_TICK;
-    // }
+    if (hardBrake) {
+        brakeHoldCnt = BRAKE_HOLD_TICK;
+    }
 
-    // if (brakeHoldCnt > 0) {
-    //     chassisCmd.speed_W = 0.0f;
-    //     brakeHoldCnt--;
-    // }
+    if (brakeHoldCnt > 0) {
+        chassisCmd.speed_W = 0.0f;
+        brakeHoldCnt--;
+    }
 
-    // lastPlanarMag = planarMag;
+    lastPlanarMag = planarMag;
 
     // 自动控制启用，则不继续做限制
     if (chassisCmd.isAutoCtrl) return APP_OK;
