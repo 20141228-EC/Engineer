@@ -266,8 +266,8 @@ void CSystemCore::UpdateHandler_() {
             // }
             parm_->armCmd.set_angle_end_roll = 0.f;
         }
-        // 轨迹任务切回控制器模式时，图传保留当前位置
-        if (pgimbal_ && !use_Controller_) {
+        // 图传强制回正
+        if (pgimbal_) {
             pgimbal_->gimbalCmd.set_visualyaw = GIMBAL_VISUAL_MOTOR_INIT_ANGLE;
         }
         gimbal_auto_ctrl = false;
@@ -403,9 +403,6 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
     if(!parm_->armInfo.isModuleAvailable){
         return APP_ERROR;
     }
-
-    // 因为现在的自定义控制器添加了自动任务，防止自定义控制器在任务启动前继续修改armCmd
-    if (parm_) parm_->armCmd.isAutoCtrl = true;
 
     switch (process)
     {

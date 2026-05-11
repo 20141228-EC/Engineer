@@ -813,75 +813,12 @@ void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
 
 	std::fill(&curModeTextMsg.message.text[0], &curModeTextMsg.message.text[29], 0);
   if (SystemCore.use_Controller_) {
-
-    // 自定义控制器模式下，同时显示任务状态
-    switch (SystemCore.currentAutoCtrlProcess_) {
-
-      case CSystemCore::EAutoCtrlProcess::NONE: {
-          curModeTextMsg.message.figureConfig.details_2 = 6;
-          curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
-          curModeTextMsg.message.figureConfig.posit_Y = 780;
-          strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CUSTOM");
-          break;
-        }
-
-      case CSystemCore::EAutoCtrlProcess::STORE_ORE: {
-          curModeTextMsg.message.figureConfig.details_2 = 13;
-          curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 6.5);
-          curModeTextMsg.message.figureConfig.posit_Y = 780;
-          if(SystemCore.storeEndRollPose_ == CSystemCore::EStoreEndRollPose::UP) {
-            strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CUSTOM STORE ^");
-          }
-          else {
-            strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CUSTOM STORE v");
-          }
-          break;
-        }
-
-      case CSystemCore::EAutoCtrlProcess::EXCHANGE_ORE: {
-          curModeTextMsg.message.figureConfig.details_2 = 14;
-          curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 7);
-          curModeTextMsg.message.figureConfig.posit_Y = 780;
-          strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CUSTOM EXCHANGE");
-          break;
-        }
-
-      // case CSystemCore::EAutoCtrlProcess::RETURN_ORIGIN: {
-      //     curModeTextMsg.message.figureConfig.details_2 = 13;
-      //     curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 6.5);
-      //     curModeTextMsg.message.figureConfig.posit_Y = 780;
-      //     strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CUSTOM ORIGIN");
-      //     break;
-      //   }
-
-      // case CSystemCore::EAutoCtrlProcess::CLIMBING: {
-      //     curModeTextMsg.message.figureConfig.details_2 = 15;
-      //     curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 7.5);
-      //     curModeTextMsg.message.figureConfig.posit_Y = 780;
-      //     strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CUSTOM CLIMBING");
-      //     break;
-      //   }
-
-      // case CSystemCore::EAutoCtrlProcess::DOWN_STAIR: {
-      //     curModeTextMsg.message.figureConfig.details_2 = 14;
-      //     curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 7);
-      //     curModeTextMsg.message.figureConfig.posit_Y = 780;
-      //     strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CUSTOM DOWNST");
-      //     break;
-      //   }
-
-      default: {
-          curModeTextMsg.message.figureConfig.details_2 = 6;
-          curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
-          curModeTextMsg.message.figureConfig.posit_Y = 780;
-          strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CUSTOM");
-          break;
-        }
-    }
-    curModeTextMsg.message.figureConfig.operate = 2;
-    curModeTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&curModeTextMsg), sizeof(curModeTextMsg) - 2);
-    pInterface_->Transmit(reinterpret_cast<uint8_t *>(&curModeTextMsg), sizeof(curModeTextMsg));
+    curModeTextMsg.message.figureConfig.details_2 = 6;
+    curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3);
+    curModeTextMsg.message.figureConfig.posit_Y = 780;
+    strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CUSTOM");
   }
+  else {
     switch (SystemCore.currentAutoCtrlProcess_) {
 
       case CSystemCore::EAutoCtrlProcess::NONE: {
@@ -953,6 +890,7 @@ void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
         break;
       }
     }
+  }
 
 	curModeTextMsg.message.figureConfig.operate = 2;
 	curModeTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&curModeTextMsg), sizeof(curModeTextMsg) - 2);
