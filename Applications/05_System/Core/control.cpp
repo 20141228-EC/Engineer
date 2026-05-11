@@ -580,27 +580,27 @@ void CSystemCore::ControlFromController_() {
         //pgimbal_->gimbalCmd.set_visualyaw += static_cast<float_t>(keyboard.mouse_Y - keyboard.mouse_X) * 1.0f / freq;
     }
 
-    // 自定义控制器模式下的自动任务快捷键，但是注意在自定义控制器模式下如果进入了自动任务之后
-    if (parm_ && pchassis_) {
-        if (keyboard.key_Ctrl && !keyboard.key_Shift && parm_->armInfo.isModuleAvailable
-            && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE)
-        {
-            if(keyboard_edge.key_X == CSystemRemote::ERemoteEdge::Rising){
-                StartAutoCtrlTask_(EAutoCtrlProcess::STORE_ORE);
-            }
-            if(keyboard_edge.key_B == CSystemRemote::ERemoteEdge::Rising){
-                StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE);
-            }
-            if(keyboard_edge.key_R == CSystemRemote::ERemoteEdge::Rising){
-                StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);
-            }
-        }
-        // Ctrl + Z: 停止所有自动任务
-        if (keyboard.key_Ctrl && keyboard.key_Z
-            && currentAutoCtrlProcess_ != EAutoCtrlProcess::NONE) {
-            StopAutoCtrlTask_();
-        }
-    }
+    // // 自定义控制器模式下的自动任务快捷键，但是注意在自定义控制器模式下如果进入了自动任务之后
+    // if (parm_ && pchassis_) {
+    //     if (keyboard.key_Ctrl && !keyboard.key_Shift && parm_->armInfo.isModuleAvailable
+    //         && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE)
+    //     {
+    //         if(keyboard_edge.key_X == CSystemRemote::ERemoteEdge::Rising){
+    //             StartAutoCtrlTask_(EAutoCtrlProcess::STORE_ORE);
+    //         }
+    //         if(keyboard_edge.key_B == CSystemRemote::ERemoteEdge::Rising){
+    //             StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE);
+    //         }
+    //         if(keyboard_edge.key_R == CSystemRemote::ERemoteEdge::Rising){
+    //             StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);
+    //         }
+    //     }
+    //     // Ctrl + Z: 停止所有自动任务
+    //     if (keyboard.key_Ctrl && keyboard.key_Z
+    //         && currentAutoCtrlProcess_ != EAutoCtrlProcess::NONE) {
+    //         StopAutoCtrlTask_();
+    //     }
+    // }
 
 /*删除自定义控制器对应的兑矿操作
     if (psubgantry_) {
