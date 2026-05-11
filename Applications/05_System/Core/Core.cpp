@@ -85,11 +85,25 @@ void CSystemCore::UpdateHandler_() {
     // 检查遥控器系统状态
     if (SysBoardLink.ctrlInfos.remote_is_online == APP_ERROR) return;
 
+            // 左下右上键盘控制
+        if (SysRemote.remoteInfo.remote.switch_L == 2
+        && SysRemote.remoteInfo.remote.switch_R == 1)
+        {
+            ControlFromKeyboard_();
+            ctrlmode_ = ECtrlMode::KEY_CTRL; ///< 键鼠控制
+        }
+        else ///< 其他情况均为遥控器控制
+        {
+            ControlFromRemote_();
+            ctrlmode_ = ECtrlMode::RC_CTRL; ///< 遥控器控制
+        }
+        
+
     ResetFlag = SysBoardLink.otherInfo.ResetFlag;   // 此处获取上板发来的复位指令
     
     if (ResetFlag)
     {
-        RESET_SYSTEM();     // 上板判断跳变沿发来 每次按下只触发一次 因此这里不清除标志位
+        // RESET_SYSTEM();     // 上板判断跳变沿发来 每次按下只触发一次 因此这里不清除标志位
         ResetFlag = false;  // 清位 防止反复触发
     }
 
