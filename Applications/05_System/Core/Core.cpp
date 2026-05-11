@@ -509,7 +509,8 @@ void CSystemCore::Chassis_UpdateHandler_(){
         float_t right = chassisCmd.speed_x;
         float_t cycle = chassisCmd.speed_w;
 
-        float_t yaw_angle = (pgimbal_->gimbalInfo.encoder_yaw / 32768.f * PI);     // 归一到-pi~pi之间，同时融合臂的yaw
+        float_t yaw_angle = (fabs(pgimbal_->gimbalInfo.encoder_yaw / 32768.f * PI)) > 0.157 ? (pgimbal_->gimbalInfo.encoder_yaw / 32768.f * PI) : 0.f;     // 归一到-pi~pi之间，同时融合臂的yaw
+        // 在只有5°误差的时候不给角速度
 
         DataBuffer<float_t> target = {0.0f};          // 目标误差为0
         DataBuffer<float_t> measure = {yaw_angle};    // 测量值为云台角度
