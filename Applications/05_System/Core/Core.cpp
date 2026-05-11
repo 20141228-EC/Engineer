@@ -502,37 +502,38 @@ void CSystemCore::Chassis_UpdateHandler_(){
 
     static uint16_t timeout = 5000;     // 等五秒
 
-    // if(pgimbal_->gimbalInfo.isModuleAvailable || (!timeout) ){     // 云台到位或超时就正常控底盘
+    if(pgimbal_->gimbalInfo.isModuleAvailable || (!timeout) ){     // 云台到位或超时就正常控底盘
 
-    //     timeout = 5000;     // 重装填超时值
+        timeout = 5000;     // 重装填超时值
 
-    //     float_t front = chassisCmd.speed_y;
-    //     float_t right = chassisCmd.speed_x;
-    //     float_t cycle = chassisCmd.speed_w;
+        float_t front = chassisCmd.speed_y;
+        float_t right = chassisCmd.speed_x;
+        float_t cycle = chassisCmd.speed_w;
 
-    //     float_t yaw_angle = (fabs(pgimbal_->gimbalInfo.encoder_yaw / 32768.f * PI)) > 0.157 ? (pgimbal_->gimbalInfo.encoder_yaw / 32768.f * PI) : 0.f;     // 归一到-pi~pi之间，同时融合臂的yaw
-    //     // 在只有5°误差的时候不给角速度
+        // float_t yaw_angle = (fabs(pgimbal_->gimbalInfo.encoder_yaw / 32768.f * PI)) > 0.157 ? (pgimbal_->gimbalInfo.encoder_yaw / 32768.f * PI) : 0.f;     // 归一到-pi~pi之间，同时融合臂的yaw
+        // // 在只有5°误差的时候不给角速度
+        float_t yaw_angle = pgimbal_->gimbalInfo.encoder_yaw / 32768.f * PI;
 
-    //     DataBuffer<float_t> target = {0.0f};          // 目标误差为0
-    //     DataBuffer<float_t> measure = {yaw_angle};    // 测量值为云台角度
-    //     float follow_output = PidFollowYaw.UpdatePidController(target, measure)[0];
+        DataBuffer<float_t> target = {0.0f};          // 目标误差为0
+        DataBuffer<float_t> measure = {yaw_angle};    // 测量值为云台角度
+        float follow_output = PidFollowYaw.UpdatePidController(target, measure)[0];
 
-    //     if(chassisCmd.is_spin_on){
-    //         cycle = 200.f;     // 小陀螺
-    //     }
-    //     else{
-    //         cycle = yaw_angle * 800.f;    // 50是magic number,后续需要调整
-    //     }   // 开小陀螺与否
-    //     chassisCmd_.speed_y_ = (front * cos(yaw_angle) - right * sin(yaw_angle));
-    //     chassisCmd_.speed_x_ = (right * cos(yaw_angle) + front * sin(yaw_angle));// 根据云台角度计算底盘运动正方向
-    //     chassisCmd_.speed_w_ = cycle;
-    // }
-    // else if(timeout && !(pgimbal_->gimbalInfo.isModuleAvailable)){         // 云台没到位且没超时      
+        if(chassisCmd.is_spin_on){
+            cycle = 200.f;     // 小陀螺
+        }
+        else{
+            cycle = yaw_angle * 800.f;    // 50是magic number,后续需要调整
+        }   // 开小陀螺与否
+        chassisCmd_.speed_y_ = (front * cos(yaw_angle) - right * sin(yaw_angle));
+        chassisCmd_.speed_x_ = (right * cos(yaw_angle) + front * sin(yaw_angle));// 根据云台角度计算底盘运动正方向
+        chassisCmd_.speed_w_ = cycle;
+    }
+    else if(timeout && !(pgimbal_->gimbalInfo.isModuleAvailable)){         // 云台没到位且没超时      
         timeout --;     // 没到位就一直等
         chassisCmd_.speed_x_ = 0;
         chassisCmd_.speed_y_ = 0;
         chassisCmd_.speed_w_ = 0; // 云台没初始化或没超时底盘不给动
-    // }
+    }
 
 }
 
