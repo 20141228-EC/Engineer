@@ -520,12 +520,6 @@ void CSystemCore::Chassis_UpdateHandler_(){
             cycle = 200.f;     // 小陀螺
         }
         else{
-            if(yaw_angle > (PI / 2.f)){
-                yaw_angle -= PI;
-            }
-            if(yaw_angle < (-PI / 2.f)){
-                yaw_angle += PI;
-            }   // 就近归位
             cycle = yaw_angle * 800.f;    // 50是magic number,后续需要调整
         }   // 开小陀螺与否
         chassisCmd_.speed_y_ = (front * cos(yaw_angle) - right * sin(yaw_angle));
