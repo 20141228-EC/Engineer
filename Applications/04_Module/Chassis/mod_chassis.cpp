@@ -174,32 +174,32 @@ void CModChassis::AllocDynamicPower(const CComWheelset& wheelset,
 
     // 2. 总功率限制
     constexpr float kTotalPower = 115.f;    // 总功率上限
-    constexpr float kMinBufferLimit = 40.f; // 缓冲低于该值主动限制
+    constexpr float kMinBufferLimit = 20.f; // 缓冲低于该值主动限制
 
-    // 默认输出等于需求
+    // 3. 默认输出等于需求
     for(int i=0;i<4;i++){
         targetWheelPower[i] = wheelDemand[i];
         targetSteerPower[i] = steerDemand[i];
     }
 
-    // 获取实时缓冲能量
+    // 4. 获取实时缓冲能量
     float buffer = SysReferee.refereeInfo.energy.buffer_energy;
 
-    // 判断是否需要主动削减功率
+    // 5. 判断是否需要主动削减功率
     bool activeLimit = (totalDemand > kTotalPower) || (buffer < kMinBufferLimit);
 
     if(activeLimit){
-
-        // 舵向优先
-        float steerScale = (totalWheelDemand > 1e-6f) ? std::max(0.0f, (kTotalPower - totalSteerDemand) / totalWheelDemand) : 0.0f;
-        for(int i=0;i<4;i++) targetWheelPower[i] *= steerScale;
-
-        // 轮向按剩余功率比例缩放
-        float wheelTotal = wheelDemand[0]+wheelDemand[1]+wheelDemand[2]+wheelDemand[3];
-        float availablewheelPower = kTotalPower - (targetWheelPower[0]+targetWheelPower[1]+targetWheelPower[2]+targetWheelPower[3]);
-        float wheelScale = (wheelTotal > 1e-6f) ? std::max(0.0f, availablewheelPower / wheelTotal) : 0.0f;
+        // 轮向优先
+        float wheelScale = (totalWheelDemand > 1e-6f) ? std::max(0.0f, (kTotalPower - totalSteerDemand) / totalWheelDemand) : 0.0f;
         for(int i=0;i<4;i++) targetWheelPower[i] *= wheelScale;
+
+        // 舵向按剩余功率比例缩放
+        float steerTotal = steerDemand[0]+steerDemand[1]+steerDemand[2]+steerDemand[3];
+        float availableSteerPower = kTotalPower - (targetWheelPower[0]+targetWheelPower[1]+targetWheelPower[2]+targetWheelPower[3]);
+        float steerScale = (steerTotal > 1e-6f) ? std::max(0.0f, availableSteerPower / steerTotal) : 0.0f;
+        for(int i=0;i<4;i++) targetSteerPower[i] *= steerScale;
     }
+
     // 不再在本地修改缓冲能量，裁判系统会更新
 }
 
