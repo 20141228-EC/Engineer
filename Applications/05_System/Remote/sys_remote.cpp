@@ -84,12 +84,17 @@ EAppStatus CSystemRemote::UpdateRemote_() {
     if (!pRemoteDev_) return APP_ERROR;
 
     /* 软件复位 */
-    // 复位顺序：右边在中间，然后左边在下面，最后右边在下面
-    if (remoteInfo.remote.switch_R == 3
-        && pRemoteDev_->remoteData[CRcDR16::CH_SW1].chValue == 2
+    // 复位判定：左拨杆在最下面的时候，右边拨杆从中间跳变到下面的时候触发
+    static uint8_t last_switch_R = 0;
+    if (pRemoteDev_->remoteData[CRcDR16::CH_SW1].chValue == 2
+        && last_switch_R == 3
         && pRemoteDev_->remoteData[CRcDR16::CH_SW2].chValue == 2) {
         ResetFlag = true;
     }
+    else{
+        ResetFlag = false;
+    }
+    last_switch_R = pRemoteDev_->remoteData[CRcDR16::CH_SW2].chValue;
 
     remoteInfo.remote.joystick_RX = pRemoteDev_->remoteData[CRcDR16::CH_0].chValue / 6.6f;
     remoteInfo.remote.joystick_RY = pRemoteDev_->remoteData[CRcDR16::CH_1].chValue / 6.6f;
@@ -116,9 +121,9 @@ EAppStatus CSystemRemote::UpdateKeyboard_() {
     if (!pRemoteDev_) return APP_ERROR;
 
     /* 软件复位 */
-    if (pRemoteDev_->remoteData[CRcDR16::CH_KEY_CTRL] == 1
-        && pRemoteDev_->remoteData[CRcDR16::CH_KEY_SHIFT].chValue == 1
-        && pRemoteDev_->remoteData[CRcDR16::CH_KEY_R].chValue == 1) {
+    if (pRemoteDev_->remoteData[CRcDR16::CH_KEY_CTRL].chEdge == ERcChannelEdge::Rising
+        && pRemoteDev_->remoteData[CRcDR16::CH_KEY_SHIFT].chEdge == ERcChannelEdge::Rising
+        && pRemoteDev_->remoteData[CRcDR16::CH_KEY_R].chEdge == ERcChannelEdge::Rising) {
         ResetFlag = true;
     }
 

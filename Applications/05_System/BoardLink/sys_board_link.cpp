@@ -149,6 +149,7 @@ EAppStatus CSystemBoardLink::UpdateCtrlInfos_() {
     pBoardLinkDev_->otherInfo_.is_spin_on = otherInfos.is_spin_on;
     pBoardLinkDev_->otherInfo_.autoTask = otherInfos.autoTask;
     pBoardLinkDev_->otherInfo_.use_controller = otherInfos.use_controller;
+    pBoardLinkDev_->otherInfo_.ResetFlag = otherInfos.ResetFlag;
 
     return APP_OK;
 }
