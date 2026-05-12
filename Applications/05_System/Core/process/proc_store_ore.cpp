@@ -52,8 +52,10 @@ void CSystemCore::StartStoreOreTask(void *arg) {
             phase1_is_arrived = true;
             break;                                      ///< 进入下一个step
         }
-        else if(keyboard.mouse_R && phase1_is_arrived && !phase2_is_arrived){   ///< 按右键进入右存矿任务
-            // core.parm_->
+        else if(keyboard.mouse_L && phase1_is_arrived && !phase2_is_arrived){   ///< 按右键进入右存矿任务
+            while(core.parm_->armCmd.set_angle_Pitch1 < STORE_ORE_PITCH1_ANGLE_PHASE2){
+                core.parm_->armCmd.set_angle_Pitch1 += 20.f / 1000.f;
+            }
         }
 
         proc_waitMs(5);

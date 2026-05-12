@@ -216,18 +216,36 @@ void CSystemCore::ControlFromKeyboard_() {
 
 
     // 小陀螺  (G键)
-        if (keyboard.key_G
-            && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
+
+        if(SysRemote.pRemoteDev_->remoteData[CRcDR16::CH_KEY_G].chEdge == ERcChannelEdge::Rising
+        && !(keyboard.key_Ctrl)){
             chassisCmd.is_spin_on = !chassisCmd.is_spin_on;
         }
 
-        if(SysRemote.pRemoteDev_->remoteData[CRcDR16::CH_KEY_G].chEdge == ERcChannelEdge::Falling){
-            chassisCmd.is_spin_on = !chassisCmd.is_spin_on;
+        // b键进出
+        if(SysRemote.pRemoteDev_->remoteData[CRcDR16::CH_KEY_B].chEdge == ERcChannelEdge::Rising
+        && !(keyboard.key_Ctrl)){
+            mec_mode = !mec_mode;
         }
 
-    /******************* 云台手动控制 *******************/
-    if (pgimbal_) {
-                pgimbal_->gimbalCmd.set_posit_yaw -= static_cast<float_t>(keyboard.mouse_X - keyboard.mouse_Y) * 1.0f / freq;
+    /******************* 陀螺仪模式云台手动控制 *******************/
+    if (pgimbal_ && !mec_mode) {
+        pgimbal_->gimbalCmd.set_posit_yaw -= static_cast<float_t>(keyboard.mouse_X) * 1.0f / freq;
+        // 在陀螺仪模式下同步更新编码器目标值，防止切回机械模式时跳变
+        pgimbal_->gimbalCmd.set_encoder_yaw = pgimbal_->gimbalInfo.encoder_yaw;
+    }
+    
+    // 机械模式手动控角速度，v+左右键控云台当前编码器值
+    if(mec_mode){
+        chassisCmd.speed_w = chassisCmd.speed_w +
+            0.1f*(keyboard.mouse_X - chassisCmd.speed_w);
+        if (pgimbal_) {
+            if (keyboard.key_V) {
+                pgimbal_->gimbalCmd.set_encoder_yaw += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 60.0f / freq;
+            }
+            // 在机械模式下同步更新陀螺仪目标值，防止切回陀螺仪模式时跳变
+            pgimbal_->gimbalCmd.set_posit_yaw = pgimbal_->gimbalInfo.posit_yaw;
+        }
     }
 
     /******************* 机械臂手动控制 *******************/
