@@ -72,8 +72,8 @@
 
 /*-------------------------------------初始化数据--------------------------------------------------------*/
 #define ARM_YAW_INIT_ANGLE 0.0f
-#define ARM_PITCH1_INIT_ANGLE 6.f
-#define ARM_PITCH2_INIT_ANGLE 20.f
+#define ARM_PITCH1_INIT_ANGLE 11.f
+#define ARM_PITCH2_INIT_ANGLE 14.f
 #define ARM_ROLL_INIT_ANGLE 0.0f
 #define ARM_END_PITCH_INIT_ANGLE 0.0f
 #define ARM_END_ROLL_INIT_ANGLE 0.0f
