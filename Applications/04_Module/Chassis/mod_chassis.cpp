@@ -138,16 +138,16 @@ float CModChassis::CalcTotalDemandPower(const CComWheelset& wheelset, float whee
 
     steerDemand[CComWheelset::LF] = std::max(0.0f, powerCtrlSteerLF_.CalcMotorPower(
         static_cast<float>(wheelset.steerMotor[CComWheelset::LF]->motorData[CDevMtr::DATA_SPEED]),
-        static_cast<float>(wheelset.mtrSteerOutputBuffer[CComWheelset::LF])) * 3.f);
+        static_cast<float>(wheelset.mtrSteerOutputBuffer[CComWheelset::LF])) * 2.75f);
     steerDemand[CComWheelset::RF] = std::max(0.0f, powerCtrlSteerRF_.CalcMotorPower(
         static_cast<float>(wheelset.steerMotor[CComWheelset::RF]->motorData[CDevMtr::DATA_SPEED]),
-        static_cast<float>(wheelset.mtrSteerOutputBuffer[CComWheelset::RF])) * 3.f);
+        static_cast<float>(wheelset.mtrSteerOutputBuffer[CComWheelset::RF])) * 2.75f);
     steerDemand[CComWheelset::LB] = std::max(0.0f, powerCtrlSteerLB_.CalcMotorPower(
         static_cast<float>(wheelset.steerMotor[CComWheelset::LB]->motorData[CDevMtr::DATA_SPEED]),
-        static_cast<float>(wheelset.mtrSteerOutputBuffer[CComWheelset::LB])) * 3.f);
+        static_cast<float>(wheelset.mtrSteerOutputBuffer[CComWheelset::LB])) * 2.75f);
     steerDemand[CComWheelset::RB] = std::max(0.0f, powerCtrlSteerRB_.CalcMotorPower(
         static_cast<float>(wheelset.steerMotor[CComWheelset::RB]->motorData[CDevMtr::DATA_SPEED]),
-        static_cast<float>(wheelset.mtrSteerOutputBuffer[CComWheelset::RB])) * 3.f);
+        static_cast<float>(wheelset.mtrSteerOutputBuffer[CComWheelset::RB])) * 2.75f);
         // 舵电机预测乘原始3倍
 
     for (int i = 0; i < 4; i++) {
