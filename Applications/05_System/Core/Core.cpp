@@ -304,6 +304,11 @@ void CSystemCore::UpdateHandler_() {
     }
     else
     {
+
+        // 拨轮向下拨进出机械模式（还得加键鼠的）
+        if(SysRemote.pRemoteDev_->remoteData[CRcDR16::CH_TW].chEdge == ERcChannelEdge::Rising){
+            mec_mode = !mec_mode;
+        }
         // 左下右上键盘控制
         if (SysRemote.remoteInfo.remote.switch_L == 2
         && SysRemote.remoteInfo.remote.switch_R == 1)
@@ -318,6 +323,10 @@ void CSystemCore::UpdateHandler_() {
         }
     }
 
+    if(pgimbal_){
+        pgimbal_->gimbalCmd.mec_mode = mec_mode;
+    }
+    
     Chassis_UpdateHandler_();
     BoardLink_Info_Update_(); ///< 更新板间通信数据包
     
@@ -352,6 +361,7 @@ void CSystemCore::HeartbeatHandler_() {
         // if (psubgantry_) psubgantry_->StopModule(); // 已删除
         if (parm_) parm_->StopModule();
         chassisCmd = SChassisCmd();
+        mec_mode = false;   // 开控默认陀螺仪模式
         
     }
 
@@ -527,7 +537,12 @@ void CSystemCore::Chassis_UpdateHandler_(){
         }   // 开小陀螺与否
         chassisCmd_.speed_y_ = (front * cos(yaw_angle) - right * sin(yaw_angle));
         chassisCmd_.speed_x_ = (right * cos(yaw_angle) + front * sin(yaw_angle));// 根据云台角度计算底盘运动正方向
-        chassisCmd_.speed_w_ = cycle;
+        if(mec_mode){
+            chassisCmd_.speed_w_ = chassisCmd.speed_w;
+        }
+        else{
+            chassisCmd_.speed_w_ = cycle;
+        }
     }
     else if(timeout && !(pgimbal_->gimbalInfo.isModuleAvailable)){         // 云台没到位且没超时      
         timeout --;     // 没到位就一直等

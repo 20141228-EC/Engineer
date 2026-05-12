@@ -103,8 +103,8 @@ void CSystemCore::ControlFromRemote_() {
         parm_->should_limit_yaw = 0;
     }
 
-    // LOW + MID 底盘控制
-    if (remote.switch_L == LOW && remote.switch_R == MID) {
+    // LOW + MID 陀螺仪模式
+    if (remote.switch_L == LOW && remote.switch_R == MID && !mec_mode) {
         SysRemote.SetRemoteDeadZone(10.f);
             chassisCmd.speed_x = remote.joystick_LX / 2 * 660 / 100;    // 归一到±100之间
             chassisCmd.speed_y = remote.joystick_LY * 660 / 100;
@@ -112,16 +112,29 @@ void CSystemCore::ControlFromRemote_() {
         if(pgimbal_){
             pgimbal_->gimbalCmd.set_posit_yaw -= 
                 (remote.joystick_RX / 100.f) * 90.f / freq;
+
+            pgimbal_->gimbalCmd.set_encoder_yaw = pgimbal_->gimbalInfo.encoder_yaw; // 在陀螺仪角度下更新编码器目标值
         }
 
         if(SysRemote.pRemoteDev_->remoteData[CRcDR16::CH_TW].chEdge == ERcChannelEdge::Falling){
             chassisCmd.is_spin_on = !chassisCmd.is_spin_on;
         }
-        
+    }
+
+    // 机械模式
+    if (remote.switch_L == LOW && remote.switch_R == MID && mec_mode){
+        SysRemote.SetRemoteDeadZone(10.f);
+            chassisCmd.speed_x = remote.joystick_LX / 2 * 660 / 100;    // 归一到±100之间
+            chassisCmd.speed_y = remote.joystick_LY * 660 / 100;
+            chassisCmd.speed_w = remote.joystick_RX * 660 / 100;
+            
+        if(pgimbal_){
+            pgimbal_->gimbalCmd.set_posit_yaw = pgimbal_->gimbalInfo.posit_yaw; // 在机械模式下更新陀螺仪目标值，防止切回时出现跳变
+        }
     }
 
     // MID + HIG 臂前关节四轴 + 夹爪
-    else if (remote.switch_L == MID && remote.switch_R == HIG) {
+    if (remote.switch_L == MID && remote.switch_R == HIG) {
         SysRemote.SetRemoteDeadZone(10.f);
         if (parm_) {
             if(!parm_->armCmd.isAutoCtrl){
@@ -140,7 +153,7 @@ void CSystemCore::ControlFromRemote_() {
     }
 
     // MID + MID 关节后三轴
-    else if (remote.switch_L == MID && remote.switch_R == MID) {
+    if (remote.switch_L == MID && remote.switch_R == MID) {
         SysRemote.SetRemoteDeadZone(10.f);
         if(parm_){
             parm_->armCmd.set_angle_Roll +=
@@ -152,15 +165,11 @@ void CSystemCore::ControlFromRemote_() {
         }
     }
 
-    else{   // 未定义模式直接锁底盘
-            chassisCmd.speed_x = 0.f;
-            chassisCmd.speed_y = 0.f;
-            chassisCmd.speed_w = 0.f;
-    }
-
-    if(remote.thumbWheel < -50){
-        test++;
-    }
+    // else{   // 未定义模式直接锁底盘
+    //         chassisCmd.speed_x = 0.f;
+    //         chassisCmd.speed_y = 0.f;
+    //         chassisCmd.speed_w = 0.f;
+    // }
 }
 
 /**

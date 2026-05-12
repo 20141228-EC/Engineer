@@ -119,8 +119,14 @@ EAppStatus CModGimbal::CComYaw::UpdateComponent() {
 		}
 
 		case FSM_CTRL: {
-			_UpdateOutput_Gyro(yawCmd.setPosit);
-			// mtrOutputBuffer = 0; // 取消这行注释以排查旧值残留
+			// 陀螺仪模式
+			if(!yawCmd.mec_mode){
+				_UpdateOutput_Gyro(yawCmd.setPosit);
+			}
+			// 机械模式
+			else{
+				_UpdateOutput_Mec(yawCmd.setEncoder);
+			}
 			return APP_OK;
 		}
 
@@ -167,8 +173,10 @@ EAppStatus CModGimbal::CComYaw::_UpdateOutput_Gyro(float_t posit){
  */
 EAppStatus CModGimbal::CComYaw::_UpdateOutput_Mec(float_t encoder){
 
-	DataBuffer<float_t> encoder_measure = {static_cast<float_t>(yawInfo.encoder)};	// 测量值
-	DataBuffer<float_t> encoder_target = {encoder};	// 目标值
+	float_t err = HalfCycle(encoder - static_cast<float_t>(yawInfo.encoder), 65536.0f); // 编码器环必须做过零处理
+	
+	DataBuffer<float_t> encoder_target = {err};	// 目标值
+	DataBuffer<float_t> encoder_measure = {0.0f};	// 测量值
 
 	auto spd_Yaw = pidPosCtrl_Mec.UpdatePidController(encoder_target, encoder_measure);
 

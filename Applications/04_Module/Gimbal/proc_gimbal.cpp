@@ -61,6 +61,8 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 				gimbal.RestrictGimbalCommand_();
 
 				// 将控制量转换为电机控制量
+				gimbal.comYaw_.yawCmd.mec_mode = gimbal.gimbalCmd.mec_mode;
+				gimbal.comYaw_.yawCmd.setEncoder = gimbal.gimbalCmd.set_encoder_yaw;
 				gimbal.comYaw_.yawCmd.setPosit = gimbal.gimbalCmd.set_posit_yaw;
 
 				proc_waitMs(1);

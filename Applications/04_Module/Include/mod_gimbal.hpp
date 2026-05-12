@@ -107,6 +107,7 @@ public:
 	// 云台控制命令
 	struct SGimbalCmd{
 		EVarStatus isAutoCtrl = false;
+		EVarStatus mec_mode = false;	// 是否为机械模式
 		float_t set_posit_yaw = 0.f;	// 角度目标值
 		int32_t set_encoder_yaw = 0.f;	// 编码器目标值
 		// float_t set_posit_lift = 0.0f;	// 抬升目标值
@@ -137,6 +138,7 @@ private:
 		} yawInfo;
 
 		struct SYawCmd{
+			EVarStatus mec_mode = false;	// 是否使用机械模式
 			float_t setPosit = 0;	// 陀螺仪目标角度
 			int16_t setEncoder = 0;	// 编码器目标值
 		} yawCmd;

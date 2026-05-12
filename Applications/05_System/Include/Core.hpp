@@ -151,6 +151,9 @@ private:
         float_t speed_w_ = 0;
     }chassisCmd_;
 
+    // 是否使用机械模式
+    EVarStatus mec_mode = false;
+
     // 底盘跟云台pid初始化参数
     CAlgoPid::SAlgoInitParam_Pid FollowYawPidParam;
     
