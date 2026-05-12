@@ -77,7 +77,7 @@ EAppStatus CModGimbal::CComYaw::UpdateComponent() {
 	// 更新组件信息
 	static float_t Init_Encoder_Posit_MACH = 0.f;
 
-	yawInfo.posit = filter->Imu_Ave_Info.imu_ave_yaw;	// 由于陀螺仪Z轴与电机编码器增加的方向是相反的，位置反馈需加负号
+	yawInfo.posit = filter->Imu_Ave_Info.imu_ave_yaw - Init_Encoder_Posit_MACH;	// 由于陀螺仪Z轴与电机编码器增加的方向是相反的，位置反馈需加负号
 	yawInfo.encoder = HalfCycle(motor->motorData[CDevMtr::DATA_ANGLE] - GINBAL_FRONT_MOTOR_ANGLE, static_cast<int32_t>(65535));	// 将encoder归一化在朝前为0
 	yawInfo.isPositArrived = (fabs(yawInfo.posit - yawCmd.setPosit) < 1.5f);
 
@@ -103,7 +103,7 @@ EAppStatus CModGimbal::CComYaw::UpdateComponent() {
 			pidPosCtrl_Mec.ResetPidController();
 			pidSpdCtrl_Mec.ResetPidController();
 
-			// Init_Encoder_Posit_MACH = filter->Imu_Ave_Info.imu_ave_yaw;	///< 初始化完成记录当前yaw角度
+			Init_Encoder_Posit_MACH = filter->Imu_Ave_Info.imu_ave_yaw;	///< 初始化完成记录当前yaw角度
 
 			yawCmd.setPosit = 0.0f;
 
