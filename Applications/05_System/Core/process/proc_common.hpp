@@ -94,10 +94,12 @@ namespace my_engineer{
                      float_t minTimeS = 0.0f);
 
     //完整的封装
+    // earlyGrip: true = 在关节运动一开始就切换夹爪，false = 关节到位后才切换
     bool PlayFrameSegment(CModArm &arm, const float_t traj[][FC_COUNT], int seg,
                           CAlgoTrajPlayback &player, bool checkctrl,
                           float_t endRollOffset = 0.0f,
-                          const float_t *prevTarget = nullptr);
+                          const float_t *prevTarget = nullptr,
+                          bool earlyGrip = false);
 }
 
 #endif // PROC_TRAJ_COMMON_HPP

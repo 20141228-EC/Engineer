@@ -38,7 +38,7 @@ EAppStatus InitAllModule() {
     // 初始化 YawPosPidParam 的成员
    armInitParam.YawPosPidParam.kp = 2.5f;
    armInitParam.YawPosPidParam.ki = 0.1f;
-   armInitParam.YawPosPidParam.kd = 0.0f;
+   armInitParam.YawPosPidParam.kd = 20.f;
    armInitParam.YawPosPidParam.maxIntegral = 3000.0f;
    armInitParam.YawPosPidParam.maxOutput = 5000.0f;
    // 初始化 YawSpdPidParam 的成员
@@ -108,7 +108,7 @@ EAppStatus InitAllModule() {
     armInitParam.GripSpdPidParam.ki = 1.4f;
     armInitParam.GripSpdPidParam.kd = 0.0f;
     armInitParam.GripSpdPidParam.maxIntegral = 3000.0f;
-    armInitParam.GripSpdPidParam.maxOutput = 5500.0f;
+    armInitParam.GripSpdPidParam.maxOutput = 4600.0f;
     armInitParam.GripInitParam.initSpeedMax_     = 6000.0f;   ///< 初始化最大速度
     armInitParam.GripInitParam.initSpeedMin_     = 1500.0f;   ///< 保底最低速度
     armInitParam.GripInitParam.initTorqueThresh_ = 1200.0f;   ///< 力矩开始减速的阈值

@@ -73,11 +73,11 @@ namespace my_engineer {
 
             /*step 2 :逐段播放轨迹*/
             for(int seg = 1; seg < Traj.frameCount; seg++){
+                // 读实际关节位置覆盖 lastTarget，清除上一段的累积跟踪误差
+                ReadArmjoint(arm, lastTarget);
+                // earlyGrip=true: 夹爪切换与关节运动重叠，省去到位后单独等夹爪的时间
                 if(!PlayFrameSegment(arm, Traj.frame, seg, player, true, 0.0f, lastTarget)) goto proc_exit;
                 Extrarow(Traj.frame, seg, lastTarget);
-            //     if(Traj.frame[seg][FC_GRIP] == 1){
-            //        proc_waitMs(0);
-            //    }
             }
         }
 

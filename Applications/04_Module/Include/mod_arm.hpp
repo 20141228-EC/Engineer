@@ -16,9 +16,9 @@
 #define ARM_YAW_PHYSICAL_RANGE_MIN -115.3f
 #define ARM_YAW_PHYSICAL_RANGE_MAX 222.7f
 #define ARM_PITCH1_PHYSICAL_RANGE_MIN 0.0f
-#define ARM_PITCH1_PHYSICAL_RANGE_MAX 96.f
+#define ARM_PITCH1_PHYSICAL_RANGE_MAX 105.f
 #define ARM_PITCH2_PHYSICAL_RANGE_MIN 1.f
-#define ARM_PITCH2_PHYSICAL_RANGE_MAX 120.f
+#define ARM_PITCH2_PHYSICAL_RANGE_MAX 148.f
 #define ARM_PITCH3_PHYSICAL_RANGE_MIN -76.f
 #define ARM_PITCH3_PHYSICAL_RANGE_MAX 0.f
 #define ARM_ROLL_PHYSICAL_RANGE_MIN -3.0f
@@ -34,7 +34,7 @@
 /*-------------------------------------电机限位----------------------------------------------------*/
 //原始限位编码器器范围
 #define ARM_YAW_MOTOR_RANGE 61551
-#define ARM_PITCH1_MOTOR_RANGE 17098
+#define ARM_PITCH1_MOTOR_RANGE 19375//52997-33622
 #define ARM_PITCH2_MOTOR_RANGE 65535
 #define ARM_END_PITCH_MOTOR_RANGE 325993
 #define ARM_END_GRIP_MOTOR_RANGE 1870274     ///(8192*22+10240+11000)
@@ -91,7 +91,7 @@
 #define POSIT_JOINT2_PITCH1_MACH_PHY 0.f
 #define POSIT_JOINT2_PITCH1_INIT_PHY 6.0f
 
-#define POSIT_JOINT3_PITCH2_MACH 50415 //12837
+#define POSIT_JOINT3_PITCH2_MACH 28776 //12837
 #define POSIT_JOINT3_PITCH2_MACH_PHY 0.f
 #define POSIT_JOINT3_PITCH2_INIT_PHY 20.0f
 
@@ -116,12 +116,12 @@
 /// 自动控制速度常量（电机的转速rpm）
 #define GRIP_OPEN_SPEED  12000.0f
 #define GRIP_OPEN_SPEED_MIN  4000.0f
-#define GRIP_CLOSE_SPEED  12000.0f
-#define GRIP_OUTPUT_LIMIT 4500       ///< 正常模式输出限幅
+#define GRIP_CLOSE_SPEED  14000.0f
+#define GRIP_OUTPUT_LIMIT 4600       ///< 正常模式输出限幅
 
 #define GRIP_OPEN_Stop_distance  1.0f
 #define GRIP_CLOSE_Stop_distance  1.0f
-#define GRIP_OPEN_Slow_distance 37.0f//减速的物理范围
+#define GRIP_OPEN_Slow_distance 32.0f//减速的物理范围
 #define GRIP_CLOSE_Slow_distance 28.0f//减速的范围
 
 #define gripOpenStopPosit  (ARM_END_GRIP_MOTOR_RANGE - PhyPositToMtrPosit(GRIP_OPEN_Stop_distance))//刹车距离
