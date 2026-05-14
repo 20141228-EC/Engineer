@@ -133,14 +133,14 @@ EAppStatus InitAllModule() {
     gimbalInitParam.YawSpdPidParam_Gyro.maxIntegral = 3000.f;
     gimbalInitParam.YawSpdPidParam_Gyro.maxOutput = 10000.f;
 
-    gimbalInitParam.YawPosPidParam_Mec.kp = 2.5f;
+    gimbalInitParam.YawPosPidParam_Mec.kp = 1.f;
     gimbalInitParam.YawPosPidParam_Mec.ki = 0.f;
     gimbalInitParam.YawPosPidParam_Mec.kd = 0.f;
     gimbalInitParam.YawPosPidParam_Mec.maxIntegral = 4000.f;
     gimbalInitParam.YawPosPidParam_Mec.maxOutput = 5000.f;
 
-    gimbalInitParam.YawSpdPidParam_Mec.kp = 2.f;
-    gimbalInitParam.YawSpdPidParam_Mec.ki = 0.0f;
+    gimbalInitParam.YawSpdPidParam_Mec.kp = 0.3;
+    gimbalInitParam.YawSpdPidParam_Mec.ki = 0.1f;
     gimbalInitParam.YawSpdPidParam_Mec.kd = 0.f;
     gimbalInitParam.YawSpdPidParam_Mec.maxIntegral = 1000.f;
     gimbalInitParam.YawSpdPidParam_Mec.maxOutput = 5000.f;
