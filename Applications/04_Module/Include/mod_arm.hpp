@@ -79,6 +79,8 @@
 #define ARM_END_ROLL_STALL_ANGLE 90.0f
 #define ARM_GRIP_INIT_LENGTH 0.0f
 
+
+#define ARM_INIT_SAFE_YAW_ANGLE 0.0f
 #define ARM_INIT_SAFE_PITCH1_ANGLE 70.0f
 #define ARM_INIT_SAFE_PITCH2_ANGLE 70.0f
 #define ARM_INIT_SAFE_PITCH3_ANGLE -11.0f
@@ -117,7 +119,7 @@
 #define GRIP_OPEN_SPEED  12000.0f
 #define GRIP_OPEN_SPEED_MIN  4000.0f
 #define GRIP_CLOSE_SPEED  14000.0f
-#define GRIP_OUTPUT_LIMIT 4600       ///< 正常模式输出限幅
+#define GRIP_OUTPUT_LIMIT 4700       ///< 正常模式输出限幅
 
 #define GRIP_OPEN_Stop_distance  1.0f
 #define GRIP_CLOSE_Stop_distance  1.0f
@@ -128,6 +130,10 @@
 #define gripOpenSlowPosit  (ARM_END_GRIP_MOTOR_RANGE - PhyPositToMtrPosit(GRIP_OPEN_Slow_distance))
 #define gripCloseStopPosit (PhyPositToMtrPosit(GRIP_CLOSE_Stop_distance))
 #define gripCloseSlowPosit (PhyPositToMtrPosit(GRIP_CLOSE_Slow_distance))//减速的编码范围
+
+/*------------------------------------- 超时判断检测数据------------------------------------------*/
+#define TIME_OUT_TICK 8000//ms
+
 /*-------------------------------------重力补偿数据--------------------------------------------------------*/
 #define PITCH1     0
 #define PITCH2 	   1
@@ -209,6 +215,7 @@ public:
 		float_t angle_end_pitch = 0.0f; ///< 机械臂末端Pitch角度
 		float_t angle_end_roll = 0.0f; ///< 机械臂末端Roll角度
 		float_t length_grip = 0.0f; ///< 机械臂夹爪张开距离
+		bool isInitTimeout = false;          ///< 初始化是否超时，在init状态中检测之后，若是超时则切换为自定义控制器模式
 		bool isAngleArrived_Yaw = false; ///< 机械臂关节Yaw角度是否到达
 		bool isAngleArrived_Pitch1 = false; ///< 机械臂关节Pitch1角度是否到达
 		bool isAngleArrived_Pitch2 = false; ///< 机械臂关节Pitch2角度是否到达
@@ -243,6 +250,7 @@ public:
 		bool gripOpen = false;            ///< 手动张开标志（Core层设置）
 		bool resetEndPitch = false; ///< 是否重置末端Pitch角度
 		bool resetEndAll = false; ///< 是否完整重初始化末端
+		bool resetbyControl = false; ///<通过自定义控制器进行重试
 	} armCmd;
 
 	CModArm() = default;
@@ -250,6 +258,7 @@ public:
 	CAlgoTrajPlayback initTraj_;                     ///< 初始化轨迹规划器实例
 	float_t initTrajTime_ = 0.0f;                    ///< 当前轨迹时间 (s)
 	bool isInitTrajActive_ = false;                  ///< 轨迹是否正在执行
+	uint32_t initStartTick_ = 0;                     ///< FSM_INIT开始时刻，供超时检测使用
 
 	// 定义带参数的模块构造函数，创建模块时自动调用初始化函数
 	explicit CModArm(SModInitParam_Arm &param) { InitModule(param); }        ///<要求**带参数**的构造函数要用explicit修饰，防止隐式转换
@@ -282,6 +291,7 @@ private:
 			bool isPositArrived_pitch1 = false; ///< Pitch1位置是否到达
 			bool isPositArrived_pitch2 = false; ///< Pitch2位置是否到达
 			bool isPositArrived_pitch3 = false; ///< Pitch3位置是否到达
+			bool isPositArrived_fail= false; 	///<关节有没有初始化到的
 		} jointInfo;
 
 		// 定义Yaw关节控制命令结构体
@@ -586,6 +596,8 @@ private:
 	EAppStatus Grav_Compemsation_Pitch1();
 	EAppStatus Grav_Compemsation_Pitch2();
 	EAppStatus Grav_Compemsation_Roll();
+	//超时判断检测函数
+	void initTimeoutdect();
 
 };
 

@@ -31,7 +31,7 @@
 #define CLIMBING_PITCH1_ANGLE     ARM_PITCH1_INIT_ANGLE
 #define CLIMBING_PITCH2_ANGLE     ARM_PITCH2_INIT_ANGLE
 #define CLIMBING_ROLL_ANGLE       ARM_ROLL_INIT_ANGLE
-#define CLIMBING_END_PITCH_ANGLE  ARM_END_PITCH_INIT_ANGLE
+#define CLIMBING_END_PITCH_ANGLE  80
 #define CLIMBING_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
 #define CLIMBING_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
 #define CLIMBING_SPEED            23.f      ///< 给一个较小的速度
@@ -43,7 +43,7 @@
 #define DOWNSTAIR_YAW_ANGLE        ARM_YAW_INIT_ANGLE
 #define DOWNSTAIR_PITCH1_ANGLE     ARM_PITCH1_INIT_ANGLE
 #define DOWNSTAIR_PITCH2_ANGLE     ARM_PITCH2_INIT_ANGLE
-#define DOWNSTAIR_ROLL_ANGLE       190
+#define DOWNSTAIR_ROLL_ANGLE       -1
 #define DOWNSTAIR_END_PITCH_ANGLE  90
 #define DOWNSTAIR_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
 #define DOWNSTAIR_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
@@ -173,6 +173,8 @@ public:
     EVarStatus use_Controller_ = false; ///< 是否使用控制器
 
     EVarStatus gimbal_auto_ctrl = false;   ///< 云台是否自动控制
+
+    EVarStatus arm_init_fail = false;          ///< 臂初始化失败
 
     // 初始化系统核心
     EAppStatus InitSystemCore();

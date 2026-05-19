@@ -37,7 +37,7 @@ void CSystemCore::StartDownStairTask(void *arg) {
 	core.parm_->armCmd.set_angle_Pitch1 = DOWNSTAIR_PITCH1_ANGLE;
 	core.parm_->armCmd.set_angle_Pitch2 = DOWNSTAIR_PITCH2_ANGLE - 5;
 	core.parm_->armCmd.set_angle_Roll = DOWNSTAIR_ROLL_ANGLE;
-	core.parm_->armCmd.set_angle_end_pitch = -DOWNSTAIR_END_PITCH_ANGLE;
+	core.parm_->armCmd.set_angle_end_pitch = DOWNSTAIR_END_PITCH_ANGLE;
 	//core.parm_->armCmd.set_angle_Roll = DOWNSTAIR_ROLL_ANGLE;
 	core.parm_->armCmd.set_angle_end_roll = DOWNSTAIR_END_ROLL_ANGLE;
     core.parm_->armCmd.set_length_grip = DOWNSTAIR_GRIP_LENGTH;
