@@ -55,7 +55,7 @@ EAppStatus CModController::CComYaw::UpdateComponent() {
 
 	// 更新组件信息
 	yawInfo.posit = motor[0]->motorData[CDevMtr::DATA_POSIT];
-	yawInfo.isPositArrived = (abs(yawCmd.setPosit - yawInfo.posit) < 8192 * 0.02);
+	yawInfo.isPositArrived = (abs(yawCmd.setPosit - yawInfo.posit) < 8192 * 0.05);
 
 	switch (Component_FSMFlag_) {    ///<这个轴不需要重补
 		case FSM_RESET: {
@@ -71,6 +71,8 @@ EAppStatus CModController::CComYaw::UpdateComponent() {
 			motor[0]->motorData[CDevMtr::DATA_POSIT] = motor[0]->motorData[CDevMtr::DATA_ANGLE] - CONTROLLER_YAW_MOTOR_MACH;
 			while (motor[0]->motorData[CDevMtr::DATA_POSIT] > 4096)
 				motor[0]->motorData[CDevMtr::DATA_POSIT] -= 8192;
+			while (motor[0]->motorData[CDevMtr::DATA_POSIT] < -4096)
+				motor[0]->motorData[CDevMtr::DATA_POSIT] += 8192;  //yaw轴就近归位
 			mtrOutputBuffer.fill(0);
 			pidPosCtrl.ResetPidController();
 			pidSpdCtrl.ResetPidController();

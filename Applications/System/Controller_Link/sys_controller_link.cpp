@@ -114,19 +114,19 @@ void CSystemControllerLink::UpdateButtonInfo_() {
 		controllerInfo.rocker_Y = pController->ControllerInfo.rocker_Y;
 	}
 
-	// 3档拨杆状态 (0=中档, 1=臂Roll末端模式, 2=底盘模式)
-	if (CDevFourButton::isSwitchArmRollEnd) {
-		controllerInfo.toggle_switch = EToggleSwitch::TOGGLE_ARM_ROLL;  // 左档 臂Roll末端模式
-	} else if (CDevFourButton::isSwitchChassis) {
-		controllerInfo.toggle_switch = EToggleSwitch::TOGGLE_CHASSIS;  // 右档 底盘模式
-	} else {
-		controllerInfo.toggle_switch = EToggleSwitch::TOGGLE_MIDDLE;  // 中档
-	}
+	// // 3档拨杆状态 (0=中档, 1=臂Roll末端模式, 2=底盘模式)
+	// if (CDevFourButton::isSwitchArmRollEnd) {
+	// 	controllerInfo.toggle_switch = EToggleSwitch::TOGGLE_ARM_ROLL;  // 左档 臂Roll末端模式
+	// } else if (CDevFourButton::isSwitchChassis) {
+	// 	controllerInfo.toggle_switch = EToggleSwitch::TOGGLE_CHASSIS;  // 右档 底盘模式
+	// } else {
+	// 	controllerInfo.toggle_switch = EToggleSwitch::TOGGLE_MIDDLE;  // 中档
+	// }
 
 	// 夹爪按钮状态（单夹爪，PB9）
 	controllerInfo.gripper_close = CDevFourButton::isGripperClose;
 
-	// 二次夹紧（脉冲信号：读取后立即清除源标志）
+	// 二次夹紧（读取后立即清除源标志）
 	if (CDevFourButton::isGripperReGrip) {
 		controllerInfo.gripper_regrip = true;
 		CDevFourButton::isGripperReGrip = false;
@@ -141,16 +141,16 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 	if (!pcontrollerLink_) return;
 
 	auto &pkg = pcontrollerLink_->controllerData_info_pkg;
+	
+	pkg.status_flags = {};
 
-	// 打包状态标志位
-	pkg.status_flags = 0;
-	if (controllerInfo.controller_OK) pkg.status_flags |= STATUS_CONTROLLER_OK;
-	if (controllerInfo.return_success) pkg.status_flags |= STATUS_RETURN_SUCCESS;
-	pkg.status_flags |= (static_cast<uint8_t>(controllerInfo.toggle_switch) << STATUS_TOGGLE_SHIFT) & STATUS_TOGGLE_MASK;
-	if (controllerInfo.gripper_close) pkg.status_flags |= STATUS_GRIPPER;
-	// 二次夹紧：脉冲信号，打包后自动清除
+	if (controllerInfo.controller_OK) pkg.status_flags.controller_init_ok = 1;
+	if (controllerInfo.return_success) pkg.status_flags.return_sucess = 1;
+	//pkg.status_flags |= (static_cast<uint8_t>(controllerInfo.toggle_switch) << STATUS_TOGGLE_SHIFT) & STATUS_TOGGLE_MASK;
+	if (controllerInfo.gripper_close) pkg.status_flags.grip = 1;
+	// 二次夹紧
 	if (controllerInfo.gripper_regrip) {
-		pkg.status_flags |= STATUS_REGRIP;
+		pkg.status_flags.regrip = 1;
 		controllerInfo.gripper_regrip = false;
 	}
 
@@ -177,9 +177,10 @@ void CSystemControllerLink::UpdateRobotInfo_() {
 	auto &pkg = pcontrollerLink_->robotData_info_pkg;
 
 	// 解析状态标志位 (使用RobotData专用定义)
-	robotInfo.ask_reset_flag = (pkg.status_flags & STATUS_ASK_RESET) != 0;
-	robotInfo.controlled_by_controller = (pkg.status_flags & STATUS_CONTROLLED) != 0;
-	robotInfo.robot_init_ok = (pkg.status_flags & STATUS_ROBOT_INIT_OK) != 0;
+	robotInfo.ask_reset_flag = pkg.status_flags.ask_reset;
+	robotInfo.controlled_by_controller = pkg.status_flags.control_by_controller;
+	robotInfo.robot_init_ok = pkg.status_flags.robot_init_ok;
+	robotInfo.p3_lock = pkg.status_flags.p3_lock;
 
 	// 解压角度 (int16 -> float)
 	robotInfo.arm.yaw       = CDevControllerLink::DecompressAngle(pkg.arm.yaw);
@@ -210,10 +211,10 @@ void CSystemControllerLink::UpdateControllerLinkInfo_() {
 	auto &pkg = pcontrollerLink_->controllerData_info_pkg;
 
 	// 解析状态标志位
-	controllerInfo.controller_OK = (pkg.status_flags & STATUS_CONTROLLER_OK) != 0;
-	controllerInfo.return_success = (pkg.status_flags & STATUS_RETURN_SUCCESS) != 0;
-	controllerInfo.toggle_switch = static_cast<EToggleSwitch>((pkg.status_flags & STATUS_TOGGLE_MASK) >> STATUS_TOGGLE_SHIFT);
-	controllerInfo.gripper_close = (pkg.status_flags & STATUS_GRIPPER) != 0;
+	controllerInfo.controller_OK = pkg.status_flags.controller_init_ok;
+	controllerInfo.return_success = pkg.status_flags.return_sucess;
+	//controllerInfo.toggle_switch = static_cast<EToggleSwitch>((pkg.status_flags & STATUS_TOGGLE_MASK) >> STATUS_TOGGLE_SHIFT);
+	controllerInfo.gripper_close = pkg.status_flags.grip;
 
 	// 单臂角度数据 (float直传)
 	controllerInfo.arm.yaw       = pkg.arm.yaw;
@@ -238,10 +239,10 @@ void CSystemControllerLink::UpdateRobotDataPkg_() {
 	auto &pkg = pcontrollerLink_->robotData_info_pkg;
 
 	// 打包状态标志位 (使用RobotData专用定义)
-	pkg.status_flags = 0;
-	if (robotInfo.ask_reset_flag) pkg.status_flags |= STATUS_ASK_RESET;
-	if (robotInfo.controlled_by_controller) pkg.status_flags |= STATUS_CONTROLLED;
-	if (robotInfo.robot_init_ok) pkg.status_flags |= STATUS_ROBOT_INIT_OK;
+	pkg.status_flags = {};
+	if (robotInfo.ask_reset_flag) pkg.status_flags.ask_reset = 1;
+	if (robotInfo.controlled_by_controller) pkg.status_flags.control_by_controller = 1;
+	if (robotInfo.robot_init_ok) pkg.status_flags.robot_init_ok = 1;
 
 	// 压缩角度 (float -> int16)
 	pkg.arm.yaw       = CDevControllerLink::CompressAngle(robotInfo.arm.yaw);

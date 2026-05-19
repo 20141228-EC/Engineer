@@ -14,6 +14,14 @@
 
 #include "mod_controller.hpp"
 
+extern "C" {
+extern volatile int dbg_position_hold_mode;
+extern volatile float dbg_hold_kp;
+extern volatile float dbg_hold_kd;
+extern volatile float dbg_target_pitch2;
+}
+
+
 namespace my_engineer {
 
 /******************************************************************************
@@ -53,7 +61,7 @@ EAppStatus CModController::CComPitch2::UpdateComponent() {
     // 更新电机信息
     pitch2Info.posit = MotortruePositToOffsetPosit_test(    ///<注意是在这里更新的示教器控制信息传给机器人，下面的状态机是用来控制自定义控制器的重力补偿的
             CDevMtrDM::uint_to_float(motor[0]->motorData[CDevMtr::DATA_ANGLE], -motor[0]->mitLimit_.Q_MAX, motor[0]->mitLimit_.Q_MAX, 16));
-    pitch2Info.isPositArrived = (fabs(pitch2Cmd.setParam[EMotorParam::POSIT] - pitch2Info.posit) < 5.0f);
+    pitch2Info.isPositArrived = (fabs(pitch2Cmd.setParam[EMotorParam::POSIT] - pitch2Info.posit) < 8.0f);
 
     switch (Component_FSMFlag_){
         case FSM_RESET: {
@@ -82,12 +90,17 @@ EAppStatus CModController::CComPitch2::UpdateComponent() {
 
         case FSM_CTRL: {
             if (pitch2Cmd.isFree) {
-                // 示教模式：使用低阻尼参数\重力补偿前馈
-                float_t savedTF = pitch2Cmd.setParam[EMotorParam::TF];
-                std::fill(std::begin(pitch2Cmd.setParam), std::end(pitch2Cmd.setParam), 0.0f);
-                pitch2Cmd.setParam[EMotorParam::KP] = 0.0f;    // 示教模式位置刚度
-                pitch2Cmd.setParam[EMotorParam::KD] = 0.03f;    // 示教模式低阻尼
-                pitch2Cmd.setParam[EMotorParam::TF] = savedTF; // 保留重力补偿
+				float_t savedTF = pitch2Cmd.setParam[EMotorParam::TF];
+				std::fill(std::begin(pitch2Cmd.setParam), std::end(pitch2Cmd.setParam), 0.0f);
+				if (dbg_position_hold_mode) {
+					pitch2Cmd.setParam[EMotorParam::KP] = dbg_hold_kp;
+					pitch2Cmd.setParam[EMotorParam::KD] = dbg_hold_kd;
+					pitch2Cmd.setParam[EMotorParam::POSIT] = dbg_target_pitch2;
+				} else {
+					pitch2Cmd.setParam[EMotorParam::KP] = 0.0f;
+					pitch2Cmd.setParam[EMotorParam::KD] = 0.03f;
+				}
+				pitch2Cmd.setParam[EMotorParam::TF] = savedTF;
                 return _UpdateOutput(pitch2Cmd.setParam);
             }
             // 联动模式：恢复位控参数，跟随机器人回传位置

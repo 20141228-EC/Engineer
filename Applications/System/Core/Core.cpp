@@ -135,6 +135,8 @@ void CSystemCore::UpdateHandler_() {
             pcontroller_->ControllerCmd.isFree = true;
             pcontroller_->ControllerInfo.isRobotInit = false;
         }
+        
+        pcontroller_->ControllerInfo.P3_lock = SysControllerLink.robotInfo.p3_lock;
     }
 
     /*------------ 状态汇总 -----------*/

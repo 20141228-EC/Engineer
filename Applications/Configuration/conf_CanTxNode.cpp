@@ -34,6 +34,7 @@ CInfCAN::CCanTxNode MitTxNode_Can2_30;
 CInfCAN::CCanTxNode MitTxNode_Can2_32;
 CInfCAN::CCanTxNode MitTxNode_Can3_30;
 CInfCAN::CCanTxNode MitTxNode_Can3_32;
+CInfCAN::CCanTxNode MitTxNode_Can1_39;
 /*----------- Roll和PitchEnd的MIT发送节点（DM3510） -----------*/
 CInfCAN::CCanTxNode MitTxNode_Can2_34;
 CInfCAN::CCanTxNode MitTxNode_Can2_36;
@@ -90,6 +91,8 @@ EAppStatus InitAllCanTxNode()
     MitTxNode_Can3_30.InitTxNode(EInterfaceID::INF_CAN3, 0x30,
                                 CInfCAN::ECanFrameType::DATA, CInfCAN::ECanFrameDlc::DLC_8);
     MitTxNode_Can3_32.InitTxNode(EInterfaceID::INF_CAN3, 0x32,
+                                CInfCAN::ECanFrameType::DATA, CInfCAN::ECanFrameDlc::DLC_8);
+    MitTxNode_Can1_39.InitTxNode(EInterfaceID::INF_CAN1, 0x39,
                                 CInfCAN::ECanFrameType::DATA, CInfCAN::ECanFrameDlc::DLC_8);
     /*----------- Roll和PitchEnd的MIT发送节点初始化（DM3510） -----------*/
     MitTxNode_Can2_34.InitTxNode(EInterfaceID::INF_CAN2, 0x34,

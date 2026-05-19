@@ -52,7 +52,12 @@ EAppStatus CModController::CComPitchEnd::UpdateComponent() {
     // 更新电机信息
     pitchEndInfo.posit = MotortruePositToOffsetPosit(                 ///<注意是在这里更新的示教器控制信息传给机器人，下面的状态机是用来控制自定义控制器的重力补偿的
             CDevMtrDM::uint_to_float(motor[0]->motorData[CDevMtr::DATA_ANGLE], -motor[0]->mitLimit_.Q_MAX, motor[0]->mitLimit_.Q_MAX, 16));
-    pitchEndInfo.isPositArrived = (fabs(pitchEndCmd.setParam[EMotorParam::POSIT] - pitchEndInfo.posit) < 5.0f);
+    pitchEndInfo.isPositArrived = (fabs(pitchEndCmd.setParam[EMotorParam::POSIT] - pitchEndInfo.posit) < 8.0f);
+
+    uint8_t setZero_flag = 0;
+    if(setZero_flag == 1) {
+        motor[0]->SetZero();  ///<测试用，将当前角度设为零点
+    }
 
     // 一阶低通滤波
     // filteredPosit 独立于 setParam[POSIT]，避免目标值被覆盖
@@ -103,12 +108,12 @@ EAppStatus CModController::CComPitchEnd::UpdateComponent() {
         case FSM_CTRL: {
             if (pitchEndCmd.isFree) {
                 // 示教模式：无位置刚度 + 低阻尼 + 重力补偿前馈，直接发送不经过低通滤波
-                float_t savedTF = pitchEndCmd.setParam[EMotorParam::TF];
+                //float_t savedTF = 0;
                 pitchEndCmd.setParam[EMotorParam::KP] = 0.0f;    // 示教模式无位置刚度
                 pitchEndCmd.setParam[EMotorParam::KD] = 0.0f;  // 示教模式低阻尼
-                pitchEndCmd.setParam[EMotorParam::TF] = savedTF; // 重力补偿前馈
+                //pitchEndCmd.setParam[EMotorParam::TF] = savedTF; // 重力补偿前馈
                 filteredPosit = pitchEndInfo.posit;  // 同步滤波器
-                pitchEndCmd.setParam[EMotorParam::POSIT] = pitchEndInfo.posit;  // 同步目标
+                pitchEndCmd.setParam[EMotorParam::POSIT] = 0;  // 同步目标
                 return _UpdateOutput(pitchEndCmd.setParam);
             }
 

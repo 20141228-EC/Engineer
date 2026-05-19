@@ -116,7 +116,7 @@ EAppStatus InitAllDevice(){
     mtr_Pitch1_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
     mtr_Pitch1_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
     mtr_Pitch1_initparam.useAngleToPosit = false;
-    mtr_Pitch1_initparam.Kp = 10.0f;
+    mtr_Pitch1_initparam.Kp = 15.0f;
     mtr_Pitch1_initparam.Kd = 2.0f;
     mtr_Pitch1_initparam.MIT_TxCANID = 0x31;  // 发送到电机的CAN_ID
     mtr_Pitch1_initparam.MIT_RxCANID = 0x30;  // 接收电机反馈的Master_ID
@@ -130,23 +130,25 @@ EAppStatus InitAllDevice(){
     mtr_Pitch2_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
     mtr_Pitch2_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
     mtr_Pitch2_initparam.useAngleToPosit = false;
-    mtr_Pitch2_initparam.Kp = 10.0f;
+    mtr_Pitch2_initparam.Kp = 15.0f;
     mtr_Pitch2_initparam.Kd = 2.0f;
     mtr_Pitch2_initparam.MIT_TxCANID = 0x33;  // 发送到电机的CAN_ID
     mtr_Pitch2_initparam.MIT_RxCANID = 0x32;  // 接收电机反馈的Master_ID
     mtr_Pitch2.InitDevice(&mtr_Pitch2_initparam);
 
-    // Pitch3 (M3508, CAN1,ID1)
-    static CDevMtrM3508 mtr_Pitch3;
-    CDevMtrM3508::SMtrInitParam_M3508 mtr_Pitch3_initparam;
+    // Pitch3 (DM4310, CAN1, CAN_ID=0x38, Master_ID=0x39)
+    static CDevMtrDM mtr_Pitch3;
+    CDevMtrDM::SMtrInitParam_DM mtr_Pitch3_initparam;
     mtr_Pitch3_initparam.deviceID = EDeviceID::DEV_MTR_PITCH3;
     mtr_Pitch3_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    mtr_Pitch3_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_6;
-    mtr_Pitch3_initparam.useAngleToPosit = true;
-    mtr_Pitch3_initparam.useStallMonit = true;
-    mtr_Pitch3_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
+    mtr_Pitch3_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
+    mtr_Pitch3_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
+    mtr_Pitch3_initparam.useAngleToPosit = false;
+    mtr_Pitch3_initparam.Kp = 10.0f;
+    mtr_Pitch3_initparam.Kd = 2.0f;
+    mtr_Pitch3_initparam.MIT_TxCANID = 0x38;  // 发送到电机的CAN_ID
+    mtr_Pitch3_initparam.MIT_RxCANID = 0x39;  // 接收电机反馈的Master_ID
     mtr_Pitch3.InitDevice(&mtr_Pitch3_initparam);
-
 
     // Roll (DM3510, CAN2, CAN_ID=0x35, Master_ID=0x34)
     static CDevMtrDM mtr_Roll;

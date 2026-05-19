@@ -46,8 +46,8 @@ EAppStatus InitAllModule() {
     initParam.roll_id = EDeviceID::DEV_MTR_ROLL;
     initParam.pitch_end_id = EDeviceID::DEV_MTR_PITCH_END;
     // CAN发送节点（Pitch1/2->CAN3, Roll/PitchEnd->CAN2, Yaw->CAN1）
-    initParam.pitch3TxNode = &TxNode_Can1_1FF;        // CAN1 DJI 0x1
-    initParam.yawTxNode = &TxNode_Can1_1FF;           // CAN1 DJI (ID5-8用0x1FF)
+    initParam.pitch3TxNode = &MitTxNode_Can1_39;        //p1
+    initParam.yawTxNode = &TxNode_Can1_1FF;           // CAN1 DJI (ID1-4用0x1FF)
     initParam.pitch1TxNode = &MitTxNode_Can3_30;      // CAN3 MIT 0x30
     initParam.pitch2TxNode = &MitTxNode_Can3_32;      // CAN3 MIT 0x32
     initParam.rollTxNode = &MitTxNode_Can2_34;         // CAN2 MIT 0x34
@@ -64,16 +64,16 @@ EAppStatus InitAllModule() {
     initParam.yawSpdPidParam.maxIntegral = 200;
     initParam.yawSpdPidParam.maxOutput = 20000;
 
-    initParam.pitch3PosPidParam.kp = 3.0f;
-    initParam.pitch3PosPidParam.ki = 0.0f;
-    initParam.pitch3PosPidParam.kd = 0.0f;
-    initParam.pitch3PosPidParam.maxIntegral = 20;
-    initParam.pitch3PosPidParam.maxOutput = 5000;
-    initParam.pitch3SpdPidParam.kp = 1.0f;
-    initParam.pitch3SpdPidParam.ki = 0.1f;
-    initParam.pitch3SpdPidParam.kd = 0.0f;
-    initParam.pitch3SpdPidParam.maxIntegral = 200;
-    initParam.pitch3SpdPidParam.maxOutput = 20000;
+    // initParam.pitch3PosPidParam.kp = 3.0f;
+    // initParam.pitch3PosPidParam.ki = 0.0f;
+    // initParam.pitch3PosPidParam.kd = 0.0f;
+    // initParam.pitch3PosPidParam.maxIntegral = 20;
+    // initParam.pitch3PosPidParam.maxOutput = 5000;
+    // initParam.pitch3SpdPidParam.kp = 1.0f;
+    // initParam.pitch3SpdPidParam.ki = 0.1f;
+    // initParam.pitch3SpdPidParam.kd = 0.0f;
+    // initParam.pitch3SpdPidParam.maxIntegral = 200;
+    // initParam.pitch3SpdPidParam.maxOutput = 20000;
     // 初始化控制器模块
     controllerModule.InitModule(initParam);
 

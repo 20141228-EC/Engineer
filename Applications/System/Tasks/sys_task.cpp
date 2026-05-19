@@ -42,7 +42,7 @@ void StartMonitorTask(void *argument) {
                 SysControllerLink.controllerInfo.arm.roll,
                 SysControllerLink.controllerInfo.arm.pitch_end,
                 static_cast<int8_t>(SysControllerLink.robotInfo.controlled_by_controller),
-                static_cast<int8_t>(SysControllerLink.controllerInfo.toggle_switch),
+//                static_cast<int8_t>(SysControllerLink.controllerInfo.toggle_switch),
                 static_cast<int8_t>(SysControllerLink.controllerInfo.gripper_close)
             );
         proc_waitMs(500);
@@ -93,7 +93,7 @@ void StartUpdateTask(void *argument) {
         }
 
         // 执行can发送
-        TxNode_Can1_200.Transmit();
+        //TxNode_Can1_200.Transmit();
         TxNode_Can1_1FF.Transmit();
         proc_waitMs(1); // 1000Hz
 

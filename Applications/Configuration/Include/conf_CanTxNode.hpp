@@ -42,6 +42,7 @@ extern CInfCAN::CCanTxNode MitTxNode_Can2_34;
 extern CInfCAN::CCanTxNode MitTxNode_Can2_36;
 extern CInfCAN::CCanTxNode MitTxNode_Can3_34;
 extern CInfCAN::CCanTxNode MitTxNode_Can3_36;
+extern CInfCAN::CCanTxNode MitTxNode_Can1_39;
 
 EAppStatus InitAllCanTxNode();
 

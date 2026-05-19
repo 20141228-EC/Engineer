@@ -52,7 +52,12 @@ EAppStatus CModController::CComRoll::UpdateComponent() {
     // 更新电机信息
     rollInfo.posit = MotortruePositToOffsetPosit(    ///<注意是在这里更新的示教器控制信息传给机器人，下面的状态机是用来控制自定义控制器的重力补偿的
             CDevMtrDM::uint_to_float(motor[0]->motorData[CDevMtr::DATA_ANGLE], -motor[0]->mitLimit_.Q_MAX, motor[0]->mitLimit_.Q_MAX, 16));
-    rollInfo.isPositArrived = (fabs(rollCmd.setParam[EMotorParam::POSIT] - rollInfo.posit) < 5.0f);
+    rollInfo.isPositArrived = (fabs(rollCmd.setParam[EMotorParam::POSIT] - rollInfo.posit) < 8.0f);
+
+    uint8_t setZero_flag = 0;
+    if(setZero_flag == 1) {
+        motor[0]->SetZero();  ///<测试用，将当前角度设为零点
+    }
 
     // 一阶低通滤波
     // filteredPosit 独立于 setParam[POSIT]，避免目标值被覆盖
