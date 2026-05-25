@@ -115,15 +115,14 @@ namespace my_engineer {
             lastTarget[J::J_ENDR] += endRollOffset;
             proc_waitMs(50);    //等待夹爪收缩
 
-            /*step 2 :逐段播放轨迹*/
+            /*step 2 :逐段播放轨迹每段从实际关节位置开始规划*/
             for(int seg = 1; seg < Traj.frameCount; seg++){
+                // 读实际关节位置覆盖 lastTarget，清除上一段的累积跟踪误差
+                ReadArmjoint(arm, lastTarget);
                 if(!PlayFrameSegment(arm, Traj.frame, seg, player, true, endRollOffset, lastTarget)) goto proc_exit;
                 // 更新 lastTarget 为当前段的 target
                 Extrarow(Traj.frame, seg, lastTarget);
                 lastTarget[J::J_ENDR] += endRollOffset;
-//                if(Traj.frame[seg][FC_GRIP] == 1){
-//                    proc_waitMs(0);
-//                }
             }
         }
 

@@ -35,7 +35,7 @@ volatile float traj_dbg_grip_info = 0.0f;
         {      0,   79.31f,   36.62f,  51.35f,   -77.62f,   190.18f,   -106.33f,       1.f,        0 ,      4.1f},  // 起始位
         {  1000,   72.8f,  35.32f,  49.438f,   -68.620f,  189.179f,  -106.427f,       1.f,        0 ,      4.f},  //
         {  2000,   72.8f,  40.81f,  56.34f,   -67.484f,  186.2f,  -29.427f,          1.f,        0,      2.5f},
-        { 3000,   72.8f,  49.34f,  37.35f,   -68.86f,  186.248f,  -45.427f,         1.f,        0 ,      2.5f},
+        { 3000,   72.8f,  49.34f,  37.35f,   -68.86f,  186.248f,  -39.427f,         1.f,        0 ,      2.5f},
         { 4000,   72.8f,  49.34f,  37.35f,   -68.86f,  186.248f,  -39.427f,         1.f,        0 ,      2.5f},
         { 5000,   72.8f,  51.34f,  31.35f,   -61.86f,  184.248f,  -39.427f,         1.f,        0 ,      2.5f},
         { 6000,   72.8f,  61.24f,  37.52f,   -67.86f,  184.248f,  -39.427f,         1.f,        0 ,      2.5f},
@@ -77,16 +77,16 @@ volatile float traj_dbg_grip_info = 0.0f;
     // 存右矿石：右手 YAW 使用原实测值，其余关节复用左手存矿轨迹特征。
     const float_t Traj_Grab_R[][FC_COUNT] = {
         // time      yaw        p1          p2       p3       roll        endP        endR       grip       speed
-        {      0,   -79.31f,   36.62f,  51.35f,   -77.62f,   190.18f,   -106.33f,      1.f,      0 ,      4.1f},
-        {  1000,   -79.8f,    35.32f,  49.438f,  -68.620f,  189.179f,  -106.427f,     1.f,      0 ,      4.f},
-        {  2000,   -79.8f,    40.81f,  56.34f,   -67.484f,  186.2f,    -29.427f,      1.f,      0,       2.5f},
-        {  3000,   -79.8f,    49.34f,  37.35f,   -68.86f,   186.248f,  -45.427f,      1.f,      0 ,      2.5f},
-        {  4000,   -79.8f,    49.34f,  37.35f,   -68.86f,   186.248f,  -38.427f,      1.f,      0 ,      2.5f},
-        {  5000,   -79.8f,    51.34f,  31.35f,   -61.86f,   184.248f,  -38.427f,      1.f,      0 ,      2.5f},
-        {  6000,   -79.8f,    61.24f,  37.52f,   -67.86f,   184.248f,  -38.427f,      1.f,      0 ,      2.5f},
-        {  7000,   -79.8f,    65.24f,  37.52f,   -67.86f,   184.248f,  -45.427f,      1.f,      1 ,      2.5f},
-        {  8000,   -79.8f,    27.24f,  32.85f,   -69.86f,   184.248f,  -45.427f,      1.f,      1 ,      2.5f},
-        {  9000,   -79.2f,    27.65f,  32.75f,   -67.86f,   184.248f,    30.427f,      1.f,      1 ,      2.5f},
+        {      0,   -71.31f,   36.62f,  51.35f,   -77.62f,   190.18f,   -106.33f,      1.f,      0 ,      4.1f},
+        {  1000,   -71.8f,    35.32f,  49.438f,  -68.620f,  189.179f,  -106.427f,     1.f,      0 ,      4.f},
+        {  2000,   -71.8f,    40.81f,  56.34f,   -67.484f,  186.2f,    -29.427f,      1.f,      0,       2.5f},
+        {  3000,   -71.8f,    49.34f,  37.35f,   -68.86f,   186.248f,  -45.427f,      1.f,      0 ,      2.5f},
+        {  4000,   -71.8f,    49.34f,  37.35f,   -68.86f,   186.248f,  -38.427f,      1.f,      0 ,      2.5f},
+        {  5000,   -71.8f,    51.34f,  31.35f,   -61.86f,   184.248f,  -38.427f,      1.f,      0 ,      2.5f},
+        {  6000,   -71.8f,    61.24f,  37.52f,   -67.86f,   184.248f,  -38.427f,      1.f,      0 ,      2.5f},
+        {  7000,   -71.8f,    65.24f,  37.52f,   -67.86f,   184.248f,  -45.427f,      1.f,      1 ,      2.5f},
+        {  8000,   -71.8f,    27.24f,  32.85f,   -69.86f,   184.248f,  -45.427f,      1.f,      1 ,      2.5f},
+        {  9000,   -71.2f,    27.65f,  32.75f,   -67.86f,   184.248f,    30.427f,      1.f,      1 ,      2.5f},
         // { 10000,   -79.02f,   27.65f,  48.75f,   -65.86f,   184.248f,    30.427f,      1.f,      1 ,      4.0f},
         // { 11000,   -79.02f,   21.65f,  54.75f,   -63.86f,   184.248f,   30.427f,      1.f,      1 ,      4.0f},
         { 10000,   -2.02f,    22.65f,  55.75f,   -60.86f,   188.248f,   30.427f,      1.f,      1 ,      4.0f},
@@ -108,13 +108,13 @@ volatile float traj_dbg_grip_info = 0.0f;
          {  4000,   70.8f,  19.32f,  23.438f,   -46.920f,  184.179f,  11.427f,       3.f,        0 ,      2.f},  //
 
          {  6000,   70.8f,  27.32f,  26.438f,   -50.920f,  184.179f,  0.427f,       3.f,        1 ,      2.f},  //
-        {  7000,   73.8f,  42.32f,  10.438f,   -28.920f,  184.179f,  -29.427f,       3.f,        1 ,      2.f},  //
+        {  7000,   73.8f,  42.32f,  28.438f,   -53.920f,  184.179f,  -29.427f,       3.f,        1 ,      2.f},  //
          
-        {  8000,   73.8f,  50.91f,  12.14f,   -25.3f,  189.2f,  -54.427f,          3.f,        0,      2.f},                //test
-         {  9000,   73.8f,  31.91f,  20.14f,   -25.3f,  189.2f,  -9.427f,          3.f,        0,      2.2f},
+        {  8000,   77.8f,  50.91f,  31.14f,   -50.3f,  189.2f,  -54.427f,          3.f,        0,      2.f},                //test
+         {  9000,  77.8f,  39.91f,  20.14f,   -46.3f,  189.2f,  -9.427f,          3.f,        0,      2.2f},
 
         
-        { 10000,  70.2f,  18.24f,  22.85f,   -48.86f,  189.248f,  -106.427f,         3.f,        0 ,      6.0f},
+        { 10000,  77.2f,  30.24f,  22.85f,   -48.86f,  189.248f,  -106.427f,         3.f,        0 ,      6.0f},
         { 11000,   59.92f,  20.65f,  26.75f,   -40.86f,  189.248f,  -106.427f,         5.f,        0 ,      4.0f},
         { 12000,   -2.02f,  15.45f,  20.75f,   -1.86f,  184.248f,  -61.427f,         0.f,        0 ,      4.f},
     };
@@ -150,7 +150,7 @@ volatile float traj_dbg_grip_info = 0.0f;
         {  5000,   -74.8f,   27.32f,  26.438f,   -50.920f,  184.179f, -6.427f,      3.f,        1 ,      2.5f},
         {  6000,   -74.8f,   36.32f,  17.438f,   -51.920f,  184.179f, -45.427f,      3.f,        1 ,      2.5f},
         {  7000,   -74.8f,   47.91f,  10.14f,    -29.3f,    190.2f,   -54.427f,      3.f,        0,       2.5f},
-        {  8000,   -74.8f,   40.91f,  15.14f,    -31.3f,    190.2f,   -9.427f,      3.f,        0,       2.5f},//test
+        {  8000,   -74.8f,   36.91f,  24.14f,    -48.3f,    190.2f,   -9.427f,      3.f,        0,       2.5f},//test
         {  9000,   -74.8f,   18.24f,  28.85f,    -48.86f,   190.248f,-106.427f,      3.f,        0 ,      6.0f},
         { 10000,   -59.92f,  20.65f,  26.75f,    -40.86f,   190.248f,-106.427f,      5.f,        0 ,      4.0f},
         { 11000,   -2.02f,   15.45f,  20.75f,    -1.86f,    184.248f, -61.427f,      0.f,        0 ,      4.0f},
@@ -295,6 +295,11 @@ volatile float traj_dbg_grip_info = 0.0f;
                 traj_dbg_warn_reason = 4;
             }
 
+            if (HAL_GetTick() - startTick >= cfg.hardTimeoutMs) {
+                traj_dbg_exit_reason = 4;
+                return false;
+            }
+
             proc_waitMs(1);
         }
     }
@@ -415,27 +420,31 @@ volatile float traj_dbg_grip_info = 0.0f;
     //再原来的播放器的基础上再封装一个速度读取的函数
     //  prevTarget 非空：用上一段 target 做起点
     //  prevTarget 为空：用实时反馈做起点
+    //  earlyGrip  true: 夹爪在段开始时切换(与关节运动重叠)，false: 关节到位后才切换
     bool PlayFrameSegment(CModArm &arm,
                                 const float_t traj[][FC_COUNT], int seg,
                                 CAlgoTrajPlayback &player, bool checkctrl,
                                 float_t endRollOffset,
-                                const float_t *prevTarget){
+                                const float_t *prevTarget,
+                                bool earlyGrip){
         float_t target[J::COUNT];
         const bool gripAfter = ExtractGripClose(traj, seg);   // 本段目标状态
 
-        //   seg == 0：用当前实际夹爪状态，避免上电时还没到 HOLD 就强切到 HOLD
-        //   seg >  0：用上一段轨迹表里的目标状态
+        // 判断夹爪状态在本段是否真的发生了切换
+        const bool gripActuallyChanged = (seg == 0)
+            ? !CheckGripArrived(arm, gripAfter)
+            : (gripAfter != ExtractGripClose(traj, seg - 1));
+
+        // earlyGrip: 段一开始就切换夹爪
+        // 否则: 关节运动期间保持上一段状态，到位后才切
         bool gripDuringMotion;
-        if (seg == 0) {
+        if (earlyGrip) {
+            gripDuringMotion = gripAfter;
+        } else if (seg == 0) {
             gripDuringMotion = (arm.armInfo.gripState == CModArm::SArmInfo::EGripState::HOLD);
         } else {
             gripDuringMotion = ExtractGripClose(traj, seg - 1);
         }
-
-        // 是否需要在本段等待夹爪状态切换完成
-        const bool gripChanged = (seg == 0)
-            ? !CheckGripArrived(arm, gripAfter)
-            : (gripAfter != gripDuringMotion);
 
         float_t speed = ExtractSpeed(traj, seg);
         Extrarow(traj, seg, target);
@@ -454,7 +463,7 @@ volatile float traj_dbg_grip_info = 0.0f;
                         prevTarget )) {// minTimeS = 0，按物理参数自由规划 
             return false;
         }
-        if(gripChanged) {   // 夹爪有切换，等待夹爪到位
+        if(gripActuallyChanged) {   // 夹爪有切换，等待夹爪到位
             const SArrivalCheckConfig arrivalCfg;
             return WaitGripArrived(arm, gripAfter, checkctrl, arrivalCfg);
         }

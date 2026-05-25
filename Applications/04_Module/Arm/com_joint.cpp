@@ -119,8 +119,10 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				// motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT1_YAW_MACH;
 				// while(motor[Y]->motorData[CDevMtr::DATA_POSIT] < -32767)
 				// 	motor[Y]->motorData[CDevMtr::DATA_POSIT] += 65535;
+				// while(motor[Y]->motorData[CDevMtr::DATA_POSIT] > 32767)
+				// 	motor[Y]->motorData[CDevMtr::DATA_POSIT] += 65535;
 				// motor[Y]->motorData[CDevMtr::DATA_POSIT]  += POSIT_JOINT1_YAW_MACH_PHY * 182.04f * POSIT_JOINT1_YAW_MACH;	
-				// jointCmd.setPosit_yaw = static_cast<int32_t>(0.0f * 182.04f);	
+				// jointCmd.setPosit_yaw =  PhyPositToMtrPosit_yaw(ARM_INIT_SAFE_YAW_ANGLE);	
 				
 				motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] * ARM_YAW_MOTOR_DIR;
 
@@ -177,6 +179,9 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 						static_cast<float_t>(jointCmd.setPosit_pitch3));
 					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-3000), static_cast<int16_t>(3000));
 					return APP_OK;
+				}
+				else if(jointInfo.isPositArrived_fail){ //初始化失败，校准一次
+					motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT1_YAW_MACH;
 				}
 				/*先抬起两个臂后，yaw才能动 - 至少有一个pitch没到位*/
 				else {
@@ -254,18 +259,18 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 /*------------------------------------------------------------------------------------*/
 // 物理位置转换为电机位置
 int32_t CModArm::CComJoint::PhyPositToMtrPosit_yaw(float_t phyPosit) {
-	const int32_t zeroOffset = 0.0f;//ARM_YAW_MOTOR_OFFSET;
-	const float_t scale = -1*65535/360.0f;//ARM_YAW_MOTOR_RATIO;
+	const float_t scale = -static_cast<float_t>(ARM_YAW_MOTOR_RANGE)
+		/ (ARM_YAW_PHYSICAL_RANGE_MAX - ARM_YAW_PHYSICAL_RANGE_MIN);
 
-	return static_cast<int32_t>((phyPosit * scale) + zeroOffset);
+	return static_cast<int32_t>(phyPosit * scale);
 }
 
 // 电机位置转换为物理位置
 float_t CModArm::CComJoint::MtrPositToPhyPosit_yaw(int32_t mtrPosit) {
-	const int32_t zeroOffset = 0.0f;//ARM_YAW_MOTOR_OFFSET;
-	const float_t scale = -1*65535/360.0f;//ARM_YAW_MOTOR_RATIO;
+	const float_t scale = -static_cast<float_t>(ARM_YAW_MOTOR_RANGE)
+		/ (ARM_YAW_PHYSICAL_RANGE_MAX - ARM_YAW_PHYSICAL_RANGE_MIN);
 
-	return (static_cast<float_t>(mtrPosit - zeroOffset) / scale);
+	return static_cast<float_t>(mtrPosit) / scale;
 }
 /*------------------------------------------------------------------------------------*/
 // 物理位置转换为电机位置
