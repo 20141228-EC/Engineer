@@ -22,19 +22,15 @@ EAppStatus InitAllModule() {
     armInitParam.MotorID_Yaw = EDeviceID::DEV_ARM_MTR_YAW;
     armInitParam.MotorID_Pitch1 = EDeviceID::DEV_ARM_MTR_PITCH1;
     armInitParam.MotorID_Pitch2 = EDeviceID::DEV_ARM_MTR_PITCH2;
-    armInitParam.MotorID_Pitch3 = EDeviceID::DEV_ARM_MTR_PITCH3;
     armInitParam.MotorID_Roll = EDeviceID::DEV_ARM_MTR_ROLL;
-    armInitParam.MotorID_End_L = EDeviceID::DEV_ARM_MTR_END_L;
-    armInitParam.MotorID_End_R = EDeviceID::DEV_ARM_MTR_END_R;
+    armInitParam.MotorID_End_Pitch = EDeviceID::DEV_ARM_MTR_END_PITCH;
+    armInitParam.MotorID_End_Roll = EDeviceID::DEV_ARM_MTR_END_ROLL;
     armInitParam.MotorID_Grip = EDeviceID::DEV_ARM_MTR_GRIP;
     // 设置can发送节点
     armInitParam.MotorTxNode_Yaw = &TxNode_Can3_280;
     armInitParam.MotorTxNode_Pitch1 = &TxNode_Can3_280;
     armInitParam.MotorTxNode_Pitch2 = &TxNode_Can3_280;
-    armInitParam.MotorTxNode_Pitch3 = &TxNode_Can3_280;
-    armInitParam.MotorTxNode_End_L = &TxNode_Can2_1FF;
-    armInitParam.MotorTxNode_End_R = &TxNode_Can2_1FF;
-    armInitParam.MotorTxNode_Grip = &TxNode_Can2_1FF;
+    armInitParam.MotorTxNode_Grip = &TxNode_Can2_280;
     // 初始化 YawPosPidParam 的成员
    armInitParam.YawPosPidParam.kp = 2.5f;
    armInitParam.YawPosPidParam.ki = 0.1f;
@@ -71,33 +67,21 @@ EAppStatus InitAllModule() {
    armInitParam.Pitch2SpdPidParam.kd = 0.0f;
    armInitParam.Pitch2SpdPidParam.maxIntegral = 2000.0f;
    armInitParam.Pitch2SpdPidParam.maxOutput = 2000.0f;
-   // 初始化 Pitch3PosPidParam 的成员
-   armInitParam.Pitch3PosPidParam.kp = 6.8f;
-   armInitParam.Pitch3PosPidParam.ki = 0.05f;
-   armInitParam.Pitch3PosPidParam.kd = 0.0f;
-   armInitParam.Pitch3PosPidParam.maxIntegral = 4000.0f;
-   armInitParam.Pitch3PosPidParam.maxOutput = 5500.0f;
-   // 初始化 Pitch3SpdPidParam 的成员
-   armInitParam.Pitch3SpdPidParam.kp = 0.07f;
-   armInitParam.Pitch3SpdPidParam.ki = 0.05f;
-   armInitParam.Pitch3SpdPidParam.kd = 0.0f;
-   armInitParam.Pitch3SpdPidParam.maxIntegral = 2000.0f;
-   armInitParam.Pitch3SpdPidParam.maxOutput = 2000.0f;
+
+   
    // 初始化 mitCtrl_Roll 的成员
    armInitParam.MIT_Roll_kp = 25.0f;
    armInitParam.MIT_Roll_kd = 2.0f;
-//    armInitParam.Pitch1PosPidParam.Grav_Load_Mode = CAlgoPid::EGravLoadMode::END_ROLL_G; ///< 末端roll的重补模式
-   // 初始化 endPosPidParam 的成员
-   armInitParam.endPosPidParam.kp = 0.18f;
-   armInitParam.endPosPidParam.ki = 0.0f;
-   armInitParam.endPosPidParam.kd = 0.0f;
-   armInitParam.endPosPidParam.maxOutput = 4000.0f;
-   // 初始化 endSpdPidParam 的成员
-   armInitParam.endSpdPidParam.kp = 4.0f;
-   armInitParam.endSpdPidParam.ki = 0.8f;
-   armInitParam.endSpdPidParam.kd = 0.0f;
-   armInitParam.endSpdPidParam.maxIntegral = 4000.0f;
-   armInitParam.endSpdPidParam.maxOutput = 4500.0f;
+//    armInitParam.endPosPidParam.kp = 0.18f;
+//    armInitParam.endPosPidParam.ki = 0.0f;
+//    armInitParam.endPosPidParam.kd = 0.0f;
+//    armInitParam.endPosPidParam.maxOutput = 4000.0f;
+//    // 初始化 endSpdPidParam 的成员
+//    armInitParam.endSpdPidParam.kp = 4.0f;
+//    armInitParam.endSpdPidParam.ki = 0.8f;
+//    armInitParam.endSpdPidParam.kd = 0.0f;
+//    armInitParam.endSpdPidParam.maxIntegral = 4000.0f;
+//    armInitParam.endSpdPidParam.maxOutput = 4500.0f;
    // 初始化 GripPosPidParam 的成员
    armInitParam.GripPosPidParam.kp = 5.3f;
     armInitParam.GripPosPidParam.ki = 0.15f;
@@ -109,11 +93,7 @@ EAppStatus InitAllModule() {
     armInitParam.GripSpdPidParam.kd = 0.0f;
     armInitParam.GripSpdPidParam.maxIntegral = 3000.0f;
     armInitParam.GripSpdPidParam.maxOutput = 4600.0f;
-    armInitParam.GripInitParam.initSpeedMax_     = 6000.0f;   ///< 初始化最大速度
-    armInitParam.GripInitParam.initSpeedMin_     = 1500.0f;   ///< 保底最低速度
-    armInitParam.GripInitParam.initTorqueThresh_ = 1200.0f;   ///< 力矩开始减速的阈值
-    armInitParam.GripInitParam.initTorqueRange_  = 2000.0f;   ///< 从全速减到最低速的力矩区间
-    // 夹取检测参数（滤波力矩减速+边沿检测）
+    // 夹取检测参数
     armInitParam.GripDetectParam.closeTorqueThresh = 1700.0f; ///< 滤波力矩开始减速的阈值
     armInitParam.GripDetectParam.closeTorqueRange  = 1100.0f; ///< 从全速减到最低速的滤波力矩区间
     armInitParam.GripDetectParam.closeSpeedMin     = 1000.0f; ///< 闭合时保底最低速度
@@ -258,9 +238,29 @@ EAppStatus InitAllModule() {
    /******初始化云台模块******/
     CModGimbal::SModInitParam_Gimbal gimbalInitParam;
     gimbalInitParam.yawVisualMotorID = EDeviceID::DEV_GIMBAL_MTR_VISUAL_YAW;
+    gimbalInitParam.storageMotorID_L = EDeviceID::DEV_GIMBAL_MTR_STORAGE_L;
+    gimbalInitParam.storageMotorID_R = EDeviceID::DEV_GIMBAL_MTR_STORAGE_R;
+    gimbalInitParam.storageMotorTxNode_L = &TxNode_Can2_280;
+    gimbalInitParam.storageMotorTxNode_R = &TxNode_Can2_280;
     gimbalInitParam.moduleID = EModuleID::MOD_GIMBAL;
     gimbalInitParam.MIT_YAW_kd = 0.06f;
     gimbalInitParam.MIT_YAW_kp = 1;
+    
+    // 两个电机用一样的参数
+    gimbalInitParam.storagePosPidParam_L.kp = 5.0f;
+    gimbalInitParam.storagePosPidParam_L.ki = 0.0f;
+    gimbalInitParam.storagePosPidParam_L.kd = 0.0f;
+    gimbalInitParam.storagePosPidParam_L.maxIntegral = 3000.0f;
+    gimbalInitParam.storagePosPidParam_L.maxOutput = 4000.0f;
+
+    gimbalInitParam.storageSpdPidParam_L.kp = 0.06f;
+    gimbalInitParam.storageSpdPidParam_L.ki = 0.05f;
+    gimbalInitParam.storageSpdPidParam_L.kd = 0.0f;
+    gimbalInitParam.storageSpdPidParam_L.maxIntegral = 2000.0f;
+    gimbalInitParam.storageSpdPidParam_L.maxOutput = 2000.0f;
+
+    gimbalInitParam.storagePosPidParam_R = gimbalInitParam.storagePosPidParam_L;
+    gimbalInitParam.storageSpdPidParam_R = gimbalInitParam.storageSpdPidParam_L;
     // 使用初始化后的参数创建 gimbalModule 实例
     static auto gimbalModule = CModGimbal(gimbalInitParam);
     return APP_OK;

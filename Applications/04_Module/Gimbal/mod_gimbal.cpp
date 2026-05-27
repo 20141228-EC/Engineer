@@ -26,6 +26,7 @@ EAppStatus CModGimbal::InitModule(SModInitParam_Base &param){
 	moduleID = gimbalParam.moduleID;
 
 	comVisualyaw_.InitComponent(param);
+	comstorage_.InitComponent(param);
 
 	CreateModuleTask_();
 	RegisterModule_();
@@ -47,11 +48,25 @@ void CModGimbal::UpdateHandler_(){
 	HalfTickRate = 1 - HalfTickRate;
 	if (moduleStatus == APP_RESET) return;
 
-	if(HalfTickRate) {comVisualyaw_.UpdateComponent();}//500hz
+	if(HalfTickRate) {
+		comVisualyaw_.UpdateComponent();
+		comstorage_.UpdateComponent();
+	}//500hz
 
 	// 将组件信息同步到模块级信息结构体, 供 SystemCore 读取
 	gimbalInfo.angle_visualyaw = comVisualyaw_.VisuallyawInfo.angle;
 	gimbalInfo.isPositArrived_Visualyaw = comVisualyaw_.VisuallyawInfo.isAngleArrived;
+	gimbalInfo.posit_storage_L = comstorage_.storageInfo.posit_L_storage;
+	gimbalInfo.posit_storage_R = comstorage_.storageInfo.posit_R_storage;
+	gimbalInfo.isPositArrived_Storage_L = comstorage_.storageInfo.isPositArrived_L_storage;
+	gimbalInfo.isPositArrived_Storage_R = comstorage_.storageInfo.isPositArrived_R_storage;
+	gimbalInfo.isStorageAvailable = comstorage_.storageInfo.isAvailable;
+	CDevMtrKT::FillCanTxBuffer(comstorage_.motor[CComStorage::L],
+								   comstorage_.mtrCanTxNode[CComStorage::L]->dataBuffer,
+								   comstorage_.mtrOutputBuffer[CComStorage::L]);
+	CDevMtrKT::FillCanTxBuffer(comstorage_.motor[CComStorage::R],
+								   comstorage_.mtrCanTxNode[CComStorage::R]->dataBuffer,
+								   comstorage_.mtrOutputBuffer[CComStorage::R]);
 }
 
 /**
@@ -91,10 +106,22 @@ EAppStatus CModGimbal::RestrictGimbalCommand_(){
 
 	gimbalCmd.set_visualyaw =
 		std::clamp(gimbalCmd.set_visualyaw, -185.0f, 1.f);
+	gimbalCmd.set_posit_storage_L = std::clamp(gimbalCmd.set_posit_storage_L,
+			static_cast<int32_t>(-STORAGE_L_MOTOR_RANGE / 2),
+			static_cast<int32_t>(STORAGE_L_MOTOR_RANGE / 2));
+	gimbalCmd.set_posit_storage_R = std::clamp(gimbalCmd.set_posit_storage_R,
+			static_cast<int32_t>(-STORAGE_R_MOTOR_RANGE / 2),
+			static_cast<int32_t>(STORAGE_R_MOTOR_RANGE / 2));
 
 	if (gimbalCmd.isAutoCtrl) return APP_OK;
 
 	return APP_OK;
+}
+/**
+ * @brief 对自动任务暴露的接口
+ */
+void CModGimbal::ChooseStoreOre(EStorageSlot ore){
+	comstorage_.ChooseStoreOre(static_cast<CComStorage::Eore_station>(ore));
 }
 
 } // namespace my_engineer

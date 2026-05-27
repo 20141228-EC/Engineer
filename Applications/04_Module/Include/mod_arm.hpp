@@ -19,8 +19,6 @@
 #define ARM_PITCH1_PHYSICAL_RANGE_MAX 105.f
 #define ARM_PITCH2_PHYSICAL_RANGE_MIN 1.f
 #define ARM_PITCH2_PHYSICAL_RANGE_MAX 148.f
-#define ARM_PITCH3_PHYSICAL_RANGE_MIN -76.f
-#define ARM_PITCH3_PHYSICAL_RANGE_MAX 0.f
 #define ARM_ROLL_PHYSICAL_RANGE_MIN -3.0f
 #define ARM_ROLL_PHYSICAL_RANGE_MAX 323.0f
 #define ARM_END_PITCH_PHYSICAL_RANGE_MIN -90.0f
@@ -55,15 +53,14 @@
 #define ARM_ROLL_MOTOR_OFFSET 0.f // 但这个比较特殊，测量这个就是从电机0位置到物理0位置总共的角度
 #define ARM_END_PITCH_MOTOR_OFFSET -ARM_END_PITCH_PHYSICAL_RANGE_MIN * ARM_END_PITCH_MOTOR_RATIO
 
+#define ARM_PITCH2_MOTOR_REDUCTION_RATIO 2 //同步带减速比
 /*-------------------------------------方向设定---------------------------------------------------------*/
 #define ARM_YAW_MOTOR_DIR 1
 #define ARM_PITCH1_MOTOR_DIR -1//减小
 #define ARM_PITCH2_MOTOR_DIR 1
 #define ARM_ROLL_MOTOR_DIR 1
-#define ARM_END_PITCH_MOTOR_L_DIR -1
-#define ARM_END_PITCH_MOTOR_R_DIR 1
-#define ARM_END_ROLL_MOTOR_L_DIR -1
-#define ARM_END_ROLL_MOTOR_R_DIR -1
+#define ARM_END_PITCH_MOTOR_DIR 1	///< 根据实际安装方向调整
+#define ARM_END_ROLL_MOTOR_DIR  1	///< 根据实际安装方向调整
 #define ARM_GRIP_MOTOR_DIR -1	// 张开方向与编码器值增大方向一致
 
 //动态限位
@@ -83,7 +80,6 @@
 #define ARM_INIT_SAFE_YAW_ANGLE 0.0f
 #define ARM_INIT_SAFE_PITCH1_ANGLE 70.0f
 #define ARM_INIT_SAFE_PITCH2_ANGLE 70.0f
-#define ARM_INIT_SAFE_PITCH3_ANGLE -11.0f
 
 #define POSIT_JOINT1_YAW_MACH 53902
 #define POSIT_JOINT1_YAW_MACH_PHY 0.f
@@ -97,14 +93,6 @@
 #define POSIT_JOINT3_PITCH2_MACH_PHY 0.f
 #define POSIT_JOINT3_PITCH2_INIT_PHY 20.0f
 
-/*-------------------------------------Pitch3 参数 (KT电机)------------------------------------------*/
-#define ARM_PITCH3_MOTOR_DIR -1
-#define ARM_PITCH3_MOTOR_RANGE 10942
-#define ARM_PITCH3_INIT_ANGLE 0.0f
-#define POSIT_JOINT4_PITCH3_MACH 10942
-#define POSIT_JOINT4_PITCH3_MACH_PHY 0.f
-#define POSIT_JOINT4_PITCH3_INIT_PHY 0.0f
-
 #define POSIT_JOINT4_ROLL_OFFSET 0
 
 #define POSIT_JOINT5_PITCH_END_MACH 0
@@ -116,10 +104,11 @@
 #define rad2deg(x) ((x) * 57.295779513082320876798154814105)
 /*------------------------------------- 夹爪的相关参数------------------------------------------*/
 /// 自动控制速度常量（电机的转速rpm）
-#define GRIP_OPEN_SPEED  12000.0f
+#define GRIP_OPEN_SPEED  6000.0f
 #define GRIP_OPEN_SPEED_MIN  4000.0f
-#define GRIP_CLOSE_SPEED  14000.0f
-#define GRIP_OUTPUT_LIMIT 4700       ///< 正常模式输出限幅
+#define GRIP_CLOSE_SPEED  7000.0f
+#define GRIP_OUTPUT_LIMIT 3700
+#define GRIP_RESCUE_OUTPUT_LIMIT 4000
 
 #define GRIP_OPEN_Stop_distance  1.0f
 #define GRIP_CLOSE_Stop_distance  1.0f
@@ -161,30 +150,26 @@ public:
 		EDeviceID MotorID_Yaw = EDeviceID::DEV_NULL;
 		EDeviceID MotorID_Pitch1 = EDeviceID::DEV_NULL;
 		EDeviceID MotorID_Pitch2 = EDeviceID::DEV_NULL;
-		EDeviceID MotorID_Pitch3 = EDeviceID::DEV_NULL;
 		EDeviceID MotorID_Roll = EDeviceID::DEV_NULL;
-		EDeviceID MotorID_End_L = EDeviceID::DEV_NULL;
-		EDeviceID MotorID_End_R = EDeviceID::DEV_NULL;
+		EDeviceID MotorID_End_Pitch = EDeviceID::DEV_NULL; ///< 末端Pitch电机(DM4310 MIT)
+		EDeviceID MotorID_End_Roll = EDeviceID::DEV_NULL;  ///< 末端Roll电机(DM4310 MIT)
 		EDeviceID MotorID_Grip = EDeviceID::DEV_NULL;
 		CInfCAN::CCanTxNode *MotorTxNode_Yaw; ///< 机械臂关节Yaw电机发送节点
 		CInfCAN::CCanTxNode *MotorTxNode_Pitch1; ///< 机械臂关节Pitch电机1发送节点
 		CInfCAN::CCanTxNode *MotorTxNode_Pitch2; ///< 机械臂关节Pitch电机2发送节点
-		CInfCAN::CCanTxNode *MotorTxNode_Pitch3;
-		CInfCAN::CCanTxNode *MotorTxNode_End_L;
-		CInfCAN::CCanTxNode *MotorTxNode_End_R;
 		CInfCAN::CCanTxNode *MotorTxNode_Grip; ///< 机械臂夹爪电机发送节点
-		float_t MIT_Roll_kp = 0.0f; ///< MIT控制器比例系数
-		float_t MIT_Roll_kd = 0.0f; ///< MIT控制器微分系数
+		float_t MIT_Roll_kp = 0.0f; ///< MIT控制器Roll比例系数
+		float_t MIT_Roll_kd = 0.0f; ///< MIT控制器Roll微分系数
+		float_t MIT_End_Pitch_kp = 0.0f; ///< MIT控制器End Pitch比例系数
+		float_t MIT_End_Pitch_kd = 0.0f; ///< MIT控制器End Pitch微分系数
+		float_t MIT_End_Roll_kp = 0.0f;  ///< MIT控制器End Roll比例系数
+		float_t MIT_End_Roll_kd = 0.0f;  ///< MIT控制器End Roll微分系数
 		CAlgoPid::SAlgoInitParam_Pid YawPosPidParam;
 		CAlgoPid::SAlgoInitParam_Pid YawSpdPidParam;
 		CAlgoPid::SAlgoInitParam_Pid Pitch1PosPidParam;
 		CAlgoPid::SAlgoInitParam_Pid Pitch1SpdPidParam;
 		CAlgoPid::SAlgoInitParam_Pid Pitch2PosPidParam;
 		CAlgoPid::SAlgoInitParam_Pid Pitch2SpdPidParam;
-		CAlgoPid::SAlgoInitParam_Pid Pitch3PosPidParam;
-		CAlgoPid::SAlgoInitParam_Pid Pitch3SpdPidParam;
-		CAlgoPid::SAlgoInitParam_Pid endPosPidParam;
-		CAlgoPid::SAlgoInitParam_Pid endSpdPidParam;
 		CAlgoPid::SAlgoInitParam_Pid GripPosPidParam;///< 夹爪位置PID参数
 		CAlgoPid::SAlgoInitParam_Pid GripSpdPidParam;
 
@@ -210,7 +195,6 @@ public:
 		float_t angle_Yaw = 0.0f; ///< 机械臂关节Yaw角度
 		float_t angle_Pitch1 = 0.0f; ///< 机械臂关节Pitch1角度
 		float_t angle_Pitch2 = 0.0f; ///< 机械臂关节Pitch2角度
-		float_t angle_Pitch3 = 0.0f; ///< 机械臂关节Pitch3角度
 		float_t angle_Roll = 0.0f; ///< 机械臂关节Roll角度
 		float_t angle_end_pitch = 0.0f; ///< 机械臂末端Pitch角度
 		float_t angle_end_roll = 0.0f; ///< 机械臂末端Roll角度
@@ -219,14 +203,11 @@ public:
 		bool isAngleArrived_Yaw = false; ///< 机械臂关节Yaw角度是否到达
 		bool isAngleArrived_Pitch1 = false; ///< 机械臂关节Pitch1角度是否到达
 		bool isAngleArrived_Pitch2 = false; ///< 机械臂关节Pitch2角度是否到达
-		bool isAngleArrived_Pitch3 = false; ///< 机械臂关节Pitch3角度是否到达
 		bool isAngleArrived_Roll = false; ///< 机械臂关节Roll角度是否到达
 		bool isAngleArrived_End_Pitch = false; ///< 机械臂末端Pitch角度是否到达
 		bool isAngleArrived_End_Roll = false; ///< 机械臂末端Roll角度是否到达
 		bool isAngleArrived_Grip = false; ///< 机械臂夹爪角度是否夹取
 		bool isGripped = false; ///< 夹爪是否处于堵转夹持状态
-		bool resetEndPitch = false; ///< 是否重置末端Pitch角度
-		bool endPitchCalibrating = false; ///< 末端Pitch是否正在标定中
 		float_t holdLength_grip = 0.0f; ///< 夹取保持位置（物理距离 mm）
 		enum class EGripState : uint8_t { RELEASE = 0, HOLD = 1 };
 		EGripState gripState = EGripState::RELEASE;
@@ -240,7 +221,6 @@ public:
 		float_t set_angle_Yaw = 0.0f; ///< 机械臂关节Yaw角度设定
 		float_t set_angle_Pitch1 = 0.0f; ///< 机械臂关节Pitch1角度设定
 		float_t set_angle_Pitch2 = 0.0f; ///< 机械臂关节Pitch2角度设定
-		float_t set_angle_Pitch3 = 0.0f; ///< 机械臂关节Pitch3角度设定
 		float_t set_angle_Roll = 0.0f; ///< 机械臂关节Roll角度设定
 		float_t set_angle_end_pitch = 0.0f; ///< 机械臂末端Pitch角度设定
 		float_t set_angle_end_roll = 0.0f; ///< 机械臂末端Roll角度设定
@@ -248,8 +228,6 @@ public:
 		float_t set_speed_grip = 0.0f; ///< 机械臂夹爪速度设定（速度环模式）
 		bool gripClose = false;           ///< 手动闭合标志（Core层设置）
 		bool gripOpen = false;            ///< 手动张开标志（Core层设置）
-		bool resetEndPitch = false; ///< 是否重置末端Pitch角度
-		bool resetEndAll = false; ///< 是否完整重初始化末端
 		bool resetbyControl = false; ///<通过自定义控制器进行重试
 	} armCmd;
 
@@ -275,22 +253,19 @@ private:
 	// 定义机械臂Yaw关节组件类并实例化
 	class CComJoint: public CComponentBase {
 	public:
-		enum {Y = 0, P1 = 1, P2 = 2, P3 = 3};
+		enum {Y = 0, P1 = 1, P2 = 2};
 		const int32_t rangeLimit_yaw 		= ARM_YAW_MOTOR_RANGE_LHK; ///< Yaw关节电机范围限制
 		const int32_t rangeLimit_pitch1 = ARM_PITCH1_MOTOR_RANGE; ///< Pitch1关节电机范围限制
 		const int32_t rangeLimit_pitch2 = ARM_PITCH2_MOTOR_RANGE; ///< Pitch2关节电机范围限制
-		const int32_t rangeLimit_pitch3 = ARM_PITCH3_MOTOR_RANGE; ///< Pitch3关节电机范围限制
 
 		// 定义Yaw关节信息结构体
 		struct SYawInfo {
 			int32_t posit_yaw = 0.0f;           ///< Yaw关节当前位置
 			int32_t posit_pitch1 = 0.0f;     ///< Pitch1关节当前位置
 			int32_t posit_pitch2 = 0.0f;     ///< Pitch2关节当前位置
-			int32_t posit_pitch3 = 0.0f;     ///< Pitch3关节当前位置
 			bool isPositArrived_yaw = false;    ///< Yaw位置是否到达目标
 			bool isPositArrived_pitch1 = false; ///< Pitch1位置是否到达
 			bool isPositArrived_pitch2 = false; ///< Pitch2位置是否到达
-			bool isPositArrived_pitch3 = false; ///< Pitch3位置是否到达
 			bool isPositArrived_fail= false; 	///<关节有没有初始化到的
 		} jointInfo;
 
@@ -299,7 +274,6 @@ private:
 			int32_t setPosit_yaw = 0.0f;        ///< Yaw关节目标位置
 			int32_t setPosit_pitch1 = POSIT_JOINT2_PITCH1_INIT_PHY; ///< Pitch1关节目标位置
 			int32_t setPosit_pitch2 = POSIT_JOINT3_PITCH2_INIT_PHY; ///< Pitch2关节目标位置
-			int32_t setPosit_pitch3 = POSIT_JOINT4_PITCH3_INIT_PHY; ///< Pitch3关节目标位置
 		} jointCmd;
 
 		// PID控制器
@@ -309,11 +283,9 @@ private:
 		CAlgoPid pidSpdCtrl_pitch1;
 		CAlgoPid pidPosCtrl_pitch2;
 		CAlgoPid pidSpdCtrl_pitch2;
-		CAlgoPid pidPosCtrl_pitch3;
-		CAlgoPid pidSpdCtrl_pitch3;
 
 		// 电机数据输出缓冲区
-		std::array<int16_t, 4> mtrOutputBuffer = {0};
+		std::array<int16_t, 3> mtrOutputBuffer = {0};
 
 		CAlgoTrajPlayback initTraj_;
 		float_t initTrajTime_ = 0.0f;
@@ -326,7 +298,7 @@ private:
 		float_t g_pitch2 = 0;
 
 		// 电机实例指针
-		CDevMtr* motor[4] = {nullptr};
+		CDevMtr* motor[3] = {nullptr};
 
 		// 父类指针，用于访问其他组件
 		CModArm* parentModule = nullptr;
@@ -335,13 +307,11 @@ private:
 		static int32_t PhyPositToMtrPosit_yaw(float_t phyPosit);
 		static int32_t PhyPositToMtrPosit_pitch1(float_t phyPosit);
 		static int32_t PhyPositToMtrPosit_pitch2(float_t phyPosit);
-		static int32_t PhyPositToMtrPosit_pitch3(float_t phyPosit);
 
 		// 电机位置转换为物理位置
 		static float_t MtrPositToPhyPosit_yaw(int32_t mtrPosit);
 		static float_t MtrPositToPhyPosit_pitch1(int32_t mtrPosit);
 		static float_t MtrPositToPhyPosit_pitch2(int32_t mtrPosit);
-		static float_t MtrPositToPhyPosit_pitch3(int32_t mtrPosit);
 
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
@@ -350,16 +320,15 @@ private:
 		EAppStatus UpdateComponent() final;
 
 		// 输出更新函数
-		EAppStatus _UpdateOutput(float_t posit_yaw, float_t posit_pitch1, float_t posit_pitch2, float_t posit_pitch3);
+		EAppStatus _UpdateOutput(float_t posit_yaw, float_t posit_pitch1, float_t posit_pitch2);
 
 		// 单独电机输出更新函数
 		EAppStatus _UpdateOutput_Yaw(float_t posit_yaw);
 		EAppStatus _UpdateOutput_Pitch1(float_t posit_pitch1);
 		EAppStatus _UpdateOutput_Pitch2(float_t posit_pitch2);
-		EAppStatus _UpdateOutput_Pitch3(float_t posit_pitch3);
 
 		// 电机can发送节点
-		std::array<CInfCAN::CCanTxNode*, 4> mtrCanTxNode;
+		std::array<CInfCAN::CCanTxNode*, 3> mtrCanTxNode;
 
 	} comjoint_;
 
@@ -409,90 +378,92 @@ private:
 		EAppStatus UpdateComponent() final;
 	} comRoll_;
 
-	// 定义机械臂末端组件类并实例化
-	class CComEnd: public CComponentBase {
+	// 定义末端Pitch关节组件类并实例化（DM4310 MIT直驱）
+	class CComEndPitch: public CComponentBase {
 	public:
+		struct SEndPitchInfo {
+			float_t angle = 0.0f;           ///< 当前Pitch角度(deg)
+			bool isAngleArrived = false;    ///< 角度是否到达目标
+		} endPitchInfo;
 
-		enum { L = 0, R = 1 };
-		enum class EEndInitState : uint8_t {
-			PITCH = 0,
-			ROLL = 1,
-			DONE = 2
-		};
+		struct SEndPitchCmd {
+			float_t setAngle = 0.0f;        ///< 目标Pitch角度(deg)
+		} endPitchCmd;
 
-		const int32_t rangeLimit_Pitch = ARM_END_PITCH_MOTOR_RANGE; ///< 电机位置范围限制
+		struct SMitCtrl {
+			float_t kp = 0.0f;
+			float_t kd = 0.0f;
+		} mitCtrl;
 
-		// 定义机械臂末端信息结构体并实例化~
-		struct SEndInfo {
-			int32_t posit_Pitch = 0;    ///< End Posit Pitch
-			int32_t posit_Roll = 0;    ///< End Posit Roll
-			bool isPositArrived_Pitch = false; ///< End Posit Arrived Pitch
-			bool isPositArrived_Roll = false; ///< End Posit Arrived Roll
-			// bool resetEndPitch = false; ///< Reset End Pitch Flag
-		} endInfo;
+		CDevMtr* motor = nullptr;
 
-		// 定义机械臂末端控制命令结构体并实例化
-		struct SEndCmd {
-			int32_t setPosit_Pitch = 0;    ///< End Posit Set Pitch
-			int32_t setPosit_Roll = 0;    ///< End Posit Set Roll
-			bool resetEndPitch = false; ///< Reset End Pitch Flag
-			bool resetEndAll = false; ///< Reset End All Flag
-		} endCmd;
-
-		// 电机实例指针数组
-		std::array<CDevMtr*, 2> motor = {nullptr};
-
-		// 定义机械臂末端PID控制器
-		CAlgoPid pidPosCtrl;
-		CAlgoPid pidSpdCtrl;
-
-		int32_t rollZeroOffset = 0; ///< Roll零点偏移（初始化时标定）
-		bool rollCalibrated_ = false; ///< Roll是否已完成标定
-		bool pitchCalibrated_ = false; ///< Pitch是否已完成标定
-		EEndInitState initState_ = EEndInitState::PITCH;
-		uint16_t initStateTick_ = 0;
-		// 电机数据输出缓冲区
-		std::array<int16_t, 2> mtrOutputBuffer = {0};
+		// 重补输出
+		float_t Grav_End_Pitch_Out = 0;
 
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
 
 		// 更新组件
 		EAppStatus UpdateComponent() final;
+	} comEndPitch_;
 
-		// 物理位置转换为电机位置: Pitch
-		static int32_t PhyPositToMtrPosit_Pitch(float_t phyPosit);
+	// 定义末端Roll关节组件类并实例化（DM4310 MIT直驱）
+	class CComEndRoll: public CComponentBase {
+	public:
+		struct SEndRollInfo {
+			float_t angle = 0.0f;           ///< 当前Roll角度(deg)
+			bool isAngleArrived = false;    ///< 角度是否到达目标
+		} endRollInfo;
 
-		// 电机位置转换为物理位置: Pitch
-		static float_t MtrPositToPhyPosit_Pitch(int32_t mtrPosit);
+		struct SEndRollCmd {
+			float_t setAngle = 0.0f;        ///< 目标Roll角度(deg)
+		} endRollCmd;
 
-		// 物理位置转换为电机位置: Roll
-		int32_t PhyPositToMtrPosit_Roll(float_t phyPosit);
+		struct SMitCtrl {
+			float_t kp = 0.0f;
+			float_t kd = 0.0f;
+		} mitCtrl;
 
-		// 电机位置转换为物理位置: Roll
-		float_t MtrPositToPhyPosit_Roll(int32_t mtrPosit);
+		CDevMtr* motor = nullptr;
 
-		// 输出更新函数
-		EAppStatus _UpdateOutput(float_t posit_Pitch, float_t posit_Roll);
+		// 重补输出
+		float_t Grav_End_Roll_Out = 0;
 
-		// 电机can发送节点
-		std::array<CInfCAN::CCanTxNode*, 2> mtrCanTxNode;
+		// 初始化组件
+		EAppStatus InitComponent(SModInitParam_Base &param) final;
 
-
-	} comEnd_;
+		// 更新组件
+		EAppStatus UpdateComponent() final;
+	} comEndRoll_;
 
 	class CComGrip: public CComponentBase {
 	public:
 
 		const int32_t rangeLimit_Grip = ARM_END_GRIP_MOTOR_RANGE; ///< 夹爪电机位置范围限制
+
+		// 夹爪张开方向
+		enum class EGripMoveDir : int8_t {
+			IDLE  = 0,
+			CLOSE = -1,
+			OPEN  = 1,
+		};
+
+		// 速度环和位置环的切换
+		struct SGripCtrlOutput {
+			enum class EGripCtrlMode : uint8_t {STOP = 0, SPEED = 1, POSITION = 2};
+			EGripCtrlMode mode = EGripCtrlMode::STOP;
+			float_t speed = 0.0f;
+			int32_t targetPosit = 0;
+		};
+
 		// 定义夹爪信息结构体
 		struct SGripInfo {
-			enum class EGripState : uint8_t { RELEASE = 0, HOLD = 1,RELEASE_MAX = 3, SAVE = 4};//松开、张开、张开最大、自救
-			EGripState state = EGripState::RELEASE;	///< 夹爪控制子状态
-			int32_t posit_grip = 0;           	///< 夹爪当前位置
-			int32_t holdPosit_Grip = 0;			///< 记忆夹持位置
-			bool isGripped = false; 			///< 是否夹住
-			bool repeatInit = false;              ///< 重复标定
+			enum class EGripState : uint8_t { RELEASE = 0, HOLD = 1, SAVE = 3 };//松开、夹持、自救
+			EGripState state = EGripState::RELEASE;
+			int32_t posit_grip = 0;
+			int32_t holdPosit_Grip = 0;
+			bool isGripped = false;
+			bool repeatInit = false;
 		} gripInfo;
 
 		// 定义夹爪控制命令结构体
@@ -502,18 +473,12 @@ private:
 			int32_t regripStableCnt = 0;      ///< 二次夹紧稳定计数
 			float_t setSpeed_grip = 0.0f;     ///< 夹爪目标速度（正=张开，负=闭合），速度环模式使用
 			bool regripPulse = false;         ///< 二次夹紧脉冲进行中（HOLD 状态下的内部子状态）
-			bool cmdReGrip = false;           ///< 二次夹紧请求（边沿脉冲，由上层写入，下层消费后清零）
-			bool cmdClose = false;            ///< 手动闭合标志（Core层设置）
-			bool cmdOpen = false;             ///< 手动张开标志（Core层设置）
+			bool cmdReGrip = false;           ///< 二次夹紧请求
+			bool cmdClose = false;            ///< 手动闭合标志
+			bool cmdOpen = false;             ///< 手动张开标志
 		} gripCmd;
 
-		struct SGripinitParam {
-			float_t initSpeedMax_     = 6000.0f;   ///< 初始化最大速度
-			float_t initSpeedMin_     = 2300.0f;   ///< 保底最低速度
-			float_t initTorqueThresh_ = 1000.0f;   ///< 力矩开始减速的阈值
-			float_t initTorqueRange_  = 2000.0f;   ///< 从全速减到最低速的力矩区间
-		} GripinitParam_;
-
+		// 定义夹爪力矩检测结构体
 		struct SGripCmdDetect {
 			bool edgeReady          = false;    ///< 边沿检测就绪标志
 			float_t filteredTorque  = 0.0f;     ///< IIR滤波后的力矩值
@@ -521,24 +486,17 @@ private:
 			float_t closeTorqueRange  = 1100.0f;///< 从全速减到最低速的滤波力矩区间
 			float_t closeSpeedMin     = 5000.0f;///< 闭合时保底最低速度
 			float_t detectTorque      = 2800.0f;///< 滤波力矩超过此值即判定夹取成功
-			float_t filterAlpha       = 0.95f;  ///< LowPassFilter滤波系数α
+			float_t filterAlpha       = 0.95f;  ///< LowPassFilter滤波系数
 		} gripDetect_;
 
-		struct SGripMotorDetect {
-			int32_t cntstable  = 0;            ///<稳定计数器
-			int32_t Torque     = 0;            ///<当前力矩
-			int32_t SpeedLimit = 0;            ///<速度限制值
-			enum class EGripMotorState : uint8_t { STALL = 0, RUNNING = 1 };
-			EGripMotorState state = EGripMotorState::RUNNING;	///< 夹爪控制子状态
-		} griGripMotor_;//这一部分暂时没有用
-
+		// 定义夹爪卡死处理结构体
 		struct SRescueParam {
-			float_t speedThresh   = 8000.0f;  ///< 触发检测的目标速度阈值 (rpm)这里的选择的依据就是在模块层中设置的高转速
-			float_t stuckThresh   = 500.0f;   ///< 实际速度低于此值视为卡死 (rpm)
-			uint16_t triggerTime  = 100;       ///< 卡死持续触发时间 
-			float_t distancePhy   = 3.0f;     ///< 自救移动物理距离 (mm)
+			float_t speedThresh   = 8000.0f;  ///< 触发检测的目标速度阈值
+			float_t stuckThresh   = 500.0f;   ///< 实际速度低于此值视为卡死
+			uint16_t triggerTime  = 100;       ///< 卡死持续触发时间
+			float_t distancePhy   = 3.0f;     ///< 自救移动物理距离
 			int32_t distanceEnc   = 0;        ///< 自救移动编码器距离
-			uint16_t timeout      = 600;      ///< 自救超时 (ticks)
+			uint16_t timeout      = 600;      ///< 自救超时
 			uint16_t detectCnt    = 0;        ///< 检测计数器
 			int32_t targetPosit   = 0;        ///< 自救目标位置
 			uint16_t elapsedTick  = 0;        ///< 自救已用时间
@@ -553,28 +511,33 @@ private:
 
 		// 电机数据输出缓冲区
 		int16_t mtrOutputBuffer = 0;
-		float_t speedTargetFiltered_ = 0.0f;
-		float_t speedMeasuredFiltered_ = 0.0f;
-		uint16_t initTick_ = 0;
+		SGripCtrlOutput gripCtrlOutput_;
+		SGripCtrlOutput::EGripCtrlMode lastCtrlMode_ = SGripCtrlOutput::EGripCtrlMode::STOP;
 
 		static float_t MtrPositToPhyPosit(float_t mtrPosit);
-
 		static int32_t PhyPositToMtrPosit(float_t phyPosit);
+
+		// 判断夹爪的运动方向
+		EGripMoveDir DeriveMoveDir() const;
+
+		// 力矩减速限幅
+		float_t ApplyTorqueSpeedLimit(float_t spd) const;
 
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
-
-
-		float_t CalcGripSlowSpeed(float_t maxSpeed, float_t minSpeed, int32_t remainToStop, int32_t slowBand);
-
 		// 更新组件
 		EAppStatus UpdateComponent() final;
 
 		// 输出更新函数（位置环）
 		EAppStatus _UpdateOutput(float_t gripTarget);
-
-		// 输出更新函数（速度环，复用内环pidSpdCtrl）
+		// 输出更新函数（速度环）
 		EAppStatus _UpdateOutputSpd(float_t speedTarget);
+		// 输出模式的选择
+		EAppStatus ApplyGripOutput(const SGripCtrlOutput& output);
+
+		void HandleStateRelease(EGripMoveDir moveDir, SGripCtrlOutput& out);///<三种控制状态
+		void HandleStateHold(EGripMoveDir moveDir, SGripCtrlOutput& out);
+		void HandleStateSave(EGripMoveDir moveDir, SGripCtrlOutput& out);
 
 		// 电机can发送节点
 		CInfCAN::CCanTxNode* mtrCanTxNode;

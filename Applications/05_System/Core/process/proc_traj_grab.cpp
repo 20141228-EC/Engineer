@@ -34,16 +34,15 @@ namespace my_engineer {
         arm.armCmd.set_angle_Yaw       = arm.armInfo.angle_Yaw;
         arm.armCmd.set_angle_Pitch1    = arm.armInfo.angle_Pitch1;
         arm.armCmd.set_angle_Pitch2    = arm.armInfo.angle_Pitch2;
-        arm.armCmd.set_angle_Pitch3    = arm.armInfo.angle_Pitch3;
         arm.armCmd.set_angle_Roll      = arm.armInfo.angle_Roll;
         arm.armCmd.set_angle_end_pitch = arm.armInfo.angle_end_pitch;
         arm.armCmd.set_angle_end_roll  = arm.armInfo.angle_end_roll;
 
-        // 重新标定末端
-        arm.armCmd.resetEndAll = true;
-        while(arm.comEnd_.initState_ !=  CModArm::CComEnd::EEndInitState::DONE){
-            proc_waitMs(1);
-        }
+//         // 重新标定末端
+//         arm.armCmd.resetEndAll = true;
+//         while(arm.comEnd_.initState_ !=  CModArm::CComEnd::EEndInitState::DONE){
+//             proc_waitMs(1);
+//         }
 
         // 循环等待鼠标左键/右键选择轨迹
         ETrajID trajId;
@@ -81,7 +80,7 @@ namespace my_engineer {
                 proc_waitMs(1);
             }
             // 左键确认: 当前电机Roll位置设为零点偏移
-            //arm.comEnd_.rollZeroOffset = arm.comEnd_.endInfo.posit_Roll;
+//             //arm.comEnd_.rollZeroOffset = arm.comEnd_.endInfo.posit_Roll;
         }
 
         {
@@ -136,7 +135,6 @@ namespace my_engineer {
         arm.armCmd.set_angle_Yaw       = arm.armInfo.angle_Yaw;
         arm.armCmd.set_angle_Pitch1    = arm.armInfo.angle_Pitch1;
         arm.armCmd.set_angle_Pitch2    = arm.armInfo.angle_Pitch2;
-        arm.armCmd.set_angle_Pitch3    = arm.armInfo.angle_Pitch3;
         arm.armCmd.set_angle_Roll      = arm.armInfo.angle_Roll;
         arm.armCmd.set_angle_end_pitch = arm.armInfo.angle_end_pitch;
         arm.armCmd.set_angle_end_roll  = arm.armInfo.angle_end_roll;

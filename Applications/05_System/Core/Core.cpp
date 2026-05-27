@@ -168,7 +168,6 @@ void CSystemCore::UpdateHandler_() {
                 armCmd.set_angle_Yaw = armInfo.angle_Yaw;
                 armCmd.set_angle_Pitch1 = armInfo.angle_Pitch1;
                 armCmd.set_angle_Pitch2 = armInfo.angle_Pitch2;
-                armCmd.set_angle_Pitch3 = armInfo.angle_Pitch3;
                 armCmd.set_angle_Roll = armInfo.angle_Roll;
                 armCmd.set_angle_end_pitch = armInfo.angle_end_pitch;
                 armCmd.set_angle_end_roll = armInfo.angle_end_roll;
@@ -204,7 +203,6 @@ void CSystemCore::UpdateHandler_() {
                 armCmd.set_angle_Yaw = armInfo.angle_Yaw;
                 armCmd.set_angle_Pitch1 = armInfo.angle_Pitch1;
                 armCmd.set_angle_Pitch2 = armInfo.angle_Pitch2;
-                armCmd.set_angle_Pitch3 = armInfo.angle_Pitch3;
                 armCmd.set_angle_Roll = armInfo.angle_Roll;
                 armCmd.set_angle_end_pitch = armInfo.angle_end_pitch;
                 armCmd.set_angle_end_roll = armInfo.angle_end_roll;
@@ -230,7 +228,6 @@ void CSystemCore::UpdateHandler_() {
             SysControllerLink.robotInfo.arm.yaw       = parm_->armInfo.angle_Yaw;
             SysControllerLink.robotInfo.arm.pitch1     = parm_->armInfo.angle_Pitch1;
             SysControllerLink.robotInfo.arm.pitch2     = parm_->armInfo.angle_Pitch2;
-            SysControllerLink.robotInfo.arm.pitch3     = parm_->armInfo.angle_Pitch3;
             SysControllerLink.robotInfo.arm.roll       = parm_->armInfo.angle_Roll;
             SysControllerLink.robotInfo.arm.pitch_end  = parm_->armInfo.angle_end_pitch;
 
@@ -238,7 +235,6 @@ void CSystemCore::UpdateHandler_() {
             SysControllerLink.robotInfo.torque.yaw       = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::Y]->motorData[CDevMtr::DATA_CURRENT]);
             SysControllerLink.robotInfo.torque.pitch1    = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::P1]->motorData[CDevMtr::DATA_CURRENT]);
             SysControllerLink.robotInfo.torque.pitch2    = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::P2]->motorData[CDevMtr::DATA_CURRENT]);
-            SysControllerLink.robotInfo.torque.pitch3    = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::P3]->motorData[CDevMtr::DATA_CURRENT]);
             SysControllerLink.robotInfo.torque.roll      = static_cast<float>(parm_->comRoll_.motor->motorData[CDevMtr::DATA_TORQUE]);
             SysControllerLink.robotInfo.torque.pitch_end = 0.f;  // 末端由双M2006差速驱动，暂不处理
         }
@@ -260,10 +256,6 @@ void CSystemCore::UpdateHandler_() {
         if (parm_) {
             gripKeyboardCmd_ = parm_->armInfo.isGripped ? EGripKeyboardCmd::CLOSE : EGripKeyboardCmd::OPEN;
             parm_->armCmd.set_speed_grip = 0.0f;
-            // 轨迹任务主动切回控制器模式时，保留末端Roll角度避免跳变
-            // if (!use_Controller_) {
-            //     parm_->armCmd.set_angle_end_roll = 0.f;
-            // }
             parm_->armCmd.set_angle_end_roll = 0.f;
         }
         // 图传强制回正
@@ -297,7 +289,6 @@ void CSystemCore::UpdateHandler_() {
                 parm_->armCmd.set_angle_Yaw = parm_->armInfo.angle_Yaw;
                 parm_->armCmd.set_angle_Pitch1 = parm_->armInfo.angle_Pitch1;
                 parm_->armCmd.set_angle_Pitch2 = parm_->armInfo.angle_Pitch2;
-                parm_->armCmd.set_angle_Pitch3 = parm_->armInfo.angle_Pitch3;
                 parm_->armCmd.set_angle_Roll = parm_->armInfo.angle_Roll;
                 parm_->armCmd.set_angle_end_pitch = parm_->armInfo.angle_end_pitch;
                 parm_->armCmd.set_angle_end_roll = parm_->armInfo.angle_end_roll;

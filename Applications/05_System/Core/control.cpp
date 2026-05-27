@@ -133,8 +133,6 @@ void CSystemCore::ControlFromRemote_() {
                     (remote.joystick_LY / 100.f) * 90.f / freq;
                 parm_->armCmd.set_angle_Pitch2 +=
                     (remote.joystick_RY / 100.f) * 90.f / freq;
-                parm_->armCmd.set_angle_Pitch3 +=
-                    (remote.joystick_RX / 100.f) * 90.f / freq;
 				parm_->armCmd.set_speed_grip =
 					(remote.thumbWheel / 100.f) * 6000.f;
             }
@@ -291,9 +289,7 @@ void CSystemCore::ControlFromKeyboard_() {
             // pitch2(R键)
             if(keyboard.key_R)
                 parm_->armCmd.set_angle_Pitch2 += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 70.0f / freq;
-            // pitch3(F键)
             if(keyboard.key_F)
-                parm_->armCmd.set_angle_Pitch3 += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 70.0f / freq;
             // roll(Z键)
             if(keyboard.key_Z)
                 parm_->armCmd.set_angle_Roll += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 80.0f / freq;
@@ -388,7 +384,7 @@ void CSystemCore::ControlFromController_() {
 
     // 线性插值器（25Hz数据  1000Hz控制，周期 = 40步）
     static CAlgoLinearInterp interp_yaw(40), interp_p1(40), interp_p2(40),
-                             interp_roll(40), interp_end_pitch(40), interp_p3(40);
+                             interp_roll(40), interp_end_pitch(40);
     // 上一次控制器原始数据，用于检测数据更新
     static CSystemControllerLink::SArmAngles last_arm;
 
@@ -472,7 +468,6 @@ void CSystemCore::ControlFromController_() {
         if(fabs(arm.yaw    - last_arm.yaw ) > 0.1f)interp_yaw.setTarget(parm_->armCmd.set_angle_Yaw, Round(arm.yaw));
         if(fabs(arm.pitch1 - last_arm.pitch1) > 0.1f)interp_p1.setTarget(parm_->armCmd.set_angle_Pitch1, Round(arm.pitch1));
         if(fabs(arm.pitch2 - last_arm.pitch2) > 0.1f)interp_p2.setTarget(parm_->armCmd.set_angle_Pitch2, Round(arm.pitch2));
-        if(fabs(arm.pitch3 - last_arm.pitch3) > 0.1f)interp_p3.setTarget(parm_->armCmd.set_angle_Pitch3, Round(arm.pitch3));
         if(fabs(arm.roll   - last_arm.roll   ) > 0.1f)interp_roll.setTarget(parm_->armCmd.set_angle_Roll, Round(-arm.roll));
         if(fabs(arm.pitch_end - last_arm.pitch_end) > 0.1f)interp_end_pitch.setTarget(parm_->armCmd.set_angle_end_pitch, Round(arm.pitch_end));
         last_arm = arm;
@@ -480,7 +475,6 @@ void CSystemCore::ControlFromController_() {
         parm_->armCmd.set_angle_Yaw    = interp_yaw.update();
         parm_->armCmd.set_angle_Pitch1 = interp_p1.update();
         parm_->armCmd.set_angle_Pitch2 = interp_p2.update();
-        parm_->armCmd.set_angle_Pitch3 = interp_p3.update();
         parm_->armCmd.set_angle_Roll   = interp_roll.update();
         parm_->armCmd.set_angle_end_pitch = interp_end_pitch.update();
         
@@ -489,7 +483,6 @@ void CSystemCore::ControlFromController_() {
         // parm_->armCmd.set_angle_Yaw       = LowPassFilter(parm_->armCmd.set_angle_Yaw,       arm.yaw,        alpha);
         // parm_->armCmd.set_angle_Pitch1    = LowPassFilter(parm_->armCmd.set_angle_Pitch1,    arm.pitch1,      alpha);
         // parm_->armCmd.set_angle_Pitch2    = LowPassFilter(parm_->armCmd.set_angle_Pitch2,    arm.pitch2,      alpha);
-        // parm_->armCmd.set_angle_Pitch3    = LowPassFilter(parm_->armCmd.set_angle_Pitch3,    arm.pitch3,      alpha);
         // parm_->armCmd.set_angle_Roll      = LowPassFilter(parm_->armCmd.set_angle_Roll,      -arm.roll,       alpha);
         // parm_->armCmd.set_angle_end_pitch = LowPassFilter(parm_->armCmd.set_angle_end_pitch, arm.pitch_end,   alpha);
 
@@ -556,9 +549,6 @@ void CSystemCore::ControlFromController_() {
         //     last_rocker_key_status == CSystemControllerLink::KEY_STATUS::RELEASE) {
         //     psubgantry_->subGantryCmd.setPumpOn_Gantry = !psubgantry_->subGantryCmd.setPumpOn_Gantry;
         // }
-        if(keyboard_edge.key_B == CSystemRemote::ERemoteEdge::Rising){
-            robotdata.p3_lock = !robotdata.p3_lock;
-        }
         // if((keyboard_edge.key_Z == CSystemRemote::ERemoteEdge::Rising 
         //     && keyboard_edge.key_Ctrl== CSystemRemote::ERemoteEdge::Rising 
         //     //&& keyboard_edge.key_Shift== CSystemRemote::ERemoteEdge::Rising 

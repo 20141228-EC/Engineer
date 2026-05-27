@@ -175,7 +175,6 @@ volatile float traj_dbg_grip_info = 0.0f;
         output[J::J_YAW]  = arm.armInfo.angle_Yaw;
         output[J::J_P1]   = arm.armInfo.angle_Pitch1;
         output[J::J_P2]   = arm.armInfo.angle_Pitch2;
-        output[J::J_P3]   = arm.armInfo.angle_Pitch3;
         output[J::J_ROLL] = arm.armInfo.angle_Roll;
         output[J::J_ENDP] = arm.armInfo.angle_end_pitch;
         output[J::J_ENDR] = arm.armInfo.angle_end_roll;
@@ -189,7 +188,6 @@ volatile float traj_dbg_grip_info = 0.0f;
         arm.armCmd.set_angle_Yaw = output[J::J_YAW];
         arm.armCmd.set_angle_Pitch1 = output[J::J_P1];
         arm.armCmd.set_angle_Pitch2 = output[J::J_P2];
-        arm.armCmd.set_angle_Pitch3 = output[J::J_P3];
         arm.armCmd.set_angle_Roll = output[J::J_ROLL];
         arm.armCmd.set_angle_end_pitch = output[J::J_ENDP];
         arm.armCmd.set_angle_end_roll = output[J::J_ENDR];
@@ -357,7 +355,7 @@ volatile float traj_dbg_grip_info = 0.0f;
             const uint32_t nowTick = HAL_GetTick();
             const uint32_t elapsedMs = nowTick - startTick;
             float_t elapsed = static_cast<float_t>(elapsedMs) / 1000.0f;//转换成当前秒数
-            const bool frameTargetCommanded = player.IsFinished(elapsed);
+            const bool frameTargetCommanded = player.IsFinished(elapsed);// 本帧运动完成
 
             // 关节角度播放
             if(frameTargetCommanded) {

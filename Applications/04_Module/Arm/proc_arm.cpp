@@ -1,13 +1,13 @@
 /******************************************************************************
- * @brief        
- * 
+ * @brief
+ *
  * @file         proc_arm.cpp
  * @author       Fish_Joe (2328339747@qq.com)
  * @version      V1.0
  * @date         2025-05-04
- * 
+ *
  * @copyright    Copyright (c) 2025
- * 
+ *
  ******************************************************************************/
 
 #include "mod_arm.hpp"
@@ -16,8 +16,8 @@ namespace my_engineer {
 
 /**
  * @brief 创建机械臂任务
- * 
- * @param argument 
+ *
+ * @param argument
  */
 void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.cpp被创建，然后在任务调度器调度
 
@@ -38,7 +38,8 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 				arm.armInfo.isModuleAvailable = false;
 				arm.comjoint_.StopComponent();
 				arm.comRoll_.StopComponent();
-				arm.comEnd_.StopComponent();
+				arm.comEndPitch_.StopComponent();
+				arm.comEndRoll_.StopComponent();
 				arm.comGrip_.StopComponent();
 
 				proc_waitMs(20);
@@ -49,28 +50,29 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 
 				proc_waitMs(250); // 等待系统稳定
 
-				
-				/*step1 : 各自模块实现初始化*/	
+
+				/*step1 : 各自模块实现初始化*/
 				arm.comjoint_.StartComponent();
 				proc_waitUntil(arm.comjoint_.componentStatus == APP_OK);
 
 				arm.comRoll_.StartComponent();
 				proc_waitUntil(arm.comRoll_.componentStatus == APP_OK);
 
-				arm.comEnd_.StartComponent();
-				proc_waitUntil(arm.comEnd_.componentStatus == APP_OK);
-					
+				arm.comEndPitch_.StartComponent();
+				proc_waitUntil(arm.comEndPitch_.componentStatus == APP_OK);
+
+				arm.comEndRoll_.StartComponent();
+				proc_waitUntil(arm.comEndRoll_.componentStatus == APP_OK);
+
 				arm.comGrip_.StartComponent();  ///< 等待末端初始化完成
 				proc_waitUntil(arm.comGrip_.componentStatus == APP_OK);
 
-							   
-				
-				/*step2 : 任务层统一回到初始化的位置*/	
+
+				/*step2 : 任务层统一回到初始化的位置*/
 				arm.armCmd = SArmCmd();
 				arm.armCmd.set_angle_Yaw = ARM_YAW_INIT_ANGLE;
 				arm.armCmd.set_angle_Pitch1 = ARM_PITCH1_INIT_ANGLE;
 				arm.armCmd.set_angle_Pitch2 = ARM_PITCH2_INIT_ANGLE;
-				arm.armCmd.set_angle_Pitch3 = ARM_PITCH3_INIT_ANGLE;
 				arm.armCmd.set_angle_Roll = ARM_ROLL_INIT_ANGLE;
 				arm.armCmd.set_angle_end_pitch = ARM_END_PITCH_INIT_ANGLE;
 				arm.armCmd.set_angle_end_roll = ARM_END_ROLL_INIT_ANGLE;
@@ -82,20 +84,15 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 					CComJoint::PhyPositToMtrPosit_pitch1(arm.armCmd.set_angle_Pitch1);
 				arm.comjoint_.jointCmd.setPosit_pitch2 =
 					CComJoint::PhyPositToMtrPosit_pitch2(arm.armCmd.set_angle_Pitch2);
-				arm.comjoint_.jointCmd.setPosit_pitch3 =
-					CComJoint::PhyPositToMtrPosit_pitch3(arm.armCmd.set_angle_Pitch3);
 				arm.comRoll_.rollCmd.setAngle =
 					CComRoll::PhyAngleToMtrAngle(arm.armCmd.set_angle_Roll);
-				arm.comEnd_.endCmd.setPosit_Pitch =
-					CComEnd::PhyPositToMtrPosit_Pitch(arm.armCmd.set_angle_end_pitch);
-				arm.comEnd_.endCmd.setPosit_Roll =
-					arm.comEnd_.PhyPositToMtrPosit_Roll(arm.armCmd.set_angle_end_roll);
+				arm.comEndPitch_.endPitchCmd.setAngle = arm.armCmd.set_angle_end_pitch;
+				arm.comEndRoll_.endRollCmd.setAngle = arm.armCmd.set_angle_end_roll;
 				arm.comGrip_.gripCmd.setPosit_grip =
 					CComGrip::PhyPositToMtrPosit(arm.armCmd.set_length_grip);
 				proc_waitUntil(arm.comjoint_.jointInfo.isPositArrived_yaw &&
 							arm.comjoint_.jointInfo.isPositArrived_pitch1 &&
 							arm.comjoint_.jointInfo.isPositArrived_pitch2 &&
-							arm.comjoint_.jointInfo.isPositArrived_pitch3 &&
 							arm.comRoll_.rollInfo.isAngleArrived);
 
 				arm.armInfo.isModuleAvailable = true;
@@ -109,34 +106,16 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 
 				arm.RestrictArmCommand_();
 
-				arm.comjoint_.jointCmd.setPosit_yaw = 
+				arm.comjoint_.jointCmd.setPosit_yaw =
 					CComJoint::PhyPositToMtrPosit_yaw(arm.armCmd.set_angle_Yaw);			///< 在这个文件中设置目标的位置，在com_joint.cpp中进行pid计算
 				arm.comjoint_.jointCmd.setPosit_pitch1 =
 					CComJoint::PhyPositToMtrPosit_pitch1(arm.armCmd.set_angle_Pitch1);
 				arm.comjoint_.jointCmd.setPosit_pitch2 =
 					CComJoint::PhyPositToMtrPosit_pitch2(arm.armCmd.set_angle_Pitch2);
-				arm.comjoint_.jointCmd.setPosit_pitch3 =
-					CComJoint::PhyPositToMtrPosit_pitch3(arm.armCmd.set_angle_Pitch3);
 				arm.comRoll_.rollCmd.setAngle =
 					CComRoll::PhyAngleToMtrAngle(arm.armCmd.set_angle_Roll);
-
-				//作为条件来判断避免末端的差速器的数值的重新覆盖
-				if(arm.armCmd.resetEndPitch){
-					arm.armCmd.resetEndPitch = false;
-					arm.comEnd_.endCmd.resetEndPitch = true;//这里只是重新初始化末端pitch 
-					// arm.comEnd_.rollCalibrated_ = true;
-				}
-				else if(arm.armCmd.resetEndAll){
-					arm.armCmd.resetEndAll = false;
-					//arm.comEnd_.endCmd.resetEndAll = true;
-					arm.comEnd_.StartComponent();  // 重新启动末端组件以重置所有状态
-				}
-				else if(arm.comEnd_.componentStatus != APP_BUSY) {//防止标志位被清零止呕没有覆盖到初始化的过程
-					arm.comEnd_.endCmd.setPosit_Pitch =
-						CComEnd::PhyPositToMtrPosit_Pitch(arm.armCmd.set_angle_end_pitch);
-					arm.comEnd_.endCmd.setPosit_Roll =
-						arm.comEnd_.PhyPositToMtrPosit_Roll(arm.armCmd.set_angle_end_roll);
-				}
+				arm.comEndPitch_.endPitchCmd.setAngle = arm.armCmd.set_angle_end_pitch;
+				arm.comEndRoll_.endRollCmd.setAngle = arm.armCmd.set_angle_end_roll;
 
 				// 夹爪命令传递：开合标志优先，否则透传遥控器拨轮速度
 				const bool gripCommand = arm.armCmd.gripClose || arm.armCmd.gripOpen;
@@ -163,7 +142,7 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 					arm.armCmd.gripOpen = false;
 					arm.comGrip_.gripCmd.cmdClose = false;
 					arm.comGrip_.gripCmd.cmdOpen = false;
-					arm.armCmd.reGripCmd = false;  
+					arm.armCmd.reGripCmd = false;
 				}
 
 				proc_waitMs(1); // 1000Hz

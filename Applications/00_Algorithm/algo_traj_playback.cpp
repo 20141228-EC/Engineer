@@ -120,6 +120,7 @@ namespace my_engineer{
      *
      * minTime: 默认 0 = 纯按物理参数规划（正常播放都用这个）
      *          > 0    = 强制最小总时长，把整段拖慢到 minTime（仅用于安全慢速/调试）
+     *          这个函数的作用就是通过规划各个关节的运动时间然后找到运动时间最长的那个关节，将时间赋值到每个关节上面重新规划
      */
     void CAlgoTrajPlayback::PlanMultiAxisTraj(const float_t current[JointId::COUNT],
                                               const float_t target[JointId::COUNT],
@@ -137,7 +138,7 @@ namespace my_engineer{
             if (tmp[i].tTotal > leadT) {
                 leadT   = tmp[i].tTotal;
                 leadIdx = i;
-            }
+            }// 选择排序记录最大时长
         }
 
         // ---------- 决定整段总时长：max(物理 leadT, minTime) ----------
