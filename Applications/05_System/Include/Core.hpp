@@ -129,7 +129,8 @@ public:
         EXCHANGE_ORE,       ///< 兑矿
         STORE_ORE,           ///< 存矿
         GROUND_ORE,         ///< 地矿
-
+        ONE_KEY_ORE,        ///<一键六矿
+        ONE_KEY_EXCHANGE,   ///<一键兑六矿
     } currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
     // 面向系统层的控制模式枚举
@@ -185,6 +186,9 @@ private:
 
     // 定义系统核心响应频率
     const float_t freq = 1000.f;
+    // 保留上一次的存取矿石的记忆
+    uint8_t oreTaskStep_ = 0; 
+    bool oreGetDone_ = false;// 确定是否停下
 
     // 模块指针
     CModChassis *pchassis_ = nullptr;
@@ -230,8 +234,10 @@ private:
     static void StartExchangeOreTask(void *arg);
     static void StartReturnOriginTask(void *arg);
     static void StartEnergyUnitTask(void *arg);
-    static void StartStoreTask(void *arg);
+    static void StartStoreTask(void *arg);//...
     static void StartExchangeGetTask(void *arg);
+    static void StartOneKeyOreTask(void *arg);
+    static void StartOneKeyExchangeTask(void *arg);
     
 };
 

@@ -330,15 +330,15 @@ void CSystemCore::ControlFromKeyboard_() {
                 StartAutoCtrlTask_(EAutoCtrlProcess::DOWN_STAIR);
             }
 
-            // Ctrl + X: 启动存矿轨迹任务
-            if(keyboard.key_X){
-                StartAutoCtrlTask_(EAutoCtrlProcess::STORE_ORE);
-            }
+            // // Ctrl + X: 启动存矿轨迹任务
+            // if(keyboard.key_X){
+            //     StartAutoCtrlTask_(EAutoCtrlProcess::STORE_ORE);
+            // }
 
-            // Ctrl + B: 启动取矿轨迹任务
-            if(keyboard.key_B){
-                StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE);
-            }
+            // // Ctrl + B: 启动取矿轨迹任务
+            // if(keyboard.key_B){
+            //     StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE);
+            // }
             // Ctrl + R: 启动全部复位任务
             if(keyboard.key_R){
                 StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);

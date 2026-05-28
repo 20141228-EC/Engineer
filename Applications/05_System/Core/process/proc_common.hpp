@@ -13,7 +13,6 @@
 #define PROC_COMMON_HPP
 
 #include "Core.hpp"
-#include <map>
 #include <cmath>
 
 #define STORE_ROLL_UP_OFFSET  -160.0f  //标定的时候出现偏差导致末端并不是水平
@@ -22,35 +21,30 @@
 namespace my_engineer{
     
     using J = CAlgoTrajPlayback::JointId;
-    
-    //轨迹id
-    enum ETrajID : uint8_t {
-        TRAJ_GRAB_L = 0,          ///< 存矿
-        TRAJ_GRAB_R,
-        TRAJ_GET_L,               ///< 取矿
-        TRAJ_GET_R,               ///< 取矿
-        // TRAJ_GROUND,          ///< 地矿
-        // TRAJ_HOME,            ///< 回零
-        TRAJ_COUNT,
-    };
 
     enum FrameCol : uint8_t {
             FC_TIME  = 0,
             FC_YAW   = 1,
             FC_P1    = 2,
             FC_P2    = 3,
-            FC_P3    = 4,
-            FC_ROLL  = 5,
-            FC_ENDP  = 6,
-            FC_ENDR  = 7,
-            FC_GRIP  = 8,
-            FC_SPEED = 9,   
-            FC_COUNT  = 10,   // 总列数
+            FC_ROLL  = 4,
+            FC_ENDP  = 5,
+            FC_ENDR  = 6,
+            FC_GRIP  = 7,
+            FC_SPEED = 8,
+            FC_COUNT  = 9,    // 总列数
         };
 
     struct TrajClip{
         const float_t (*frame)[FC_COUNT]; // 指向关键帧的数组
         int frameCount ; //关键帧计数器
+    };
+
+    struct SOreStep {
+        CModGimbal::EStorageSlot slot;          // 存矿电机槽位
+        TrajClip getClip;                       // 取矿
+        TrajClip storeClip;                     // 存矿
+        bool enabled;                           // 是否启用
     };
 
     struct SArrivalCheckConfig {
@@ -60,14 +54,7 @@ namespace my_engineer{
         uint32_t hardTimeoutMs = 8000;    ///< 本帧目标指令到达后，等待真实反馈到位的硬超时时间
         uint32_t gripTimeoutMs = 3000;   ///< 本帧目标指令到达后，等待夹爪到位的超时时间
     };
-    //轨迹外部声明
-    extern const float_t Traj_Grab[][FC_COUNT];
-    extern const int     Traj_GrabLen; 
-    
-    //轨迹图管理所有的轨迹
-    extern std::map<ETrajID,TrajClip> TrajMap;
-    
-    //从 armInfo 读取7个关节角度到 float_t[7] 
+    //从 armInfo 读取关节角度到 float_t[J::COUNT]
     void ReadArmjoint(const CModArm &arm, float_t output[7]);
 
     // 检查所有关节是否到达目标角度
@@ -78,7 +65,7 @@ namespace my_engineer{
     void WriteArmjoint(CModArm &arm, const float_t output[7]);
     
     //从轨迹二维数组提取第 row 行的7个关节数据 
-    void Extrarow(const float_t traj[][FC_COUNT], int row, float_t output[7]);
+    void Extrarow(const float_t traj[][FC_COUNT], int row, float_t output[J::COUNT]);
     
     //提取第 row 行的夹爪状态：返回true=夹紧，false=松开 
     bool ExtractGripClose(const float_t traj[][FC_COUNT], int row);
