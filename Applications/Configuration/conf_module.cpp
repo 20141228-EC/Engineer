@@ -42,11 +42,9 @@ EAppStatus InitAllModule() {
     initParam.yaw_id = EDeviceID::DEV_MTR_YAW;
     initParam.pitch1_id = EDeviceID::DEV_MTR_PITCH1;
     initParam.pitch2_id = EDeviceID::DEV_MTR_PITCH2;
-    initParam.pitch3_id = EDeviceID::DEV_MTR_PITCH3;
     initParam.roll_id = EDeviceID::DEV_MTR_ROLL;
     initParam.pitch_end_id = EDeviceID::DEV_MTR_PITCH_END;
     // CAN发送节点（Pitch1/2->CAN3, Roll/PitchEnd->CAN2, Yaw->CAN1）
-    initParam.pitch3TxNode = &MitTxNode_Can1_39;        //p1
     initParam.yawTxNode = &TxNode_Can1_1FF;           // CAN1 DJI (ID1-4用0x1FF)
     initParam.pitch1TxNode = &MitTxNode_Can3_30;      // CAN3 MIT 0x30
     initParam.pitch2TxNode = &MitTxNode_Can3_32;      // CAN3 MIT 0x32

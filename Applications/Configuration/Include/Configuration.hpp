@@ -66,7 +66,6 @@ enum class EDeviceID{
     DEV_MTR_YAW,            ///< Yaw电机（M6020, CAN1 ID5）
     DEV_MTR_PITCH1,         ///< Pitch1电机（DM4310, CAN3 0x30）
     DEV_MTR_PITCH2,         ///< Pitch2电机（DM4310, CAN3 0x32）
-    DEV_MTR_PITCH3,         ///< Pitch3电机（M3508, CAN1 ID1）
     DEV_MTR_ROLL,           ///< Roll电机（DM3510, CAN2 0x34）
     DEV_MTR_PITCH_END,      ///< 末端Pitch电机（DM3510, CAN2 0x36）
 };

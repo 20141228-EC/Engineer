@@ -6,7 +6,7 @@
  * @version      V1.0
  * @date         2025-03-30
  * @LastEditors  Ciallo(1002046597@qq.com)
- * @LastEditTime 2026-01-22
+ * @LastEditTime 2026-05-30
  *
  * @copyright    Copyright (c) 2025
  *
@@ -22,7 +22,7 @@
 #define CONTROLLER_YAW_PHYSICAL_RANGE 195.0f
 #define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
 #define CONTROLLER_YAW_PHYSICAL_RANGE_MIN -97.5f
-#define CONTROLLER_YAW_PHYSICAL_RANGE_MAX 97.5f	
+#define CONTROLLER_YAW_PHYSICAL_RANGE_MAX 97.5f
 #define CONTROLLER_YAW_MOTOR_MACH 7492
 /*------------------------------------------------------------------------------------------*/
 #define CONTROLLER_PITCH1_PHYSICAL_RANGE_MIN 0.0f
@@ -35,18 +35,12 @@
 // 例如：偏移8.0表示电机报告0rad时，控制器关节实际在物理8°位置
 #define CONTROLLER_PITCH1_ZERO_OFFSET  0.0f   // P1零点偏移(deg)，根据实测调节
 #define CONTROLLER_PITCH2_ZERO_OFFSET  0.0f   // P2零点偏移(deg)，根据实测调节
-#define CONTROLLER_PITCH3_ZERO_OFFSET  0.0f   // P3零点偏移(deg)，根据实测调节
+// P3 removed - 5-axis controller
 #define CONTROLLER_PITCHEND_ZERO_OFFSET  43.0f   // PitchEnd零点偏移(deg)，根据实测调节
 /*----------------------------------Pitch2限幅范围-----------------------------------------------*/
 #define CONTROLLER_PITCH2_PHYSICAL_RANGE_MIN 0.0f
 #define CONTROLLER_PITCH2_PHYSICAL_RANGE_MAX 180.0f
 
-/*----------------------------------Pitch3限幅范围-----------------------------------------------*/
-#define CONTROLLER_PITCH3_MOTOR_RANGE 0				//全部待测
-#define CONTROLLER_PITCH3_PHYSICAL_RANGE_MIN 0.0f
-#define CONTROLLER_PITCH3_PHYSICAL_RANGE_MAX 180.0f
-#define CONTROLLER_PITCH3_MOTOR_MACH 0
-#define CONTROLLER_PITCH3_END_MOTOR_OFFSET 0
 
 /*----------------------------------roll限幅范围------------------------------------------*/
 #define CONTROLLER_ROLL_PHYSICAL_RANGE_MIN -163.0f     ///< 对应机器人 Roll 上限 163°（映射取反）
@@ -62,9 +56,8 @@
 // K3_end符号修正后：零力矩跳变点在P2≈50°，需移至90°，P2偏移+40°
 #define CONTROLLER_GRAV_COMP_PITCH1_OFFSET    90.0f    // P1: 最小值在90°
 #define CONTROLLER_GRAV_COMP_PITCH2_OFFSET   -32.0f    // P2: -90-32
-#define CONTROLLER_GRAV_COMP_PITCH3_OFFSET    36.0f      // P3: 最小值在90°
-#define CONTROLLER_GRAV_COMP_ROLL_OFFSET      0.0f     // Roll: DH零点偏移（无关点-80°和+100°的中点）
-#define CONTROLLER_GRAV_COMP_PITCHEND_OFFSET  0.0f     // PitchEnd: 42+20，补偿PITCH2_OFFSET变化的影响
+#define CONTROLLER_GRAV_COMP_ROLL_OFFSET      0.0f     // Roll: DH零点偏移
+#define CONTROLLER_GRAV_COMP_PITCHEND_OFFSET  0.0f     // PitchEnd
 /*----------------------------------重力补偿力矩限幅(N·m)------------------------------------*/
 #define CONTROLLER_GRAV_COMP_TAU_LIMIT_DM4310  2.5f    // Pitch1/2 (DM4310) 额定3N·m，留余量
 #define CONTROLLER_GRAV_COMP_TAU_LIMIT_DM3510  0.5f    // Roll/PitchEnd (DM3510) 峰值力矩测试
@@ -73,7 +66,6 @@
 /*----------------------------------各轴效率/补偿缩放(欠补偿时增大，过补偿时减小)---------------*/
 #define CONTROLLER_PITCH1_EFFICIENCY_COMP   1.0f    // Pitch1 (DM4310) 减速器效率补偿
 #define CONTROLLER_PITCH2_EFFICIENCY_COMP   1.0f    // Pitch2 (DM4310) 减速器效率补偿
-#define CONTROLLER_PITCH3_EFFICIENCY_COMP   1.0f    // Pitch3 (DM4310) 减速器效率补偿
 #define CONTROLLER_PITCHEND_EFFICIENCY_COMP 1.0f    // PitchEnd (DM3510) 系数已校准，无需额外缩放
 /*------------------------------------------------------------------------------------------*/
 #define CONTROLLER_PITCH1_MOTOR_RATIO (CONTROLLER_PITCH1_MOTOR_RANGE / CONTROLLER_PITCH1_PHYSICAL_RANGE)
@@ -85,7 +77,6 @@
 #define CONTROLLER_YAW_MOTOR_DIR -1
 #define CONTROLLER_PITCH1_MOTOR_DIR -1
 #define CONTROLLER_PITCH2_MOTOR_DIR 1
-#define CONTROLLER_PITCH3_MOTOR_DIR -1
 #define CONTROLLER_ROLL_MOTOR_DIR -1
 #define CONTROLLER_PITCH_END_MOTOR_DIR -1     // PitchEnd: MotortruePositToOffsetPosit含取反，与P2同理
 
@@ -132,21 +123,17 @@ public:
 		EDeviceID yaw_id 				= EDeviceID::DEV_NULL; ///< yaw电机设备ID
 		EDeviceID pitch1_id 		= EDeviceID::DEV_NULL; ///< 大pitch电机设备ID
 		EDeviceID pitch2_id 		= EDeviceID::DEV_NULL; ///<小pitch电机设备ID
-		EDeviceID pitch3_id 		= EDeviceID::DEV_NULL; ///< third pitch电机设备ID
 		EDeviceID roll_id 			= EDeviceID::DEV_NULL; ///< Roll轴电机设备ID (MIT模式)
 		EDeviceID pitch_end_id 	= EDeviceID::DEV_NULL; ///< 末端pitch电机设备ID (MIT模式)
 		/*--------------------------Set Can----------------------------------------------*/
 		CInfCAN::CCanTxNode *yawTxNode;
 		CInfCAN::CCanTxNode *pitch1TxNode;
 		CInfCAN::CCanTxNode *pitch2TxNode;
-		CInfCAN::CCanTxNode *pitch3TxNode;
 		CInfCAN::CCanTxNode *rollTxNode;
 		CInfCAN::CCanTxNode *pitchEndTxNode;
 		/*--------------------------Set Pid----------------------------------------------*/
 		CAlgoPid::SAlgoInitParam_Pid yawPosPidParam;
 		CAlgoPid::SAlgoInitParam_Pid yawSpdPidParam;
-		CAlgoPid::SAlgoInitParam_Pid pitch3PosPidParam;
-		CAlgoPid::SAlgoInitParam_Pid pitch3SpdPidParam;
 	};
 
 	enum KEY_STATUS  {RELEASE = 0, PRESS = 1, LONG_PRESS = 2,};
@@ -165,18 +152,16 @@ public:
 		EVarStatus isModuleAvailable = false; ///< 模块是否可用
 		EVarStatus isReturnSuccess = false; ///< 归位是否成功
 		EVarStatus isRobotInit = false; ///< 机器人初始化
-		EVarStatus P3_lock = false; ///< P3锁定信号
 		bool isRest = false; ///< 是否归位
 		bool isLevel4 = false; ///< 是否处于四级状态
 		bool isLevel3 = false; ///< 是否处于三级状态
 		bool isSelf = false; ///<
-		int8_t rocker_X = 0; ///< 摇杆X轴值 -100 - 100
-		int8_t rocker_Y = 0; ///< 摇杆Y轴值 -100 - 100
+		// int8_t rocker_X = 0; ///< 摇杆X轴值 -100 - 100
+		// int8_t rocker_Y = 0; ///< 摇杆Y轴值 -100 - 100
 		KEY_STATUS rocker_Key = KEY_STATUS::RELEASE; ///< 摇杆按键状态
 		float_t posit_yaw = 0; ///< yaw电机位置
 		float_t posit_pitch1 = 0; ///< pitch1电机位置
 		float_t posit_pitch2 = 0; ///< pitch2电机位置
-		float_t posit_pitch3 = 0; ///< pitch3电机位置
 		float_t posit_roll = 0; ///< Roll轴电机位置 (MIT模式)
 		float_t posit_pitch_end = 0; ///< 末端pitch电机位置 (MIT模式)
 	} ControllerInfo = { };
@@ -189,14 +174,12 @@ public:
 		float_t cmd_yaw = 0; ///< 横移电机命令
 		float_t cmd_pitch1 = 0; ///< 大pitch电机命令
 		float_t cmd_pitch2 = 0; ///< 小pitch电机命令
-		float_t cmd_pitch3 = 0; ///< third pitch电机命令
 		float_t cmd_roll = 0; ///< Roll轴电机命令 (MIT模式)
 		float_t cmd_pitch_end = 0; ///< 末端pitch电机命令 (MIT模式)
 		/*----------- 力反馈力矩（机器人端回传的电机原始值） -----------*/
 		float_t fb_torque_yaw = 0;       ///< Yaw电流反馈
 		float_t fb_torque_pitch1 = 0;    ///< Pitch1力矩反馈
 		float_t fb_torque_pitch2 = 0;    ///< Pitch2力矩反馈
-		float_t fb_torque_pitch3 = 0;    ///< Pitch3力矩反馈
 		float_t fb_torque_roll = 0;      ///< Roll电流反馈
 		float_t fb_torque_pitch_end = 0; ///< PitchEnd力矩反馈
 	} ControllerCmd = { };
@@ -226,13 +209,12 @@ public:
 		float yaw    = 0.01f;   ///< Yaw轴力反馈增益 (KT i8v3)
 		float pitch1 = 0.02f;   ///< Pitch1轴力反馈增益 (KT i36v3, 减速比36)
 		float pitch2 = 0.02f;   ///< Pitch2轴力反馈增益 (KT i36v3, 减速比36)
-		float pitch3 = 0.02f;   ///< Pitch3轴力反馈增益 (KT i36v3, 减速比36)
 		float roll   = -0.00017f;   ///< Roll轴力反馈增益 (DM4310)
 	};
 	void SetForceFeedbackEnabled(bool enabled) { forceFeedbackEnabled_ = enabled; }
 	bool IsForceFeedbackEnabled() const { return forceFeedbackEnabled_; }
-	void SetForceFeedbackGain(float yaw, float p1, float p2, float p3, float roll) {
-		fbGain_.yaw = yaw; fbGain_.pitch1 = p1; fbGain_.pitch2 = p2; fbGain_.pitch3 = p3; fbGain_.roll = roll;
+	void SetForceFeedbackGain(float yaw, float p1, float p2, float roll) {
+		fbGain_.yaw = yaw; fbGain_.pitch1 = p1; fbGain_.pitch2 = p2; fbGain_.roll = roll;
 	}
 	const SForceFeedbackGain& GetForceFeedbackGain() const { return fbGain_; }
 
@@ -357,42 +339,6 @@ private:
 		std::array<CInfCAN::CCanTxNode*, 1> mtrCanTxNode_;
 
 	} comPitch2_;
-
-	// 定义Pitch2轴组件类并实例化
-	class CComPitch3: public CComponentBase{
-	public:
-
-		// 定义Pitch3轴信息结构体并实例化
-		struct SPitch3Info {
-			float_t posit = 0;    ///< Pitch3 Position
-			bool isPositArrived = false; ///< Pitch3 Position Arrived
-		} pitch3Info;
-
-		// 定义Pitch3轴控制命令结构体并实例化
-		struct SPitch3Cmd {
-			bool isFree = false;	 ///< Pitch3 Free
-			float_t setParam[static_cast<int>(EMotorParam::COUNT_)] = {0};
-		} pitch3Cmd;
-
-		// 电机实例指针
-		CDevMtrDM *motor[1] = {nullptr};
-
-		// 初始化组件
-		EAppStatus InitComponent(SModInitParam_Base &param) final;
-
-		// 更新组件
-		EAppStatus UpdateComponent() final;
-
-		EAppStatus _UpdateOutput(float_t* setParam);
-
-    	static float_t OffsetPositToMotortruePosit_test(float_t OffsetPosit);
-    	static float_t MotortruePositToOffsetPosit_test(float_t MotortruePosit);
-
-		// 电机can发送节点
-		std::array<CInfCAN::CCanTxNode*, 1> mtrCanTxNode_;
-
-	} comPitch3_;
-
 
 	/*----------- Roll轴组件类（MIT模式，DM3510） -----------*/
 	/**
@@ -551,11 +497,11 @@ private:
 
 	// 重力补偿相关
 	CAlgoGravityComp gravityComp_;             ///< 重力补偿算法实例
-	bool gravityCompEnabled_ = false;           ///< 重力补偿使能标志
+	bool gravityCompEnabled_ = true;           ///< 重力补偿使能标志
 	void UpdateGravityComp_();                  ///< 计算并应用重力补偿
 
 	// 力反馈相关
-	bool forceFeedbackEnabled_ = false;        ///< 力反馈使能标志（默认关闭，调试时打开）
+	bool forceFeedbackEnabled_ = true;        ///< 力反馈使能标志
 	SForceFeedbackGain fbGain_;
 	void UpdateForceFeedback_();                ///< 将机器人力矩叠加到控制器 TF
 

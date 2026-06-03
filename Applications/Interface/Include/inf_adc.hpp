@@ -89,7 +89,7 @@ private:
 	// 定义DMA接收缓冲区
 	DataBuffer<uint16_t> adcDataBuffer_;
 
-	uint16_t adc_data[4];  // 4通道：CH4, CH14, CH16, CH19
+	uint16_t adc_data[2];  // CH4, CH19
 
 	// 重写心跳处理函数
 	void HeartbeatHandler_() override;

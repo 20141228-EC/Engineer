@@ -6,7 +6,7 @@
  * @version      V3.0
  * @date         2025-04-05
  * @LastEditors  Ciallo(1002046597@qq.com)
- * @LastEditTime 2026-03-19
+ * @LastEditTime 2026-06-03
  *
  * @copyright    Copyright (c) 2025
  ******************************************************************************/
@@ -47,7 +47,7 @@ EAppStatus CSystemControllerLink::InitSystem(SSystemInitParam_Base *pStruct) {
 	// 获取按键设备指针
 	auto it_btn = DeviceIDMap.find(EDeviceID::DEV_MULTI_BUTTON);
 	if (it_btn != DeviceIDMap.end() && it_btn->second != nullptr) {
-		pbuttons_ = static_cast<CDevFourButton *>(it_btn->second);
+		pbuttons_ = static_cast<CDevButton *>(it_btn->second);
 	}
 
 	// 注册系统
@@ -63,7 +63,8 @@ EAppStatus CSystemControllerLink::InitSystem(SSystemInitParam_Base *pStruct) {
  * 控制器端执行流程：
  *   1. UpdateButtonInfo_()          采集本地输入（摇杆/按钮） 写入 controllerInfo
  *   2. UpdateRobotInfo_()           解析机器人发来的数据包    写入 robotInfo
- *   3. UpdateControllerDataPkg_()   将 controllerInfo 打包   通过 UART 发送给机器人
+ *   3. TickLevelChoose_()           选难度状态机推进（每 tick 最多发 1 包）
+ *   4. UpdateControllerDataPkg_()   将 controllerInfo 打包   通过 UART 发送给机器人
  */
 void CSystemControllerLink::UpdateHandler_() {
 	if (systemStatus != APP_OK) return;
@@ -80,6 +81,8 @@ void CSystemControllerLink::UpdateHandler_() {
 	UpdateButtonInfo_();
 	//解析机器人发来的 RobotDataPkg ->  robotInfo
 	UpdateRobotInfo_();
+	//选难度状态机推进（每 tick 最多发 1 包）
+	TickLevelChoose_();
 
 	//将 controllerInfo 打包为 ControllerDataPkg ->  发送给机器人
 #if DEBUG_SKIP_INIT_CHECK == 0
@@ -106,30 +109,12 @@ void CSystemControllerLink::UpdateHandler_() {
 void CSystemControllerLink::UpdateButtonInfo_() {
 	if (systemStatus != APP_OK) return;
 
-	// 从模块层获取摇杆数据（模块层已转换为 -100~100 范围，直接赋值即可）
-	auto it = ModuleIDMap.find(EModuleID::MOD_CONTROLLER);
-	if (it != ModuleIDMap.end() && it->second != nullptr) {
-		auto *pController = static_cast<CModController*>(it->second);
-		controllerInfo.rocker_X = pController->ControllerInfo.rocker_X;
-		controllerInfo.rocker_Y = pController->ControllerInfo.rocker_Y;
-	}
-
-	// // 3档拨杆状态 (0=中档, 1=臂Roll末端模式, 2=底盘模式)
-	// if (CDevFourButton::isSwitchArmRollEnd) {
-	// 	controllerInfo.toggle_switch = EToggleSwitch::TOGGLE_ARM_ROLL;  // 左档 臂Roll末端模式
-	// } else if (CDevFourButton::isSwitchChassis) {
-	// 	controllerInfo.toggle_switch = EToggleSwitch::TOGGLE_CHASSIS;  // 右档 底盘模式
-	// } else {
-	// 	controllerInfo.toggle_switch = EToggleSwitch::TOGGLE_MIDDLE;  // 中档
-	// }
-
-	// 夹爪按钮状态（单夹爪，PB9）
-	controllerInfo.gripper_close = CDevFourButton::isGripperClose;
-
-	// 二次夹紧（读取后立即清除源标志）
-	if (CDevFourButton::isGripperReGrip) {
-		controllerInfo.gripper_regrip = true;
-		CDevFourButton::isGripperReGrip = false;
+	// 按键事件
+	if (levelStep_ == ELevelStep::IDLE) {
+		if      (CDevButton::islevel_1) { StartLevelChoose_(0); CDevButton::islevel_1 = false; }
+		else if (CDevButton::islevel_2) { StartLevelChoose_(1); CDevButton::islevel_2 = false; }
+		else if (CDevButton::islevel_3) { StartLevelChoose_(2); CDevButton::islevel_3 = false; }
+		else if (CDevButton::islevel_4) { StartLevelChoose_(3); CDevButton::islevel_4 = false; }
 	}
 }
 
@@ -141,7 +126,7 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 	if (!pcontrollerLink_) return;
 
 	auto &pkg = pcontrollerLink_->controllerData_info_pkg;
-	
+
 	pkg.status_flags = {};
 
 	if (controllerInfo.controller_OK) pkg.status_flags.controller_init_ok = 1;
@@ -154,17 +139,14 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 		controllerInfo.gripper_regrip = false;
 	}
 
-	// 单臂角度数据 (float直传)
+	// 单臂角度数据 (float直传, 5轴)
 	pkg.arm.yaw       = controllerInfo.arm.yaw;
 	pkg.arm.pitch1    = controllerInfo.arm.pitch1;
 	pkg.arm.pitch2    = controllerInfo.arm.pitch2;
-	pkg.arm.pitch3    = controllerInfo.arm.pitch3;
 	pkg.arm.roll      = controllerInfo.arm.roll;
 	pkg.arm.pitch_end = controllerInfo.arm.pitch_end;
 
 	// 摇杆数据
-	pkg.rocker_X = controllerInfo.rocker_X;
-	pkg.rocker_Y = controllerInfo.rocker_Y;
 }
 
 /**
@@ -180,21 +162,18 @@ void CSystemControllerLink::UpdateRobotInfo_() {
 	robotInfo.ask_reset_flag = pkg.status_flags.ask_reset;
 	robotInfo.controlled_by_controller = pkg.status_flags.control_by_controller;
 	robotInfo.robot_init_ok = pkg.status_flags.robot_init_ok;
-	robotInfo.p3_lock = pkg.status_flags.p3_lock;
 
-	// 解压角度 (int16 -> float)
+	// 解压角度 (int16 -> float, 5轴)
 	robotInfo.arm.yaw       = CDevControllerLink::DecompressAngle(pkg.arm.yaw);
 	robotInfo.arm.pitch1    = CDevControllerLink::DecompressAngle(pkg.arm.pitch1);
 	robotInfo.arm.pitch2    = CDevControllerLink::DecompressAngle(pkg.arm.pitch2);
-	robotInfo.arm.pitch3    = CDevControllerLink::DecompressAngle(pkg.arm.pitch3);
 	robotInfo.arm.roll      = CDevControllerLink::DecompressAngle(pkg.arm.roll);
 	robotInfo.arm.pitch_end = CDevControllerLink::DecompressAngle(pkg.arm.pitch_end);
 
-	// 力矩/电流反馈 (int16 -> float，保留原始值)
+	// 力矩/电流反馈 (int16 -> float，保留原始值, 5轴)
 	robotInfo.torque.yaw       = static_cast<float>(pkg.torque.yaw);
 	robotInfo.torque.pitch1    = static_cast<float>(pkg.torque.pitch1);
 	robotInfo.torque.pitch2    = static_cast<float>(pkg.torque.pitch2);
-	robotInfo.torque.pitch3    = static_cast<float>(pkg.torque.pitch3);
 	robotInfo.torque.roll      = static_cast<float>(pkg.torque.roll);
 	robotInfo.torque.pitch_end = static_cast<float>(pkg.torque.pitch_end);
 }
@@ -216,17 +195,14 @@ void CSystemControllerLink::UpdateControllerLinkInfo_() {
 	//controllerInfo.toggle_switch = static_cast<EToggleSwitch>((pkg.status_flags & STATUS_TOGGLE_MASK) >> STATUS_TOGGLE_SHIFT);
 	controllerInfo.gripper_close = pkg.status_flags.grip;
 
-	// 单臂角度数据 (float直传)
+	// 单臂角度数据 (float直传, 5轴)
 	controllerInfo.arm.yaw       = pkg.arm.yaw;
 	controllerInfo.arm.pitch1    = pkg.arm.pitch1;
 	controllerInfo.arm.pitch2    = pkg.arm.pitch2;
-	controllerInfo.arm.pitch3    = pkg.arm.pitch3;
 	controllerInfo.arm.roll      = pkg.arm.roll;
 	controllerInfo.arm.pitch_end = pkg.arm.pitch_end;
 
 	// 摇杆数据
-	controllerInfo.rocker_X = pkg.rocker_X;
-	controllerInfo.rocker_Y = pkg.rocker_Y;
 }
 
 /**
@@ -244,19 +220,17 @@ void CSystemControllerLink::UpdateRobotDataPkg_() {
 	if (robotInfo.controlled_by_controller) pkg.status_flags.control_by_controller = 1;
 	if (robotInfo.robot_init_ok) pkg.status_flags.robot_init_ok = 1;
 
-	// 压缩角度 (float -> int16)
+	// 压缩角度 (float -> int16, 5轴)
 	pkg.arm.yaw       = CDevControllerLink::CompressAngle(robotInfo.arm.yaw);
 	pkg.arm.pitch1    = CDevControllerLink::CompressAngle(robotInfo.arm.pitch1);
 	pkg.arm.pitch2    = CDevControllerLink::CompressAngle(robotInfo.arm.pitch2);
-	pkg.arm.pitch3    = CDevControllerLink::CompressAngle(robotInfo.arm.pitch3);
 	pkg.arm.roll      = CDevControllerLink::CompressAngle(robotInfo.arm.roll);
 	pkg.arm.pitch_end = CDevControllerLink::CompressAngle(robotInfo.arm.pitch_end);
 
-	// 力矩/电流 (float -> int16)
+	// 力矩/电流 (float -> int16, 5轴)
 	pkg.torque.yaw       = static_cast<int16_t>(robotInfo.torque.yaw);
 	pkg.torque.pitch1    = static_cast<int16_t>(robotInfo.torque.pitch1);
 	pkg.torque.pitch2    = static_cast<int16_t>(robotInfo.torque.pitch2);
-	pkg.torque.pitch3    = static_cast<int16_t>(robotInfo.torque.pitch3);
 	pkg.torque.roll      = static_cast<int16_t>(robotInfo.torque.roll);
 	pkg.torque.pitch_end = static_cast<int16_t>(robotInfo.torque.pitch_end);
 }

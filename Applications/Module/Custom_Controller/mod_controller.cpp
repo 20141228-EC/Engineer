@@ -6,7 +6,7 @@
  * @version      V1.1
  * @date         2025-04-01
  * @LastEditors  Ciallo(1002046597@qq.com)
- * @LastEditTime 2026-01-22
+ * @LastEditTime 2026-05-30
  *
  * @copyright    Copyright (c) 2025
  *
@@ -18,36 +18,30 @@
 extern "C" {
 volatile float dbg_gc_enc_pitch1_rad = 0.0f;
 volatile float dbg_gc_enc_pitch2_rad = 0.0f;
-volatile float dbg_gc_enc_pitch3_rad = 0.0f;
 volatile float dbg_gc_enc_roll_rad = 0.0f;
 volatile float dbg_gc_enc_pitchEnd_rad = 0.0f;
 
 volatile float dbg_gc_tau_pitch1 = 0.0f;
 volatile float dbg_gc_tau_pitch2 = 0.0f;
-volatile float dbg_gc_tau_pitch3 = 0.0f;
 volatile float dbg_gc_tau_roll = 0.0f;
 volatile float dbg_gc_tau_pitchEnd = 0.0f;
 
 volatile float dbg_gc_motor_tf_pitch1 = 0.0f;
 volatile float dbg_gc_motor_tf_pitch2 = 0.0f;
-volatile float dbg_gc_motor_tf_pitch3 = 0.0f;
 volatile float dbg_gc_motor_tf_roll = 0.0f;
 volatile float dbg_gc_motor_tf_pitchEnd = 0.0f;
 
 volatile float dbg_motor_tau_pitch1 = 0.0f;
 volatile float dbg_motor_tau_pitch2 = 0.0f;
-volatile float dbg_motor_tau_pitch3 = 0.0f;
 
 volatile float dbg_motor_speed_pitch1 = 0.0f;
 volatile float dbg_motor_speed_pitch2 = 0.0f;
-volatile float dbg_motor_speed_pitch3 = 0.0f;
 
 // Gravity identification mode (J-Scope writable).
 // 0=normal compensation, 1=hold target angle with all TF injection disabled.
 volatile int dbg_gravity_ident_mode = 0;
 volatile float dbg_ident_tau_pitch1 = 0.0f;
 volatile float dbg_ident_tau_pitch2 = 0.0f;
-volatile float dbg_ident_tau_pitch3 = 0.0f;
 
 // Position hold mode (J-Scope writable)
 volatile int dbg_position_hold_mode = 0;     // 0=off, 1=position hold
@@ -55,7 +49,6 @@ volatile float dbg_hold_kp = 15.0f;           // MIT kp for position hold
 volatile float dbg_hold_kd = 2.f;           // MIT kd for position hold
 volatile float dbg_target_pitch1 = 0.0f;     // Target physical angle (deg)
 volatile float dbg_target_pitch2 = 0.0f;
-volatile float dbg_target_pitch3 = 0.0f;
 volatile float dbg_target_roll = 0.0f;
 volatile float dbg_target_pitchEnd = 0.0f;
 }
@@ -85,7 +78,6 @@ EAppStatus CModController::InitModule(SModInitParam_Base &param) {
 	comYaw_.InitComponent(param);
 	comPitch1_.InitComponent(param);
 	comPitch2_.InitComponent(param);
-	comPitch3_.InitComponent(param);
 	comRoll_.InitComponent(param);
 	comRocker_.InitComponent(param);
 	comBuzzer_.InitComponent(param);
@@ -123,7 +115,6 @@ void CModController::UpdateHandler_() {
 	// 更新组件
 	comPitch1_.UpdateComponent();
 	comPitch2_.UpdateComponent();
-	comPitch3_.UpdateComponent();
 	comYaw_.UpdateComponent();
 	comRocker_.UpdateComponent();  // 先更新摇杆，再更新Roll
 	comRoll_.UpdateComponent();
@@ -132,46 +123,19 @@ void CModController::UpdateHandler_() {
 
 
 	// 摇杆X轴缩放到 -100 ~ +100（有效范围 = 总范围 - 死区，与死区重映射配合）
-	{
-		int32_t raw_x = comRocker_.rockerInfo.X;
-		float normalized_x;
-		if (raw_x > 0) {
-			normalized_x = raw_x / static_cast<float>(comRocker_.x_range_pos - CONTROLLER_ROCKER_DEAD_ZONE) * 100.0f;
-		} else {
-			normalized_x = raw_x / static_cast<float>(comRocker_.x_range_neg - CONTROLLER_ROCKER_DEAD_ZONE) * 100.0f;
-		}
-		ControllerInfo.rocker_X = static_cast<int8_t>(std::clamp(
-			comRocker_.x_dir * normalized_x, -100.0f, 100.0f));
-	}
 	// Y轴：非对称范围处理（有效范围 = 总范围 - 死区）
-	{
-		int32_t raw_y = comRocker_.rockerInfo.Y;
-		float normalized_y;
-		if (raw_y > 0) {
-			normalized_y = raw_y / static_cast<float>(comRocker_.y_range_pos - CONTROLLER_ROCKER_DEAD_ZONE) * 100.0f;
-		} else {
-			normalized_y = raw_y / static_cast<float>(comRocker_.y_range_neg - CONTROLLER_ROCKER_DEAD_ZONE) * 100.0f;
-		}
-		ControllerInfo.rocker_Y = static_cast<int8_t>(std::clamp(
-			comRocker_.y_dir * normalized_y, -100.0f, 100.0f));
-	}
 	ControllerInfo.rocker_Key = comRocker_.rockerInfo.Key_status;
 	ControllerInfo.posit_yaw = CModController::CComYaw::MtrPositToPhyPosit(comYaw_.yawInfo.posit);
 	ControllerInfo.posit_pitch1 = comPitch1_.pitch1Info.posit;
 	ControllerInfo.posit_pitch2 = comPitch2_.pitch2Info.posit;
-	ControllerInfo.posit_pitch3 = comPitch3_.pitch3Info.posit;
 	ControllerInfo.posit_roll = comRoll_.rollInfo.posit;         // MIT模式直接使用float位置
 	ControllerInfo.posit_pitch_end = comPitchEnd_.pitchEndInfo.posit;  // 已在组件层转换为物理方向
 
-	/*----------- Yaw电机（DJI M6020）/pitch3 3508 CAN发送 -----------*/
+	/*----------- Yaw电机（DJI M6020）CAN发送 -----------*/
 	// Roll/PitchEnd改为MIT模式后在各自组件内发送，Pitch1/Pitch2也在组件内发送
 	CDevMtrDJI::FillCanTxBuffer(comYaw_.motor[0],
 							   comYaw_.mtrCanTxNode_[0]->dataBuffer,
 							   comYaw_.mtrOutputBuffer[0]);
-	// CDevMtrDJI::FillCanTxBuffer(comPitch3_.motor[0],
-	// 						   comPitch3_.mtrCanTxNode_[0]->dataBuffer,
-	// 						   comPitch3_.mtrOutputBuffer[0]);
-
 
 }
 
@@ -202,7 +166,7 @@ EAppStatus CModController::CreateModuleTask_() {
  * @brief    限制控制器模块的控制命令大小
  ******************************************************************************/
 EAppStatus CModController::RestrictControllerCommand_() {
-	
+
 	// 检查模块状态
 	if (moduleStatus == APP_RESET) {
 		ControllerCmd = SControllerCmd();
@@ -216,8 +180,6 @@ EAppStatus CModController::RestrictControllerCommand_() {
 		std::clamp(ControllerCmd.cmd_pitch1, CONTROLLER_PITCH1_PHYSICAL_RANGE_MIN, CONTROLLER_PITCH1_PHYSICAL_RANGE_MAX);
 	ControllerCmd.cmd_pitch2 =
 		std::clamp(ControllerCmd.cmd_pitch2, CONTROLLER_PITCH2_PHYSICAL_RANGE_MIN, CONTROLLER_PITCH2_PHYSICAL_RANGE_MAX);
-	ControllerCmd.cmd_pitch3 =
-		std::clamp(ControllerCmd.cmd_pitch3, -CONTROLLER_PITCH3_PHYSICAL_RANGE_MAX, -CONTROLLER_PITCH3_PHYSICAL_RANGE_MIN);
 	ControllerCmd.cmd_roll =
 		std::clamp(ControllerCmd.cmd_roll, CONTROLLER_ROLL_PHYSICAL_RANGE_MIN, CONTROLLER_ROLL_PHYSICAL_RANGE_MAX);
 	ControllerCmd.cmd_pitch_end =
@@ -235,22 +197,18 @@ void CModController::UpdateGravityComp_() {
 	auto clearTorques = [this]() {
 		comPitch1_.pitch1Cmd.setParam[EMotorParam::TF] = 0.0f;
 		comPitch2_.pitch2Cmd.setParam[EMotorParam::TF] = 0.0f;
-		comPitch3_.pitch3Cmd.setParam[EMotorParam::TF] = 0.0f;
 		comRoll_.rollCmd.setParam[EMotorParam::TF] = 0.0f;
 		comPitchEnd_.pitchEndCmd.setParam[EMotorParam::TF] = 0.0f;
 		dbg_gc_tau_pitch1 = 0.0f;
 		dbg_gc_tau_pitch2 = 0.0f;
-		dbg_gc_tau_pitch3 = 0.0f;
 		dbg_gc_tau_roll = 0.0f;
 		dbg_gc_tau_pitchEnd = 0.0f;
 		dbg_gc_motor_tf_pitch1 = 0.0f;
 		dbg_gc_motor_tf_pitch2 = 0.0f;
-		dbg_gc_motor_tf_pitch3 = 0.0f;
 		dbg_gc_motor_tf_roll = 0.0f;
 		dbg_gc_motor_tf_pitchEnd = 0.0f;
 		dbg_ident_tau_pitch1 = 0.0f;
 		dbg_ident_tau_pitch2 = 0.0f;
-		dbg_ident_tau_pitch3 = 0.0f;
 	};
 
 	// 未使能或组件未就绪时清零并退出
@@ -258,49 +216,35 @@ void CModController::UpdateGravityComp_() {
 	if (!gravityCompEnabled_ && !identMode) { clearTorques(); return; }
 	if (comPitch1_.componentStatus != APP_OK) { clearTorques(); return; }
 	if (comPitch2_.componentStatus != APP_OK) { clearTorques(); return; }
-	if (comPitch3_.componentStatus != APP_OK) { clearTorques(); return; }
 	if (comRoll_.componentStatus != APP_OK) { clearTorques(); return; }
 	if (comPitchEnd_.componentStatus != APP_OK) { clearTorques(); return; }
 
 	constexpr float DEG2RAD = PI / 180.0f;
 
 	// 物理角度(deg) -> DH角度(rad)
-	// DH: q2=Pitch1, q3=Pitch2, q4=P3, q5=Roll, q6=PitchEnd
+	// DH: q2=Pitch1, q3=Pitch2, q4=P3(removed), q5=Roll, q6=PitchEnd
 	// 注意：enc_pitch1 取反，因为实际Link2绝对角度 = P2 - P1
 	float enc_pitch1 = -(comPitch1_.pitch1Info.posit - CONTROLLER_GRAV_COMP_PITCH1_OFFSET) * DEG2RAD;
 	float enc_pitch2 = (comPitch2_.pitch2Info.posit - CONTROLLER_GRAV_COMP_PITCH2_OFFSET) * DEG2RAD;
-	float enc_pitch3 = (comPitch3_.pitch3Info.posit - CONTROLLER_GRAV_COMP_PITCH3_OFFSET) * DEG2RAD;
 	float enc_roll = (comRoll_.rollInfo.posit - CONTROLLER_GRAV_COMP_ROLL_OFFSET) * DEG2RAD;
 	// PitchEnd: posit 已在组件层转换为物理方向（向上为正）
 	float enc_pitchEnd = (comPitchEnd_.pitchEndInfo.posit - CONTROLLER_GRAV_COMP_PITCHEND_OFFSET) * DEG2RAD;
 
 	dbg_gc_enc_pitch1_rad = enc_pitch1;
 	dbg_gc_enc_pitch2_rad = enc_pitch2;
-	dbg_gc_enc_pitch3_rad = enc_pitch3;
 	dbg_gc_enc_roll_rad = enc_roll;
 	dbg_gc_enc_pitchEnd_rad = enc_pitchEnd;
 
-	// 计算重力补偿力矩 (6轴)
- 	auto torques = gravityComp_.Calculate(enc_pitch1, enc_pitch2, enc_pitch3, enc_roll, enc_pitchEnd);
+	// 计算重力补偿力矩 (P3已删除，传0.0f)
+ 	auto torques = gravityComp_.Calculate(enc_pitch1, enc_pitch2, 0.0f, enc_roll, enc_pitchEnd);
 
 	dbg_gc_tau_pitch1 = torques.tau_pitch1;
 	dbg_gc_tau_pitch2 = torques.tau_pitch2;
-	dbg_gc_tau_pitch3 = torques.tau_pitch3;
 	dbg_gc_tau_roll = torques.tau_roll;
 	dbg_gc_tau_pitchEnd = torques.tau_pitchEnd;
 
 	/*---------------------虚拟阻尼计算---------------------*/
-	// float dampingTorque_pitchEnd = 0.0f;  // 展示场景下PitchEnd虚拟阻尼已关闭
 	float dampingTorque_roll = 0.0f;
-
-	// PitchEnd 虚拟阻尼 (展示场景下关闭，避免速度反馈环引起的抖动)
-	// if (comPitchEnd_.pitchEndCmd.isFree) {
-	// 	float rawVelocity = CDevMtrDM::uint_to_float(
-	// 		comPitchEnd_.motor[0]->motorData[CDevMtr::DATA_SPEED],
-	// 		-comPitchEnd_.motor[0]->mitLimit_.DQ_MAX,
-	// 		comPitchEnd_.motor[0]->mitLimit_.DQ_MAX, 12);
-	// 	dampingTorque_pitchEnd = gravityComp_.CalculateDamping_PitchEnd(rawVelocity);
-	// }
 
 	// Roll 虚拟阻尼
 	if (!identMode && comRoll_.rollCmd.isFree) {
@@ -335,15 +279,6 @@ void CModController::UpdateGravityComp_() {
 	} else {
 		comPitch2_.pitch2Cmd.setParam[EMotorParam::TF] = 0.0f;
 	}
-	// DM4310 (Pitch3/P3): 仅示教模式下施加重力补偿，锁定时清零
-	if (!identMode && comPitch3_.pitch3Cmd.isFree) {
-		comPitch3_.pitch3Cmd.setParam[EMotorParam::TF] =
-			CONTROLLER_PITCH3_MOTOR_DIR * std::clamp(
-				torques.tau_pitch3 * CONTROLLER_PITCH3_EFFICIENCY_COMP / CONTROLLER_GEAR_RATIO_DM4310,
-				-CONTROLLER_GRAV_COMP_TAU_LIMIT_DM4310, CONTROLLER_GRAV_COMP_TAU_LIMIT_DM4310);
-	} else {
-		comPitch3_.pitch3Cmd.setParam[EMotorParam::TF] = 0.0f;
-	}
 
 	// DM3510 (Roll): 无重力补偿，仅虚拟阻尼
 	float totalTorque_roll = 0.0f;
@@ -354,20 +289,15 @@ void CModController::UpdateGravityComp_() {
 
 	// DM3510 (PitchEnd): 无重力补偿，虚拟阻尼已关闭
 	float totalTorque_pitchEnd = 0.0f;
-	// if (comPitchEnd_.pitchEndCmd.isFree) {
-	// 	totalTorque_pitchEnd = dampingTorque_pitchEnd;
-	// }
 	comPitchEnd_.pitchEndCmd.setParam[EMotorParam::TF] = totalTorque_pitchEnd;
 
 	dbg_gc_motor_tf_pitch1 = comPitch1_.pitch1Cmd.setParam[EMotorParam::TF];
 	dbg_gc_motor_tf_pitch2 = comPitch2_.pitch2Cmd.setParam[EMotorParam::TF];
-	dbg_gc_motor_tf_pitch3 = comPitch3_.pitch3Cmd.setParam[EMotorParam::TF];
 	dbg_gc_motor_tf_roll = comRoll_.rollCmd.setParam[EMotorParam::TF];
 	dbg_gc_motor_tf_pitchEnd = comPitchEnd_.pitchEndCmd.setParam[EMotorParam::TF];
 
 	auto *mP1 = comPitch1_.motor[0];
 	auto *mP2 = comPitch2_.motor[0];
-	auto *mP3 = comPitch3_.motor[0];
 
 	// ----- 关节侧重力矩 -----
       float tau_m_p1 = CDevMtrDM::uint_to_float(
@@ -376,14 +306,10 @@ void CModController::UpdateGravityComp_() {
       float tau_m_p2 = CDevMtrDM::uint_to_float(
           mP2->motorData[CDevMtr::DATA_TORQUE],
           -mP2->mitLimit_.TAU_MAX, mP2->mitLimit_.TAU_MAX, 12);
-      float tau_m_p3 = CDevMtrDM::uint_to_float(
-          mP3->motorData[CDevMtr::DATA_TORQUE],
-          -mP3->mitLimit_.TAU_MAX, mP3->mitLimit_.TAU_MAX, 12);
 
       // DM4310 减速 10:1, DM3510 直驱
       dbg_motor_tau_pitch1 = -tau_m_p1 * CONTROLLER_GEAR_RATIO_DM4310 * CONTROLLER_PITCH1_MOTOR_DIR;
       dbg_motor_tau_pitch2 = -tau_m_p2 * CONTROLLER_GEAR_RATIO_DM4310 * CONTROLLER_PITCH2_MOTOR_DIR;
-      dbg_motor_tau_pitch3 = -tau_m_p3 * CONTROLLER_GEAR_RATIO_DM4310 * CONTROLLER_PITCH3_MOTOR_DIR;
 
       // ----- 关节侧速度 (rad/s) -----
       // motorData[DATA_SPEED] 是 12-bit raw, 中位 2047 = 0
@@ -395,21 +321,14 @@ void CModController::UpdateGravityComp_() {
           mP2->motorData[CDevMtr::DATA_SPEED],
           -mP2->mitLimit_.DQ_MAX, mP2->mitLimit_.DQ_MAX, 12)
           * CONTROLLER_PITCH2_MOTOR_DIR / CONTROLLER_GEAR_RATIO_DM4310;
-      dbg_motor_speed_pitch3 = CDevMtrDM::uint_to_float(
-          mP3->motorData[CDevMtr::DATA_SPEED],
-          -mP3->mitLimit_.DQ_MAX, mP3->mitLimit_.DQ_MAX, 12)
-          * CONTROLLER_PITCH3_MOTOR_DIR / CONTROLLER_GEAR_RATIO_DM4310;
 
       if (identMode) {
           dbg_ident_tau_pitch1 = dbg_motor_tau_pitch1;
           dbg_ident_tau_pitch2 = dbg_motor_tau_pitch2;
-          dbg_ident_tau_pitch3 = dbg_motor_tau_pitch3;
       } else {
           dbg_ident_tau_pitch1 = 0.0f;
           dbg_ident_tau_pitch2 = 0.0f;
-          dbg_ident_tau_pitch3 = 0.0f;
       }
-
 
 }
 

@@ -5,7 +5,7 @@
  * @version      V1.1
  * @date         2025-04-01
  * @LastEditors  Ciallo(1002046597@qq.com)
- * @LastEditTime 2026-01-15
+ * @LastEditTime 2026-05-30
  *
  * @copyright    Copyright (c) 2025
  *
@@ -37,7 +37,6 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comYaw_.StopComponent();
 				controller.comPitch1_.StopComponent();
 				controller.comPitch2_.StopComponent();
-				controller.comPitch3_.StopComponent();
 				controller.comRoll_.StopComponent();
 				controller.comPitchEnd_.StopComponent();
 				controller.comBuzzer_.StopComponent();
@@ -54,13 +53,10 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comBuzzer_.StartComponent();
 				controller.comPitch1_.StartComponent();
 				controller.comPitch2_.StartComponent();
-				controller.comPitch3_.StartComponent();
 				proc_waitUntil(controller.comPitch1_.componentStatus == APP_OK
-					&& controller.comPitch2_.componentStatus == APP_OK
-					&& controller.comPitch3_.componentStatus == APP_OK);
+					&& controller.comPitch2_.componentStatus == APP_OK);
 				controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] = 4.0f;
 				controller.comPitch2_.pitch2Cmd.setParam[EMotorParam::POSIT] = 11.0f;
-				controller.comPitch3_.pitch3Cmd.setParam[EMotorParam::POSIT] = 0.0f;
 				proc_waitUntil(controller.comPitch1_.pitch1Info.isPositArrived
 					&& controller.comPitch2_.pitch2Info.isPositArrived);
 
@@ -68,7 +64,7 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comPitchEnd_.StartComponent();
 				proc_waitUntil(controller.comRoll_.componentStatus == APP_OK
 					&& controller.comPitchEnd_.componentStatus == APP_OK);
-				
+
 				controller.comYaw_.StartComponent();
 				proc_waitUntil(controller.comYaw_.componentStatus == APP_OK);
 
@@ -77,16 +73,15 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comPitch2_.pitch2Cmd.isFree = true; ///< 允许自由控制
 				controller.comRoll_.rollCmd.isFree = true; ///< 允许自由控制
 				controller.comPitchEnd_.pitchEndCmd.isFree = true; ///< 允许自由控制
-				controller.comPitch3_.pitch3Cmd.isFree = false; ///< 允许自由控制
 
-				//controller.comBuzzer_.buzzerCmd.musicType = CDevBuzzer::MusicType::STARTUP;  // 暂时关闭启动音乐
+				// controller.comBuzzer_.buzzerCmd.musicType = CDevBuzzer::MusicType::STARTUP;  // 暂时关闭启动音乐
 
 				controller.ControllerCmd = SControllerCmd();
 				controller.ControllerCmd.isFree = true;
 				controller.ControllerInfo.isModuleAvailable = true;
 				controller.Module_FSMFlag_ = FSM_CTRL;
 				controller.moduleStatus = APP_OK;
-				
+
 				continue;
 			}
 
@@ -99,14 +94,6 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comYaw_.yawCmd.isFree = controller.ControllerCmd.isFree;
 				controller.comPitch1_.pitch1Cmd.isFree = controller.ControllerCmd.isFree;
 				controller.comPitch2_.pitch2Cmd.isFree = controller.ControllerCmd.isFree;
-				if(controller.ControllerCmd.isFree) {
-					// 示教模式：保持当前电机位置，允许用户通过控制器移动到新位置
-					controller.comPitch3_.pitch3Cmd.isFree = controller.ControllerInfo.P3_lock; // 示教模式锁死P3，跟随控制器位置
-				} else {
-					// 联动模式：P3锁定状态由控制器端P3_lock信号控制
-					controller.comPitch3_.pitch3Cmd.isFree = false;
-				}
-				controller.comPitch3_.pitch3Cmd.isFree = controller.ControllerInfo.P3_lock;	//初始化锁住，在键盘上解锁
 				controller.comRoll_.rollCmd.isFree = controller.ControllerCmd.isFree;
 				controller.comPitchEnd_.pitchEndCmd.isFree = controller.ControllerCmd.isFree;
 
@@ -115,17 +102,14 @@ void CModController::StartControllerModuleTask(void *argument) {
 					controller.comYaw_.yawCmd.setPosit = CModController::CComYaw::PhyPositToMtrPosit(controller.ControllerCmd.cmd_yaw);
 					controller.comPitch1_.pitch1Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch1;
 					controller.comPitch2_.pitch2Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch2;
-					controller.comPitch3_.pitch3Cmd.setParam[EMotorParam::POSIT] =  controller.ControllerCmd.cmd_pitch3;
 					controller.comRoll_.rollCmd.setParam[EMotorParam::POSIT] = controller.ControllerCmd.cmd_roll;
 					controller.comPitchEnd_.pitchEndCmd.setParam[EMotorParam::POSIT] = controller.ControllerCmd.cmd_pitch_end;
 				}
-
 
 				// 是否到达固定的位置
 				controller.ControllerInfo.isReturnSuccess =
 					controller.comPitch1_.pitch1Info.isPositArrived &&
 					controller.comPitch2_.pitch2Info.isPositArrived &&
-					controller.comPitch3_.pitch3Info.isPositArrived &&
 					controller.comYaw_.yawInfo.isPositArrived &&
 					controller.comRoll_.rollInfo.isPositArrived &&
 					controller.comPitchEnd_.pitchEndInfo.isPositArrived;

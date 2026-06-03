@@ -1,15 +1,15 @@
 /******************************************************************************
- * @brief        
- * 
+ * @brief
+ *
  * @file         sys_controller_link.hpp
- * @author       Fish_Joe (2328339747@qq.com)
+ * @author       ciallo (1002046597@qq.com)
  * @version      V2.0
- * @date         2025-04-05
+ * @date         2026-06-03
  * @LastEditors  Ciallo(1002046597@qq.com)
- * @LastEditTime 2026-01-17
+ * @LastEditTime 2026-06-03
  *
  * @copyright    Copyright (c) 2025
- * 
+ *
  ******************************************************************************/
 
 #ifndef SYS_CONTROLLER_LINK_HPP
@@ -18,16 +18,6 @@
 #include "sys_common.hpp"
 #include "Device.hpp"
 #include <algorithm>
-
-/*选不同难度时，x和y的位置*/
-#define POSIT_LEVEL3_X 0
-#define POSIT_LEVEL3_Y 0
-#define POSIT_LEVEL4_X 0
-#define POSIT_LEVEL4_Y 0
-
-/*确定键的位置*/
-#define POSIT_YES_X 0
-#define POSIT_YES_Y 0
 
 namespace my_engineer {
 
@@ -51,14 +41,12 @@ public:
 	};
 
 	/**
-	 * @brief 系统层使用float
-	 * @note  末端Roll由摇杆控制
+	 * @brief 系统层使用float (5轴)
 	 */
 	struct SArmAngles {
 		float_t yaw = 0.f;
 		float_t pitch1 = 0.f;
 		float_t pitch2 = 0.f;
-		float_t pitch3 = 0.f;
 		float_t roll = 0.f;
 		float_t pitch_end = 0.f;
 	};
@@ -70,9 +58,9 @@ public:
 		// EToggleSwitch toggle_switch = TOGGLE_MIDDLE;  ///< 拨杆档位
 		bool gripper_close = false;          ///< 夹爪闭合
 		bool gripper_regrip = false;         ///< 夹爪二次夹紧请求
-		SArmAngles arm;                      ///< 单臂6轴角度
-		int8_t rocker_X = 0;                 ///< 摇杆X: roll_end / 底盘左右移动 (-100~100)
-		int8_t rocker_Y = 0;                 ///< 摇杆Y: 底盘前进 (-100~100)，仅底盘模式有效
+		SArmAngles arm;                      ///< 单臂5轴角度
+		// int8_t rocker_X = 0;                 ///< 摇杆X: roll_end / 底盘左右移动 (-100~100)
+		// int8_t rocker_Y = 0;                 ///< 摇杆Y: 底盘前进 (-100~100)，仅底盘模式有效
 	} controllerInfo;
 
 	// 机器人信息结构体(Robot -> Controller)
@@ -80,8 +68,8 @@ public:
 		bool ask_reset_flag = false;           ///< 要求复位
 		bool controlled_by_controller = false; ///< 被控制器控制中
 		bool robot_init_ok = false;            ///< 机器人初始化完成
-		bool p3_lock = false;                   ///< P3锁定标志
-		SArmAngles arm;                        ///< 单臂6轴角度
+		bool p3_lock = false;                   ///< 保留（机器人端协议兼容）
+		SArmAngles arm;                        ///< 单臂5轴角度
 		SArmAngles torque;                     ///< 臂部力矩/电流反馈（原始值转float）
 	} robotInfo;
 
@@ -90,7 +78,7 @@ public:
 
 	// 控制器通信设备指针
 	CDevControllerLink *pcontrollerLink_ = nullptr;
-	CDevFourButton *pbuttons_ = nullptr; ///< 按键设备指针
+	CDevButton *pbuttons_ = nullptr; ///< 按键设备指针
 
 private:
 
@@ -113,11 +101,36 @@ private:
 	/*更新按键信息*/
 	void UpdateButtonInfo_();
 
-	/*根据难度等级来更新键鼠信息*/
-	EAppStatus Level4Move_();
-	EAppStatus Level3Move_();
-	EAppStatus Mouse_move_(uint16_t pos_x, uint16_t pos_y, uint8_t mouse_left, uint8_t mouse_right);
-	EAppStatus KeyBoard_move_(uint8_t key_value1, uint8_t key_value2);
+	/*选难度状态机*/
+	enum class ELevelStep : uint8_t {
+		IDLE = 0,
+		KEY_PRESS,
+		KEY_RELEASE,
+		MOVE_TO_LEVEL,
+		CLICK_LEVEL,
+		RELEASE_CLICK_LEVEL,
+		MOVE_TO_YES,
+		CLICK_YES,
+		RELEASE_CLICK_YES,
+	};
+
+	ELevelStep levelStep_ = ELevelStep::IDLE;
+	uint16_t levelTargetX_ = 0;
+	uint16_t levelTargetY_ = 0;
+
+	///< 难度位置查找表 [level][x,y]
+	const uint16_t Level_Positions[4][2] = {
+		{833, 511},  ///< LEVEL_1
+		{833, 551},  ///< LEVEL_2
+		{833, 592},  ///< LEVEL_3
+		{833, 633},  ///< LEVEL_4
+	};
+
+	///< 确定键的位置
+	const uint16_t Yes_Position[2] = {841, 765};
+
+	void StartLevelChoose_(uint8_t level);
+	void TickLevelChoose_();
 
 };
 

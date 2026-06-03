@@ -72,8 +72,14 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SWITCH_ARM_ROLL_END_Pin SWITCH_CHASSIS_Pin */
-  GPIO_InitStruct.Pin = SWITCH_ARM_ROLL_END_Pin|SWITCH_CHASSIS_Pin;
+  /*Configure GPIO pins : LEVEL_3_Pin LEVEL_4_Pin */
+  GPIO_InitStruct.Pin = LEVEL_3_Pin|LEVEL_4_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LEVEL_2_Pin LEVEL_1_Pin */
+  GPIO_InitStruct.Pin = LEVEL_2_Pin|LEVEL_1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
@@ -93,7 +99,7 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pins : GRIPPER_LEFT_Pin GRIPPER_RIGHT_Pin */
   GPIO_InitStruct.Pin = GRIPPER_LEFT_Pin|GRIPPER_RIGHT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;  // 上拉输入，按下接GND变低电平
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*AnalogSwitch Config */

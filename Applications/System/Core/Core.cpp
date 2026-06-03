@@ -18,12 +18,10 @@ CSystemCore SystemCore;
 volatile float dbg_fb_yaw    = 0;  ///< 转换后力矩 (N·m)
 volatile float dbg_fb_pitch1 = 0;
 volatile float dbg_fb_pitch2 = 0;
-volatile float dbg_fb_pitch3 = 0;
 volatile float dbg_fb_roll   = 0;
 volatile float dbg_raw_yaw    = 0;  ///< 主控传来的原始值
 volatile float dbg_raw_pitch1 = 0;
 volatile float dbg_raw_pitch2 = 0;
-volatile float dbg_raw_pitch3 = 0;
 volatile float dbg_raw_roll   = 0;
 
 /**
@@ -77,14 +75,12 @@ void CSystemCore::UpdateHandler_() {
         SysControllerLink.controllerInfo.arm.yaw       = pcontroller_->ControllerInfo.posit_yaw;
         SysControllerLink.controllerInfo.arm.pitch1     = pcontroller_->ControllerInfo.posit_pitch1 - CONTROLLER_PITCH1_ZERO_OFFSET;
         SysControllerLink.controllerInfo.arm.pitch2     = pcontroller_->ControllerInfo.posit_pitch2 - CONTROLLER_PITCH2_ZERO_OFFSET;
-        SysControllerLink.controllerInfo.arm.pitch3     = pcontroller_->ControllerInfo.posit_pitch3 - CONTROLLER_PITCH3_ZERO_OFFSET;
         SysControllerLink.controllerInfo.arm.roll       = -pcontroller_->ControllerInfo.posit_roll;       // 保留原右臂符号反转
         SysControllerLink.controllerInfo.arm.pitch_end  = -pcontroller_->ControllerInfo.posit_pitch_end;  // 保留原右臂符号反转
         // 接收机器人臂部位置 (机器人 -> 控制器)
         pcontroller_->ControllerCmd.cmd_yaw       = SysControllerLink.robotInfo.arm.yaw;
         pcontroller_->ControllerCmd.cmd_pitch1    = SysControllerLink.robotInfo.arm.pitch1;
         pcontroller_->ControllerCmd.cmd_pitch2    = SysControllerLink.robotInfo.arm.pitch2;
-        pcontroller_->ControllerCmd.cmd_pitch3    = SysControllerLink.robotInfo.arm.pitch3;
         pcontroller_->ControllerCmd.cmd_roll      = SysControllerLink.robotInfo.arm.roll;
         pcontroller_->ControllerCmd.cmd_pitch_end = SysControllerLink.robotInfo.arm.pitch_end;
 
@@ -99,11 +95,10 @@ void CSystemCore::UpdateHandler_() {
         // torque = raw_iq × (33.0/2048.0) × 0.175
             constexpr float MG6012_i36v3_KT_RAW_TO_TORQUE = (33.0f / 2048.0f) / 0.175f;  
             constexpr float MG8010_i8v3_KT_RAW_TO_TORQUE = (33.0f / 2048.0f) / 1.09f;  
-            constexpr float MG5010_i36v3_KT_RAW_TO_TORQUE = (33.0f / 2048.0f) * 0.3f; 
+            constexpr float MG5010_i36v3_KT_RAW_TO_TORQUE = (33.0f / 2048.0f) * 0.3f; // 保留定义（机器人端可能用到）
             pcontroller_->ControllerCmd.fb_torque_yaw       = SysControllerLink.robotInfo.torque.yaw    * MG8010_i8v3_KT_RAW_TO_TORQUE;
             pcontroller_->ControllerCmd.fb_torque_pitch1    = SysControllerLink.robotInfo.torque.pitch1 * MG6012_i36v3_KT_RAW_TO_TORQUE;
             pcontroller_->ControllerCmd.fb_torque_pitch2    = SysControllerLink.robotInfo.torque.pitch2 * MG6012_i36v3_KT_RAW_TO_TORQUE;
-            pcontroller_->ControllerCmd.fb_torque_pitch3    = SysControllerLink.robotInfo.torque.pitch3 * MG5010_i36v3_KT_RAW_TO_TORQUE;
 
             // DM4310 MIT: 12bit原始值(0~4095) -> 物理力矩(-TAU_MAX ~ +TAU_MAX), TAU_MAX=10.0 N·m
             constexpr float DM_TAU_MAX = 10.0f;
@@ -114,13 +109,11 @@ void CSystemCore::UpdateHandler_() {
             dbg_raw_yaw    = SysControllerLink.robotInfo.torque.yaw;
             dbg_raw_pitch1 = SysControllerLink.robotInfo.torque.pitch1;
             dbg_raw_pitch2 = SysControllerLink.robotInfo.torque.pitch2;
-            dbg_raw_pitch3 = SysControllerLink.robotInfo.torque.pitch3;
             dbg_raw_roll   = SysControllerLink.robotInfo.torque.roll;
             //  扭矩的转换值
             dbg_fb_yaw    = pcontroller_->ControllerCmd.fb_torque_yaw;
             dbg_fb_pitch1 = pcontroller_->ControllerCmd.fb_torque_pitch1;
             dbg_fb_pitch2 = pcontroller_->ControllerCmd.fb_torque_pitch2;
-            dbg_fb_pitch3 = pcontroller_->ControllerCmd.fb_torque_pitch3;
             dbg_fb_roll   = pcontroller_->ControllerCmd.fb_torque_roll;
             if(SysControllerLink.robotInfo.controlled_by_controller){
                 pcontroller_->ControllerCmd.isfirstChange = true;
@@ -135,8 +128,6 @@ void CSystemCore::UpdateHandler_() {
             pcontroller_->ControllerCmd.isFree = true;
             pcontroller_->ControllerInfo.isRobotInit = false;
         }
-        
-        pcontroller_->ControllerInfo.P3_lock = SysControllerLink.robotInfo.p3_lock;
     }
 
     /*------------ 状态汇总 -----------*/

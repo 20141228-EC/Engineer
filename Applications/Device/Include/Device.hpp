@@ -26,7 +26,7 @@
 #include "dev_rocker.hpp"
 #include "buzzer/dev_buzzer.hpp"
 #include "dev_controller_link.hpp"
-#include "multi_button/dev_FourButton.hpp"
+#include "multi_button/dev_Button.hpp"
 
 // #include "dev_vision.hpp"
 // #include "dev_referee.hpp"

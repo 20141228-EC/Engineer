@@ -44,10 +44,8 @@ EAppStatus InitAllInterface(){
     inf_rocker_initparam.useDma = true;
     inf_rocker_initparam.useTimer = true;
     inf_rocker_initparam.halTimerHandle = &htim6;
-    inf_rocker_initparam.channelNum = 4;
+    inf_rocker_initparam.channelNum = 2;
     inf_rocker_initparam.channelList = {CInfADC::EAdcChannel::CHANNEL_4,   /* PC4 - 电池电压 */  \
-                                        CInfADC::EAdcChannel::CHANNEL_14,  /* PA2 - 右臂X轴 */   \
-                                        CInfADC::EAdcChannel::CHANNEL_16,  /* PA0 - 左臂X轴 */   \
                                         CInfADC::EAdcChannel::CHANNEL_19}; /* PA5 - 右臂Y轴 */
     inf_rocker.InitInterface(&inf_rocker_initparam);
     

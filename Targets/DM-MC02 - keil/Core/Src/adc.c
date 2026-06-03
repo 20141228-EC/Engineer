@@ -53,7 +53,7 @@ void MX_ADC1_Init(void)
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc1.Init.LowPowerAutoWait = DISABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
-  hadc1.Init.NbrOfConversion = 4;
+  hadc1.Init.NbrOfConversion = 2;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIG_T6_TRGO;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_RISING;
@@ -91,26 +91,8 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_14;
-  sConfig.Rank = ADC_REGULAR_RANK_2;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure Regular Channel
-  */
-  sConfig.Channel = ADC_CHANNEL_16;
-  sConfig.Rank = ADC_REGULAR_RANK_3;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure Regular Channel
-  */
   sConfig.Channel = ADC_CHANNEL_19;
-  sConfig.Rank = ADC_REGULAR_RANK_4;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -195,15 +177,13 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOC_CLK_ENABLE();
     /**ADC1 GPIO Configuration
-    PA0     ------> ADC1_INP16
-    PA2     ------> ADC1_INP14
     PA5     ------> ADC1_INP19
     PC4     ------> ADC1_INP4
     */
-    GPIO_InitStruct.Pin = LEFT_AXIS_X_Pin|RIGHT_AXIS_X_Pin|RIGHT_AXIS_Y_Pin;
+    GPIO_InitStruct.Pin = RIGHT_AXIS_Y_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_GPIO_Init(RIGHT_AXIS_Y_GPIO_Port, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = ADC1_VBAT_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
@@ -278,12 +258,10 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     __HAL_RCC_ADC12_CLK_DISABLE();
 
     /**ADC1 GPIO Configuration
-    PA0     ------> ADC1_INP16
-    PA2     ------> ADC1_INP14
     PA5     ------> ADC1_INP19
     PC4     ------> ADC1_INP4
     */
-    HAL_GPIO_DeInit(GPIOA, LEFT_AXIS_X_Pin|RIGHT_AXIS_X_Pin|RIGHT_AXIS_Y_Pin);
+    HAL_GPIO_DeInit(RIGHT_AXIS_Y_GPIO_Port, RIGHT_AXIS_Y_Pin);
 
     HAL_GPIO_DeInit(ADC1_VBAT_GPIO_Port, ADC1_VBAT_Pin);
 

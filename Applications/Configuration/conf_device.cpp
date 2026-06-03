@@ -45,38 +45,38 @@ EAppStatus InitAllDevice(){
     bmi088_initparam.tempPidParam.maxOutput = 100;
     bmi088.InitDevice(&bmi088_initparam);
 
-    /*four button config - 4按钮配置（连续索引，下拉输入高电平有效）*/
-    static CDevFourButton fourButton;
-    CDevFourButton::SDevInitParam_FourButton fourButton_initparam;
-    fourButton_initparam.deviceID = EDeviceID::DEV_MULTI_BUTTON;
-    // 槽位0: 拨杆右档 - 底盘模式 (PE13)
-    fourButton_initparam.buttons_[0].buttonID = CDevFourButton::EButtonID::SWITCH_CHASSIS;
-    fourButton_initparam.buttons_[0].activeLevel = 1;  // 高电平有效（下拉输入）
-    fourButton_initparam.buttons_[0].halGpioPort = SWITCH_CHASSIS_GPIO_Port;
-    fourButton_initparam.buttons_[0].halGpioPin = SWITCH_CHASSIS_Pin;
-    // 槽位1: 拨杆左档 - 臂Roll末端模式 (PE9)
-    fourButton_initparam.buttons_[1].buttonID = CDevFourButton::EButtonID::SWITCH_ARM_ROLL_END;
-    fourButton_initparam.buttons_[1].activeLevel = 1;  // 高电平有效（下拉输入）
-    fourButton_initparam.buttons_[1].halGpioPort = SWITCH_ARM_ROLL_END_GPIO_Port;
-    fourButton_initparam.buttons_[1].halGpioPin = SWITCH_ARM_ROLL_END_Pin;
-    // 槽位2: 保留按钮 (PB8, 原左手夹爪，未使用)
-    fourButton_initparam.buttons_[2].buttonID = CDevFourButton::EButtonID::BUTTON_RESERVED;
-    fourButton_initparam.buttons_[2].activeLevel = 0;  // 低电平有效（上拉输入，按下接GND）
-    fourButton_initparam.buttons_[2].halGpioPort = GRIPPER_LEFT_GPIO_Port;
-    fourButton_initparam.buttons_[2].halGpioPin = GRIPPER_LEFT_Pin;
-    // 槽位3: 夹爪 (PB9)
-    fourButton_initparam.buttons_[3].buttonID = CDevFourButton::EButtonID::GRIPPER;
-    fourButton_initparam.buttons_[3].activeLevel = 0;  // 低电平有效（上拉输入，按下接GND）
-    fourButton_initparam.buttons_[3].halGpioPort = GRIPPER_RIGHT_GPIO_Port;
-    fourButton_initparam.buttons_[3].halGpioPin = GRIPPER_RIGHT_Pin;
-    fourButton.InitDevice(&fourButton_initparam);
+    /*four button config 按钮配置（连续索引，下拉输入高电平有效）*/
+    static CDevButton Button;
+    CDevButton::SDevInitParam_Button Button_initparam;
+    Button_initparam.deviceID = EDeviceID::DEV_MULTI_BUTTON;
+    // 按键1
+    Button_initparam.buttons_[0].buttonID = CDevButton::EButtonID::LEVEL_1;
+    Button_initparam.buttons_[0].activeLevel = 1;  // 高电平有效
+    Button_initparam.buttons_[0].halGpioPort = LEVEL_1_GPIO_Port;
+    Button_initparam.buttons_[0].halGpioPin = LEVEL_1_Pin;
+    // 按键2
+    Button_initparam.buttons_[1].buttonID = CDevButton::EButtonID::LEVEL_2;
+    Button_initparam.buttons_[1].activeLevel = 1;  // 高电平有效
+    Button_initparam.buttons_[1].halGpioPort = LEVEL_2_GPIO_Port;
+    Button_initparam.buttons_[1].halGpioPin = LEVEL_2_Pin;
+    // 按键3
+    Button_initparam.buttons_[2].buttonID = CDevButton::EButtonID::LEVEL_3;
+    Button_initparam.buttons_[2].activeLevel = 1;  // 高电平有效
+    Button_initparam.buttons_[2].halGpioPort = LEVEL_3_GPIO_Port;
+    Button_initparam.buttons_[2].halGpioPin = LEVEL_3_Pin;
+    // 按键4
+    Button_initparam.buttons_[3].buttonID = CDevButton::EButtonID::LEVEL_4;
+    Button_initparam.buttons_[3].activeLevel = 1;  // 高电平有效
+    Button_initparam.buttons_[3].halGpioPort = LEVEL_4_GPIO_Port;
+    Button_initparam.buttons_[3].halGpioPin = LEVEL_4_Pin;
+    Button.InitDevice(&Button_initparam);
 
-    // 摇杆（双轴模式）- PA2 = CHANNEL_14, PA5 = CHANNEL_19
+    // 摇杆
     static CDevRocker rocker;
     CDevRocker::SDevInitParam_Rocker rocker_initparam;
     rocker_initparam.deviceID = EDeviceID::DEV_ROCKER;
     rocker_initparam.interfaceID = EInterfaceID::INF_ADC1;
-    rocker_initparam.X_channel = CInfADC::EAdcChannel::CHANNEL_14;  // PA2
+    rocker_initparam.X_channel = CInfADC::EAdcChannel::CHANNEL_NULL;  // PA2 is LEVEL_4 GPIO
     rocker_initparam.Y_channel = CInfADC::EAdcChannel::CHANNEL_19;  // PA5
     rocker.InitDevice(&rocker_initparam);
 
@@ -135,20 +135,6 @@ EAppStatus InitAllDevice(){
     mtr_Pitch2_initparam.MIT_TxCANID = 0x33;  // 发送到电机的CAN_ID
     mtr_Pitch2_initparam.MIT_RxCANID = 0x32;  // 接收电机反馈的Master_ID
     mtr_Pitch2.InitDevice(&mtr_Pitch2_initparam);
-
-    // Pitch3 (DM4310, CAN1, CAN_ID=0x38, Master_ID=0x39)
-    static CDevMtrDM mtr_Pitch3;
-    CDevMtrDM::SMtrInitParam_DM mtr_Pitch3_initparam;
-    mtr_Pitch3_initparam.deviceID = EDeviceID::DEV_MTR_PITCH3;
-    mtr_Pitch3_initparam.interfaceID = EInterfaceID::INF_CAN1;
-    mtr_Pitch3_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
-    mtr_Pitch3_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
-    mtr_Pitch3_initparam.useAngleToPosit = false;
-    mtr_Pitch3_initparam.Kp = 10.0f;
-    mtr_Pitch3_initparam.Kd = 2.0f;
-    mtr_Pitch3_initparam.MIT_TxCANID = 0x38;  // 发送到电机的CAN_ID
-    mtr_Pitch3_initparam.MIT_RxCANID = 0x39;  // 接收电机反馈的Master_ID
-    mtr_Pitch3.InitDevice(&mtr_Pitch3_initparam);
 
     // Roll (DM3510, CAN2, CAN_ID=0x35, Master_ID=0x34)
     static CDevMtrDM mtr_Roll;
