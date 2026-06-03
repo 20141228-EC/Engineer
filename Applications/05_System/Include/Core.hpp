@@ -34,7 +34,7 @@
 #define CLIMBING_END_PITCH_ANGLE  80
 #define CLIMBING_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
 #define CLIMBING_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
-#define CLIMBING_SPEED            23.f      ///< 给一个较小的速度
+#define CLIMBING_SPEED            20.f      ///< 给一个较小的速度
 #define SAVING_SPEED              -40.f     ///< 回退
 #define SAVING_HIP_ANGLE          6.3f      ///< 自救腿长
 #define CLIMBING_HIP_ANGLE        2.5f      ///< 抬一点腿
