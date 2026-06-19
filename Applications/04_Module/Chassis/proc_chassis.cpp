@@ -71,6 +71,9 @@ void CModChassis::StartChassisModuleTask(void *argument) {
                 chassis.comHip_.HipCmd.R_Set_Angle = std::clamp(CHASSIS_HIP_INIT_ECD_R + chassis.chassisCmd.L_length * ECD_LENGTH_RATIO * R_LIFT_MOTOR_DIR,
                                                                 CHASSIS_HIP_ECD_MIN_R,CHASSIS_HIP_ECD_MAX_R);                                 
                 // 根据电机初始化编码器值加上目标腿长所需要改变的编码器值 得出目标位置
+                chassis.comHip_.HipCmd.L_Set_Tau = chassis.chassisCmd.L_Tau * L_TAU_MOTOR_DIR;
+                chassis.comHip_.HipCmd.R_Set_Tau = chassis.chassisCmd.L_Tau * R_TAU_MOTOR_DIR;
+                // 获取腿的姿态修正力矩
 
                 proc_waitMs(1); // 1000Hz
                 continue;

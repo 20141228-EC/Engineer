@@ -127,7 +127,8 @@ EAppStatus InitAllModule() {
     CModChassis::SModInitParam_Chassis chassisInitParam;
     chassisInitParam.moduleID = EModuleID::MOD_CHASSIS;
     chassisInitParam.memsDevID = EDeviceID::DEV_MEMS_BMI088;
-    chassisInitParam.FilterID = EAlgoID::ALGO_IMU_AVE;      //使用互补滤波
+    // chassisInitParam.FilterID = EAlgoID::ALGO_IMU_AVE;      //使用互补滤波
+    chassisInitParam.FilterID = EAlgoID::ALGO_IMU_EKF;
     chassisInitParam.wheelsetMotorID_LF = EDeviceID::DEV_CHAS_MTR_LF;
     chassisInitParam.wheelsetMotorID_RF = EDeviceID::DEV_CHAS_MTR_RF;
     chassisInitParam.wheelsetMotorID_LB = EDeviceID::DEV_CHAS_MTR_LB;

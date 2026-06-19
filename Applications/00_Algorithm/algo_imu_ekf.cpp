@@ -14,97 +14,146 @@
 
 namespace my_engineer
 {
-    // 全局姿态角定义
-    float g_ekf_roll = 0.0f;
-    float g_ekf_pitch = 0.0f;
-    float g_ekf_yaw = 0.0f;
-    float g_ekf_yaw_total = 0.0f;
 
-    // --- 内部变量和参数 ---
-    static CMemsBmi088 *s_bmi088 = nullptr; // IMU设备指针
-
-    // EKF初始化参数
-    static constexpr float EKF_Q1 = 10.0f;
-    static constexpr float EKF_Q2 = 0.001f;
-    static constexpr float EKF_R = 1000000.0f;
-    static constexpr float EKF_LAMBDA = 0.9996f;
-    static constexpr float DT = 0.001f; // 采样周期 (秒)
-    static float init_quaternion[4] = {1.0f, 0.0f, 0.0f, 0.0f};
-
-    /**
-     * @brief 初始化IMU EKF
-     */
-    EAppStatus InitImuEkf()
+EAppStatus CAlgo_IMU_EKF::InitAlgo_(SFilterInitParam_Base &param)
+{
+    if (param.AlgoID == EAlgoID::ALGO_NULL)
     {
-        // 1. 获取传感器指针
-        auto it = MemsIDMap.find(EDeviceID::DEV_MEMS_BMI088);
-        if (it != MemsIDMap.end())
-        {
-            s_bmi088 = static_cast<CMemsBmi088 *>(it->second);
-        }
+        return APP_ERROR;
+    }
 
-        if (s_bmi088 == nullptr)
-        {
-            return APP_ERROR; // 如果找不到设备，返回错误
-        }
+    auto &imu_ekf_param =
+        static_cast<SAlgoImuEkfInitParam &>(param);
 
-        // 2. 初始化坐标变换
-        // 注意：EKFgim_trans 结构体应在 bmi_EKF.h 中定义
+    AlgoID = imu_ekf_param.AlgoID;
+    DT = imu_ekf_param.DT;
+    use_transform = imu_ekf_param.use_transform;
+
+    mems = MemsIDMap.at(imu_ekf_param.memsDevID);
+
+    if (mems == nullptr)
+    {
+        return APP_ERROR;
+    }
+
+    mems->StartDevice();
+
+    float init_q[4] =
+    {
+        1.0f,
+        0.0f,
+        0.0f,
+        0.0f
+    };
+
+    IMU_QuaternionEKF_Init(
+        init_q,
+        imu_ekf_param.process_noise_q,
+        imu_ekf_param.process_noise_b,
+        imu_ekf_param.measure_noise,
+        imu_ekf_param.lambda
+    );
+
+    if (use_transform)
+    {
         transform_init(&EKFgim_trans);
-
-        // 3. 初始化EKF核心
-        // 实际的初始化推迟到Update函数中，等待传感器数据就绪
-        // IMU_QuaternionEKF_Init(init_quaternion, EKF_Q1, EKF_Q2, EKF_R, EKF_LAMBDA);
-        
-        return APP_OK;
     }
 
-    /**
-     * @brief 更新IMU EKF
-     */
-    EAppStatus UpdateImuEkf()
+    Imu_Ekf_Info.is_initialized = true;
+
+    RegisterAlgorithm_();
+
+    return APP_OK;
+}
+
+EAppStatus CAlgo_IMU_EKF::UpdateHandler_()
+{
+    if (mems == nullptr)
     {
-        // 检查设备指针和状态
-        if (s_bmi088 == nullptr)
-        {
-            return APP_ERROR;
-        }
-
-        // 如果EKF未初始化，尝试进行初始化
-        if (!QEKF_INS.Initialized)
-        {
-            IMU_QuaternionEKF_Init(init_quaternion, EKF_Q1, EKF_Q2, EKF_R, EKF_LAMBDA);
-            // 如果初始化失败，直接返回，下一轮再试
-            if (!QEKF_INS.Initialized)
-            {
-                return APP_OK;
-            }
-        }
-
-        // --- 核心EKF更新逻辑 ---
-
-        // 1. 读取BMI088原始数据
-        float gx = s_bmi088->memsData[CMemsBase::DATA_GYRO_X];
-        float gy = s_bmi088->memsData[CMemsBase::DATA_GYRO_Y];
-        float gz = s_bmi088->memsData[CMemsBase::DATA_GYRO_Z];
-        float ax = s_bmi088->memsData[CMemsBase::DATA_ACC_X];
-        float ay = s_bmi088->memsData[CMemsBase::DATA_ACC_Y];
-        float az = s_bmi088->memsData[CMemsBase::DATA_ACC_Z];
-
-        // 2. (可选) 坐标变换
-        float ggx, ggy, ggz, aax, aay, aaz;
-        Vector_Transform(gx, gy, gz, ax, ay, az, &ggx, &ggy, &ggz, &aax, &aay, &aaz);
-
-        // 3. 调用EKF更新
-        IMU_QuaternionEKF_Update(ggx, ggy, ggz, aax, aay, aaz, DT);
-
-        // 4. 读取EKF输出结果到全局变量
-        g_ekf_roll = QEKF_INS.Roll;
-        g_ekf_pitch = QEKF_INS.Pitch;
-        g_ekf_yaw = QEKF_INS.Yaw;
-        g_ekf_yaw_total = QEKF_INS.YawTotalAngle;
-
-        return APP_OK;
+        return APP_ERROR;
     }
+
+    float ax_raw = mems->memsData[CMemsBase::DATA_ACC_X];
+    float ay_raw = mems->memsData[CMemsBase::DATA_ACC_Y];
+    float az_raw = mems->memsData[CMemsBase::DATA_ACC_Z];
+
+    float gx_raw = mems->memsData[CMemsBase::DATA_GYRO_X];
+    float gy_raw = mems->memsData[CMemsBase::DATA_GYRO_Y];
+    float gz_raw = mems->memsData[CMemsBase::DATA_GYRO_Z];
+
+    float gx = gx_raw;
+    float gy = gy_raw;
+    float gz = gz_raw;
+
+    float ax = ax_raw;
+    float ay = ay_raw;
+    float az = az_raw;
+
+    Imu_Ekf_Info.gyro_x = gx;
+    Imu_Ekf_Info.gyro_y = gy;
+    Imu_Ekf_Info.gyro_z = gz;
+
+    // 如果使用坐标系转换
+    if (use_transform)
+    {
+        float tgx, tgy, tgz;
+        float tax, tay, taz;
+
+        Vector_Transform(
+            gx, gy, gz,
+            ax, ay, az,
+            &tgx, &tgy, &tgz,
+            &tax, &tay, &taz
+        );
+
+        gx = tgx;
+        gy = tgy;
+        gz = tgz;
+
+        ax = tax;
+        ay = tay;
+        az = taz;
+    }
+
+    IMU_QuaternionEKF_Update(
+        gx,
+        gy,
+        gz,
+        ax,
+        ay,
+        az,
+        DT
+    );
+
+    Imu_Ekf_Info.q[0] = QEKF_INS.q[0];
+    Imu_Ekf_Info.q[1] = QEKF_INS.q[1];
+    Imu_Ekf_Info.q[2] = QEKF_INS.q[2];
+    Imu_Ekf_Info.q[3] = QEKF_INS.q[3];
+
+    Imu_Ekf_Info.gyro_bias[0] = QEKF_INS.GyroBias[0];
+    Imu_Ekf_Info.gyro_bias[1] = QEKF_INS.GyroBias[1];
+    Imu_Ekf_Info.gyro_bias[2] = QEKF_INS.GyroBias[2];
+
+    // 获取欧拉角
+    Imu_Ekf_Info.roll = QEKF_INS.Roll;
+    Imu_Ekf_Info.pitch = QEKF_INS.Pitch;
+    Imu_Ekf_Info.yaw = QEKF_INS.Yaw;
+    Imu_Ekf_Info.yaw_total = QEKF_INS.YawTotalAngle;
+
+    // 获取世界系下的平动加速度
+    BMI_Get_Acceleration(
+        Imu_Ekf_Info.pitch,
+        Imu_Ekf_Info.roll,
+        Imu_Ekf_Info.yaw,
+        ax,
+        ay,
+        az,
+        &Imu_Ekf_Info.accel_x,
+        &Imu_Ekf_Info.accel_y,
+        &Imu_Ekf_Info.accel_z
+    );
+
+    return APP_OK;
+}
 
 } // namespace my_engineer
