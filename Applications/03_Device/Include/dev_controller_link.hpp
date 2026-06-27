@@ -23,28 +23,15 @@
 namespace my_engineer {
 
 // /*------------------------------ 状态标志位定义 ------------------------------*/
-// // ControllerData (控制器 -> 机器人)
-// #define STATUS_CONTROLLER_OK      (1 << 0)  // bit0: 控制器状态OK
-// #define STATUS_RETURN_SUCCESS     (1 << 1)  // bit1: 归位成功标志
-// #define STATUS_TOGGLE_MASK        (0x03 << 2)  // bit2-3: 拨杆档位 (0-3)
-// #define STATUS_TOGGLE_SHIFT       2
-// #define STATUS_GRIPPER            (1 << 4)  // bit4: 夹爪闭合
-// #define STATUS_REGRIP             (1 << 5)  // bit5: 夹爪二次夹紧请求（脉冲）
-
-// // RobotData (机器人 -> 控制器)
-// #define STATUS_ASK_RESET          (1 << 0)  // bit0: 要求复位
-// #define STATUS_CONTROLLED         (1 << 1)  // bit1: 被控制器控制中
-// #define STATUS_ROBOT_INIT_OK      (1 << 4)  // bit4: 机器人初始化完成
 
 /**
  * @brief 臂部角度结构体（5轴，浮点直传，用于 ControllerDataPkg）
- * 总大小: 5 × 4 = 24 bytes
+ * 总大小: 5 × 4 = 20 bytes
  */
 struct SArmAnglesPkg {
 	float yaw = 0.f;        ///< Yaw角度 (deg)
 	float pitch1 = 0.f;     ///< Pitch1角度 (deg)
 	float pitch2 = 0.f;     ///< Pitch2角度 (deg)
-	float pitch3 = 0.f;	 	///< Pitch3角度 (deg)
 	float roll = 0.f;       ///< Roll角度 (deg)
 	float pitch_end = 0.f;  ///< PitchEnd角度 (deg)
 } __packed;
@@ -52,27 +39,25 @@ struct SArmAnglesPkg {
 /**
  * @brief 压缩角度结构体（5轴，用于 RobotDataPkg）
  * int16存储，精度0.01°，范围±327.67°
- * 总大小: 6 × 2 = 12 bytes
+ * 总大小: 5 × 2 = 10 bytes
  */
 struct SArmAnglesCompressed {
 	int16_t yaw = 0;        ///< Yaw角度 (×100)
 	int16_t pitch1 = 0;     ///< Pitch1角度 (×100)
 	int16_t pitch2 = 0;     ///< Pitch2角度 (×100)
-	int16_t pitch3 = 0;     ///< Pitch3角度 (×100)
 	int16_t roll = 0;       ///< Roll角度 (×100)
 	int16_t pitch_end = 0;  ///< PitchEnd角度 (×100)
 } __packed;
 
 /**
- * @brief 力矩/电流反馈结构体（6轴，用于 RobotDataPkg）
+ * @brief 力矩/电流反馈结构体（5轴，用于 RobotDataPkg）
  * int16存储，直接使用电机反馈原始值
- * 总大小: 6 × 2 = 12 bytes
+ * 总大小: 5 × 2 = 10 bytes
  */
 struct SArmTorqueCompressed {
 	int16_t yaw = 0;        ///< Yaw电流 (原始值)
 	int16_t pitch1 = 0;     ///< Pitch1力矩 (原始值)
 	int16_t pitch2 = 0;     ///< Pitch2力矩 (原始值)
-	int16_t pitch3 = 0;     ///< Pitch3力矩 (原始值)
 	int16_t roll = 0;       ///< Roll电流 (原始值)
 	int16_t pitch_end = 0;  ///< PitchEnd电流 (原始值)
 } __packed;
@@ -105,19 +90,18 @@ public:
 
 	/**
 	 * @brief 机器人状态控制包
-	 * 数据段大小: 1 bytes 
+	 * 数据段大小: 1 bytes
 	 */
 	struct SRobotStatusFlags {
 		uint8_t ask_reset : 1;  ///< bit0 - 要求复位
 		uint8_t control_by_controller : 1; ///< bit1 - 被控制器控制中
-		uint8_t robot_init_ok : 1;    ///< bit2-3 - 拨杆档位
-		uint8_t p3_lock : 1;           ///<p3锁定标志
-		uint8_t reserve : 4;
+		uint8_t robot_init_ok : 1;    ///< bit2 - 机器人初始化完成
+		uint8_t reserve : 5;
 	} __packed robotStatusFlags_pkt = {};
 
 	/**
 	 * @brief 控制器状态控制包
-	 * 数据段大小: 1 bytes 
+	 * 数据段大小: 1 bytes
 	 */
 	struct SControllerStatusFlags {
 		uint8_t ask_reset : 1;  			///< bit0 - 要求复位
@@ -136,9 +120,9 @@ public:
 	struct SRobotDataPkg {
 		SPkgHeader header;
 		SRobotStatusFlags status_flags;        ///< 状态标志位           1B
-		SArmAnglesCompressed arm;              ///< 臂部角度 (int16)    12B
-		SArmTorqueCompressed torque;           ///< 臂部力矩/电流       12B
-		int8_t reserved[5] = {0};              ///< 保留字段             5B
+		SArmAnglesCompressed arm;              ///< 臂部角度 (int16)    10B
+		SArmTorqueCompressed torque;           ///< 臂部力矩/电流       10B
+		int8_t reserved[9] = {0};              ///< 保留字段             9B
 		uint16_t CRC16 = 0x0000;               ///< CRC16校验
 	} __packed robotData_info_pkg = { };
 
@@ -150,10 +134,10 @@ public:
 	struct SControllerDataPkg {
 		SPkgHeader header;
 		SControllerStatusFlags status_flags ;           ///< 状态标志位 (bit-packed)      1B
-		SArmAnglesPkg arm;                  			///< 单臂5轴角度 (float)          24B
+		SArmAnglesPkg arm;                  			///< 单臂5轴角度 (float)          20B
 		int8_t rocker_X = 0;               				///< 摇杆X (-100~100)             1B
 		int8_t rocker_Y = 0;                			///< 摇杆Y (-100~100)             1B
-		uint8_t reserved[3] = {0};          			///< 保留字段                      7B
+		uint8_t reserved[7] = {0};          			///< 保留字段                      7B
 		uint16_t CRC16 = 0x0000;            			///< CRC16校验
 	} __packed controllerData_info_pkg = {};
 

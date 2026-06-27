@@ -93,7 +93,9 @@ public:
      * 
      */
     class CCanTxNode : public CCanNode{
-    public:
+        uint32_t txDivider_  = 1;   // 分频系数 = 1000 / freqHz
+        uint32_t txCounter_  = 0;
+        public:
         /**
          * @brief 初始化发送节点
          * @param infID - 通信接口ID
@@ -102,6 +104,7 @@ public:
          * @param nodeFrameDlc - 节点数据长度
          */
         void InitTxNode(EInterfaceID infID, uint32_t nodestdID, ECanFrameType nodeFrameType, ECanFrameDlc nodeFrameDlc);
+        void SetTxFreq(uint32_t freqHz) { txDivider_ = (freqHz == 0 || freqHz > 1000)? 1 : (1000 / freqHz);}
 
         /**
          * @brief 发送数据

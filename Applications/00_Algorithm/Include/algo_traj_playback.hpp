@@ -77,7 +77,6 @@ public:
         J_YAW = 0,
         J_P1,
         J_P2,
-        J_P3,
         J_ROLL,
         J_ENDP,
         J_ENDR,
@@ -95,7 +94,6 @@ public:
         {90.0f,180.0f}, //yaw
         {60.0f,120.0f}, //pitch1
         {80.0f,160.0f}, //pitch2, 
-        {90.0f,180.0f}, //pitch3
         {120.0f,300.0f}, //roll,
         {120.0f,300.0f}, //pitch_end
         {60.0f,120.0f}, //end_roll,

@@ -271,6 +271,10 @@ void CInfCAN::CCanRxNode::InitRxNode(EInterfaceID canInfId,
  * 
  */
 void CInfCAN::CCanTxNode::Transmit(){
+    if(txDivider_ > 1){
+        if(++ txCounter_ < txDivider_)return ;
+        txCounter_ = 0;
+    }
     pInterface_->Transmit(*this);
 }
 

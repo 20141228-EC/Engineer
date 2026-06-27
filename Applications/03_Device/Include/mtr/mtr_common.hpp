@@ -78,6 +78,7 @@ public:
         DATA_TEMP,   ///< 电机温度
         DATA_ERR, ///< 电机错误
         DATA_ID, ///< 电机ID
+        DATA_CMD,///<电机的命令字节
         DATA_COUNT_, ///< 数据类型数量
     };
 

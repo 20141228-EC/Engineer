@@ -44,7 +44,6 @@ public:
 		float_t yaw = 0.0f;
 		float_t pitch1 = 0.0f;
 		float_t pitch2 = 0.0f;
-		float_t pitch3 = 0.0f;
 		float_t roll = 0.0f;
 		float_t pitch_end = 0.0f;
 	};
@@ -66,8 +65,7 @@ public:
 		bool ask_reset_flag = false;         ///< 是否要求复位
 		bool controlled_by_controller = false; ///< 是否被控制器控制
 		bool robot_init_ok = false;          ///< 机器人初始化完成
-		bool p3_lock = false;                ///< P3锁定标志
-		SArmAngles arm;                      ///< 单臂6轴角度
+		SArmAngles arm;                      ///< 单臂5轴角度
 		SArmAngles torque;                   ///< 臂部力矩/电流反馈（原始值转float）
 	} robotInfo;
 

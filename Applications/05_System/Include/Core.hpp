@@ -117,6 +117,7 @@ class CSystemCore final {
     // 友元函数
     friend void StartUpdateTask(void *argument);
     friend void StartHeartbeatTask(void *argument);
+    friend class CStoreOreTaskRunner;  ///< 允许 Runner 访问 oreTaskStep_ / oreGetDone_ 等私有成员
 
 public:
     // 定义自动操作的任务类型并实例化表示当前任务类型
@@ -129,7 +130,6 @@ public:
         EXCHANGE_ORE,       ///< 兑矿
         STORE_ORE,           ///< 存矿
         GROUND_ORE,         ///< 地矿
-
     } currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
     // 面向系统层的控制模式枚举
@@ -154,8 +154,9 @@ public:
         NORMAL,             ///< 普通
         STORE_L_ORE,           ///< 左边存矿
         STORE_R_ORE,          ///< 右边存矿
-        GET_L_ORE,           ///< 左边取矿
-        GET_R_ORE,          ///< 右边取矿
+        EXCHANGE_L_ORE,           ///< 左边取矿
+        EXCHANGE_R_ORE,          ///< 右边取矿
+        AUTO,                   ///< 自动六矿
         // ...to be updated...
     } armmode_ = EArmMode::NONE;
 
@@ -165,6 +166,7 @@ public:
         OPEN,
     };
 
+    // 存矿时末端 roll 的朝向（上/下），手动存矿前由 R 键切换
     enum class EStoreEndRollPose : uint8_t {
         DOWN,
         UP,
@@ -185,6 +187,9 @@ private:
 
     // 定义系统核心响应频率
     const float_t freq = 1000.f;
+    // 保留上一次的存取矿石的记忆
+    uint8_t oreTaskStep_ = 0; 
+    bool oreGetDone_ = false;// 确定是否停下
 
     // 模块指针
     CModChassis *pchassis_ = nullptr;
@@ -230,6 +235,7 @@ private:
     static void StartExchangeOreTask(void *arg);
     static void StartReturnOriginTask(void *arg);
     static void StartEnergyUnitTask(void *arg);
+
     static void StartStoreTask(void *arg);
     static void StartExchangeGetTask(void *arg);
     

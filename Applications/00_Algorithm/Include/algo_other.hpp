@@ -56,6 +56,41 @@ private:
 	uint32_t period_;
 };
 
+/**
+ * @brief 斜坡函数
+ * @note  每周期最多变化 step_ 的量，从当前值线性逼近目标值。
+ *
+ * 用法：
+ *   1. SetTarget(target, step)  设置目标和每周期最大变化量
+ *   2. 每个控制周期调用 Update()  返回当前斜坡值
+ *   3. IsArrived()               判断是否已到达目标
+ */
+class CAlgoRamp{
+public:
+	CAlgoRamp() = default;
+
+	explicit CAlgoRamp(float_t step) : step_(step) {}
+	
+	///< 设置目标值（step <= 0 则不改变步长）
+	void SetTarget(float_t target, float_t step = 0.0f);
+	
+	///< 每周期调用，返回当前斜坡值
+	float_t Update();
+
+    ///< 直接设置当前值
+    void SetValue(float_t value) { current_ = value; }
+
+	///< 是否已到达目标
+    bool IsArrived() const;
+	
+	///< 重置到指定值
+    void Reset(float_t value = 0.0f) { current_ = value; target_ = value; }
+
+private:
+	float_t current_ = 0.f;     ///< 当前输出值
+	float_t target_ = 0.f;      ///< 目标值
+	float_t step_ = 0.f;        ///< 每周期最大变化量
+};
 } // namespace my_engineer
 
 #endif // ALGO_OTHER_HPP

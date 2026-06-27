@@ -2,8 +2,8 @@
  * @file mod_gimbal.cpp
  * @author ciallo
  * @brief 云台模块
- * @version 2.0
- * @date 2026-03-06
+ * @version 3.0
+ * @date 2026-06-07
  *
  * @copyright Copyright (c) 2026
  *
@@ -26,6 +26,7 @@ EAppStatus CModGimbal::InitModule(SModInitParam_Base &param){
 	moduleID = gimbalParam.moduleID;
 
 	comVisualyaw_.InitComponent(param);
+	comGimbalPitch_.InitComponent(param);
 
 	CreateModuleTask_();
 	RegisterModule_();
@@ -43,15 +44,25 @@ EAppStatus CModGimbal::InitModule(SModInitParam_Base &param){
  *
  */
 void CModGimbal::UpdateHandler_(){
-	static uint8_t HalfTickRate = 0;
-	HalfTickRate = 1 - HalfTickRate;
+	static uint8_t TickRate = 0;
+	if (++TickRate >= 4) TickRate = 0;
 	if (moduleStatus == APP_RESET) return;
 
-	if(HalfTickRate) {comVisualyaw_.UpdateComponent();}//500hz
+	// 云台 visualYaw 与pitch 都以 250Hz 更新
+	if(TickRate == 0) {
+		comVisualyaw_.UpdateComponent();   // 250Hz DM_MIT
+		comGimbalPitch_.UpdateComponent(); // 250Hz DJI M2006
 
-	// 将组件信息同步到模块级信息结构体, 供 SystemCore 读取
+		CDevMtrDJI::FillCanTxBuffer(comGimbalPitch_.motor,
+		                            comGimbalPitch_.mtrCanTxNode->dataBuffer,
+		                            comGimbalPitch_.mtrOutputBuffer);
+	}
+
+	// 将组件信息同步到模块级信息结构体, 供 SystemCore 
 	gimbalInfo.angle_visualyaw = comVisualyaw_.VisuallyawInfo.angle;
 	gimbalInfo.isPositArrived_Visualyaw = comVisualyaw_.VisuallyawInfo.isAngleArrived;
+	gimbalInfo.angle_pitch = comGimbalPitch_.MtrPositToPhyPosit(comGimbalPitch_.pitchInfo.posit);
+	gimbalInfo.isPositArrived_Pitch = comGimbalPitch_.pitchInfo.isPositArrived;
 }
 
 /**
@@ -79,8 +90,6 @@ EAppStatus CModGimbal::CreateModuleTask_(){
 /**
  * @brief 限制云台模块的控制命令范围
  *
- * @return EAppStatus APP_OK=正常, APP_ERROR=模块复位状态
- *
  * @note 图传yaw限制在 0~360 度范围
  */
 EAppStatus CModGimbal::RestrictGimbalCommand_(){
@@ -89,8 +98,9 @@ EAppStatus CModGimbal::RestrictGimbalCommand_(){
 		return APP_ERROR;
 	}
 
-	gimbalCmd.set_visualyaw =
-		std::clamp(gimbalCmd.set_visualyaw, -185.0f, 1.f);
+	gimbalCmd.set_visualyaw = std::clamp(gimbalCmd.set_visualyaw, 0.f, 179.f);
+
+	gimbalCmd.set_pitch = std::clamp(gimbalCmd.set_pitch, -55.0f, 55.0f);
 
 	if (gimbalCmd.isAutoCtrl) return APP_OK;
 

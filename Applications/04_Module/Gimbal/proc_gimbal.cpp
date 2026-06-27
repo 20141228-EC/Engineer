@@ -1,8 +1,8 @@
 /**
  * @file proc_gimbal.cpp
  * @author ciallo
- * @version 2.0
- * @date 2026-03-06
+ * @version 3.0
+ * @date 2026-06-07
  *
  * @copyright Copyright (c) 2026
  *
@@ -30,6 +30,7 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 			case FSM_RESET: {
 				gimbal.gimbalInfo.isModuleAvailable = false;
 				gimbal.comVisualyaw_.StopComponent();
+				gimbal.comGimbalPitch_.StopComponent();
 				proc_waitMs(20);
 				continue;
 			}
@@ -40,9 +41,14 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 				gimbal.comVisualyaw_.StartComponent();
 				proc_waitUntil(gimbal.comVisualyaw_.componentStatus == APP_OK);
 
+				// 启动Pitch组件
+				gimbal.comGimbalPitch_.StartComponent();
+				proc_waitUntil(gimbal.comGimbalPitch_.componentStatus == APP_OK);
+
 				// 设置初始目标角度
 				gimbal.gimbalCmd = SGimbalCmd();
 				gimbal.gimbalCmd.set_visualyaw = GIMBAL_VISUAL_MOTOR_INIT_ANGLE;
+				gimbal.gimbalCmd.set_pitch = GIMBAL_PITCH_INIT_ANGLE;
 				gimbal.gimbalInfo.isModuleAvailable = true;
 				gimbal.Module_FSMFlag_ = FSM_CTRL;
 				gimbal.moduleStatus = APP_OK;
@@ -50,11 +56,14 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 			}
 
 			case FSM_CTRL: {
-				// 写入组件目标角度
+				// 写入组件目标
 				gimbal.RestrictGimbalCommand_();
 
 				gimbal.comVisualyaw_.VisuallyawCmd.setAngle =
 					CComVisualyaw::PhyAngleToMtrAngle(gimbal.gimbalCmd.set_visualyaw);
+
+				gimbal.comGimbalPitch_.pitchCmd.setPosit =
+					CComGimbalPitch::PhyPositToMtrPosit(gimbal.gimbalCmd.set_pitch);
 
 				proc_waitMs(1);
 				break;

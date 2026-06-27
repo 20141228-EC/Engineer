@@ -141,51 +141,6 @@ void CSystemReferee::UI_InitDrawing() {
   crawlerTextMsg.message.figureConfig.width = 2;            // Line Width
   strcpy(reinterpret_cast<char *>(crawlerTextMsg.message.text), "Crawler_On:");  
 
-  /* Text - p3LockConfig */
-  p3LockTextMsg.header = CDevReferee::SPkgHeader();
-  p3LockTextMsg.header.len = sizeof(p3LockTextMsg) - 9;
-  p3LockTextMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
-  p3LockTextMsg.header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&p3LockTextMsg.header), 4);
-  p3LockTextMsg.transmitterID = (refereeInfo.robot.robotCamp == 2) ? 100 : 0;
-  p3LockTextMsg.transmitterID += (refereeInfo.robot.robotID);
-  p3LockTextMsg.receiverID = (refereeInfo.robot.robotCamp == 2) ? 0x164 : 0x100;
-  p3LockTextMsg.receiverID += (refereeInfo.robot.robotID);
-  p3LockTextMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_TEXT;
-  p3LockTextMsg.message.figureConfig.figureName[0] = 0;    // Frame ID
-  p3LockTextMsg.message.figureConfig.figureName[1] = 0;    // Layer ID
-  p3LockTextMsg.message.figureConfig.figureName[2] = 9;    // Figure ID
-  p3LockTextMsg.message.figureConfig.operate = 1;
-  p3LockTextMsg.message.figureConfig.figureType = 7;
-  p3LockTextMsg.message.figureConfig.layerID = 0;
-  p3LockTextMsg.message.figureConfig.details_1 = 20;       // Font Size
-  p3LockTextMsg.message.figureConfig.posit_X = 1400;
-  p3LockTextMsg.message.figureConfig.posit_Y = 790;
-  p3LockTextMsg.message.figureConfig.color = 4;
-  p3LockTextMsg.message.figureConfig.details_2 = 8;        // String Length
-  p3LockTextMsg.message.figureConfig.width = 2;            // Line Width
-  strcpy(reinterpret_cast<char *>(p3LockTextMsg.message.text), "P3_Enable:");
-
-  p3LockMsg.header = CDevReferee::SPkgHeader();
-  p3LockMsg.header.len = sizeof(p3LockMsg) - 9;
-  p3LockMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
-  p3LockMsg.header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&p3LockMsg.header), 4);
-  p3LockMsg.transmitterID = (refereeInfo.robot.robotCamp == 2) ? 100 : 0;
-  p3LockMsg.transmitterID += (refereeInfo.robot.robotID);
-  p3LockMsg.receiverID = (refereeInfo.robot.robotCamp == 2) ? 0x164 : 0x100;
-  p3LockMsg.receiverID += (refereeInfo.robot.robotID);
-  p3LockMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_SINGLE;
-  p3LockMsg.message.figureConfig[0].figureName[0] = 0;
-  p3LockMsg.message.figureConfig[0].figureName[1] = 0;
-  p3LockMsg.message.figureConfig[0].figureName[2] = 10;
-  p3LockMsg.message.figureConfig[0].operate = 1;
-  p3LockMsg.message.figureConfig[0].figureType = 2; // circle
-  p3LockMsg.message.figureConfig[0].layerID = 0;
-  p3LockMsg.message.figureConfig[0].posit_X = 1620;
-  p3LockMsg.message.figureConfig[0].posit_Y = 780;
-  p3LockMsg.message.figureConfig[0].color = 7;
-  p3LockMsg.message.figureConfig[0].details_3 = 10; // radius
-  p3LockMsg.message.figureConfig[0].width = 14;
-
   /* Text - gripCloseConfig */
   gripCloseTextMsg.header = CDevReferee::SPkgHeader();
   gripCloseTextMsg.header.len = sizeof(gripCloseTextMsg) - 9;
@@ -733,18 +688,6 @@ void CSystemReferee::UI_StartStateFigureDrawing_() {
 
 	proc_waitMs(50);
 
-	p3LockTextMsg.message.figureConfig.operate = 1;
-	p3LockTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&p3LockTextMsg), sizeof(p3LockTextMsg) - 2);
-	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&p3LockTextMsg), sizeof(p3LockTextMsg));
-
-	proc_waitMs(50);
-
-	p3LockMsg.message.figureConfig[0].operate = 1;
-	p3LockMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&p3LockMsg), sizeof(p3LockMsg) - 2);
-	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&p3LockMsg), sizeof(p3LockMsg));
-
-	proc_waitMs(50);
-
 	gripCloseTextMsg.message.figureConfig.operate = 1;
 	gripCloseTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&gripCloseTextMsg), sizeof(gripCloseTextMsg) - 2);
 	pInterface_->Transmit(reinterpret_cast<uint8_t *>(&gripCloseTextMsg), sizeof(gripCloseTextMsg));
@@ -854,15 +797,10 @@ void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
       }
 
       case CSystemCore::EAutoCtrlProcess::STORE_ORE: {
-        curModeTextMsg.message.figureConfig.details_2 = 7;
-        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 3.5);
+        curModeTextMsg.message.figureConfig.details_2 = 5;
+        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2.5);
         curModeTextMsg.message.figureConfig.posit_Y = 780;
-        if(SystemCore.storeEndRollPose_ == CSystemCore::EStoreEndRollPose::UP) {
-          strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "STORE ^");
-        }
-        else {
-          strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "STORE v");
-        }
+        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "STORE");
         break;
       }
 
@@ -925,25 +863,6 @@ void CSystemReferee::UI_UpdateStateFigureDrawing_() {
   }
   crawlerTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&crawlerTextMsg), sizeof(crawlerTextMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&crawlerTextMsg), sizeof(crawlerTextMsg));
-
-  proc_waitMs(50);
-
-  p3LockTextMsg.message.figureConfig.operate = 2;
-  if(SysControllerLink.robotInfo.p3_lock) {
-    p3LockTextMsg.message.figureConfig.color = 2;
-  }
-  else {
-    p3LockTextMsg.message.figureConfig.color = 7;
-  }
-  p3LockTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&p3LockTextMsg), sizeof(p3LockTextMsg) - 2);
-  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&p3LockTextMsg), sizeof(p3LockTextMsg));
-
-  proc_waitMs(50);
-
-  p3LockMsg.message.figureConfig[0].operate = 2;
-  p3LockMsg.message.figureConfig[0].color = (SysControllerLink.robotInfo.p3_lock) ? 3 : 7;
-  p3LockMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&p3LockMsg), sizeof(p3LockMsg) - 2);
-  pInterface_->Transmit(reinterpret_cast<uint8_t *>(&p3LockMsg), sizeof(p3LockMsg));
 
   proc_waitMs(50);
 
@@ -1083,14 +1002,14 @@ void CSystemReferee::UI_UpdateArmAngleFigureDrawing_() {
 
   float rad1 = (180.f - arm_info.angle_Pitch1) * 2 * PI / 360.0f;
   float rad2 = (180.f - (arm_info.angle_Pitch2 - 70.f)) * 2 * PI / 360.0f;   
-  float rad3 = (180.f - (arm_info.angle_Pitch3 - 0.0f)) * 2 * PI / 360.0f;  
+  //float rad3 = (180.f - (arm_info.angle_Pitch3 - 0.0f)) * 2 * PI / 360.0f;  
 
   float p1_x = origin_x + len1 * cos(rad1);
   float p1_y = origin_y + len1 * sin(rad1);
   float p2_x = p1_x + len2 * cos(rad2);
   float p2_y = p1_y + len2 * sin(rad2);
-  float p3_x = p2_x + len3 * cos(rad3);
-  float p3_y = p2_y + len3 * sin(rad3);
+//  float p3_x = p2_x + len3 * cos(rad3);
+//  float p3_y = p2_y + len3 * sin(rad3);
 
   armAngleFigureMsg.message.figureConfig[0].operate = 2;
   armAngleFigureMsg.message.figureConfig[0].posit_X = (uint32_t)origin_x;
@@ -1107,8 +1026,8 @@ void CSystemReferee::UI_UpdateArmAngleFigureDrawing_() {
   armAngleFigureMsg.message.figureConfig[2].operate = 2;
   armAngleFigureMsg.message.figureConfig[2].posit_X = (uint32_t)p2_x;
   armAngleFigureMsg.message.figureConfig[2].posit_Y = (uint32_t)p2_y;
-  armAngleFigureMsg.message.figureConfig[2].details_4 = (uint32_t)p3_x;
-  armAngleFigureMsg.message.figureConfig[2].details_5 = (uint32_t)p3_y;
+//  armAngleFigureMsg.message.figureConfig[2].details_4 = (uint32_t)p3_x;
+//  armAngleFigureMsg.message.figureConfig[2].details_5 = (uint32_t)p3_y;
 
   armAngleFigureMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&armAngleFigureMsg), sizeof(armAngleFigureMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&armAngleFigureMsg), sizeof(armAngleFigureMsg));

@@ -103,7 +103,6 @@ void CSystemControllerLink::UpdateControllerLinkInfo_() {
 	controllerInfo.arm.yaw       = pkg.arm.yaw;
 	controllerInfo.arm.pitch1    = pkg.arm.pitch1;
 	controllerInfo.arm.pitch2    = pkg.arm.pitch2;
-	controllerInfo.arm.pitch3	= pkg.arm.pitch3;
 	controllerInfo.arm.roll      = pkg.arm.roll;
 	controllerInfo.arm.pitch_end = pkg.arm.pitch_end;
 
@@ -126,13 +125,11 @@ void CSystemControllerLink::UpdateRobotInfo_() {
 	robotInfo.ask_reset_flag = pkg.status_flags.ask_reset;
 	robotInfo.controlled_by_controller = pkg.status_flags.control_by_controller;
 	robotInfo.robot_init_ok = pkg.status_flags.robot_init_ok;
-	robotInfo.p3_lock = pkg.status_flags.p3_lock;
 
 	// 解压角度 (int16 -> float)
 	robotInfo.arm.yaw       = CDevControllerLink::DecompressAngle(pkg.arm.yaw);
 	robotInfo.arm.pitch1    = CDevControllerLink::DecompressAngle(pkg.arm.pitch1);
 	robotInfo.arm.pitch2    = CDevControllerLink::DecompressAngle(pkg.arm.pitch2);
-	robotInfo.arm.pitch3    = CDevControllerLink::DecompressAngle(pkg.arm.pitch3);
 	robotInfo.arm.roll      = CDevControllerLink::DecompressAngle(pkg.arm.roll);
 	robotInfo.arm.pitch_end = CDevControllerLink::DecompressAngle(pkg.arm.pitch_end);
 
@@ -140,7 +137,6 @@ void CSystemControllerLink::UpdateRobotInfo_() {
 	robotInfo.torque.yaw       = static_cast<float>(pkg.torque.yaw);
 	robotInfo.torque.pitch1    = static_cast<float>(pkg.torque.pitch1);
 	robotInfo.torque.pitch2    = static_cast<float>(pkg.torque.pitch2);
-	robotInfo.torque.pitch3    = static_cast<float>(pkg.torque.pitch3);
 	robotInfo.torque.roll      = static_cast<float>(pkg.torque.roll);
 	robotInfo.torque.pitch_end = static_cast<float>(pkg.torque.pitch_end);
 }
@@ -161,13 +157,11 @@ void CSystemControllerLink::UpdateRobotDataPkg_() {
 	if (robotInfo.ask_reset_flag) pkg.status_flags.ask_reset = 1;
 	if (robotInfo.controlled_by_controller) pkg.status_flags.control_by_controller = 1;
 	if (robotInfo.robot_init_ok) pkg.status_flags.robot_init_ok = 1;
-	if (robotInfo.p3_lock) pkg.status_flags.p3_lock = 1;
 
 	// 压缩角度 (float -> int16)
 	pkg.arm.yaw       = CDevControllerLink::CompressAngle(robotInfo.arm.yaw);
 	pkg.arm.pitch1    = CDevControllerLink::CompressAngle(robotInfo.arm.pitch1);
 	pkg.arm.pitch2    = CDevControllerLink::CompressAngle(robotInfo.arm.pitch2);
-	pkg.arm.pitch3    = CDevControllerLink::CompressAngle(robotInfo.arm.pitch3);
 	pkg.arm.roll      = CDevControllerLink::CompressAngle(robotInfo.arm.roll);
 	pkg.arm.pitch_end = CDevControllerLink::CompressAngle(robotInfo.arm.pitch_end);
 
@@ -175,7 +169,6 @@ void CSystemControllerLink::UpdateRobotDataPkg_() {
 	pkg.torque.yaw       = static_cast<int16_t>(robotInfo.torque.yaw);
 	pkg.torque.pitch1    = static_cast<int16_t>(robotInfo.torque.pitch1);
 	pkg.torque.pitch2    = static_cast<int16_t>(robotInfo.torque.pitch2);
-	pkg.torque.pitch3    = static_cast<int16_t>(robotInfo.torque.pitch3);
 	pkg.torque.roll      = static_cast<int16_t>(robotInfo.torque.roll);
 	pkg.torque.pitch_end = static_cast<int16_t>(robotInfo.torque.pitch_end);
 }
@@ -189,7 +182,7 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 	if (!pcontrollerLink_) return;
 
 	auto &pkg = pcontrollerLink_->controllerData_info_pkg;
-	
+
 	pkg.status_flags = {};
 
 	if (controllerInfo.controller_OK) pkg.status_flags.controller_init_ok = 1;
@@ -201,7 +194,6 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 	pkg.arm.yaw       = controllerInfo.arm.yaw;
 	pkg.arm.pitch1    = controllerInfo.arm.pitch1;
 	pkg.arm.pitch2    = controllerInfo.arm.pitch2;
-	pkg.arm.pitch3    = controllerInfo.arm.pitch3;
 	pkg.arm.roll      = controllerInfo.arm.roll;
 	pkg.arm.pitch_end = controllerInfo.arm.pitch_end;
 

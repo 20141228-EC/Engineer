@@ -43,17 +43,19 @@ uint32_t sys_test_n = 0;
  * 
  */
 void StartUpdateTask(void *argument) {
-	
-	static uint8_t TickRate = 4;
-    
+
     // 初始化系统核心
     SystemCore.InitSystemCore();                ///<等所有模块初始化完成之后再初始化系统核心，并且是在任务创建的时候初始化
+
+    // 配置 CAN 发送节点频率，主循环 1000Hz
+    TxNode_Can3_200.SetTxFreq(250);    // 履带电机 250Hz
+    //TxNode_Can3_280.SetTxFreq(500);    // 机械臂电机 yaw/p1/p2 /夹爪（一拖四）1000Hz
+    TxNode_Can2_200.SetTxFreq(250);    // 云台 pitch 250Hz
 
     while (true) {
 
         sys_test_n++;
-		//HalfTickRate = 1 - HalfTickRate;        
-        
+
         // 更新所有设备
         for (const auto &item : DeviceIDMap) {
             item.second->UpdateHandler_();
@@ -73,18 +75,12 @@ void StartUpdateTask(void *argument) {
             item.second->UpdateHandler_();
         }
 
-        // 执行can发送
-        TxNode_Can3_200.Transmit(); ///< 履带电机
-		if(--TickRate == 0) {              ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载                  
-		    TxNode_Can3_280.Transmit(); ///< 机械臂后四轴电机 250Hz
-            TickRate = 4;
-        }
-        
-        // TxNode_Can2_280.Transmit(test_data);
-            
-        TxNode_Can1_200.Transmit(); ///< 底盘轮毂电机
-        TxNode_Can2_1FF.Transmit(); ///< 末端pitch roll和夹爪收放
-
+        // 执行 CAN 发送
+        TxNode_Can1_200.Transmit();    // 底盘轮毂电机 1000Hz
+        TxNode_Can2_200.Transmit();    // 云台 pitch 250Hz
+        TxNode_Can3_200.Transmit();    // 履带电机 250Hz
+        TxNode_Can3_280.Transmit();    // 机械臂电机 yaw/p1/p2 /夹爪 1000Hz
+        //TxNode_Can2_280.Transmit();    // 夹爪 1000Hz
         proc_waitMs(1); // 1000Hz
 
     }

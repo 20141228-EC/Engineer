@@ -70,13 +70,16 @@ enum class EDeviceID{
     DEV_ARM_MTR_PITCH3,        ///< 机械臂Pitch3轴电机(KT)
     DEV_ARM_MTR_ROLL,          ///< 机械臂Roll轴电机(DM-MIT mode)
     DEV_ARM_MTR_END_L,   ///< 机械臂末端左轴电机(M2006)
+    DEV_ARM_MTR_END_PITCH,   ///< 机械臂末端PITCH电机(DM4310)
+    DEV_ARM_MTR_END_ROLL,   ///< 机械臂末端ROLL电机(DM4310)
     DEV_ARM_MTR_END_R,   ///< 机械臂末端右轴电机(M2006)
     DEV_CHAS_L_HIP,      ///< 底盘后腿电机左（DM-8009P）
     DEV_CHAS_R_HIP,      ///< 底盘后腿电机右 （DM-8009P）
-    DEV_ARM_MTR_GRIP,        ///< 机械臂夹爪电机(M2006)
+    DEV_ARM_MTR_GRIP,        ///< 机械臂夹爪电机(4005)
     DEV_CHAS_CRAWLER_L,     ///< 履带电机左（M3508）
     DEV_CHAS_CRAWLER_R,     ///< 履带电机右（M3508）
-    DEV_GIMBAL_MTR_VISUAL_YAW,///<云台电机
+    DEV_GIMBAL_MTR_VISUAL_YAW,///<云台图传yaw电机 (DM_MIT)
+    DEV_GIMBAL_MTR_PITCH,   ///<云台Pitch电机 (DJI M2006, CAN2)
 };
 
 /**
