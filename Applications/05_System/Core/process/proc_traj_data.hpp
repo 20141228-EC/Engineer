@@ -1,13 +1,13 @@
 /******************************************************************************
- * @brief        
- * 
+ * @brief
+ *
  * @file         proc_traj_data.hpp
  * @author       ciallo
- * @version      V1.0
- * @date         2026-5-28
- * 
+ * @version      V2.0
+ * @date         2026-06-07
+ *
  * @copyright    Copyright (c) 2026
- * 
+ *
  ******************************************************************************/
 #ifndef TRAJ_DATA_HPP
 #define TRAJ_DATA_HPP
@@ -16,13 +16,16 @@
 
 namespace my_engineer {
 
-// 存矿石轨迹
 extern const SOreStep OreStepConfig[];
 extern const int OreStepCount;
 
-// 兑换轨迹
-extern const TrajClip ExchangeClipL;
-extern const TrajClip ExchangeClipR;
+// 单个存矿轨迹（左/右）
+extern const TrajClip StoresingleClip_L;
+extern const TrajClip StoresingleClip_R;
+
+// 单个兑矿轨迹（左/右）
+extern const TrajClip ExchangesingleClip_L;
+extern const TrajClip ExchangesingleClip_R;
 
 } // namespace my_engineer
 

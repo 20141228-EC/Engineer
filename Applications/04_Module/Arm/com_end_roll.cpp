@@ -56,8 +56,14 @@ EAppStatus CModArm::CComEndRoll::UpdateComponent() {
 
 	// 更新组件信息
 	endRollInfo.angle = rad2deg(pMtr->motorPhyAngle);
+	endRollInfo.torque = CDevMtrDM_MIT::uint_to_float(pMtr->motorData[CDevMtr::DATA_TORQUE], -pMtr->get_tau_max(), pMtr->get_tau_max(), 12); ///< 12位无符号转实际力矩
 	endRollInfo.isAngleArrived = (fabs(endRollInfo.angle - endRollCmd.setAngle) < 3.0f);
 
+	uint8_t test1 = 0;
+	if(test1 == 1) {
+		pMtr->SetZero();			///<测试用，将当前角度设为零点
+		//test1 =0;
+	}
 	// 缓慢移动控制逻辑
 	static float_t next_angle = 0.0f;
 	static float_t gradual_kp = 0.05f;
@@ -91,7 +97,9 @@ EAppStatus CModArm::CComEndRoll::UpdateComponent() {
 		}
 
 		case FSM_CTRL: {
-			pMtr->Control_MIT(mitCtrl.kp, mitCtrl.kd, deg2rad(next_angle), 0.0f, this->Grav_End_Roll_Out);
+			float_t kp = onlyGravity_ ? 0.0f : mitCtrl.kp;
+			float_t kd = onlyGravity_ ? 0.0f : mitCtrl.kd;
+			pMtr->Control_MIT(kp, kd, deg2rad(next_angle), 0.0f, this->Grav_End_Roll_Out);
 			return APP_OK;
 		}
 

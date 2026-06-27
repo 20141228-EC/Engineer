@@ -47,5 +47,26 @@ void CAlgoLinearInterp::setTarget(float_t current, float_t target){
 		target_ = target;
 		step_ = 0;
 	}	
+void CAlgoRamp::SetTarget(float_t target, float_t step) {
+    target_ = target;
+    if (step > 0.0f) step_ = step;
+}
 
+float_t CAlgoRamp::Update() {
+    if (step_ <= 0.0f) {
+        current_ = target_;
+        return current_;
+    }
+    const float_t diff = target_ - current_;
+    if (fabsf(diff) <= step_) {
+        current_ = target_;
+    } else {
+        current_ += (diff > 0.0f) ? step_ : -step_;
+    }
+    return current_;
+}
+
+bool CAlgoRamp::IsArrived() const {
+    return fabsf(target_ - current_) <= 1e-6f;
+}
 } // namespace my_engineer

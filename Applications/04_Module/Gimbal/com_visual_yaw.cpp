@@ -40,7 +40,7 @@ EAppStatus CModGimbal::CComVisualyaw::UpdateComponent(){
     }
 
     CDevMtrDM_MIT *pMtr = static_cast<CDevMtrDM_MIT *>(motor);
-	VisuallyawInfo.angle = rad2deg(pMtr->motorPhyAngle);
+	VisuallyawInfo.angle = rad2deg(pMtr->motorPhyAngle) ;
     VisuallyawInfo.isAngleArrived = (fabs(VisuallyawInfo.angle - VisuallyawCmd.setAngle) < 2.f);
     
     //零点标定
@@ -66,11 +66,11 @@ EAppStatus CModGimbal::CComVisualyaw::UpdateComponent(){
 			Component_FSMFlag_ = FSM_CTRL;
 			componentStatus = APP_OK;
 		}
-		pMtr->Control_MIT(mitCtrl.kp, mitCtrl.kd, deg2rad(VisuallyawCmd.setAngle), 0.0f, 0.0f);
+		pMtr->Control_MIT(mitCtrl.kp, mitCtrl.kd, deg2rad(VisuallyawCmd.setAngle) * GIMBAL_VISUAL_MOTOR_MOTOR_DIR, 0.0f, 0.0f);
 		return APP_OK;
     }  
 	case FSM_CTRL: {
-			pMtr->Control_MIT(mitCtrl.kp, mitCtrl.kd, deg2rad(VisuallyawCmd.setAngle), 0.0f, 0.0f);//低通滤波控制角度
+			pMtr->Control_MIT(mitCtrl.kp, mitCtrl.kd, deg2rad(VisuallyawCmd.setAngle) * GIMBAL_VISUAL_MOTOR_MOTOR_DIR, 0.0f, 0.0f);
 			return APP_OK;
 		}
 

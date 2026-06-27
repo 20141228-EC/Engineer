@@ -41,6 +41,7 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 				arm.comEndPitch_.StopComponent();
 				arm.comEndRoll_.StopComponent();
 				arm.comGrip_.StopComponent();
+				arm.SetGravityCompEnable(false);
 
 				proc_waitMs(20);
 				continue; // 跳过下面的代码，直接进入下一次循环
@@ -52,17 +53,19 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 
 
 				/*step1 : 各自模块实现初始化*/
-				arm.comjoint_.StartComponent();
-				proc_waitUntil(arm.comjoint_.componentStatus == APP_OK);
+				arm.comEndPitch_.StartComponent();
+				proc_waitUntil(arm.comEndPitch_.componentStatus == APP_OK);
+				
+				arm.comEndRoll_.StartComponent();
+				proc_waitUntil(arm.comEndRoll_.componentStatus == APP_OK);
 
 				arm.comRoll_.StartComponent();
 				proc_waitUntil(arm.comRoll_.componentStatus == APP_OK);
 
-				arm.comEndPitch_.StartComponent();
-				proc_waitUntil(arm.comEndPitch_.componentStatus == APP_OK);
+				arm.comjoint_.StartComponent();
+				proc_waitUntil(arm.comjoint_.componentStatus == APP_OK);
 
-				arm.comEndRoll_.StartComponent();
-				proc_waitUntil(arm.comEndRoll_.componentStatus == APP_OK);
+
 
 				arm.comGrip_.StartComponent();  ///< 等待末端初始化完成
 				proc_waitUntil(arm.comGrip_.componentStatus == APP_OK);
@@ -96,6 +99,8 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 							arm.comRoll_.rollInfo.isAngleArrived);
 
 				arm.armInfo.isModuleAvailable = true;
+				arm.SetGravityCompEnable(true);
+				arm.SetGravityCompObserve(true); // false=计算并输出重补; true=只计算不输出
 				arm.Module_FSMFlag_ = FSM_CTRL;
 				arm.moduleStatus = APP_OK;
 
@@ -105,6 +110,8 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 			case FSM_CTRL: {
 
 				arm.RestrictArmCommand_();
+
+				arm.SetGravityOnlyMode(arm.armCmd.enableGravOnly);// 这个模式是用来看重补的效果的
 
 				arm.comjoint_.jointCmd.setPosit_yaw =
 					CComJoint::PhyPositToMtrPosit_yaw(arm.armCmd.set_angle_Yaw);			///< 在这个文件中设置目标的位置，在com_joint.cpp中进行pid计算
@@ -117,7 +124,7 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 				arm.comEndPitch_.endPitchCmd.setAngle = arm.armCmd.set_angle_end_pitch;
 				arm.comEndRoll_.endRollCmd.setAngle = arm.armCmd.set_angle_end_roll;
 
-				// 夹爪命令传递：开合标志优先，否则透传遥控器拨轮速度
+				// 夹爪命令传递：开合标志优先，否则透传速度
 				const bool gripCommand = arm.armCmd.gripClose || arm.armCmd.gripOpen;
 
 				arm.comGrip_.gripCmd.cmdClose = arm.armCmd.gripClose;

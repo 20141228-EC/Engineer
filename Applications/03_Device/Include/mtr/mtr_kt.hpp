@@ -34,7 +34,7 @@ protected:
 	EVarStatus useAngleToPosit_ = false;
 
 	// 编码器分辨率
-	uint32_t encoderResolution_ = 65535;
+	uint32_t encoderResolution_ = 65536;
 
 	// 上一次的角度
 	int32_t lastAngle_ = 0;

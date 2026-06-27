@@ -107,6 +107,12 @@ public:
 	float_t get_dq_max() const { return limit_param_.DQ_MAX; }
 	float_t get_tau_max() const { return limit_param_.TAU_MAX; }
 
+	// MIT协议原始值转物理力矩
+	static float_t uint_to_float(uint16_t x_uint, float xmin, float xmax, uint8_t bits) {
+		float span = xmax - xmin;
+		float data_norm = static_cast<float>(x_uint) / ((1 << bits) - 1);
+		return data_norm * span + xmin;
+	}
 	float_t motorPhyAngle = 0.0f; ///< 电机物理角度
 
 	/**

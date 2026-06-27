@@ -85,9 +85,6 @@ void CSystemESP32::UpdateHandler_() {
 	pESP32_->robotInfo.Arm_Pitch1 = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_ARM_MTR_PITCH1))->IsMotorOnline();
 	pESP32_->robotInfo.Arm_Pitch2 = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_ARM_MTR_PITCH2))->IsMotorOnline();
 	pESP32_->robotInfo.Arm_Roll = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_ARM_MTR_ROLL))->IsMotorOnline();
-	pESP32_->robotInfo.Arm_End_L = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_ARM_MTR_END_L))->IsMotorOnline();
-	pESP32_->robotInfo.Arm_End_R = reinterpret_cast<CDevMtr *>(DeviceIDMap.at(EDeviceID::DEV_ARM_MTR_END_R))->IsMotorOnline();
-	// pESP32_->SendPackage(CDevESP32::EPackageID::ID_Motor_Info_Pkg);
 
 }
 

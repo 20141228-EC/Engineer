@@ -78,9 +78,8 @@ enum class EDeviceID{
     DEV_ARM_MTR_GRIP,        ///< 机械臂夹爪电机(4005)
     DEV_CHAS_CRAWLER_L,     ///< 履带电机左（M3508）
     DEV_CHAS_CRAWLER_R,     ///< 履带电机右（M3508）
-    DEV_GIMBAL_MTR_VISUAL_YAW,///<云台电机
-    DEV_GIMBAL_MTR_STORAGE_L, ///< 左存矿电机(KT一拖四模式)
-    DEV_GIMBAL_MTR_STORAGE_R, ///< 右存矿电机(KT一拖四模式)
+    DEV_GIMBAL_MTR_VISUAL_YAW,///<云台图传yaw电机 (DM_MIT)
+    DEV_GIMBAL_MTR_PITCH,   ///<云台Pitch电机 (DJI M2006, CAN2)
 };
 
 /**

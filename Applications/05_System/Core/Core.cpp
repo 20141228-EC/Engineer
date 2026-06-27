@@ -224,19 +224,18 @@ void CSystemCore::UpdateHandler_() {
         }
     }
     if (parm_) {   //反馈给控制器的数据
-        // 角度
             SysControllerLink.robotInfo.arm.yaw       = parm_->armInfo.angle_Yaw;
             SysControllerLink.robotInfo.arm.pitch1     = parm_->armInfo.angle_Pitch1;
             SysControllerLink.robotInfo.arm.pitch2     = parm_->armInfo.angle_Pitch2;
             SysControllerLink.robotInfo.arm.roll       = parm_->armInfo.angle_Roll;
             SysControllerLink.robotInfo.arm.pitch_end  = parm_->armInfo.angle_end_pitch;
 
-            // 力矩/电流：直接传原始值，避免转物理量后被int16截断为0
+            // 力矩/电流：直接传原始值，避免转物理量后被int16截断为0 - 暂未使用2026/6/27因为力反馈容易疯控制器，需要很强的保护条件
             SysControllerLink.robotInfo.torque.yaw       = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::Y]->motorData[CDevMtr::DATA_CURRENT]);
             SysControllerLink.robotInfo.torque.pitch1    = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::P1]->motorData[CDevMtr::DATA_CURRENT]);
             SysControllerLink.robotInfo.torque.pitch2    = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::P2]->motorData[CDevMtr::DATA_CURRENT]);
             SysControllerLink.robotInfo.torque.roll      = static_cast<float>(parm_->comRoll_.motor->motorData[CDevMtr::DATA_TORQUE]);
-            SysControllerLink.robotInfo.torque.pitch_end = 0.f;  // 末端由双M2006差速驱动，暂不处理
+            SysControllerLink.robotInfo.torque.pitch_end = 0.f;  // 末端由双M2006差速驱动，暂不处理（老车）
         }
     SysControllerLink.robotInfo.robot_init_ok =
         (parm_ && parm_->armInfo.isModuleAvailable) && (SysRemote.systemStatus == APP_OK);
@@ -246,7 +245,7 @@ void CSystemCore::UpdateHandler_() {
         //     // TODO: 决定切换出自定义控制器模式后的行为
         // }
     
-    ControlFromEsp32_(); // ESP32控制
+    //ControlFromEsp32_(); // ESP32控制
 
     // 由于自动任务会出现莫名的残留现象直接杀死任务会出现残留标志位没有同步，所以在此处做后续的处理
     static EAutoCtrlProcess lastAutoCtrlProcess = EAutoCtrlProcess::NONE;
@@ -425,37 +424,21 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
            return APP_OK;
        }
 
-       // case EAutoCtrlProcess::STORE_ORE: {
-       //     currentAutoCtrlProcess_ = EAutoCtrlProcess::STORE_ORE;
-       //     xTaskCreate(StartStoreTask, "Save Ore Task",
-       //                 512, this, proc_ModuleTaskPriority,
-       //                 &autoCtrlTaskHandle_);
-       //     return APP_OK;
-       // }
+       case EAutoCtrlProcess::STORE_ORE: {
+           currentAutoCtrlProcess_ = EAutoCtrlProcess::STORE_ORE;
+           xTaskCreate(StartStoreTask, "Store Ore Task",
+                       512, this, proc_ModuleTaskPriority,
+                       &autoCtrlTaskHandle_);
+           return APP_OK;
+       }
 
-    //    case EAutoCtrlProcess::EXCHANGE_ORE : {
-    //        currentAutoCtrlProcess_ = EAutoCtrlProcess::EXCHANGE_ORE;
-    //        xTaskCreate(StartExchangeGetTask, "Exchange Ore Task",
-    //                    512, this, proc_ModuleTaskPriority,
-    //                    &autoCtrlTaskHandle_);
-    //        return APP_OK;
-    //    }
-
-        case EAutoCtrlProcess::ONE_KEY_ORE: {
-        currentAutoCtrlProcess_ = EAutoCtrlProcess::ONE_KEY_ORE;
-        xTaskCreate(StartOneKeyOreTask, "OneKey Ore Task",
-                        512, this, proc_ModuleTaskPriority,
-                        &autoCtrlTaskHandle_);
-        return APP_OK;
-        }
-
-        case EAutoCtrlProcess::ONE_KEY_EXCHANGE: {
-            currentAutoCtrlProcess_ = EAutoCtrlProcess::ONE_KEY_EXCHANGE;
-            xTaskCreate(StartOneKeyExchangeTask, "OneKey Exchange Task",
-                        512, this, proc_ModuleTaskPriority,
-                        &autoCtrlTaskHandle_);
-            return APP_OK;
-        }
+       case EAutoCtrlProcess::EXCHANGE_ORE: {
+           currentAutoCtrlProcess_ = EAutoCtrlProcess::EXCHANGE_ORE;
+           xTaskCreate(StartExchangeGetTask, "Exchange Ore Task",
+                       512, this, proc_ModuleTaskPriority,
+                       &autoCtrlTaskHandle_);
+           return APP_OK;
+       }
 
 //        case EAutoCtrlProcess::ENERGY_UNIT: {
 //            currentAutoCtrlProcess_ = EAutoCtrlProcess::ENERGY_UNIT;

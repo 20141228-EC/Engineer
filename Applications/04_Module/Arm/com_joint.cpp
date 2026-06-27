@@ -75,10 +75,10 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 	jointInfo.posit_pitch1 = motor[P1]->motorData[CDevMtr::DATA_POSIT] * ARM_PITCH1_MOTOR_DIR;
 	jointInfo.posit_pitch2 = motor[P2]->motorData[CDevMtr::DATA_POSIT] * ARM_PITCH2_MOTOR_DIR;	  ///<将电机的机械角度更新到关节类中
 	
-	jointInfo.isPositArrived_yaw = abs(jointInfo.posit_yaw - jointCmd.setPosit_yaw) < 700;
-	jointInfo.isPositArrived_pitch1 = abs(jointInfo.posit_pitch1 - jointCmd.setPosit_pitch1) < 700;
-	jointInfo.isPositArrived_pitch2 = abs(jointInfo.posit_pitch2 - jointCmd.setPosit_pitch2) < 700;///<要求机械臂每一次运动到要在目标位置的限制范围内才能够进行下一步的动作
-
+	jointInfo.isPositArrived_yaw = abs(jointInfo.posit_yaw - jointCmd.setPosit_yaw) < 500;
+	jointInfo.isPositArrived_pitch1 = abs(jointInfo.posit_pitch1 - jointCmd.setPosit_pitch1) < arrivalThresh_pitch1;
+	jointInfo.isPositArrived_pitch2 = abs(jointInfo.posit_pitch2 - jointCmd.setPosit_pitch2) < arrivalThresh_pitch2;
+	
 	switch (Component_FSMFlag_) {
 
 		case FSM_RESET: {
@@ -104,15 +104,15 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				pidPosCtrl_pitch2.ResetPidController();
 				pidSpdCtrl_pitch2.ResetPidController();
 				/*设置每个关节的绝对角度*/
-				// motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT1_YAW_MACH;
-				// while(motor[Y]->motorData[CDevMtr::DATA_POSIT] < -32767)
-				// 	motor[Y]->motorData[CDevMtr::DATA_POSIT] += 65535;
-				// while(motor[Y]->motorData[CDevMtr::DATA_POSIT] > 32767)
-				// 	motor[Y]->motorData[CDevMtr::DATA_POSIT] += 65535;
-				// motor[Y]->motorData[CDevMtr::DATA_POSIT]  += POSIT_JOINT1_YAW_MACH_PHY * 182.04f * POSIT_JOINT1_YAW_MACH;	
-				// jointCmd.setPosit_yaw =  PhyPositToMtrPosit_yaw(ARM_INIT_SAFE_YAW_ANGLE);	
+				motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT1_YAW_MACH;
+				while(motor[Y]->motorData[CDevMtr::DATA_POSIT] < -32767)
+					motor[Y]->motorData[CDevMtr::DATA_POSIT] += 65535;
+				while(motor[Y]->motorData[CDevMtr::DATA_POSIT] > 32767)
+					motor[Y]->motorData[CDevMtr::DATA_POSIT] -= 65535;// 过了零点
+				motor[Y]->motorData[CDevMtr::DATA_POSIT]  += POSIT_JOINT1_YAW_MACH_PHY * 182.04f * POSIT_JOINT1_YAW_MACH;	
+				jointCmd.setPosit_yaw =  PhyPositToMtrPosit_yaw(ARM_INIT_SAFE_YAW_ANGLE);		
 				
-				motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] * ARM_YAW_MOTOR_DIR;
+				//motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] * ARM_YAW_MOTOR_DIR; 
 
 				motor[P1]->motorData[CDevMtr::DATA_POSIT] = motor[P1]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT2_PITCH1_MACH;		///<刚上电的时候获取初始值.距离机械中值的偏差
 				while(motor[P1]->motorData[CDevMtr::DATA_POSIT] < -32767)
@@ -147,17 +147,17 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 					_UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 						static_cast<float_t>(jointCmd.setPosit_pitch1),
 						static_cast<float_t>(jointCmd.setPosit_pitch2));
-					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-3000), static_cast<int16_t>(3000));//初始化的时候限制输出防止撞到灯条，遍历所有输出数组
+					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-200), static_cast<int16_t>(200));//初始化的时候限制输出防止撞到灯条，遍历所有输出数组
 					return APP_OK;
 				}
 				/*全部到位后才进入初始化*/
 				else if(jointInfo.isPositArrived_pitch2 && jointInfo.isPositArrived_pitch1 && alreadySetYaw == false){
-					jointCmd.setPosit_yaw = POSIT_JOINT1_YAW_MACH;								///<yaw轴在p1,p2抬升到安全位置之后才动
+					jointCmd.setPosit_yaw = 0;								///<yaw轴归位到机械零点(DATA_POSIT坐标系下零点对应机械零点)
 					alreadySetYaw = true;
 					_UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 						static_cast<float_t>(jointCmd.setPosit_pitch1),
 						static_cast<float_t>(jointCmd.setPosit_pitch2));
-					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-3000), static_cast<int16_t>(3000));
+					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-200), static_cast<int16_t>(200));
 					return APP_OK;
 				}
 				else if(jointInfo.isPositArrived_fail){ //初始化失败，校准一次
@@ -169,7 +169,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 					_UpdateOutput_Pitch1(jointCmd.setPosit_pitch1);
 					// Yaw保持不动
 					mtrOutputBuffer[Y] = 0;
-					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-3000), static_cast<int16_t>(3000));
+					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-200), static_cast<int16_t>(200));
 					return APP_OK;
 				}
 			}
@@ -305,30 +305,37 @@ EAppStatus CModArm::CComJoint::_UpdateOutput(float_t posit_yaw, float_t posit_pi
 	auto output_pitch2 = pidSpdCtrl_pitch2.UpdatePidController(Spd_pitch2, SpdMeasure_pitch2);
 
 
-	if(is_record)
-	{
-		if(Is_Recording_ArmTorque) ///< 正在记录数据
-		{
-			if(index < RECORD_MAX - 1) 
-			{
-				arm_Info[PITCH1][index] = output_pitch1; ///< 大p的扭矩
-				arm_Info[PITCH2][index] = output_pitch2; ///< 小p的扭矩
-				index ++;
-				///< 这里还差用来传输数据的代码
-			}
-			else ///< 数据记录完毕
-			{
-				Is_Recording_ArmTorque = false; ///< 停止记录数据
-			}
-		}	
+	// if(is_record)
+	// {
+	// 	if(Is_Recording_ArmTorque) ///< 正在记录数据
+	// 	{
+	// 		if(index < RECORD_MAX - 1) 
+	// 		{
+	// 			arm_Info[PITCH1][index] = output_pitch1; ///< 大p的扭矩
+	// 			arm_Info[PITCH2][index] = output_pitch2; ///< 小p的扭矩
+	// 			index ++;
+	// 			///< 这里还差用来传输数据的代码
+	// 		}
+	// 		else ///< 数据记录完毕
+	// 		{
+	// 			Is_Recording_ArmTorque = false; ///< 停止记录数据
+	// 		}
+	// 	}	
+	// }
+
+	// if(Need_Grav_Compensation) ///< 如果启用重力补偿
+	// {
+	// 	output_pitch1[0] += this->Grav_Pitch1_Out;
+	// 	output_pitch2[0] += this->Grav_Pitch2_Out;
+	// }
+	if (onlyGravity_) {
+		output_pitch1[0] = this->grav_ff_pitch1;
+		output_pitch2[0] = this->grav_ff_pitch2;
+	} else {
+		output_pitch1[0] += this->grav_ff_pitch1;
+		output_pitch2[0] += this->grav_ff_pitch2;
 	}
 
-	if(Need_Grav_Compensation) ///< 如果启用重力补偿
-	{
-		output_pitch1[0] += this->Grav_Pitch1_Out;
-		output_pitch2[0] += this->Grav_Pitch2_Out;
-	}
-	
 	mtrOutputBuffer = { 
 		static_cast<int16_t>(output_yaw[0]),
 		static_cast<int16_t>(output_pitch1[0]),

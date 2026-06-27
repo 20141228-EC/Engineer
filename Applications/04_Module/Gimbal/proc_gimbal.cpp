@@ -1,8 +1,8 @@
 /**
  * @file proc_gimbal.cpp
  * @author ciallo
- * @version 2.0
- * @date 2026-03-06
+ * @version 3.0
+ * @date 2026-06-07
  *
  * @copyright Copyright (c) 2026
  *
@@ -30,7 +30,7 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 			case FSM_RESET: {
 				gimbal.gimbalInfo.isModuleAvailable = false;
 				gimbal.comVisualyaw_.StopComponent();
-				gimbal.comstorage_.StopComponent();
+				gimbal.comGimbalPitch_.StopComponent();
 				proc_waitMs(20);
 				continue;
 			}
@@ -39,15 +39,16 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 				// 初始化: 等待电机上线后启动组件
 				proc_waitMs(250); // 等待DM_MIT电机使能完成
 				gimbal.comVisualyaw_.StartComponent();
-				gimbal.comstorage_.StartComponent();
 				proc_waitUntil(gimbal.comVisualyaw_.componentStatus == APP_OK);
-				proc_waitUntil(gimbal.comstorage_.componentStatus == APP_OK);
+
+				// 启动Pitch组件
+				gimbal.comGimbalPitch_.StartComponent();
+				proc_waitUntil(gimbal.comGimbalPitch_.componentStatus == APP_OK);
 
 				// 设置初始目标角度
 				gimbal.gimbalCmd = SGimbalCmd();
 				gimbal.gimbalCmd.set_visualyaw = GIMBAL_VISUAL_MOTOR_INIT_ANGLE;
-				gimbal.gimbalCmd.set_posit_storage_L = STORAGE_L_MOTOR_INIT_POSIT;
-				gimbal.gimbalCmd.set_posit_storage_R = STORAGE_R_MOTOR_INIT_POSIT;
+				gimbal.gimbalCmd.set_pitch = GIMBAL_PITCH_INIT_ANGLE;
 				gimbal.gimbalInfo.isModuleAvailable = true;
 				gimbal.Module_FSMFlag_ = FSM_CTRL;
 				gimbal.moduleStatus = APP_OK;
@@ -55,15 +56,14 @@ void CModGimbal::StartGimbalModuleTask(void *argument) {
 			}
 
 			case FSM_CTRL: {
-				// 写入组件目标角度
+				// 写入组件目标
 				gimbal.RestrictGimbalCommand_();
 
 				gimbal.comVisualyaw_.VisuallyawCmd.setAngle =
 					CComVisualyaw::PhyAngleToMtrAngle(gimbal.gimbalCmd.set_visualyaw);
-				gimbal.comstorage_.storageCmd.setPosit_L_storage =
-					gimbal.gimbalCmd.set_posit_storage_L;
-				gimbal.comstorage_.storageCmd.setPosit_R_storage =
-					gimbal.gimbalCmd.set_posit_storage_R;
+
+				gimbal.comGimbalPitch_.pitchCmd.setPosit =
+					CComGimbalPitch::PhyPositToMtrPosit(gimbal.gimbalCmd.set_pitch);
 
 				proc_waitMs(1);
 				break;

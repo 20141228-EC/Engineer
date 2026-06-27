@@ -28,7 +28,7 @@ volatile float traj_dbg_grip_info = 0.0f;
      *  @param output 输出数组
      */
 
-    void ReadArmjoint(const CModArm &arm,float_t output[7]){
+    void ReadArmjoint(const CModArm &arm,float_t output[J::COUNT]){
         output[J::J_YAW]  = arm.armInfo.angle_Yaw;
         output[J::J_P1]   = arm.armInfo.angle_Pitch1;
         output[J::J_P2]   = arm.armInfo.angle_Pitch2;
@@ -41,7 +41,7 @@ volatile float traj_dbg_grip_info = 0.0f;
      *  @param arm 机械臂对象
      *  @param output 输出数组
      */
-    void WriteArmjoint(CModArm &arm,const float_t output[7]){
+    void WriteArmjoint(CModArm &arm,const float_t output[J::COUNT]){
         arm.armCmd.set_angle_Yaw = output[J::J_YAW];
         arm.armCmd.set_angle_Pitch1 = output[J::J_P1];
         arm.armCmd.set_angle_Pitch2 = output[J::J_P2];
@@ -99,11 +99,7 @@ volatile float traj_dbg_grip_info = 0.0f;
     bool ExtractGripClose(const float_t traj[][FC_COUNT], int row) {
         return traj[row][FC_GRIP] < 1.0f;
     }
-    // 提取第 row 行的关节速度状态
-    float_t ExtractSpeed(const float_t traj[][FC_COUNT], int row) {
-        return traj[row][FC_SPEED];
-    }
-    
+
     //控制夹爪的张开和闭合
     void WriteGripCommand(CModArm &arm, bool close) {
         if (close) {
@@ -119,7 +115,7 @@ volatile float traj_dbg_grip_info = 0.0f;
     bool CheckGripArrived(const CModArm &arm, bool close) {
         const auto state = arm.armInfo.gripState;
         if (close) {
-            return state == CModArm::SArmInfo::EGripState::HOLD && arm.armInfo.length_grip <=  ARM_END_GRIP_PHYSICAL_RANGE_MAX - GRIP_CLOSE_Stop_distance;//增强判断依据防止夹爪的状态误判
+            return state == CModArm::SArmInfo::EGripState::HOLD && arm.armInfo.length_grip <=  ARM_END_GRIP_PHYSICAL_RANGE_MAX - GRIP_CLOSE_Stop_distance;
         }
 
         return state == CModArm::SArmInfo::EGripState::RELEASE && arm.armInfo.length_grip >= ARM_END_GRIP_PHYSICAL_RANGE_MAX - GRIP_OPEN_Stop_distance;
@@ -162,139 +158,113 @@ volatile float traj_dbg_grip_info = 0.0f;
         }
     }
 
-    /** @brief 轨迹播放器
-     *  @param arm 臂的控制和信息参数
-     *  @param target 目标关节角度
-     *  @param gripDuringMotion 关节运动过程中夹爪保持的状态，关节运动过程中保持的夹爪状态（true=夹紧, false=松开）
-     *  @param gripAfter        关节到位之后才切换的夹爪状态
-     *  @param player 播放器的内部速度参数定义
-     *  @param startOverride 非空：用其作为规划起点
-     *  @param minTimeS 可选最小总时长(秒)
-     */
-    bool PlaySegment(CModArm &arm, const float_t target[J::COUNT],
-                           float_t speedScale,
-                           bool gripDuringMotion, bool gripAfter,
-                           CAlgoTrajPlayback &player, bool checkctrl,
-                           const float_t *startOverride,
-                           float_t minTimeS){
 
-        const SArrivalCheckConfig arrivalCfg;//到位检查函数
+    // 五次关节播放器
+    bool PlayJointTarget(CModArm &arm,
+                         const float_t target[J::COUNT],
+                         const SPlayJointTargetOptions &opt) {
 
-        /*-----------------------  功能函数  ---------------------------*/
-        // 夹爪控制，true=夹紧, false=松开
+        const SArrivalCheckConfig arrivalCfg;
         float_t current[J::COUNT];
         float_t joints[J::COUNT];
 
-        // 规划起点：优先使用 startOverride（上一段 target），否则读实时反馈
-        if (startOverride != nullptr) {
-            for (int i = 0; i < J::COUNT; i++) current[i] = startOverride[i];
+        // 规划起点
+        if (opt.startOverride != nullptr) {
+            for (int i = 0; i < J::COUNT; i++) current[i] = opt.startOverride[i];
         } else {
             ReadArmjoint(arm, current);
         }
 
-        player.speedScale = speedScale;                       // 设置当前的速度比例
-        player.PlanMultiAxisTraj(current, target, minTimeS);  // 最小时长约束
+        CAlgoQuintic qplayer;
+        qplayer.speedScale = opt.speedScale;
+        qplayer.PlanPointToPoint(current, target, opt.minTimeS);
 
-        bool arrivalCheckStarted = false;
-        bool stableTiming = false;
-        bool frameJointsArrived = false;
-        uint32_t arrivalStartTick = 0;
-        uint32_t stableStartTick = 0;
+        SPlayJointTargetState s;
+        uint32_t startTick = HAL_GetTick();
 
-        uint32_t startTick = HAL_GetTick();//获取时间轴
-
-        while(true){
-
-            // ctrl+z操作手打断回放避免实际位姿错误或者出现干涉
-            if(checkctrl && SysRemote.remoteInfo.keyboard.key_Ctrl
-               && SysRemote.remoteInfo.keyboard.key_Z) {
+        while (true) {
+            // Ctrl+Z 打断
+            if (SysRemote.remoteInfo.keyboard.key_Ctrl
+                && SysRemote.remoteInfo.keyboard.key_Z) {
                 traj_dbg_exit_reason = 2;
                 return false;
             }
 
             const uint32_t nowTick = HAL_GetTick();
-            const uint32_t elapsedMs = nowTick - startTick;
-            float_t elapsed = static_cast<float_t>(elapsedMs) / 1000.0f;//转换成当前秒数
-            const bool frameTargetCommanded = player.IsFinished(elapsed);// 本帧运动完成
+            float_t elapsed = static_cast<float_t>(nowTick - startTick) / 1000.0f;
+            const bool frameTargetCommanded = qplayer.IsFinished(elapsed);
 
             // 关节角度播放
-            if(frameTargetCommanded) {
+            if (frameTargetCommanded) {
                 WriteArmjoint(arm, target);
             } else {
-                player.MultiAxisTrajDistance(elapsed, joints);//根据当前的秒数度取关节的信息
-                WriteArmjoint(arm, joints);//将获取到的关节信息反写入arm中
+                qplayer.Evaluate(elapsed, joints);
+                WriteArmjoint(arm, joints);
             }
 
-            // 运动期间夹爪保持上一段状态，禁止提前切换
-            WriteGripCommand(arm, gripDuringMotion);
+            // 运动期间夹爪保持 opt.gripDuringMotion
+            WriteGripCommand(arm, opt.gripDuringMotion);
 
-//测试代码：
-            if(frameTargetCommanded) {
-                if(!arrivalCheckStarted) {
-                    arrivalCheckStarted = true;
-                    arrivalStartTick = nowTick;
-                }
-
-                if(!frameJointsArrived) {
-                    if(CheckAllJointsArrived(arm, target, arrivalCfg)) {
-                        if(!stableTiming) {
-                            stableTiming = true;
-                            stableStartTick = nowTick;
+            // 到位检查
+            if (frameTargetCommanded) {
+                if (opt.waitForArrival) {
+                    if (!s.arrivalCheckStarted) {
+                        s.arrivalCheckStarted = true;
+                        s.arrivalStartTick = nowTick;
+                    }
+                    if (!s.frameJointsArrived) {
+                        if (CheckAllJointsArrived(arm, target, arrivalCfg)) {
+                            if (!s.stableTiming) {
+                                s.stableTiming = true;
+                                s.stableStartTick = nowTick;
+                            }
+                            if (nowTick - s.stableStartTick >= arrivalCfg.stableMs) {
+                                s.frameJointsArrived = true;
+                            }
+                        } else {
+                            s.stableTiming = false;
                         }
-
-                        if(nowTick - stableStartTick >= arrivalCfg.stableMs) {
-                            frameJointsArrived = true;
+                        if (nowTick - s.arrivalStartTick >= arrivalCfg.timeoutMs) {
+                            traj_dbg_warn_reason = 3;
                         }
-                    } else {
-                        stableTiming = false;
+                        if (nowTick - s.arrivalStartTick >= arrivalCfg.hardTimeoutMs) {
+                            traj_dbg_exit_reason = 3;
+                            return false;
+                        }
                     }
-
-                    if(nowTick - arrivalStartTick >= arrivalCfg.timeoutMs) {
-                        traj_dbg_warn_reason = 3;
-                    }
-
-                    //Debug: 超时退出
-                    if(nowTick - arrivalStartTick >= arrivalCfg.hardTimeoutMs) {
-                        traj_dbg_exit_reason = 3;
-                        return false;
-                    }
+                    if (s.frameJointsArrived) break;
+                } else {
+                    break;
                 }
-
-                // 关节到位后退出，夹爪切换由 PlayFrameSegment
-                if(frameJointsArrived) break;
             }
 
             proc_waitMs(1);
         }
 
-        // 关节到位后才切换到本段目标夹爪状态（夹爪到位检查由 PlayFrameSegment 负责）
+        // 关节到位后才切换到本段目标夹爪状态
         WriteArmjoint(arm, target);
-        WriteGripCommand(arm, gripAfter);
+        WriteGripCommand(arm, opt.gripAfter);
         traj_dbg_exit_reason = 1;
         return true;
     }
 
-
-    //再原来的播放器的基础上再封装一个速度读取的函数
-    //  prevTarget 非空：用上一段 target 做起点
-    //  prevTarget 为空：用实时反馈做起点
-    //  earlyGrip  true: 夹爪在段开始时切换(与关节运动重叠)，false: 关节到位后才切换
-    bool PlayFrameSegment(CModArm &arm,
-                                const float_t traj[][FC_COUNT], int seg,
-                                CAlgoTrajPlayback &player, bool checkctrl,
-                                float_t endRollOffset,
-                                const float_t *prevTarget,
-                                bool earlyGrip){
+    // 按轨迹第 seg 行播放一段
+    // earlyGrip=true: 段开始就切夹爪；false: 关节到位后才切
+    bool PlayTrajRow(CModArm &arm,
+                     const float_t traj[][FC_COUNT], int seg,
+                     const float_t *prevTarget,
+                     bool waitForArrival,
+                     float_t endRollOffset,
+                     bool earlyGrip) {
         float_t target[J::COUNT];
-        const bool gripAfter = ExtractGripClose(traj, seg);   // 本段目标状态
+        const bool gripAfter = ExtractGripClose(traj, seg);   // 本段目标夹爪状态
 
-        // 判断夹爪状态在本段是否真的发生了切换
+        // 判断夹爪在本段是否真的切换
         const bool gripActuallyChanged = (seg == 0)
             ? !CheckGripArrived(arm, gripAfter)
             : (gripAfter != ExtractGripClose(traj, seg - 1));
 
-        // earlyGrip: 段一开始就切换夹爪
-        // 否则: 关节运动期间保持上一段状态，到位后才切
+        // earlyGrip: 段一开始就切；否则运动期间保持上一段状态，到位后才切
         bool gripDuringMotion;
         if (earlyGrip) {
             gripDuringMotion = gripAfter;
@@ -304,7 +274,6 @@ volatile float traj_dbg_grip_info = 0.0f;
             gripDuringMotion = ExtractGripClose(traj, seg - 1);
         }
 
-        float_t speed = ExtractSpeed(traj, seg);
         Extrarow(traj, seg, target);
         target[J::J_ENDR] += endRollOffset;
 
@@ -312,21 +281,129 @@ volatile float traj_dbg_grip_info = 0.0f;
         traj_dbg_exit_reason = 0;
         traj_dbg_warn_reason = 0;
         traj_dbg_wait_joint = -1;
-        traj_dbg_wait_grip = 0;
 
-        // 关节运动期间保持 gripDuringMotion；关节到位后才切到 gripAfter
-        if(!PlaySegment(arm, target, speed,
-                        gripDuringMotion, gripAfter,
-                        player, checkctrl,
-                        prevTarget )) {// minTimeS = 0，按物理参数自由规划 
+        SPlayJointTargetOptions opt;
+        opt.speedScale = traj[seg][FC_SPEED];
+        opt.gripDuringMotion = gripDuringMotion;
+        opt.gripAfter = gripAfter;
+        opt.startOverride = prevTarget;
+        opt.minTimeS = 0.f;
+        opt.waitForArrival = waitForArrival || gripActuallyChanged;  // 夹爪切换时强制等关节到位
+        if (!PlayJointTarget(arm, target, opt))
             return false;
-        }
-        if(gripActuallyChanged) {   // 夹爪有切换，等待夹爪到位
-            const SArrivalCheckConfig arrivalCfg;
-            return WaitGripArrived(arm, gripAfter, checkctrl, arrivalCfg);
+
+        // 夹爪有切换，关节到位后等夹爪到位再继续
+        if (gripActuallyChanged) {
+            const SArrivalCheckConfig cfg;
+            return WaitGripArrived(arm, gripAfter, true, cfg);
         }
         return true;
     }
 
+
+    // 按 traj 第 0..segEnd-1 行逐段播放
+    bool PlayTrajRows(CModArm &arm,
+                      const float_t traj[][FC_COUNT],
+                      int segEnd,
+                      float_t *lastTargetOut,
+                      float_t endRollOffset,
+                      bool earlyGrip) {
+        if (segEnd <= 0) return true;
+
+        float_t lastTarget[J::COUNT];
+
+        // seg 0: 固定起点等到位
+        if (!PlayTrajRow(arm, traj, 0, nullptr, true, endRollOffset, earlyGrip))
+            return false;
+        Extrarow(traj, 0, lastTarget);
+        lastTarget[J::J_ENDR] += endRollOffset;
+
+        // seg 1..segEnd-1: 逐段播放，prevTarget 链式
+        for (int seg = 1; seg < segEnd; seg++) {
+            const bool isLastSeg = (seg == segEnd - 1);
+            const bool gripChanged = (ExtractGripClose(traj, seg) != ExtractGripClose(traj, seg - 1));
+            const bool waitArrival = isLastSeg || gripChanged;
+            if (!PlayTrajRow(arm, traj, seg, lastTarget, waitArrival, endRollOffset, earlyGrip))
+                return false;
+            Extrarow(traj, seg, lastTarget);
+            lastTarget[J::J_ENDR] += endRollOffset;
+        }
+
+        if (lastTargetOut != nullptr) {
+            for (int i = 0; i < J::COUNT; i++) lastTargetOut[i] = lastTarget[i];
+        }
+        return true;
+    }
+
+    // 五次插值范围连续播放
+    bool PlaySplineRange(CModArm &arm,
+                         const TrajClip &clip,
+                         int segFrom,
+                         int segTo,
+                         CAlgoQuinticSpline &spline,
+                         float_t rollOff) {
+        if (segTo < 0) segTo = clip.frameCount - 1;
+        const int n = segTo - segFrom + 1;
+        if (n < 2) return true;
+
+        spline.Build(clip.frame, clip.frameCount, segFrom, segTo, rollOff);
+
+        const uint32_t t0 = HAL_GetTick();
+
+        float_t joints[CAlgoQuinticSpline::AXES];
+
+        while (true) {
+            // Ctrl+Z 中断
+            if (SysRemote.remoteInfo.keyboard.key_Ctrl
+                && SysRemote.remoteInfo.keyboard.key_Z) {
+                traj_dbg_exit_reason = 2;
+                return false;
+            }
+
+            const uint32_t nowTick = HAL_GetTick();
+            const float_t elapsedMs = static_cast<float_t>(nowTick - t0);
+
+            // 轨迹结束：写入最终帧关节角度 + 等到位
+            if (spline.IsFinished(elapsedMs)) {
+                float_t finalTarget[J::COUNT];
+                Extrarow(clip.frame, segTo, finalTarget);
+                finalTarget[J::J_ENDR] += rollOff;
+                WriteArmjoint(arm, finalTarget);
+
+                {
+                    const SArrivalCheckConfig cfg;
+                    uint32_t arrivalTick = nowTick;
+                    bool stable = false;
+                    uint32_t stableTick = 0;
+                    while (true) {
+                        if (SysRemote.remoteInfo.keyboard.key_Ctrl
+                            && SysRemote.remoteInfo.keyboard.key_Z) {
+                            traj_dbg_exit_reason = 2;
+                            return false;
+                        }
+                        if (CheckAllJointsArrived(arm, finalTarget, cfg)) {
+                            if (!stable) { stable = true; stableTick = HAL_GetTick(); }
+                            if (HAL_GetTick() - stableTick >= cfg.stableMs) break;
+                        } else {
+                            stable = false;
+                            if (HAL_GetTick() - arrivalTick >= cfg.hardTimeoutMs) {
+                                traj_dbg_exit_reason = 3;
+                                return false;
+                            }
+                        }
+                        proc_waitMs(1);
+                    }
+                }
+                traj_dbg_exit_reason = 1;
+                return true;
+            }
+
+            // 五次样条计算关节角度
+            spline.Evaluate(elapsedMs, joints);
+            WriteArmjoint(arm, joints);
+
+            proc_waitMs(1);
+        }
+    }
 
  }// namespace my_engineer
