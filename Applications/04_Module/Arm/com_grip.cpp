@@ -173,11 +173,22 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
 /**
  * @brief 闭合方向力矩线性减速
  */
-float_t CModArm::CComGrip::ApplyTorqueSpeedLimit(float_t spd) const {
-    if (gripDetect_.filteredTorque > gripDetect_.closeTorqueThresh) {
-        float_t factor = std::max(0.0f,
-            1.0f - (gripDetect_.filteredTorque - gripDetect_.closeTorqueThresh)
-                  / gripDetect_.closeTorqueRange);
+float_t CModArm::CComGrip::ApplyTorqueSpeedLimit(float_t spd) {
+    const float_t enterThresh = gripDetect_.closeTorqueThresh;
+    const float_t exitThresh  = gripDetect_.closeTorqueThresh * 0.7f;
+
+    // 进入用 enterThresh，退出用 exitThresh，避免阈值附近反复横跳
+    if (!torqueLimitActive_) {
+        if (gripDetect_.filteredTorque > enterThresh) torqueLimitActive_ = true;
+    } else {
+        if (gripDetect_.filteredTorque < exitThresh) torqueLimitActive_ = false;
+    }
+
+    if (torqueLimitActive_) {
+        float_t factor = 1.0f - (gripDetect_.filteredTorque - enterThresh)
+                                 / gripDetect_.closeTorqueRange;
+        if (factor > 1.0f) factor = 1.0f;
+        if (factor < 0.3f) factor = 0.3f;
         spd *= factor;
     }
     return spd;
