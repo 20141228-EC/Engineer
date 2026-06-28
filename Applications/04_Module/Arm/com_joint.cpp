@@ -117,12 +117,16 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				motor[P1]->motorData[CDevMtr::DATA_POSIT] = motor[P1]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT2_PITCH1_MACH;		///<刚上电的时候获取初始值.距离机械中值的偏差
 				while(motor[P1]->motorData[CDevMtr::DATA_POSIT] < -32767)
 					motor[P1]->motorData[CDevMtr::DATA_POSIT] += 65535;//归位到-32767~32768范围内
+				while(motor[P1]->motorData[CDevMtr::DATA_POSIT] > 32767)
+					motor[P1]->motorData[CDevMtr::DATA_POSIT] -= 65535;// 过了零点
 				motor[P1]->motorData[CDevMtr::DATA_POSIT] +=	POSIT_JOINT2_PITCH1_MACH_PHY * 182.04f * ARM_PITCH1_MOTOR_DIR;			///<这个是等效连杆和水平面的夹角
 				jointCmd.setPosit_pitch1 = PhyPositToMtrPosit_pitch1(ARM_INIT_SAFE_PITCH1_ANGLE);
 
 				motor[P2]->motorData[CDevMtr::DATA_POSIT] = motor[P2]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT3_PITCH2_MACH;
 				while(motor[P2]->motorData[CDevMtr::DATA_POSIT] < -32767)
 					motor[P2]->motorData[CDevMtr::DATA_POSIT] += 65535;
+				while(motor[P2]->motorData[CDevMtr::DATA_POSIT] > 32767)
+					motor[P2]->motorData[CDevMtr::DATA_POSIT] -= 65535;// 过了零点
 				motor[P2]->motorData[CDevMtr::DATA_POSIT]  += ARM_PITCH2_MOTOR_DIR * POSIT_JOINT3_PITCH2_MACH_PHY * 182.04f;			///<这个是等效连杆和水平面的夹角
 				jointCmd.setPosit_pitch2 = PhyPositToMtrPosit_pitch2(ARM_INIT_SAFE_PITCH2_ANGLE);
 				
