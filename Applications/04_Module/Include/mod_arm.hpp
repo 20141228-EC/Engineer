@@ -525,6 +525,7 @@ private:
 		// 标定堵转计数器（组件层堵转判断）
 		int32_t initStallCnt_ = 0;
 		int32_t closeStartCnt_ = 0;
+		bool torqueLimitActive_ = false; ///< 力矩减速触发
 
 		static float_t MtrPositToPhyPosit(float_t mtrPosit);
 		static int32_t PhyPositToMtrPosit(float_t phyPosit);
@@ -541,7 +542,7 @@ private:
 		// 输出更新函数（位置环）
 		EAppStatus _UpdateOutput(float_t gripTarget);    ///< 位置环输出
 		EAppStatus _UpdateOutputSpd(float_t speedTarget); ///< 速度环输出更新函数
-		float_t ApplyTorqueSpeedLimit(float_t spd) const; ///< 闭合方向力矩线性减速
+		float_t ApplyTorqueSpeedLimit(float_t spd); ///< 闭合方向力矩线性减速
 		// 输出模式的选择
 		EAppStatus ApplyGripOutput(const SGripCtrlOutput& output);
 

@@ -64,7 +64,8 @@ namespace my_engineer {
         arm.armCmd.set_angle_Roll      = arm.armInfo.angle_Roll;
         arm.armCmd.set_angle_end_pitch = arm.armInfo.angle_end_pitch;
         arm.armCmd.set_angle_end_roll  = arm.armInfo.angle_end_roll;
-
+        proc_waitMs(800);
+        
         // 任务结束默认进入自定义控制器模式（仅在控制器在线时切换，否则保留键盘模式避免立刻被自动退出）
         if (SysControllerLink.IsControllerOnline()) {
             SysControllerLink.robotInfo.controlled_by_controller = true;
