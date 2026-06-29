@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>STM32H723VGTx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32H7xx_DFP.4.1.3</PackID>
+          <PackID>Keil.STM32H7xx_DFP.4.1.2</PackID>
           <PackURL>https://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000-0x2001FFFF) IRAM2(0x24000000-0x2401FFFF) IROM(0x8000000-0x80FFFFF) CLOCK(12000000) FPU3(DFPU) CPUTYPE("Cortex-M7") ELITTLE TZ</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -524,6 +524,26 @@
               <FileType>5</FileType>
               <FilePath>..\..\..\Applications\05_System\Core\process\wait.txt</FilePath>
             </File>
+            <File>
+              <FileName>proc_traj_common.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\05_System\Core\process\proc_traj_common.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>proc_traj_data.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\05_System\Core\process\proc_traj_data.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>proc_traj_get.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\05_System\Core\process\proc_traj_get.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>proc_traj_grab.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\05_System\Core\process\proc_traj_grab.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -539,11 +559,6 @@
         <Group>
           <GroupName>Application/Module/Arm</GroupName>
           <Files>
-            <File>
-              <FileName>com_end.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\..\..\Applications\04_Module\Arm\com_end.cpp</FilePath>
-            </File>
             <File>
               <FileName>com_roll.cpp</FileName>
               <FileType>8</FileType>
@@ -573,6 +588,16 @@
               <FileName>dev_board_link.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\03_Device\dev_board_link.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>com_end_pitch.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\04_Module\Arm\com_end_pitch.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>com_end_roll.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\04_Module\Arm\com_end_roll.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -624,6 +649,11 @@
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\04_Module\Gimbal\com_visual_yaw.cpp</FilePath>
             </File>
+            <File>
+              <FileName>com_gimbal_pitch.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\04_Module\Gimbal\com_gimbal_pitch.cpp</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -666,6 +696,41 @@
               <FileName>Algorithm.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>..\..\..\Applications\00_Algorithm\Algorithm.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>algo_grav_comp.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\00_Algorithm\algo_grav_comp.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>algo_imu_ekf.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\00_Algorithm\algo_imu_ekf.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>algo_quintic_spline.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\00_Algorithm\algo_quintic_spline.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>algo_traj_playback.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\00_Algorithm\algo_traj_playback.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>bmi_ekf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Applications\00_Algorithm\bmi_ekf.c</FilePath>
+            </File>
+            <File>
+              <FileName>kalman_fliter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\Applications\00_Algorithm\kalman_fliter.c</FilePath>
+            </File>
+            <File>
+              <FileName>algo_quintic.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\Applications\00_Algorithm\algo_quintic.cpp</FilePath>
             </File>
           </Files>
         </Group>

@@ -285,13 +285,13 @@ void CModChassis::UpdateHandler_(){
 
     comHip_.MovMode_ = MovMode; ///< 更新面向底层髋关节组件的运动模式
 
-    float_t roll_Target = 0.1f; ///< 目标roll角度，目前暂时写这个，后续出车之后根据实际可能有些误差待改
+    float_t roll_Target = -0.8f; ///< 目标pitch角度
 
     // 更新Roll角
-    chassisInfo.roll_Measure = filter->Imu_Ekf_Info.roll;
+    chassisInfo.roll_Measure = filter->Imu_Ekf_Info.pitch;
 
     // 更新加速度
-    chassisInfo.accel_y = filter->Imu_Ekf_Info.accel_y;
+    chassisInfo.accel_y = filter->Imu_Ekf_Info.accel_x;
 
     if(comHip_.MovMode_ == EmovMode::CLIMBING)
     {   
@@ -301,9 +301,9 @@ void CModChassis::UpdateHandler_(){
             reset_hip = 0;
         }
 
-        // if(filter->Imu_Ave_Info.imu_ave_roll < -18.f){
-        //     should_be_saved = true;     // 仰角超过18°就自救
-        // }
+        if(filter->Imu_Ekf_Info.pitch < -16.f){
+            should_be_saved = true;     // 仰角超过18°就自救
+        }
 
         // if(should_be_saved){    // 如果需要自救，就立刻抬腿
         //     roll_target_climbing = comHip_.pidRollCtrl.UpdatePidController(roll_Target, chassisInfo.roll_Measure);
@@ -320,8 +320,8 @@ void CModChassis::UpdateHandler_(){
     else if(MovMode == EmovMode::DOWNSTAIR){    // 下台阶模式
 			
         float_t roll_err = roll_Target - chassisInfo.roll_Measure;  ///< 当前仰角与目标差值
-        float_t roll_rate = filter->Imu_Ekf_Info.gyro_x;    // 当前roll轴角速度
-        chassisCmd.L_Tau = roll_err * 0.3f - roll_rate * 0.05;          ///< pd控制
+        float_t roll_rate = filter->Imu_Ekf_Info.gyro_y;    // 当前pitch轴角速度
+        chassisCmd.L_Tau = roll_err * 0.4f - roll_rate * 0.05;          ///< pd控制
         ///< 目前只单纯给个力 如果效果好的话后续对连杆建模给精确一些
     }
 
