@@ -191,16 +191,14 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 					// pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.f, mitCtrl[LL].tau);
 					// pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.f, mitCtrl[LR].tau);
 				if(parent->MovMode == EmovMode::DOWNSTAIR){		// 下台阶模式中
-					// 1. 获取目标力矩
+					// 获取目标力矩
 					float_t target_tau_L = HipCmd.L_Set_Tau;
 					float_t target_tau_R = HipCmd.R_Set_Tau;	// 先不给重补 只给姿态平衡力
 					// float_t target_tau_L = mitCtrl[LL].tau + HipCmd.L_Set_Tau;
 					// float_t target_tau_R = mitCtrl[LR].tau + HipCmd.R_Set_Tau;
 
-					// 2. 力矩斜坡限制 (Slew Rate Limiter)
+					// 力矩斜坡限制 (Slew Rate Limiter)
 					static float_t current_tau[2] = {0.0f, 0.0f};
-					// 每次控制周期(任务频率)允许的最大力矩变化量，需要根据实际效果调试
-					// 假设计算周期是1ms，0.1f 意味着力矩每秒最多变化 100 Nm
 					const float_t max_tau_step = 0.03f; 
 
 					// 左腿斜坡处理
@@ -224,9 +222,11 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 					float_t l_grav = _UpdateGravity(HipInfo.pos_L_L);
 					float_t r_grav = _UpdateGravity(HipInfo.pos_L_R);
 
-					// 3. 发送控制指令
-					pMtr[LL]->Control_MIT(0.f, mitCtrl[LL].kd, 0.f, 0.f, 3.5f + current_tau[LL]);
-					pMtr[LR]->Control_MIT(0.f, mitCtrl[LR].kd, 0.f, 0.f, -3.5f + current_tau[LR]);
+					pMtr[LL]->Control_MIT(0.f, mitCtrl[LL].kd, 0.f, 0.f, 1.f + current_tau[LL]);
+					pMtr[LR]->Control_MIT(0.f, mitCtrl[LR].kd, 0.f, 0.f, -1.f + current_tau[LR]);
+
+					// pMtr[LL]->Control_MIT(0.f, 0.f, 0.f, 0.f, 0.f);
+					// pMtr[LR]->Control_MIT(0.f, 0.f, 0.f, 0.f, 0.f);
 					// 一个重力前馈加上姿态平衡pid输出最终发力矩给电机
 
 					// 离开模式的时候可能需要清零current_tau

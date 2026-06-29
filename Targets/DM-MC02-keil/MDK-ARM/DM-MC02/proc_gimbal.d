@@ -85,6 +85,7 @@ dm-mc02/proc_gimbal.o: \
   ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_pid.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_power_control.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_traj_playback.hpp \
   ..\..\..\Applications\02_Interface\Include\Interface.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_common.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_uart.hpp \

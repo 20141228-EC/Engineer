@@ -126,6 +126,7 @@ dm-mc02/algorithm.o: ..\..\..\Applications\00_Algorithm\Algorithm.cpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_kf_filter.hpp \
   ..\..\..\Applications\00_Algorithm\Include\rp_matrix.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_imu_ekf.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_traj_playback.hpp \
   ..\..\..\Applications\00_Algorithm\Include\bmi_ekf.h \
   ..\..\..\Applications\00_Algorithm\Include\kalman_fliter.h \
   ..\..\..\Applications\00_Algorithm\Include\matrix.h

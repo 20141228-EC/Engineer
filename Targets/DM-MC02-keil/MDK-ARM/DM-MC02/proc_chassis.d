@@ -85,6 +85,7 @@ dm-mc02/proc_chassis.o: \
   ..\..\..\Applications\01_Configuration\Include\conf_algo.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_pid.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_power_control.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_traj_playback.hpp \
   ..\..\..\Applications\02_Interface\Include\Interface.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_common.hpp \
   ..\..\..\Applications\02_Interface\Include\inf_uart.hpp \
@@ -127,4 +128,11 @@ dm-mc02/proc_chassis.o: \
   ..\..\..\Applications\03_Device\Include\dev_referee.hpp \
   ..\..\..\Applications\01_Configuration\Include\conf_CanTxNode.hpp \
   ..\..\..\Applications\00_Algorithm\Include\algo_ave_filter.hpp \
-  ..\..\..\Applications\00_Algorithm\Include\algo_filter_common.hpp
+  ..\..\..\Applications\00_Algorithm\Include\algo_filter_common.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_imu_ekf.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\Algorithm.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\algo_kf_filter.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\rp_matrix.hpp \
+  ..\..\..\Applications\00_Algorithm\Include\bmi_ekf.h \
+  ..\..\..\Applications\00_Algorithm\Include\kalman_fliter.h \
+  ..\..\..\Applications\00_Algorithm\Include\matrix.h
