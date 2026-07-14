@@ -19,14 +19,14 @@
 #include "algo_gravity_comp.hpp"
 
 // 直接把机器人的物理位置给自定义控制器，懒得转换了
-#define CONTROLLER_YAW_PHYSICAL_RANGE 195.0f
-#define CONTROLLER_YAW_MOTOR_RANGE 4437.33f
+#define CONTROLLER_YAW_PHYSICAL_RANGE 300.0f
+#define CONTROLLER_YAW_MOTOR_RANGE 6809.f
 #define CONTROLLER_YAW_PHYSICAL_RANGE_MIN -97.5f
 #define CONTROLLER_YAW_PHYSICAL_RANGE_MAX 97.5f
-#define CONTROLLER_YAW_MOTOR_MACH 7492
+#define CONTROLLER_YAW_MOTOR_MACH 8171
 /*------------------------------------------------------------------------------------------*/
 #define CONTROLLER_PITCH1_PHYSICAL_RANGE_MIN 0.0f
-#define CONTROLLER_PITCH1_PHYSICAL_RANGE_MAX 90.0f
+#define CONTROLLER_PITCH1_PHYSICAL_RANGE_MAX 92.0f
 #define CONTROLLER_PITCH1_PHYSICAL_RANGE 328.6f
 #define CONTROLLER_PITCH1_MOTOR_RANGE 392000
 #define CONTROLLER_PITCH1_MOTOR_OFFSET 0
@@ -35,11 +35,10 @@
 // 例如：偏移8.0表示电机报告0rad时，控制器关节实际在物理8°位置
 #define CONTROLLER_PITCH1_ZERO_OFFSET  0.0f   // P1零点偏移(deg)，根据实测调节
 #define CONTROLLER_PITCH2_ZERO_OFFSET  0.0f   // P2零点偏移(deg)，根据实测调节
-// P3 removed - 5-axis controller
 #define CONTROLLER_PITCHEND_ZERO_OFFSET  43.0f   // PitchEnd零点偏移(deg)，根据实测调节
 /*----------------------------------Pitch2限幅范围-----------------------------------------------*/
 #define CONTROLLER_PITCH2_PHYSICAL_RANGE_MIN 0.0f
-#define CONTROLLER_PITCH2_PHYSICAL_RANGE_MAX 180.0f
+#define CONTROLLER_PITCH2_PHYSICAL_RANGE_MAX 147.0f
 
 
 /*----------------------------------roll限幅范围------------------------------------------*/
@@ -51,22 +50,8 @@
 #define CONTROLLER_PITCH_END_MOTOR_RANGE 4201
 #define CONTROLLER_PITCH_END_MOTOR_RATIO (CONTROLLER_PITCH_END_MOTOR_RANGE / (CONTROLLER_PITCH_END_PHYSICAL_RANGE_MAX - CONTROLLER_PITCH_END_PHYSICAL_RANGE_MIN))
 #define CONTROLLER_PITCH_END_MOTOR_OFFSET 3345
-/*----------------------------------重力补偿安装偏移(deg)------------------------------------*/
-// DH角度 = (物理角度 - OFFSET) * DEG2RAD
-// K3_end符号修正后：零力矩跳变点在P2≈50°，需移至90°，P2偏移+40°
-#define CONTROLLER_GRAV_COMP_PITCH1_OFFSET    90.0f    // P1: 最小值在90°
-#define CONTROLLER_GRAV_COMP_PITCH2_OFFSET   -32.0f    // P2: -90-32
-#define CONTROLLER_GRAV_COMP_ROLL_OFFSET      0.0f     // Roll: DH零点偏移
-#define CONTROLLER_GRAV_COMP_PITCHEND_OFFSET  0.0f     // PitchEnd
-/*----------------------------------重力补偿力矩限幅(N·m)------------------------------------*/
-#define CONTROLLER_GRAV_COMP_TAU_LIMIT_DM4310  2.5f    // Pitch1/2 (DM4310) 额定3N·m，留余量
-#define CONTROLLER_GRAV_COMP_TAU_LIMIT_DM3510  0.5f    // Roll/PitchEnd (DM3510) 峰值力矩测试
-/*----------------------------------电机减速比------------------------------------------------*/
-#define CONTROLLER_GEAR_RATIO_DM4310  10.0f   // Pitch1/2 (DM4310) 减速比 10:1
-/*----------------------------------各轴效率/补偿缩放(欠补偿时增大，过补偿时减小)---------------*/
-#define CONTROLLER_PITCH1_EFFICIENCY_COMP   1.0f    // Pitch1 (DM4310) 减速器效率补偿
-#define CONTROLLER_PITCH2_EFFICIENCY_COMP   1.0f    // Pitch2 (DM4310) 减速器效率补偿
-#define CONTROLLER_PITCHEND_EFFICIENCY_COMP 1.0f    // PitchEnd (DM3510) 系数已校准，无需额外缩放
+/*----------------------------------重力补偿---------------------------------------------*/
+#define CONTROLLER_GEAR_RATIO_DM4310  10.0f //4310的减速比
 /*------------------------------------------------------------------------------------------*/
 #define CONTROLLER_PITCH1_MOTOR_RATIO (CONTROLLER_PITCH1_MOTOR_RANGE / CONTROLLER_PITCH1_PHYSICAL_RANGE)
 #define CONTROLLER_YAW_MOTOR_RATIO (CONTROLLER_YAW_MOTOR_RANGE / (CONTROLLER_YAW_PHYSICAL_RANGE_MAX - CONTROLLER_YAW_PHYSICAL_RANGE_MIN))
@@ -76,9 +61,9 @@
 // 当物理位置从0增大时，电机位置的变化方向
 #define CONTROLLER_YAW_MOTOR_DIR -1
 #define CONTROLLER_PITCH1_MOTOR_DIR -1
-#define CONTROLLER_PITCH2_MOTOR_DIR 1
+#define CONTROLLER_PITCH2_MOTOR_DIR -1
 #define CONTROLLER_ROLL_MOTOR_DIR -1
-#define CONTROLLER_PITCH_END_MOTOR_DIR -1     // PitchEnd: MotortruePositToOffsetPosit含取反，与P2同理
+#define CONTROLLER_PITCH_END_MOTOR_DIR -1
 
 // 摇杆校准参数
 #define CONTROLLER_ROCKER_DEAD_ZONE 2000   // 摇杆死区
@@ -86,9 +71,6 @@
 #define CONTROLLER_ROCKER_KEY_LONG_PRESS_DURATION 2000
 #define CONTROLLER_ROLL_SPEED_MAX 200.0f // 大Roll轴电机最大有效速度
 
-
-// 前伸横移辅助移动
-#define CONTROLLER_ASSIST_ENABLE 1 // 是否启用辅助移动
 
 namespace my_engineer {
 
@@ -134,6 +116,8 @@ public:
 		/*--------------------------Set Pid----------------------------------------------*/
 		CAlgoPid::SAlgoInitParam_Pid yawPosPidParam;
 		CAlgoPid::SAlgoInitParam_Pid yawSpdPidParam;
+		/*--------------------------重力补偿参数------------------------------------------*/
+		SGravParam gravParam;  ///< 重力补偿参数 (零点偏移/电机转换/限幅/K系数)
 	};
 
 	enum KEY_STATUS  {RELEASE = 0, PRESS = 1, LONG_PRESS = 2,};
@@ -199,24 +183,8 @@ public:
 	int16_t get_rocker_y() {return comRocker_.rockerInfo.Y;};
 
 	// 重力补偿控制接口
-	void SetGravityCompEnabled(bool enabled) { gravityCompEnabled_ = enabled; }
-	bool IsGravityCompEnabled() const { return gravityCompEnabled_; }
-	void SetGravityCompScale(float scale) { gravityComp_.SetScale(scale); }
-	float GetGravityCompScale() const { return gravityComp_.GetScale(); }
-
-	// 力反馈控制接口
-	struct SForceFeedbackGain {
-		float yaw    = 0.01f;   ///< Yaw轴力反馈增益 (KT i8v3)
-		float pitch1 = 0.02f;   ///< Pitch1轴力反馈增益 (KT i36v3, 减速比36)
-		float pitch2 = 0.02f;   ///< Pitch2轴力反馈增益 (KT i36v3, 减速比36)
-		float roll   = -0.00017f;   ///< Roll轴力反馈增益 (DM4310)
-	};
-	void SetForceFeedbackEnabled(bool enabled) { forceFeedbackEnabled_ = enabled; }
-	bool IsForceFeedbackEnabled() const { return forceFeedbackEnabled_; }
-	void SetForceFeedbackGain(float yaw, float p1, float p2, float roll) {
-		fbGain_.yaw = yaw; fbGain_.pitch1 = p1; fbGain_.pitch2 = p2; fbGain_.roll = roll;
-	}
-	const SForceFeedbackGain& GetForceFeedbackGain() const { return fbGain_; }
+	void SetGravityCompMode(CAlgoGravityComp::CGravityCompMode mode) { gravityComp_.SetMode(mode); }
+	CAlgoGravityComp::CGravityCompMode GetGravityCompMode() const { return gravityComp_.GetMode(); }
 
 private:
 
@@ -289,6 +257,8 @@ private:
 		// 电机实例指针
 		CDevMtrDM *motor[1] = {nullptr};
 
+		float_t grav_ff = 0.0f;  ///< 重力补偿前馈指令 
+
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
 
@@ -323,6 +293,8 @@ private:
 
 		// 电机实例指针
 		CDevMtrDM *motor[1] = {nullptr};
+
+		float_t grav_ff = 0.0f;  ///< 重力补偿前馈指令 (由 UpdateGravityComp_ 分发)
 
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
@@ -362,6 +334,8 @@ private:
 		// 电机实例指针（MIT模式使用DM电机）
 		CDevMtrDM *motor[1] = {nullptr};
 
+		float_t grav_ff = 0.0f;  ///< 前馈力矩指令 (虚拟阻尼/力反馈, Roll无重力补偿)
+
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
 
@@ -398,6 +372,8 @@ private:
 
 		// 电机实例指针（MIT模式使用DM电机）
 		CDevMtrDM *motor[1] = {nullptr};
+
+		float_t grav_ff = 0.0f;  ///< 重力补偿前馈指令 (由 UpdateGravityComp_ 分发)
 
 		// 初始化组件
 		EAppStatus InitComponent(SModInitParam_Base &param) final;
@@ -495,15 +471,11 @@ private:
 	// 控制量限制函数
 	EAppStatus RestrictControllerCommand_();
 
-	// 重力补偿相关
+	// 重力补偿相关 (模式统一由 gravityComp_.SetMode/GetMode 管理)
 	CAlgoGravityComp gravityComp_;             ///< 重力补偿算法实例
-	bool gravityCompEnabled_ = true;           ///< 重力补偿使能标志
-	void UpdateGravityComp_();                  ///< 计算并应用重力补偿
-
-	// 力反馈相关
-	bool forceFeedbackEnabled_ = true;        ///< 力反馈使能标志
-	SForceFeedbackGain fbGain_;
-	void UpdateForceFeedback_();                ///< 将机器人力矩叠加到控制器 TF
+	SGravState gravState_;                     ///< 重力补偿输入状态
+	SGravOutput gravOut_;                      ///< 重力补偿输出结果
+	void UpdateGravityComp_();                 ///< 计算重力补偿并分发 grav_ff 到各组件
 
 };
 

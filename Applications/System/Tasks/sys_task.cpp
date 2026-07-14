@@ -85,7 +85,6 @@ void StartUpdateTask(void *argument) {
         // 更新系统核心
         SystemCore.UpdateHandler_();
 
-        // SystemIDMap.at(ESystemID::SYS_BOARDLINK)->UpdateHandler_();
 
         // 更新所有模块
         for (const auto &item : ModuleIDMap) {
@@ -93,7 +92,6 @@ void StartUpdateTask(void *argument) {
         }
 
         // 执行can发送
-        //TxNode_Can1_200.Transmit();
         TxNode_Can1_1FF.Transmit();
         proc_waitMs(1); // 1000Hz
 

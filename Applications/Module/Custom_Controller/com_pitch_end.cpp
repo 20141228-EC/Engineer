@@ -13,6 +13,13 @@
 
 #include "mod_controller.hpp"
 
+extern "C" {
+extern volatile int dbg_position_hold_mode;
+extern volatile float dbg_hold_kp;
+extern volatile float dbg_hold_kd;
+extern volatile float dbg_target_pitchEnd;
+}
+
 namespace my_engineer {
 
 /******************************************************************************
@@ -59,28 +66,14 @@ EAppStatus CModController::CComPitchEnd::UpdateComponent() {
         motor[0]->SetZero();  ///<测试用，将当前角度设为零点
     }
 
-    // 一阶低通滤波
-    // filteredPosit 独立于 setParam[POSIT]，避免目标值被覆盖
-    static float_t filteredPosit = 0.0f;
-    constexpr float_t LPF_ALPHA = 0.05f;   // 滤波系数
-    constexpr float_t LPF_MIN   = 0.03f;    // 最小分辨率
-
-    filteredPosit += (pitchEndCmd.setParam[EMotorParam::POSIT] - filteredPosit) * LPF_ALPHA;
-    if (fabs(pitchEndCmd.setParam[EMotorParam::POSIT] - filteredPosit) < LPF_MIN) {
-        filteredPosit = pitchEndCmd.setParam[EMotorParam::POSIT];
-    }
-
     switch (Component_FSMFlag_) {
         case FSM_RESET: {
             std::fill(std::begin(pitchEndCmd.setParam), std::end(pitchEndCmd.setParam), 0.0f);
-            filteredPosit = 0.0f;
             componentStatus = APP_OK;
             return APP_OK;
         }
 
         case FSM_PREINIT: {
-            // 初始化滤波器到当前实际位置，避免初始化时跳变
-            filteredPosit = pitchEndInfo.posit;
             pitchEndCmd.setParam[EMotorParam::POSIT] = pitchEndInfo.posit;
             Component_FSMFlag_ = FSM_INIT;
             return APP_OK;
@@ -95,11 +88,10 @@ EAppStatus CModController::CComPitchEnd::UpdateComponent() {
                 Component_FSMFlag_ = FSM_CTRL;
                 componentStatus = APP_OK;
             }
-            // 使用滤波后的位置发送
             motor[0]->Control_MIT(
                 pitchEndCmd.setParam[static_cast<int>(EMotorParam::KP)],
                 pitchEndCmd.setParam[static_cast<int>(EMotorParam::KD)],
-                OffsetPositToMotortruePosit(filteredPosit),
+                OffsetPositToMotortruePosit(pitchEndCmd.setParam[static_cast<int>(EMotorParam::POSIT)]),
                 pitchEndCmd.setParam[static_cast<int>(EMotorParam::SPEED)],
                 pitchEndCmd.setParam[static_cast<int>(EMotorParam::TF)]);
             return APP_OK;
@@ -107,23 +99,27 @@ EAppStatus CModController::CComPitchEnd::UpdateComponent() {
 
         case FSM_CTRL: {
             if (pitchEndCmd.isFree) {
-                // 示教模式：无位置刚度 + 低阻尼 + 重力补偿前馈，直接发送不经过低通滤波
-                //float_t savedTF = 0;
-                pitchEndCmd.setParam[EMotorParam::KP] = 0.0f;    // 示教模式无位置刚度
-                pitchEndCmd.setParam[EMotorParam::KD] = 0.0f;  // 示教模式低阻尼
-                //pitchEndCmd.setParam[EMotorParam::TF] = savedTF; // 重力补偿前馈
-                filteredPosit = pitchEndInfo.posit;  // 同步滤波器
-                pitchEndCmd.setParam[EMotorParam::POSIT] = 0;  // 同步目标
+                // 示教模式：TF(重力补偿+力反馈)由模块层写入grav_ff
+                pitchEndCmd.setParam[EMotorParam::KP] = 0.0f;    // 无位置刚度
+                pitchEndCmd.setParam[EMotorParam::KD] = 0.0f;    // 无速度刚度
+                if (dbg_position_hold_mode) {
+                    // 辨识模式: MIT位置环锁定目标角, 供采保持力矩
+                    pitchEndCmd.setParam[EMotorParam::KP] = motor[0]->Kp;
+                    pitchEndCmd.setParam[EMotorParam::KD] = motor[0]->Kd;
+                    pitchEndCmd.setParam[EMotorParam::POSIT] = dbg_target_pitchEnd;
+                } else {
+                    pitchEndCmd.setParam[EMotorParam::POSIT] = 0;  // 同步目标
+                }
                 return _UpdateOutput(pitchEndCmd.setParam);
             }
 
-            // 位控模式：使用滤波后的位置
+            // 位控模式
             pitchEndCmd.setParam[EMotorParam::KP] = motor[0]->Kp;
             pitchEndCmd.setParam[EMotorParam::KD] = motor[0]->Kd;
             motor[0]->Control_MIT(
                 pitchEndCmd.setParam[static_cast<int>(EMotorParam::KP)],
                 pitchEndCmd.setParam[static_cast<int>(EMotorParam::KD)],
-                OffsetPositToMotortruePosit(filteredPosit),
+                OffsetPositToMotortruePosit(pitchEndCmd.setParam[static_cast<int>(EMotorParam::POSIT)]),
                 pitchEndCmd.setParam[static_cast<int>(EMotorParam::SPEED)],
                 pitchEndCmd.setParam[static_cast<int>(EMotorParam::TF)]);
             return APP_OK;
@@ -146,7 +142,7 @@ EAppStatus CModController::CComPitchEnd::UpdateComponent() {
  ******************************************************************************/
 float_t CModController::CComPitchEnd::OffsetPositToMotortruePosit(float_t offsetPosit) {
     const float_t scale = 180.0f / PI;
-    return (static_cast<float_t>(offsetPosit) / scale);
+    return CONTROLLER_PITCH_END_MOTOR_DIR * (static_cast<float_t>(offsetPosit) / scale);
 }
 
 /******************************************************************************
@@ -157,8 +153,7 @@ float_t CModController::CComPitchEnd::OffsetPositToMotortruePosit(float_t offset
  ******************************************************************************/
 float_t CModController::CComPitchEnd::MotortruePositToOffsetPosit(float_t motortruePosit) {
     const float_t scale = 180.0f / PI;
-    // 取反以匹配物理方向（向上为正，向下为负）
-    return (static_cast<float_t>(-motortruePosit * scale));
+    return CONTROLLER_PITCH_END_MOTOR_DIR * (static_cast<float_t>(motortruePosit * scale));
 }
 
 /******************************************************************************
@@ -166,7 +161,8 @@ float_t CModController::CComPitchEnd::MotortruePositToOffsetPosit(float_t motort
  ******************************************************************************/
 EAppStatus CModController::CComPitchEnd::_UpdateOutput(float_t* setParam){
     float_t posit = OffsetPositToMotortruePosit(setParam[static_cast<int>(EMotorParam::POSIT)]);
-    float_t torq = setParam[static_cast<int>(EMotorParam::TF)];
+    // TF 由模块层 UpdateGravityComp_ 写入 grav_ff 成员
+    float_t torq = this->grav_ff;
 
     /* 使用电机内部 TxNode 发送 */
     motor[0]->Control_MIT(

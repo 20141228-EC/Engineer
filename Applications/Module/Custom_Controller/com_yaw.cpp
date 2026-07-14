@@ -54,7 +54,7 @@ EAppStatus CModController::CComYaw::UpdateComponent() {
 	if (componentStatus == APP_RESET) return APP_ERROR;
 
 	// 更新组件信息
-	yawInfo.posit = motor[0]->motorData[CDevMtr::DATA_POSIT];
+	yawInfo.posit = motor[0]->motorData[CDevMtr::DATA_POSIT] * CONTROLLER_YAW_MOTOR_DIR;
 	yawInfo.isPositArrived = (abs(yawCmd.setPosit - yawInfo.posit) < 8192 * 0.05);
 
 	switch (Component_FSMFlag_) {    ///<这个轴不需要重补

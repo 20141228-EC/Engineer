@@ -112,12 +112,13 @@ EAppStatus InitAllDevice(){
     static CDevMtrDM mtr_Pitch1;
     CDevMtrDM::SMtrInitParam_DM mtr_Pitch1_initparam;
     mtr_Pitch1_initparam.deviceID = EDeviceID::DEV_MTR_PITCH1;
-    mtr_Pitch1_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    mtr_Pitch1_initparam.interfaceID = EInterfaceID::INF_CAN2;
     mtr_Pitch1_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
     mtr_Pitch1_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
     mtr_Pitch1_initparam.useAngleToPosit = false;
     mtr_Pitch1_initparam.Kp = 15.0f;
     mtr_Pitch1_initparam.Kd = 2.0f;
+    mtr_Pitch1_initparam.Q_MAX = 3.1416f;
     mtr_Pitch1_initparam.MIT_TxCANID = 0x31;  // 发送到电机的CAN_ID
     mtr_Pitch1_initparam.MIT_RxCANID = 0x30;  // 接收电机反馈的Master_ID
     mtr_Pitch1.InitDevice(&mtr_Pitch1_initparam);
@@ -126,12 +127,13 @@ EAppStatus InitAllDevice(){
     static CDevMtrDM mtr_Pitch2;
     CDevMtrDM::SMtrInitParam_DM mtr_Pitch2_initparam;
     mtr_Pitch2_initparam.deviceID = EDeviceID::DEV_MTR_PITCH2;
-    mtr_Pitch2_initparam.interfaceID = EInterfaceID::INF_CAN3;
+    mtr_Pitch2_initparam.interfaceID = EInterfaceID::INF_CAN2;
     mtr_Pitch2_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
     mtr_Pitch2_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
     mtr_Pitch2_initparam.useAngleToPosit = false;
     mtr_Pitch2_initparam.Kp = 15.0f;
     mtr_Pitch2_initparam.Kd = 2.0f;
+    mtr_Pitch2_initparam.Q_MAX = 3.1416f;
     mtr_Pitch2_initparam.MIT_TxCANID = 0x33;  // 发送到电机的CAN_ID
     mtr_Pitch2_initparam.MIT_RxCANID = 0x32;  // 接收电机反馈的Master_ID
     mtr_Pitch2.InitDevice(&mtr_Pitch2_initparam);
@@ -140,7 +142,7 @@ EAppStatus InitAllDevice(){
     static CDevMtrDM mtr_Roll;
     CDevMtrDM::SMtrInitParam_DM mtr_Roll_initparam;
     mtr_Roll_initparam.deviceID = EDeviceID::DEV_MTR_ROLL;
-    mtr_Roll_initparam.interfaceID = EInterfaceID::INF_CAN2; 
+    mtr_Roll_initparam.interfaceID = EInterfaceID::INF_CAN3; 
     mtr_Roll_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
     mtr_Roll_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
     mtr_Roll_initparam.useAngleToPosit = false;
@@ -156,7 +158,7 @@ EAppStatus InitAllDevice(){
     static CDevMtrDM mtr_PitchEnd;
     CDevMtrDM::SMtrInitParam_DM mtr_PitchEnd_initparam;
     mtr_PitchEnd_initparam.deviceID = EDeviceID::DEV_MTR_PITCH_END;
-    mtr_PitchEnd_initparam.interfaceID = EInterfaceID::INF_CAN2; 
+    mtr_PitchEnd_initparam.interfaceID = EInterfaceID::INF_CAN3; 
     mtr_PitchEnd_initparam.dmMtrID = CDevMtrDM::EDmMtrID::ID_MIT;
     mtr_PitchEnd_initparam.dmMtrMode = CDevMtrDM::EMotorControlMode::MODE_MIT;
     mtr_PitchEnd_initparam.useAngleToPosit = false;

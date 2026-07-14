@@ -13,6 +13,13 @@
 
 #include "mod_controller.hpp"
 
+extern "C" {
+extern volatile int dbg_position_hold_mode;
+extern volatile float dbg_hold_kp;
+extern volatile float dbg_hold_kd;
+extern volatile float dbg_target_roll;
+}
+
 namespace my_engineer {
 
 /******************************************************************************
@@ -59,27 +66,13 @@ EAppStatus CModController::CComRoll::UpdateComponent() {
         motor[0]->SetZero();  ///<测试用，将当前角度设为零点
     }
 
-    // 一阶低通滤波
-    // filteredPosit 独立于 setParam[POSIT]，避免目标值被覆盖
-    static float_t filteredPosit = 0.0f;
-    constexpr float_t LPF_ALPHA = 0.005f;   // 滤波系数
-    constexpr float_t LPF_MIN   = 0.03f;    // 最小分辨率
-
-    filteredPosit += (rollCmd.setParam[EMotorParam::POSIT] - filteredPosit) * LPF_ALPHA;
-    if (fabs(rollCmd.setParam[EMotorParam::POSIT] - filteredPosit) < LPF_MIN) {
-        filteredPosit = rollCmd.setParam[EMotorParam::POSIT];
-    }
-
     switch (Component_FSMFlag_) {
         case FSM_RESET: {
             std::fill(std::begin(rollCmd.setParam), std::end(rollCmd.setParam), 0.0f);
-            filteredPosit = 0.0f;
             return APP_OK;
         }
 
         case FSM_PREINIT: {
-            // 初始化滤波器到当前实际位置，避免初始化时跳变
-            filteredPosit = rollInfo.posit;
             rollCmd.setParam[EMotorParam::POSIT] = rollInfo.posit;
             Component_FSMFlag_ = FSM_INIT;
             return APP_OK;
@@ -87,18 +80,17 @@ EAppStatus CModController::CComRoll::UpdateComponent() {
 
         case FSM_INIT: {
             // 初始化阶段：移动到初始位置
-            rollCmd.setParam[EMotorParam::POSIT] = 0.0f;  // 设置目标（不会被滤波覆盖）
+            rollCmd.setParam[EMotorParam::POSIT] = 0.0f;  // 设置目标
             rollCmd.setParam[EMotorParam::KP] = motor[0]->Kp;
             rollCmd.setParam[EMotorParam::KD] = motor[0]->Kd;
             if (rollInfo.isPositArrived) {
                 Component_FSMFlag_ = FSM_CTRL;
                 componentStatus = APP_OK;
             }
-            // 使用滤波后的位置发送（参考主控板 next_angle）
             motor[0]->Control_MIT(
                 rollCmd.setParam[static_cast<int>(EMotorParam::KP)],
                 rollCmd.setParam[static_cast<int>(EMotorParam::KD)],
-                OffsetPositToMotortruePosit(filteredPosit),
+                OffsetPositToMotortruePosit(rollCmd.setParam[static_cast<int>(EMotorParam::POSIT)]),
                 rollCmd.setParam[static_cast<int>(EMotorParam::SPEED)],
                 rollCmd.setParam[static_cast<int>(EMotorParam::TF)]);
             return APP_OK;
@@ -106,23 +98,29 @@ EAppStatus CModController::CComRoll::UpdateComponent() {
 
         case FSM_CTRL: {
             if (rollCmd.isFree) {
-                // 示教模式：无位置刚度，TF由UpdateGravityComp_设置（虚拟阻尼）
+                // 示教模式
                 rollCmd.setParam[EMotorParam::KP] = 0.0f;     // 无位置刚度
-                rollCmd.setParam[EMotorParam::KD] = 0.0f;     // 无速度刚度（阻尼由软件TF实现）
-                filteredPosit = rollInfo.posit;  // 同步滤波器，确保切换回位控时不跳变
-                rollCmd.setParam[EMotorParam::POSIT] = rollInfo.posit;  // 同步目标
+                rollCmd.setParam[EMotorParam::KD] = 0.0f;     // 无速度刚度
+                if (dbg_position_hold_mode) {
+                    // 辨识模式: MIT位置环锁定目标角, 供采保持力矩
+                    rollCmd.setParam[EMotorParam::KP] = motor[0]->Kp;
+                    rollCmd.setParam[EMotorParam::KD] = motor[0]->Kd;
+                    rollCmd.setParam[EMotorParam::POSIT] = dbg_target_roll;
+                } else {
+                    rollCmd.setParam[EMotorParam::POSIT] = rollInfo.posit;  // 同步目标
+                }
                 return _UpdateOutput(rollCmd.setParam);
             }
 
-            // 位控模式：使用滤波后的位置
+            // 位控模式, grav_ff 在位控模式下为0
             rollCmd.setParam[EMotorParam::KP] = motor[0]->Kp;
             rollCmd.setParam[EMotorParam::KD] = motor[0]->Kd;
             motor[0]->Control_MIT(
                 rollCmd.setParam[static_cast<int>(EMotorParam::KP)],
                 rollCmd.setParam[static_cast<int>(EMotorParam::KD)],
-                OffsetPositToMotortruePosit(filteredPosit),
+                OffsetPositToMotortruePosit(rollCmd.setParam[static_cast<int>(EMotorParam::POSIT)]),
                 rollCmd.setParam[static_cast<int>(EMotorParam::SPEED)],
-                rollCmd.setParam[static_cast<int>(EMotorParam::TF)]);
+                0);
             return APP_OK;
         }
 
@@ -143,8 +141,7 @@ EAppStatus CModController::CComRoll::UpdateComponent() {
  ******************************************************************************/
 float_t CModController::CComRoll::OffsetPositToMotortruePosit(float_t offsetPosit) {
     const float_t scale = 180.0f / PI;
-    // 注意：这里不使用重力补偿偏置，只做单位转换（度->弧度）
-    return (static_cast<float_t>(offsetPosit) / scale);
+    return CONTROLLER_ROLL_MOTOR_DIR * (static_cast<float_t>(offsetPosit) / scale);
 }
 
 /******************************************************************************
@@ -155,8 +152,7 @@ float_t CModController::CComRoll::OffsetPositToMotortruePosit(float_t offsetPosi
  ******************************************************************************/
 float_t CModController::CComRoll::MotortruePositToOffsetPosit(float_t motortruePosit) {
     const float_t scale = 180.0f / PI;
-    // 注意：这里不使用重力补偿偏置，只做单位转换（弧度->度）
-    return (static_cast<float_t>(motortruePosit * scale));
+    return CONTROLLER_ROLL_MOTOR_DIR * (static_cast<float_t>(motortruePosit * scale));
 }
 
 /******************************************************************************
@@ -164,7 +160,8 @@ float_t CModController::CComRoll::MotortruePositToOffsetPosit(float_t motortrueP
  ******************************************************************************/
 EAppStatus CModController::CComRoll::_UpdateOutput(float_t* setParam){
     float_t posit = OffsetPositToMotortruePosit(setParam[static_cast<int>(EMotorParam::POSIT)]);
-    float_t torq = setParam[static_cast<int>(EMotorParam::TF)];
+    // TF 由模块层 UpdateGravityComp_ 写入 grav_ff 成员
+    float_t torq = this->grav_ff;
 
     /* 使用电机内部 TxNode 发送 */
     motor[0]->Control_MIT(

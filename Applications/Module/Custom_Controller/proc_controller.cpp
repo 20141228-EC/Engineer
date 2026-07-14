@@ -74,7 +74,7 @@ void CModController::StartControllerModuleTask(void *argument) {
 				controller.comRoll_.rollCmd.isFree = true; ///< 允许自由控制
 				controller.comPitchEnd_.pitchEndCmd.isFree = true; ///< 允许自由控制
 
-				// controller.comBuzzer_.buzzerCmd.musicType = CDevBuzzer::MusicType::STARTUP;  // 暂时关闭启动音乐
+				controller.comBuzzer_.buzzerCmd.musicType = CDevBuzzer::MusicType::STARTUP;  // 暂时关闭启动音乐
 
 				controller.ControllerCmd = SControllerCmd();
 				controller.ControllerCmd.isFree = true;

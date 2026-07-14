@@ -97,7 +97,7 @@ EAppStatus CModController::CComPitch1::UpdateComponent() {
 					pitch1Cmd.setParam[EMotorParam::POSIT] = dbg_target_pitch1;
 				} else {
 					pitch1Cmd.setParam[EMotorParam::KP] = 0.0f;
-					pitch1Cmd.setParam[EMotorParam::KD] = 0.03f;
+					pitch1Cmd.setParam[EMotorParam::KD] = 0.075f;
 				}
 				pitch1Cmd.setParam[EMotorParam::TF] = savedTF;
 				return _UpdateOutput(pitch1Cmd.setParam);
@@ -144,7 +144,8 @@ float_t CModController::CComPitch1::MotortruePositToOffsetPosit_test(float_t mot
  ******************************************************************************/
 EAppStatus CModController::CComPitch1::_UpdateOutput(float_t* Setparam){
   float_t posit = OffsetPositToMotortruePosit_test(Setparam[static_cast<int>(EMotorParam::POSIT)]);
-  float_t torq = Setparam[static_cast<int>(EMotorParam::TF)];
+  // TF 由模块层 UpdateGravityComp_ 写入 grav_ff 成员
+  float_t torq = this->grav_ff;
 
   /* 使用电机内部 TxNode 发送 (CAN重分配后Pitch1独占CAN3，无需降频) */
   motor[0]->Control_MIT(

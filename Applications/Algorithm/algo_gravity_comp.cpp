@@ -1,301 +1,197 @@
 /**
  * @file algo_gravity_comp.cpp
- * @brief 示教器重力补偿与虚拟阻尼算法实现 (6轴版)
+ * @brief 示教器重力补偿算法实现
  * @author Ciallo
- * @date 2026-01-20
- * @note 2026-04-18: 6轴重构 — P3/PitchEnd独立建模, Roll仅阻尼
- *
- * DH: q2=Pitch1, q3=Pitch2, q4=P3, q5=Roll, q6=PitchEnd
- * 累积角: q23=q2+q3, q234=q2+q3+q4
+ * @date 2026-06-25
  */
 
 #include "algo_gravity_comp.hpp"
 
-extern "C" {
-volatile float dbg_gc_q2 = 0.0f;
-volatile float dbg_gc_q3 = 0.0f;
-volatile float dbg_gc_q4 = 0.0f;
-volatile float dbg_gc_q5 = 0.0f;
-volatile float dbg_gc_q6 = 0.0f;
-
-volatile float dbg_gc_s2 = 0.0f;
-volatile float dbg_gc_c2 = 0.0f;
-volatile float dbg_gc_s23 = 0.0f;
-volatile float dbg_gc_c23 = 0.0f;
-volatile float dbg_gc_s234 = 0.0f;
-volatile float dbg_gc_c234 = 0.0f;
-volatile float dbg_gc_s5 = 0.0f;
-volatile float dbg_gc_c5 = 0.0f;
-volatile float dbg_gc_s6 = 0.0f;
-volatile float dbg_gc_c6 = 0.0f;
-
-volatile float dbg_gc_tau_pitch1_raw = 0.0f;
-volatile float dbg_gc_tau_pitch2_raw = 0.0f;
-volatile float dbg_gc_tau_pitch3_raw = 0.0f;
-volatile float dbg_gc_tau_pitchEnd_raw = 0.0f;
-volatile float dbg_gc_tau_pitch1_scaled = 0.0f;
-volatile float dbg_gc_tau_pitch2_scaled = 0.0f;
-volatile float dbg_gc_tau_pitch3_scaled = 0.0f;
-volatile float dbg_gc_tau_pitchEnd_scaled = 0.0f;
-}
-
 namespace my_engineer {
 
-CAlgoGravityComp::SGravTorques CAlgoGravityComp::Calculate(
-    float enc_pitch1, float enc_pitch2,
-    float enc_pitch3, float enc_roll, float enc_pitchEnd)
-{
-    const float q2 = enc_pitch1   + DH_OFFSET_PITCH1;
-    const float q3 = enc_pitch2   + DH_OFFSET_PITCH2;
-    const float q4 = enc_pitch3   + DH_OFFSET_PITCH3;
-    const float q5 = enc_roll     + DH_OFFSET_ROLL;
-    const float q6 = enc_pitchEnd + DH_OFFSET_PITCHEND;
+///< 度转弧度
+static inline float deg2rad(float deg) { return deg * 0.017453292519943295769f; }
 
-    return CalculateDH(q2, q3, q4, q5, q6);
-}
+/**
+ * @brief 关节力矩 -> 电机指令
+ * DM_MIT: 力矩经减速比换算到电机侧
+ * DJI_CURRENT: 力矩 -> 电流 -> raw
+ */
+float SMotorConversion::JointTorqueToCommand(float tau_Nm) const {
+    const float directedTau = tau_Nm * direction;
 
-CAlgoGravityComp::SGravTorques CAlgoGravityComp::CalculateDH(
-    float q2, float q3, float q4, float q5, float q6)
-{
-    SGravTorques torques;
-
-    if (!enabled_) {
-        return torques;
+    switch (type) {
+        case EMotorType::DM_MIT: {
+            if (reduction == 0.0f) return 0.0f;
+            return directedTau / reduction;  ///< 关节力矩除以减速比 = 电机侧力矩
+        }
+        case EMotorType::DJI_CURRENT: {
+            const float rawPerAmp =
+                (amp_to_raw > 0.0f) ? amp_to_raw : GRAV_KT_MOTOR_RAW_PER_AMP;
+            const float denom = kt * reduction;
+            if (denom == 0.0f) return 0.0f;
+            return directedTau / denom * rawPerAmp;
+        }
+        case EMotorType::CUSTOM:
+        default:
+            return 0.0f;
     }
-
-    // Precompute trig values (10 calls)
-    const float s2 = sinf(q2);
-    const float c2 = cosf(q2);
-
-    const float q23 = q2 + q3;
-    const float s23 = sinf(q23);
-    const float c23 = cosf(q23);
-
-    const float q234 = q23 + q4;
-    const float s234 = sinf(q234);
-    const float c234 = cosf(q234);
-
-    const float s5 = sinf(q5);
-    const float c5 = cosf(q5);
-    const float s6 = sinf(q6);
-    const float c6 = cosf(q6);
-
-    // Debug: store inputs
-    lastDebug_.q2 = q2; lastDebug_.q3 = q3; lastDebug_.q4 = q4;
-    lastDebug_.q5 = q5; lastDebug_.q6 = q6;
-    lastDebug_.s2 = s2; lastDebug_.c2 = c2;
-    lastDebug_.s23 = s23; lastDebug_.c23 = c23;
-    lastDebug_.s234 = s234; lastDebug_.c234 = c234;
-    lastDebug_.s5 = s5; lastDebug_.c5 = c5;
-    lastDebug_.s6 = s6; lastDebug_.c6 = c6;
-
-    dbg_gc_q2 = q2; dbg_gc_q3 = q3; dbg_gc_q4 = q4;
-    dbg_gc_q5 = q5; dbg_gc_q6 = q6;
-    dbg_gc_s2 = s2; dbg_gc_c2 = c2;
-    dbg_gc_s23 = s23; dbg_gc_c23 = c23;
-    dbg_gc_s234 = s234; dbg_gc_c234 = c234;
-    dbg_gc_s5 = s5; dbg_gc_c5 = c5;
-    dbg_gc_s6 = s6; dbg_gc_c6 = c6;
-
-    // Common cross products
-    const float s5c234   = s5 * c234;
-    const float c6s234   = c6 * s234;
-    const float s6s234   = s6 * s234;
-    const float c5c6     = c5 * c6;
-    const float c5s6     = c5 * s6;
-    const float c5c6c234 = c5c6 * c234;
-    const float c5s6c234 = c5s6 * c234;
-
-    // tau1 (Yaw) = 0
-    torques.tau_yaw = 0.0f;
-
-    // ================================================================
-    // tau2 (Pitch1) — 11 terms
-    // ================================================================
-    lastDebug_.p1_base =
-        coeffs_.K2_c2 * c2 +
-        coeffs_.K2_s2 * s2;
-    lastDebug_.p1_link =
-        coeffs_.K2_c23 * c23 +
-        coeffs_.K2_s23 * s23;
-    lastDebug_.p1_wrist =
-        coeffs_.K2_c234 * c234 +
-        coeffs_.K2_s234 * s234;
-    lastDebug_.p1_roll =
-        coeffs_.K2_s5c234 * s5c234;
-    lastDebug_.p1_end =
-        coeffs_.K2_c6s234 * c6s234 +
-        coeffs_.K2_s6s234 * s6s234;
-    lastDebug_.p1_cross =
-        coeffs_.K2_c5c6c234 * c5c6c234 +
-        coeffs_.K2_c5s6c234 * c5s6c234;
-    lastDebug_.p1_total =
-        lastDebug_.p1_base + lastDebug_.p1_link + lastDebug_.p1_wrist +
-        lastDebug_.p1_roll + lastDebug_.p1_end + lastDebug_.p1_cross;
-    torques.tau_pitch1 = lastDebug_.p1_total;
-
-    // ================================================================
-    // tau3 (Pitch2) — 9 terms
-    // ================================================================
-    lastDebug_.p2_link =
-        coeffs_.K3_c23 * c23 +
-        coeffs_.K3_s23 * s23;
-    lastDebug_.p2_wrist =
-        coeffs_.K3_c234 * c234 +
-        coeffs_.K3_s234 * s234;
-    lastDebug_.p2_roll =
-        coeffs_.K3_s5c234 * s5c234;
-    lastDebug_.p2_end =
-        coeffs_.K3_c6s234 * c6s234 +
-        coeffs_.K3_s6s234 * s6s234;
-    lastDebug_.p2_cross =
-        coeffs_.K3_c5c6c234 * c5c6c234 +
-        coeffs_.K3_c5s6c234 * c5s6c234;
-    lastDebug_.p2_total =
-        lastDebug_.p2_link + lastDebug_.p2_wrist +
-        lastDebug_.p2_roll + lastDebug_.p2_end + lastDebug_.p2_cross;
-    torques.tau_pitch2 = lastDebug_.p2_total;
-
-    // ================================================================
-    // tau4 (P3) — 7 terms
-    // ================================================================
-    lastDebug_.p3_wrist =
-        coeffs_.K4_c234 * c234 +
-        coeffs_.K4_s234 * s234;
-    lastDebug_.p3_roll =
-        coeffs_.K4_s5c234 * s5c234;
-    lastDebug_.p3_end =
-        coeffs_.K4_c6s234 * c6s234 +
-        coeffs_.K4_s6s234 * s6s234;
-    lastDebug_.p3_cross =
-        coeffs_.K4_c5c6c234 * c5c6c234 +
-        coeffs_.K4_c5s6c234 * c5s6c234;
-    lastDebug_.p3_total =
-        lastDebug_.p3_wrist + lastDebug_.p3_roll +
-        lastDebug_.p3_end + lastDebug_.p3_cross;
-    torques.tau_pitch3 = lastDebug_.p3_total;
-
-    // ================================================================
-    // tau5 (Roll) — 无重力补偿
-    // ================================================================
-    torques.tau_roll = 0.0f;
-
-    // ================================================================
-    // tau6 (PitchEnd) — 5 terms
-    // ================================================================
-    const float c6c234   = c6 * c234;
-    const float s6c234   = s6 * c234;
-    const float c5c6s234 = c5c6 * s234;
-    const float c5s6s234 = c5s6 * s234;
-    const float s5s6s234 = s5 * s6 * s234;
-
-    lastDebug_.pEnd_direct =
-        coeffs_.K6_c6c234 * c6c234 +
-        coeffs_.K6_s6c234 * s6c234;
-    lastDebug_.pEnd_roll =
-        coeffs_.K6_c5c6s234 * c5c6s234 +
-        coeffs_.K6_c5s6s234 * c5s6s234;
-    lastDebug_.pEnd_cross =
-        coeffs_.K6_s5s6s234 * s5s6s234;
-    lastDebug_.pEnd_total =
-        lastDebug_.pEnd_direct + lastDebug_.pEnd_roll + lastDebug_.pEnd_cross;
-    torques.tau_pitchEnd = lastDebug_.pEnd_total;
-
-    dbg_gc_tau_pitch1_raw = torques.tau_pitch1;
-    dbg_gc_tau_pitch2_raw = torques.tau_pitch2;
-    dbg_gc_tau_pitch3_raw = torques.tau_pitch3;
-    dbg_gc_tau_pitchEnd_raw = torques.tau_pitchEnd;
-
-    // Apply global scale
-    torques.tau_pitch1   *= scale_;
-    torques.tau_pitch2   *= scale_;
-    torques.tau_pitch3   *= scale_;
-    torques.tau_pitchEnd *= scale_;
-
-    dbg_gc_tau_pitch1_scaled = torques.tau_pitch1;
-    dbg_gc_tau_pitch2_scaled = torques.tau_pitch2;
-    dbg_gc_tau_pitch3_scaled = torques.tau_pitch3;
-    dbg_gc_tau_pitchEnd_scaled = torques.tau_pitchEnd;
-
-    return torques;
 }
 
 /**
- * @brief 计算虚拟阻尼力矩（仅PitchEnd）
- * @param rawVelocity 原始速度反馈 (rad/s)，已由调用方转换
- * @return 阻尼力矩 (N·m)，方向与速度相反
- * @note 使用滑动平均滤波 + 方向一致性检查，避免延迟导致的抖动
+ * @brief 电机指令 -> 关节力矩 (反算, 辨识用)
  */
-float CAlgoGravityComp::CalculateDamping_PitchEnd(float rawVelocity) {
-    if (!dampingEnabled_) {
-        lastDebug_.damping_vel_raw = rawVelocity;
-        lastDebug_.damping_vel_filtered = 0.0f;
-        lastDebug_.damping_torque = 0.0f;
-        return 0.0f;
+float SMotorConversion::CommandToJointTorque(float command) const {
+    switch (type) {
+        case EMotorType::DM_MIT: {
+            return command * reduction * direction;
+        }
+        case EMotorType::DJI_CURRENT: {
+            const float rawPerAmp =
+                (amp_to_raw > 0.0f) ? amp_to_raw : GRAV_KT_MOTOR_RAW_PER_AMP;
+            if (rawPerAmp == 0.0f) return 0.0f;
+            return command / rawPerAmp * kt * reduction * direction;
+        }
+        case EMotorType::CUSTOM:
+        default:
+            return 0.0f;
     }
-
-    velocityBuffer_pitchEnd_[bufferIndex_pitchEnd_] = rawVelocity;
-    bufferIndex_pitchEnd_ = (bufferIndex_pitchEnd_ + 1) % VELOCITY_BUFFER_SIZE;
-
-    float sum = 0.0f;
-    for (int i = 0; i < VELOCITY_BUFFER_SIZE; ++i) {
-        sum += velocityBuffer_pitchEnd_[i];
-    }
-    const float avgVelocity = sum / static_cast<float>(VELOCITY_BUFFER_SIZE);
-
-    float effectiveVelocity = 0.0f;
-    const bool sameDirection = (rawVelocity * avgVelocity) >= 0.0f;
-
-    if (sameDirection && fabsf(avgVelocity) > dampingParams_.deadzone) {
-        effectiveVelocity = (fabsf(rawVelocity) < fabsf(avgVelocity)) ? rawVelocity : avgVelocity;
-    }
-
-    float dampingTorque = -dampingParams_.B_pitchEnd * effectiveVelocity;
-    dampingTorque = std::clamp(dampingTorque, -dampingParams_.maxTorque, dampingParams_.maxTorque);
-
-    lastVelocity_pitchEnd_ = rawVelocity;
-
-    lastDebug_.damping_vel_raw = rawVelocity;
-    lastDebug_.damping_vel_filtered = avgVelocity;
-    lastDebug_.damping_torque = dampingTorque;
-
-    return dampingTorque;
 }
 
-float CAlgoGravityComp::CalculateDamping_Roll(float rawVelocity) {
-    if (!dampingEnabled_) {
-        lastDebug_.damping_roll_vel_raw = rawVelocity;
-        lastDebug_.damping_roll_vel_filtered = 0.0f;
-        lastDebug_.damping_roll_torque = 0.0f;
-        return 0.0f;
+EAppStatus CAlgoGravityComp::InitComponent(const SGravParam& param) {
+    param_ = param;
+    ramp_ = 0.0f;
+    mode_ = CGravityCompMode::NONE;
+    return APP_OK;
+}
+
+void CAlgoGravityComp::Reset() {
+    mode_ = CGravityCompMode::NONE;
+    ramp_ = 0.0f;
+}
+
+bool CAlgoGravityComp::IsStateValid_(const SGravState& state) const {
+    return state.pitch1_deg >= param_.ws_pitch1_min && state.pitch1_deg <= param_.ws_pitch1_max
+        && state.pitch2_deg >= param_.ws_pitch2_min && state.pitch2_deg <= param_.ws_pitch2_max
+        && state.roll_deg >= param_.ws_roll_min && state.roll_deg <= param_.ws_roll_max;
+}
+
+/**
+ * @brief 计算重力补偿前馈
+ */
+SGravOutput CAlgoGravityComp::Calc(const SGravState& state) {
+    SGravOutput out;
+
+    // ramp 渐变: 非 NONE 模式且在工作空间内才上升, 否则下降
+    const bool stateValid = IsStateValid_(state);
+    if (mode_ != CGravityCompMode::NONE && stateValid) {
+        ramp_ = std::clamp(ramp_ + param_.ramp_alpha, 0.0f, 1.0f);
+    } else {
+        ramp_ = std::clamp(ramp_ - param_.ramp_alpha, 0.0f, 1.0f);
+    }
+    if (ramp_ <= 0.0f) return out;  ///< ramp 归零直接返回空输出
+
+    // 角度转 rad 并减零点偏移
+    const float q2 = deg2rad(state.pitch1_deg - param_.pitch1_zero_deg);
+    const float q3 = deg2rad(state.pitch2_deg);  ///< P2 用相对角, 不减零点
+    const float q5 = deg2rad(state.roll_deg - param_.roll_zero_deg);
+    const float q6 = deg2rad(state.pitch_end_deg - param_.pitch_end_zero_deg);
+
+    // 单关节 sin/cos
+    const float s2 = sinf(q2), c2 = cosf(q2);
+    const float s3 = sinf(q3), c3 = cosf(q3);
+    const float s5 = sinf(q5), c5 = cosf(q5);
+    const float s6 = sinf(q6), c6 = cosf(q6);
+
+    // 累积角 sin/cos 
+    const float s23 = s2 * c3 + c2 * s3, c23 = c2 * c3 - s2 * s3;
+    const float s56 = s5 * c6 + c5 * s6, c56 = c5 * c6 - s5 * s6;
+
+    // P2 相对 P1 姿态调制项: sin/cos(q3-q2)
+    const float sr = s3 * c2 - c3 * s2;  ///< sin(q3-q2)
+    const float cr = c3 * c2 + s3 * s2;  ///< cos(q3-q2)
+
+    // ---- q3 二阶项 ----
+    const float s2q3 = sinf(2.0f * q3);
+    const float c2q3 = cosf(2.0f * q3);
+
+    // ---- tau_p1: 1, s2, c2, s3, c3, s2s3, s2c3, c2s3, c2c3, sin(2q3), cos(2q3), s56, c56 ----
+    const auto& p1 = param_.pitch1_coeff;
+    const float tau_p1 =
+        p1[0]
+        + p1[1] * s2 + p1[2] * c2
+        + p1[3] * s3 + p1[4] * c3
+        + p1[5] * s2 * s3 + p1[6] * s2 * c3 + p1[7] * c2 * s3 + p1[8] * c2 * c3
+        + p1[9] * s2q3 + p1[10] * c2q3
+        + p1[11] * s56 + p1[12] * c56;
+
+    // ---- tau_p2: 1, s2, c2, s3, c3, s2s3, s2c3, c2s3, c2c3, sin(2q3), cos(2q3), s56, c56 ----
+    const auto& p2 = param_.pitch2_coeff;
+    const float tau_p2 =
+        p2[0]
+        + p2[1] * s2 + p2[2] * c2
+        + p2[3] * s3 + p2[4] * c3
+        + p2[5] * s2 * s3 + p2[6] * s2 * c3 + p2[7] * c2 * s3 + p2[8] * c2 * c3
+        + p2[9] * s2q3 + p2[10] * c2q3
+        + p2[11] * s56 + p2[12] * c56;
+
+    // ---- tau_roll: 1, s5, c5, s6*c5, c6*s5 ----
+    const auto& rl = param_.roll_coeff;
+    const float tau_roll =
+        rl[0]
+        + rl[1] * s5 + rl[2] * c5
+        + rl[3] * s6 * c5
+        + rl[4] * c6 * s5;
+
+    // ---- tau_pe: 1, s6, c6, c5*c6, cr*s6, s5*c6 ----
+    const auto& pe = param_.pitch_end_coeff;
+    const float tau_pe =
+        pe[0]
+        + pe[1] * s6      + pe[2] * c6
+        + pe[3] * c5 * c6
+        + pe[4] * cr * s6
+        + pe[5] * s5 * c6;
+
+    // 关节侧重力矩
+    out.pitch1_tau = tau_p1;
+    out.pitch2_tau = tau_p2;
+    out.roll_tau = tau_roll;
+    out.pitch_end_tau = tau_pe;
+
+    // p2 软边界 pushback
+    const float over_p2 = state.pitch2_deg - param_.ws_pitch2_soft_max;
+    const float p2_pushback = (over_p2 > 0.0f)
+        ? param_.pitch2_pushback_gain * over_p2
+        : 0.0f;
+    if (over_p2 > 0.0f) {
+        out.pitch2_tau -= p2_pushback;
     }
 
-    velocityBuffer_roll_[bufferIndex_roll_] = rawVelocity;
-    bufferIndex_roll_ = (bufferIndex_roll_ + 1) % VELOCITY_BUFFER_SIZE;
+    // roll 轴线束补偿
+    const float roll_pushback = 0.0f;
 
-    float sum = 0.0f;
-    for (int i = 0; i < VELOCITY_BUFFER_SIZE; ++i) {
-        sum += velocityBuffer_roll_[i];
-    }
-    const float avgVelocity = sum / static_cast<float>(VELOCITY_BUFFER_SIZE);
+    // 观察模式: 只算力矩不输出前馈指令
+    if (mode_ == CGravityCompMode::OBSERVE) return out;
 
-    float effectiveVelocity = 0.0f;
-    const bool sameDirection = (rawVelocity * avgVelocity) >= 0.0f;
+    // 电机指令转换
+    float ff_p1 = tau_p1;
+    float ff_p2 = tau_p2 - p2_pushback;
+    float ff_roll = tau_roll - roll_pushback;
+    float ff_pe = tau_pe;
+    out.pitch1_ff = std::clamp(
+        param_.pitch1_motor.JointTorqueToCommand(ff_p1) * ramp_,
+        -param_.pitch1_ff_limit, param_.pitch1_ff_limit);
+    out.pitch2_ff = std::clamp(
+        param_.pitch2_motor.JointTorqueToCommand(ff_p2) * ramp_,
+        -param_.pitch2_ff_limit, param_.pitch2_ff_limit);
+    out.roll_ff = std::clamp(
+        param_.roll_motor.JointTorqueToCommand(ff_roll) * ramp_,
+        -param_.roll_ff_limit, param_.roll_ff_limit);
+    out.pitch_end_ff = std::clamp(
+        param_.pitch_end_motor.JointTorqueToCommand(ff_pe) * ramp_,
+        -param_.pitch_end_ff_limit, param_.pitch_end_ff_limit);
 
-    if (sameDirection && fabsf(avgVelocity) > dampingParams_.deadzone) {
-        effectiveVelocity = (fabsf(rawVelocity) < fabsf(avgVelocity)) ? rawVelocity : avgVelocity;
-    }
-
-    float dampingTorque = -dampingParams_.B_roll * effectiveVelocity;
-    dampingTorque = std::clamp(dampingTorque, -dampingParams_.maxTorque, dampingParams_.maxTorque);
-
-    lastVelocity_roll_ = rawVelocity;
-
-    lastDebug_.damping_roll_vel_raw = rawVelocity;
-    lastDebug_.damping_roll_vel_filtered = avgVelocity;
-    lastDebug_.damping_roll_torque = dampingTorque;
-
-    return dampingTorque;
+    return out;
 }
 
 } // namespace my_engineer
