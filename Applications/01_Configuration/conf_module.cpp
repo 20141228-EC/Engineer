@@ -59,7 +59,7 @@ EAppStatus InitAllModule() {
    armInitParam.Pitch2PosPidParam.kp = 2.f;
    armInitParam.Pitch2PosPidParam.ki = 0.05f;
    armInitParam.Pitch2PosPidParam.kd = 0.0f;
-   armInitParam.Pitch2PosPidParam.maxIntegral = 4000.0f;
+   armInitParam.Pitch2PosPidParam.maxIntegral = 2000.0f;
    armInitParam.Pitch2PosPidParam.maxOutput = 5000.0f;
    // 初始化 Pitch2SpdPidParam 的成员
    armInitParam.Pitch2SpdPidParam.kp = 0.1f;

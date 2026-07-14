@@ -14,6 +14,7 @@
 
 namespace my_engineer {
 
+using GravityMode = CAlgoGravityComp::CGravityCompMode;
 /**
  * @brief 创建机械臂任务
  *
@@ -41,7 +42,7 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 				arm.comEndPitch_.StopComponent();
 				arm.comEndRoll_.StopComponent();
 				arm.comGrip_.StopComponent();
-				arm.SetGravityCompEnable(false);
+				arm.SetGravityCompMode(GravityMode::NONE);
 
 				proc_waitMs(20);
 				continue; // 跳过下面的代码，直接进入下一次循环
@@ -99,8 +100,7 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 							arm.comRoll_.rollInfo.isAngleArrived);
 
 				arm.armInfo.isModuleAvailable = true;
-				arm.SetGravityCompEnable(true);
-				arm.SetGravityCompObserve(true); // false=计算并输出重补; true=只计算不输出
+				arm.SetGravityCompMode(GravityMode::OBSERVE); // 只计算不输出
 				arm.Module_FSMFlag_ = FSM_CTRL;
 				arm.moduleStatus = APP_OK;
 
@@ -111,7 +111,7 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 
 				arm.RestrictArmCommand_();
 
-				arm.SetGravityOnlyMode(arm.armCmd.enableGravOnly);// 这个模式是用来看重补的效果的
+				arm.SetGravityCompMode(arm.armCmd.enableGravOnly ? GravityMode::GRAVITY_ONLY : GravityMode::ENABLE);
 
 				arm.comjoint_.jointCmd.setPosit_yaw =
 					CComJoint::PhyPositToMtrPosit_yaw(arm.armCmd.set_angle_Yaw);			///< 在这个文件中设置目标的位置，在com_joint.cpp中进行pid计算

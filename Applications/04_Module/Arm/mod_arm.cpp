@@ -18,13 +18,7 @@ namespace my_engineer {
 
 CModArm *pArm_test = nullptr;
 
-// ///< 全局变量
-bool Need_Grav_Compensation = false; ///< 是否启用重力补偿
-bool Is_Recording_ArmTorque = true; ///<是否正在记录数据
-DataBuffer<float_t> arm_Info[3][10]; ///<用于记录臂的力矩，三个关节，1000个数据点
-uint16_t index = 0; ///< 数组索引
-bool is_record = false; ///< 是否要记录数据
-
+using GravityMode = CAlgoGravityComp::CGravityCompMode;
 /**
  * @brief 初始化机械臂模块
  *
@@ -44,7 +38,7 @@ EAppStatus CModArm::InitModule(SModInitParam_Base &param) {
 	comEndPitch_.InitComponent(param);
 	comEndRoll_.InitComponent(param);
 	comGrip_.InitComponent(param);
-    gravComp_.Init(armParam.gravParam);
+    gravComp_.InitComponent(armParam.gravParam);
 
 	// 创建任务并注册模块
 	CreateModuleTask_();
@@ -98,7 +92,7 @@ void CModArm::UpdateHandler_() {
 	armInfo.holdLength_grip = CComGrip::MtrPositToPhyPosit( static_cast<float_t>(comGrip_.gripInfo.holdPosit_Grip));
 	gravState_ = { armInfo.angle_Pitch1, armInfo.angle_Pitch2,armInfo.angle_Roll, armInfo.angle_end_roll, armInfo.angle_end_pitch};
 	gravOut_ = gravComp_.Calc(gravState_);
-	if(gravityOnlyMode_ || !gravComp_.IsObserveMode()){  // 重补的调试模式和非观察观察模式
+	if(gravComp_.GetMode() != GravityMode::OBSERVE){  // 非观察模式输出 ff
 		comjoint_.grav_ff_pitch1 = gravOut_.pitch1_current_ff;
 		comjoint_.grav_ff_pitch2 = gravOut_.pitch2_current_ff;
 		comRoll_.grav_ff_roll = gravOut_.roll_tau_ff;
@@ -112,7 +106,6 @@ void CModArm::UpdateHandler_() {
 		comEndRoll_.Grav_End_Roll_Out = 0.0f;
 		comEndPitch_.Grav_End_Pitch_Out = 0.0f;
 	}
-	bool gravActive = !gravComp_.IsObserveMode();// 观察模式的变量传递
 
 
 	// 填充电机发送缓冲区
@@ -224,14 +217,14 @@ EAppStatus CModArm::RestrictArmCommand_() {
 }
 
 /**
- * @brief 设置纯重补模式，用于验证重补效果
+ * @brief 设置重力补偿模式
  */
-void CModArm::SetGravityOnlyMode(bool enable) {
-	gravityOnlyMode_ = enable;
-	comjoint_.SetOnlyGravity(enable);
-	comRoll_.SetOnlyGravity(enable);
-	comEndRoll_.SetOnlyGravity(enable);
-	comEndPitch_.SetOnlyGravity(enable);
+void CModArm::SetGravityCompMode(GravityMode mode) {
+	gravComp_.SetMode(mode);
+	comjoint_.SetOnlyGravity(mode == GravityMode::GRAVITY_ONLY);
+	comRoll_.SetOnlyGravity(mode == GravityMode::GRAVITY_ONLY);
+	comEndRoll_.SetOnlyGravity(mode == GravityMode::GRAVITY_ONLY);
+	comEndPitch_.SetOnlyGravity(mode == GravityMode::GRAVITY_ONLY);
 }
 
 } // namespace my_engineer

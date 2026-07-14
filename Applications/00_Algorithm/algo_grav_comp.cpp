@@ -65,39 +65,33 @@ float_t SMotorConversion::CommandToJointTorque(float_t command) const {
 /**
  * @brief 初始化重力补偿器
  */
-EAppStatus CAlgoArmGravityComp::Init(const SArmGravityParam& param) {
+EAppStatus CAlgoGravityComp::InitComponent(const SGravParam& param) {
     param_ = param;
     ramp_ = 0.0f;
-    enabled_ = false;
+    mode_ = CGravityCompMode::NONE;
     return APP_OK;
 }
 
 /**
- * @brief 启停重力补偿
+ * @brief 设置模式
  */
-void CAlgoArmGravityComp::SetEnable(bool enable) {
-    enabled_ = enable;
-}
-
-/**
- * @brief 设置观察模式
- */
-void CAlgoArmGravityComp::SetObserveMode(bool observe) {
-    observe_ = observe;
+void CAlgoGravityComp::SetMode(CGravityCompMode mode) {
+    if (mode_ != mode) ramp_ = 0.0f;
+    mode_ = mode;
 }
 
 /**
  * @brief 重置重力补偿器状态
  */
-void CAlgoArmGravityComp::Reset() {
-    enabled_ = false;
+void CAlgoGravityComp::Reset() {
+    mode_ = CGravityCompMode::NONE;
     ramp_ = 0.0f;
 }
 
 /**
  * @brief 检查关节角度是否在安全工作空间内
  */
-bool CAlgoArmGravityComp::IsStateValid_(const SArmGravityState& state) const {
+bool CAlgoGravityComp::IsStateValid_(const SGravState& state) const {
     return state.pitch1_deg >= param_.ws_pitch1_min && state.pitch1_deg <= param_.ws_pitch1_max
         && state.pitch2_deg >= param_.ws_pitch2_min && state.pitch2_deg <= param_.ws_pitch2_max
         && state.roll_deg >= param_.ws_roll_min && state.roll_deg <= param_.ws_roll_max;
@@ -106,13 +100,13 @@ bool CAlgoArmGravityComp::IsStateValid_(const SArmGravityState& state) const {
 /**
  * @brief 计算重力补偿前馈量
  */
-SArmGravityOutput CAlgoArmGravityComp::Calc(const SArmGravityState& state) {
-    SArmGravityOutput out;
+SGravOutput CAlgoGravityComp::Calc(const SGravState& state) {
+    SGravOutput out;
 
     const bool stateValid = IsStateValid_(state);
 
     // 超出安全工作空间则强制ramp下降，防止力矩突变
-    if (enabled_ && stateValid) {
+    if (mode_ != CGravityCompMode::NONE && stateValid) {
         ramp_ = std::clamp(ramp_ + param_.ramp_alpha, 0.0f, 1.0f);
     } else {
         ramp_ = std::clamp(ramp_ - param_.ramp_alpha, 0.0f, 1.0f);
