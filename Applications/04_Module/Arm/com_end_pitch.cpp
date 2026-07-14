@@ -69,10 +69,10 @@ EAppStatus CModArm::CComEndPitch::UpdateComponent() {
 		next_angle = endPitchCmd.setAngle;									///<设定最小的分辨率
 	}
 	
-	uint8_t test1 = 0;
+	static uint8_t test1 = 0;
 	if(test1 == 1) {
 		pMtr->SetZero();			///<测试用，将当前角度设为零点
-		//test1 =0;
+		test1 =0;
 	}
 	switch (Component_FSMFlag_) {
 		case FSM_RESET: {
