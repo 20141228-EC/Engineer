@@ -16,9 +16,9 @@
 #define ARM_YAW_PHYSICAL_RANGE_MIN -165.3f
 #define ARM_YAW_PHYSICAL_RANGE_MAX 225.5f
 #define ARM_PITCH1_PHYSICAL_RANGE_MIN 0.0f
-#define ARM_PITCH1_PHYSICAL_RANGE_MAX 93.f
+#define ARM_PITCH1_PHYSICAL_RANGE_MAX 91.f
 #define ARM_PITCH2_PHYSICAL_RANGE_MIN 1.f
-#define ARM_PITCH2_PHYSICAL_RANGE_MAX 148.f
+#define ARM_PITCH2_PHYSICAL_RANGE_MAX 141.f
 #define ARM_ROLL_PHYSICAL_RANGE_MIN -148.0f
 #define ARM_ROLL_PHYSICAL_RANGE_MAX 152.0f
 #define ARM_END_PITCH_PHYSICAL_RANGE_MIN -91.0f
@@ -62,7 +62,7 @@
 #define ARM_GRIP_SPD_DIR  -1   // 编码器速度
 
 //动态限位
-#define ARM_P2_MAX_WHEN_P1_MIN 58.2f  ///< P1处于最小角度时，P2的最大可达角度
+#define ARM_P2_MAX_WHEN_P1_MIN 45.f  ///< P1处于最小角度时，P2的最大可达角度
 
 /*-------------------------------------初始化数据--------------------------------------------------------*/
 #define ARM_YAW_INIT_ANGLE 0.0f
@@ -87,7 +87,7 @@
 #define POSIT_JOINT2_PITCH1_MACH_PHY 0.f
 #define POSIT_JOINT2_PITCH1_INIT_PHY 6.0f
 
-#define POSIT_JOINT3_PITCH2_MACH 25222//22814虽然错了但是存矿的效果比较好 
+#define POSIT_JOINT3_PITCH2_MACH 19215
 #define POSIT_JOINT3_PITCH2_MACH_PHY 0.f
 #define POSIT_JOINT3_PITCH2_INIT_PHY 20.0f
 

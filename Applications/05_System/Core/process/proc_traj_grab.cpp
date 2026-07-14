@@ -230,7 +230,6 @@ proc_exit:
             const uint32_t tShift = HAL_GetTick();
             while (true) {
                 if (keyboard_.key_Ctrl && keyboard_.key_Z) {
-                    traj_dbg_exit_reason = 2;
                     return false;
                 }
                 if (keyboard_.key_Shift) {
@@ -238,7 +237,6 @@ proc_exit:
                     break;
                 }
                 if (HAL_GetTick() - tShift >= 10000) {
-                    traj_dbg_exit_reason = 6;
                     return false;
                 }
                 proc_waitMs(1);

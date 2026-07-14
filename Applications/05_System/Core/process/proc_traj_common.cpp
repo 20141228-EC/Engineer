@@ -8,19 +8,6 @@
 
  #include "proc_common.hpp"
 
-//debug
-extern "C" {
-volatile int32_t traj_dbg_seg = -1;
-volatile int32_t traj_dbg_exit_reason = 0;      // 0 running, 1 ok, 2 ctrl_z, 3 关节超时, 4 夹爪超时
-volatile int32_t traj_dbg_warn_reason = 0;      // 0 none, 3 等待慢关节, 4 夹爪闭合的慢
-volatile int32_t traj_dbg_wait_joint = -1;
-volatile float traj_dbg_max_joint_error = 0.0f;
-volatile float traj_dbg_joint_current = 0.0f;
-volatile float traj_dbg_joint_target = 0.0f;
-volatile int32_t traj_dbg_wait_grip = 0;
-volatile float traj_dbg_grip_cmd = 0.0f;
-volatile float traj_dbg_grip_info = 0.0f;
-}
  namespace my_engineer{
 
     /** @brief 读取机械臂关节角度
@@ -72,25 +59,12 @@ volatile float traj_dbg_grip_info = 0.0f;
         ReadArmjoint(arm, current);
 
         bool arrived = true;
-        int32_t maxErrJoint = -1;
-        float_t maxErr = 0.0f;
-
-        //等待超时标记关节方便debug
         for (int i = 0; i < J::COUNT; i++) {
             float_t err = std::fabs(current[i] - target[i]);
-            if (err > maxErr) {
-                maxErr = err;
-                maxErrJoint = i;
-                traj_dbg_joint_current = current[i];
-                traj_dbg_joint_target = target[i];
-            }
             if (err > cfg.toleranceDeg) {
                 arrived = false;
             }
         }
-
-        traj_dbg_wait_joint = maxErrJoint;
-        traj_dbg_max_joint_error = maxErr;
 
         return arrived;
     }
@@ -129,28 +103,18 @@ volatile float traj_dbg_grip_info = 0.0f;
         while (true) {
             if(checkctrl && SysRemote.remoteInfo.keyboard.key_Ctrl
                && SysRemote.remoteInfo.keyboard.key_Z) {
-                traj_dbg_exit_reason = 2;
                 return false;
             }
 
             WriteGripCommand(arm, close);
 
             const bool gripArrived = CheckGripArrived(arm, close);
-            traj_dbg_wait_grip = gripArrived ? 0 : 1;
-            traj_dbg_grip_cmd = arm.armCmd.set_length_grip;
-            traj_dbg_grip_info = arm.armInfo.length_grip;
 
             if (gripArrived) {
-                traj_dbg_exit_reason = 1;
                 return true;
             }
 
-            if (HAL_GetTick() - startTick >= cfg.gripTimeoutMs) {
-                traj_dbg_warn_reason = 4;
-            }
-
             if (HAL_GetTick() - startTick >= cfg.hardTimeoutMs) {
-                traj_dbg_exit_reason = 4;
                 return false;
             }
 
@@ -186,7 +150,6 @@ volatile float traj_dbg_grip_info = 0.0f;
             // Ctrl+Z 打断
             if (SysRemote.remoteInfo.keyboard.key_Ctrl
                 && SysRemote.remoteInfo.keyboard.key_Z) {
-                traj_dbg_exit_reason = 2;
                 return false;
             }
 
@@ -224,11 +187,7 @@ volatile float traj_dbg_grip_info = 0.0f;
                         } else {
                             s.stableTiming = false;
                         }
-                        if (nowTick - s.arrivalStartTick >= arrivalCfg.timeoutMs) {
-                            traj_dbg_warn_reason = 3;
-                        }
                         if (nowTick - s.arrivalStartTick >= arrivalCfg.hardTimeoutMs) {
-                            traj_dbg_exit_reason = 3;
                             return false;
                         }
                     }
@@ -244,7 +203,6 @@ volatile float traj_dbg_grip_info = 0.0f;
         // 关节到位后才切换到本段目标夹爪状态
         WriteArmjoint(arm, target);
         WriteGripCommand(arm, opt.gripAfter);
-        traj_dbg_exit_reason = 1;
         return true;
     }
 
@@ -276,11 +234,6 @@ volatile float traj_dbg_grip_info = 0.0f;
 
         Extrarow(traj, seg, target);
         target[J::J_ENDR] += endRollOffset;
-
-        traj_dbg_seg = seg;
-        traj_dbg_exit_reason = 0;
-        traj_dbg_warn_reason = 0;
-        traj_dbg_wait_joint = -1;
 
         SPlayJointTargetOptions opt;
         opt.speedScale = traj[seg][FC_SPEED];
@@ -356,7 +309,6 @@ volatile float traj_dbg_grip_info = 0.0f;
             // Ctrl+Z 中断
             if (SysRemote.remoteInfo.keyboard.key_Ctrl
                 && SysRemote.remoteInfo.keyboard.key_Z) {
-                traj_dbg_exit_reason = 2;
                 return false;
             }
 
@@ -378,7 +330,6 @@ volatile float traj_dbg_grip_info = 0.0f;
                     while (true) {
                         if (SysRemote.remoteInfo.keyboard.key_Ctrl
                             && SysRemote.remoteInfo.keyboard.key_Z) {
-                            traj_dbg_exit_reason = 2;
                             return false;
                         }
                         if (CheckAllJointsArrived(arm, finalTarget, cfg)) {
@@ -387,14 +338,12 @@ volatile float traj_dbg_grip_info = 0.0f;
                         } else {
                             stable = false;
                             if (HAL_GetTick() - arrivalTick >= cfg.hardTimeoutMs) {
-                                traj_dbg_exit_reason = 3;
                                 return false;
                             }
                         }
                         proc_waitMs(1);
                     }
                 }
-                traj_dbg_exit_reason = 1;
                 return true;
             }
 

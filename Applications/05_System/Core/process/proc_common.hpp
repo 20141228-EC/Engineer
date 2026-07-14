@@ -18,13 +18,8 @@
 #include <map>
 #include <cmath>
 
-#define STORE_ROLL_UP_OFFSET    -160.0f  ///< 末端 roll 翻转偏移（朝上）
+#define STORE_ROLL_UP_OFFSET    -180.0f  ///< 末端 roll 翻转偏移（朝上）
 #define STORE_ROLL_DOWN_OFFSET  0.0f     ///< 末端 roll 默认偏移（朝下）
-
-extern "C" {
-    extern volatile int32_t traj_dbg_exit_reason;
-    extern volatile int32_t traj_dbg_warn_reason;
-}
 
 /**
 /-------------------------------------如何使用此轨迹回放库----------------------------------------------/
@@ -85,9 +80,8 @@ extern "C" {
  *
  *
  * 4.关于内部约定
- *   - 所有 Play 函数在执行期间持续监测 Ctrl+Z，操作手可随时打断（traj_dbg_exit_reason=2）
- *   - 失败原因记录在 traj_dbg_exit_reason：
- *       0=运行中  1=成功  2=Ctrl+Z  3=关节超时  4=夹爪超时  5=跟踪误差过大
+ *   - 所有 Play 函数在执行期间持续监测 Ctrl+Z，操作手可随时打断
+ *   - Play 函数返回值约定：true=成功  false=失败（Ctrl+Z 打断 / 关节超时 / 夹爪超时 / 跟踪误差过大）
  *   - 关节 P2P 算法统一走 CAlgoQuintic 五次多项式（algo_quintic.hpp）
  *   - 多段平滑走 CAlgoQuinticSpline 五次样条（algo_quintic_spline.hpp）
  *   - 轨迹二维数组列含义见 FrameCol 枚举（6 轴: FC_TIME/YAW/P1/P2/ROLL/ENDP/ENDR/GRIP/SPEED）
