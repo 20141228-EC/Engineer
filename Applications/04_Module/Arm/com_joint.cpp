@@ -90,7 +90,6 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 			pidPosCtrl_pitch2.ResetPidController();
 			pidSpdCtrl_pitch2.ResetPidController();
 			isreset_flag = false;
-			Need_Grav_Compensation = false;
 			return APP_OK;
 		}
 
@@ -204,10 +203,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 		}
 
 		case FSM_CTRL: {
-			//jointCmd.setPosit_yaw = std::clamp(jointCmd.setPosit_yaw, static_cast<int32_t>(-rangeLimit_yaw/2),  static_cast<int32_t>(rangeLimit_yaw/2));///<对Yaw进行机械限位
 			
-			is_record = true; ///< 臂初始化完之后开始记录数据
-			// Need_Grav_Compensation = true; //臂初始化完之后启用重力补偿
 			return _UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 				static_cast<float_t>(jointCmd.setPosit_pitch1),
 				static_cast<float_t>(jointCmd.setPosit_pitch2));

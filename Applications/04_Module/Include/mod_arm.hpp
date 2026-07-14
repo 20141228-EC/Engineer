@@ -87,7 +87,7 @@
 #define POSIT_JOINT2_PITCH1_MACH_PHY 0.f
 #define POSIT_JOINT2_PITCH1_INIT_PHY 6.0f
 
-#define POSIT_JOINT3_PITCH2_MACH 63102 
+#define POSIT_JOINT3_PITCH2_MACH 25222//22814虽然错了但是存矿的效果比较好 
 #define POSIT_JOINT3_PITCH2_MACH_PHY 0.f
 #define POSIT_JOINT3_PITCH2_INIT_PHY 20.0f
 
@@ -188,7 +188,7 @@ public:
 			float_t filterAlpha       = 0.95f;   ///< LowPassFilter滤波系数α
 		} GripDetectParam;
 
-		SArmGravityParam gravParam;
+		SGravParam gravParam;
 	};
 
 	// 定义机械臂信息结构体并实例化
@@ -249,9 +249,8 @@ public:
 
 	// 初始化模块
 	EAppStatus InitModule(SModInitParam_Base &param) final;
-	void SetGravityCompEnable(bool enable) { gravComp_.SetEnable(enable); }
-	void SetGravityCompObserve(bool observe) { gravComp_.SetObserveMode(observe); }///< 重力补偿观察模式
-	void SetGravityOnlyMode(bool enable);  ///< 纯重力补偿模式
+	void SetGravityCompMode(CAlgoGravityComp::CGravityCompMode mode);  ///< 含 GRAVITY_ONLY 时自动开关位置环
+	CAlgoGravityComp::CGravityCompMode GetGravityCompMode() const { return gravComp_.GetMode(); }
 	uint8_t should_limit_yaw = 0; ///< 是否限制Yaw角度
 
 private:
@@ -568,19 +567,12 @@ private:
 	//超时判断检测函数
 	void initTimeoutdect();
 
-	CAlgoArmGravityComp gravComp_;
-	SArmGravityState gravState_; ///< 重力补偿输入状态
-	SArmGravityOutput gravOut_;  ///< 重力补偿输出结果
-	bool gravityOnlyMode_ = false;  ///< 纯重力补偿模式标志
+	CAlgoGravityComp gravComp_;
+	SGravState gravState_; ///< 重力补偿输入状态
+	SGravOutput gravOut_;  ///< 重力补偿输出结果
 
 };
 
-///< 全局变量
-extern bool Need_Grav_Compensation; ///< 是否启用重力补偿
-extern bool Is_Recording_ArmTorque; ///<是否正在记录数据
-extern DataBuffer<float_t> arm_Info[3][10]; ///<用于记录臂的力矩，三个关节，10个数据点
-extern uint16_t index; ///< 数组索引
-extern bool is_record; ///< 是否要记录数据
 
 } // namespace my_engineer
 

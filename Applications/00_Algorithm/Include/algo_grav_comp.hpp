@@ -52,7 +52,7 @@ struct SMotorConversion {
  * @brief 重力补偿输入
  *
  */
-struct SArmGravityState {
+struct SGravState {
     float_t pitch1_deg = 0.0f;    ///< 大Pitch角度 (deg)
     float_t pitch2_deg = 0.0f;    ///< 小Pitch角度 (deg)
     float_t roll_deg = 0.0f;      ///< Roll角度 (deg)
@@ -64,7 +64,7 @@ struct SArmGravityState {
  * @brief 重力补偿输出
  *
  */
-struct SArmGravityOutput {
+struct SGravOutput {
     float_t pitch1_current_ff = 0.0f; ///< Pitch1 raw电流前馈指令
     float_t pitch2_current_ff = 0.0f; ///< Pitch2 raw电流前馈指令
     float_t roll_tau_ff = 0.0f;       ///< Roll力矩前馈
@@ -83,7 +83,7 @@ struct SArmGravityOutput {
  * @brief 重力补偿参数
  *
  */
-struct SArmGravityParam {
+struct SGravParam {
     // 关节零点偏移 (deg)，物理零点相对重力零点的偏移
     float_t pitch1_zero_deg = 0.0f;    ///< Pitch1零点偏移
     float_t pitch2_zero_deg = 0.0f;    ///< Pitch2零点偏移
@@ -152,58 +152,31 @@ struct SArmGravityParam {
  * @brief 重力补偿算法类
  *
  */
-class CAlgoArmGravityComp {
+class CAlgoGravityComp {
 public:
-    /**
-     * @brief 初始化重力补偿器
-     *
-     * @param param 重力补偿参数
-     * @return EAppStatus
-     */
-    EAppStatus Init(const SArmGravityParam& param);
 
-    /**
-     * @brief 计算重力补偿前馈量
-     *
-     * @param state 当前关节角度
-     * @return SArmGravityOutput 各关节前馈量
-     */
-    SArmGravityOutput Calc(const SArmGravityState& state);
+    enum class CGravityCompMode {
+        NONE = 0,       ///< 关闭 
+        ENABLE,         ///< 正常补偿 (位置环 + 重补 ff)              -正常使用
+        OBSERVE,        ///< 观察模式 (只算力矩不输出 ff)             -调试用
+        GRAVITY_ONLY,   ///< 纯重补 (输出 ff, mod_arm 层关闭位置环)   -调试用
+    };
 
-    /**
-     * @brief 启停重力补偿
-     * @param enable true启用, false禁用
-     */
-    void SetEnable(bool enable);
+    EAppStatus InitComponent(const SGravParam& param);
+    SGravOutput Calc(const SGravState& state);
 
-    /**
-     * @brief 设置观察模式: 只计算力矩不输出电流指令
-     * @param observe true观察模式, false正常输出模式
-     */
-    void SetObserveMode(bool observe);
+    void SetMode(CGravityCompMode mode);
+    CGravityCompMode GetMode() const { return mode_; }
 
-    /**
-     * @brief 重置补偿器状态
-     */
     void Reset();
-
-    const SArmGravityParam& GetParam() const { return param_; }
-    bool IsObserveMode() const { return observe_; }
+    const SGravParam& GetParam() const { return param_; }
 
 private:
+    SGravParam param_{};
+    float_t ramp_ = 0.0f;
+    CGravityCompMode mode_ = CGravityCompMode::NONE;
 
-    SArmGravityParam param_{};    // 补偿参数
-    float_t ramp_ = 0.0f;    // ramp渐变值 (0~1)
-    bool enabled_ = false;  // 启停标志
-    bool observe_ = false;  // debug模式,观察补偿的力矩但是不输出力
-
-    /**
-     * @brief 检查关节角度是否在安全工作空间内
-     *
-     * @param state 当前关节角度
-     * @return true 在安全范围内
-     */
-    bool IsStateValid_(const SArmGravityState& state) const;
+    bool IsStateValid_(const SGravState& state) const;
 };
 
 } // namespace my_engineer
