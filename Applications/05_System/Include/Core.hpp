@@ -49,7 +49,7 @@
 #define DOWNSTAIR_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
 #define DOWNSTAIR_SPEED            -50.f      ///< 全速的80%
 #define DOWNSTAIR_HIP_ANGLE        5.3f      ///< 腿抬高
-#define DOWNSTAIR_GIMBAL_ANGLE     -185.f
+#define DOWNSTAIR_GIMBAL_ANGLE     179.f
 
 /* --------------------抓能量单元------------------- */
 #define GRAB_ENERGY_UNIT_YAW_ANGLE        1.0f

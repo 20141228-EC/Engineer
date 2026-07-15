@@ -261,10 +261,14 @@ void CSystemCore::ControlFromKeyboard_() {
     if (pgimbal_) {
         if (!pgimbal_->gimbalCmd.isAutoCtrl) {
             if (keyboard.key_G) {
-                pgimbal_->gimbalCmd.set_visualyaw += ((keyboard.mouse_L - keyboard.mouse_R) / 100.f) * 200.f / freq;
+                pgimbal_->gimbalCmd.set_visualyaw += static_cast<float_t>(keyboard.mouse_R - keyboard.mouse_L) * 70.f / freq;
             }
-            if (keyboard.key_F && !keyboard.key_Ctrl) {
-                pgimbal_->gimbalCmd.set_pitch += ((keyboard.mouse_L - keyboard.mouse_R) / 100.f) * 55.f / freq;
+            if (keyboard.key_F) {
+                pgimbal_->gimbalCmd.set_pitch += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 60.f / freq;
+            }
+            if(keyboard.key_Shift){// shift键自动复位
+                pgimbal_->gimbalCmd.set_pitch = 0.f;
+                pgimbal_->gimbalCmd.set_visualyaw = 0.f;
             }
         }
     }
