@@ -239,7 +239,7 @@
         opt.speedScale = traj[seg][FC_SPEED];
         opt.gripDuringMotion = gripDuringMotion;
         opt.gripAfter = gripAfter;
-        opt.startOverride = prevTarget;
+        opt.startOverride = nullptr;// 直接传上一次的目标值的效果比较差，所以这里直接设置nullptr
         opt.minTimeS = 0.f;
         opt.waitForArrival = waitForArrival || gripActuallyChanged;  // 夹爪切换时强制等关节到位
         if (!PlayJointTarget(arm, target, opt))

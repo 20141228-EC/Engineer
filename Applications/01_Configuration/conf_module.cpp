@@ -135,9 +135,9 @@ EAppStatus InitAllModule() {
     armInitParam.GripSpdPidParam.maxOutput = 1000.0f;
     //armInitParam.GripSpdPidParam.input_integralSeparation = 5000.0f;  ///< 误差过大时清零积分，防止撞限位时积分过冲误判自锁
     // 夹取检测参数
-    armInitParam.GripDetectParam.closeTorqueThresh = 60.0f;  ///< 滤波电流接触阈值
+    armInitParam.GripDetectParam.closeTorqueThresh = 80.0f;  ///< 滤波电流接触阈值
     armInitParam.GripDetectParam.closeTorqueRange  = 100.0f;  ///< 接触到夹紧的电流区间
-    armInitParam.GripDetectParam.detectTorque      = 91.0f;  ///< 夹取成功阈值
+    armInitParam.GripDetectParam.detectTorque      = 130.0f;  ///< 夹取成功阈值
     armInitParam.GripDetectParam.filterAlpha       = 0.90f;  ///< LowPassFilter滤波系数
     // armInitParam.Need_Grav_Compensation = false;
     // 使用初始化后的参数创建 armModule 实例 
