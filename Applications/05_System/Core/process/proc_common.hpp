@@ -18,7 +18,7 @@
 #include <map>
 #include <cmath>
 
-#define STORE_ROLL_UP_OFFSET    -180.0f  ///< 末端 roll 翻转偏移（朝上）
+#define STORE_ROLL_UP_OFFSET    +180.0f  ///< 末端 roll 翻转偏移（朝上）
 #define STORE_ROLL_DOWN_OFFSET  0.0f     ///< 末端 roll 默认偏移（朝下）
 
 /**
