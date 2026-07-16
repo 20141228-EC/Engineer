@@ -285,7 +285,7 @@ EAppStatus InitAllDevice(){
     armMotor_end_Roll_initparam.interfaceID = EInterfaceID::INF_CAN2;
     armMotor_end_Roll_initparam.MasterID = 0x34;
     armMotor_end_Roll_initparam.SlaveID = 0x35;
-    armMotor_end_Roll_initparam.Q_MAX = 3.1416f;
+    armMotor_end_Roll_initparam.Q_MAX = 12.5f;
     armMotor_end_Roll_initparam.DQ_MAX = 30.0f;
     armMotor_end_Roll_initparam.TAU_MAX = 10.0f;
     armMotor_end_Roll_initparam.useAngleToPosit = true;
