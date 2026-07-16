@@ -73,7 +73,7 @@ void CSystemCore::StartClimbingTask(void *arg) {
 				// if(core.pchassis_->is_climbed && core.pchassis_->time_to_reset_hip){
 				if(core.pchassis_->is_climbed){
 					core.pchassis_->is_climbing = false;
-					proc_waitMs(50);
+					proc_waitMs(40);
 					core.pchassis_->reset_hip = true;		// 检测到前轮爬上台阶之后就收腿 可能会需要一个延时
 					core.pchassis_->is_climbed = false;
 				}

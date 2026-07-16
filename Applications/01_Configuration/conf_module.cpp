@@ -209,12 +209,12 @@ EAppStatus InitAllModule() {
     chassisInitParam.rollCorrectionPidParam.Input_deadband = 1.0f;
     chassisInitParam.rollCorrectionPidParam.maxIntegral = 50.0f;
     chassisInitParam.rollCorrectionPidParam.maxOutput = 1000.0f; ///< roll轴pid待调
-    chassisInitParam.MIT_L_kp = 260.f;//15.0f;
-    chassisInitParam.MIT_L_kd = 2.f;//1.0f; // mit参数待调
-    chassisInitParam.MIT_L_tau = 1.f;
-    chassisInitParam.MIT_R_kp = 310.f;
-    chassisInitParam.MIT_R_kd = 2.f;
-    chassisInitParam.MIT_R_tau = -1.f;
+    chassisInitParam.MIT_L_kp = 300.f;//15.0f;
+    chassisInitParam.MIT_L_kd = 1.5f;//1.0f; // mit参数待调
+    chassisInitParam.MIT_L_tau = -2.f;
+    chassisInitParam.MIT_R_kp = 350.f;
+    chassisInitParam.MIT_R_kd = 1.5f;
+    chassisInitParam.MIT_R_tau = 2.f;
 
     chassisInitParam.HipPosPidParam_L.kp = 0.f;
     chassisInitParam.HipPosPidParam_L.ki = 0.f;
@@ -240,7 +240,7 @@ EAppStatus InitAllModule() {
     chassisInitParam.HipSpdPidParam_R.maxOutput = 10000.f;
 
     chassisInitParam.CrawlerSpdPidParam.kp = 5.5f;
-    chassisInitParam.CrawlerSpdPidParam.ki = 1.0f;
+    chassisInitParam.CrawlerSpdPidParam.ki = 1.0f;  
     chassisInitParam.CrawlerSpdPidParam.kd = 0.f;
     chassisInitParam.CrawlerSpdPidParam.maxIntegral = 4000.f;
     chassisInitParam.CrawlerSpdPidParam.maxOutput = 15000.f;
