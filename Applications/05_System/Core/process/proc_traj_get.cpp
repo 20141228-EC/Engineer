@@ -40,7 +40,8 @@ namespace my_engineer {
             }
             proc_waitMs(5);
         }
-
+        core.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_YAW_ANGLE;
+        core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
 
         auto &Traj = (trajId == TRAJ_EXCHANGE_R) ? ExchangesingleClip_R : ExchangesingleClip_L;
         {
@@ -57,6 +58,8 @@ namespace my_engineer {
         core.autoCtrlTaskHandle_ = nullptr;
         core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
+        core.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_INIT_ANGLE;
+        core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_INIT_ANGLE;
         // 退出时
         arm.armCmd.set_angle_Yaw       = arm.armInfo.angle_Yaw;
         arm.armCmd.set_angle_Pitch1    = arm.armInfo.angle_Pitch1;
@@ -64,7 +67,7 @@ namespace my_engineer {
         arm.armCmd.set_angle_Roll      = arm.armInfo.angle_Roll;
         arm.armCmd.set_angle_end_pitch = arm.armInfo.angle_end_pitch;
         arm.armCmd.set_angle_end_roll  = arm.armInfo.angle_end_roll;
-        proc_waitMs(800);
+        proc_waitMs(500);
         
         // 任务结束默认进入自定义控制器模式（仅在控制器在线时切换，否则保留键盘模式避免立刻被自动退出）
         if (SysControllerLink.IsControllerOnline()) {

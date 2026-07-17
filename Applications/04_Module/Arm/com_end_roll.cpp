@@ -59,10 +59,10 @@ EAppStatus CModArm::CComEndRoll::UpdateComponent() {
 	endRollInfo.torque = CDevMtrDM_MIT::uint_to_float(pMtr->motorData[CDevMtr::DATA_TORQUE], -pMtr->get_tau_max(), pMtr->get_tau_max(), 12); ///< 12位无符号转实际力矩
 	endRollInfo.isAngleArrived = (fabs(endRollInfo.angle - endRollCmd.setAngle) < 3.0f);
 
-	uint8_t test1 = 0;
+	static uint8_t test1 = 0;
 	if(test1 == 1) {
 		pMtr->SetZero();			///<测试用，将当前角度设为零点
-		//test1 =0;
+		test1 =0;
 	}
 	// 缓慢移动控制逻辑
 	static float_t next_angle = 0.0f;
