@@ -136,20 +136,25 @@ public:
 		uint16_t CRC16;                       ///< CRC16 Checksum
 	} __packed warningPkg = { };
 
-	struct SRobotStatusPkg {                // ID: ID_ROBOT_STATUS (0x0201)
-		SPkgHeader header;                    ///< Package Header
-		uint8_t robotId;                      ///< Robot ID (Red: 1~7, Blue: 101~107)
-		uint8_t robotLevel;                   ///< Robot Level
-		uint16_t robotHp;                     ///< Robot Current HP
-		uint16_t robotMaxHp;                  ///< Robot HP Limit
-		uint16_t robotCoolDown;               ///< Robot Cool Down Value
-		uint16_t robotMaxHeat;                ///< Robot Heat Limit
-		uint16_t robotMaxPower;               ///< Robot Power Limit
-		uint8_t isGimbalOutputEnabled:1;      ///< Is Gimbal Power Output Enabled (0 - No, 1 - Yes)
-		uint8_t isChassisOutputEnabled:1;     ///< Is Chassis Power Output Enabled (0 - No, 1 - Yes)
-		uint8_t isShooterOutputEnabled:1;     ///< Is Shooter Power Output Enabled (0 - No, 1 - Yes)
+	struct SRobotStatusPkg {
+		SPkgHeader header;
+
+		uint8_t robotId;
+		uint8_t robotLevel;
+		uint16_t robotHp;
+		uint16_t robotMaxHp;
+		uint16_t robotCoolDown;
+		uint16_t robotMaxHeat;
+		uint16_t robotMaxPower;
+		float bulletSpeedLimit;
+
+		uint8_t isGimbalOutputEnabled : 1;
+		uint8_t isChassisOutputEnabled : 1;
+		uint8_t isShooterOutputEnabled : 1;
+		uint8_t reserved : 5;
+
 		uint16_t CRC16;
-	} __packed robotStatusPkg = { };
+	} __packed robotStatusPkg = {};
 
 	struct SRobotPerfPkg {                  // ID: ID_ROBOT_PERF (0x0202)
 		SPkgHeader header;                    ///< Package Header
@@ -158,7 +163,6 @@ public:
 		float_t chassisPower;                 ///< PM Chassis Port Power (unit: W)
 		uint16_t energyBuffer;                ///< Energy Buffer (unit: J)
 		uint16_t shooterHeat_17mm_1;          ///< First 17mm Shooter Heat
-		uint16_t shooterHeat_17mm_2;          ///< Second 17mm Shooter Heat
 		uint16_t shooterHeat_42mm;            ///< 42mm Shooter Heat
 		uint16_t CRC16;                       ///< CRC16 Checksum
 	} __packed robotPerfPkg = { };
