@@ -150,7 +150,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 					_UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 						static_cast<float_t>(jointCmd.setPosit_pitch1),
 						static_cast<float_t>(jointCmd.setPosit_pitch2));
-					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-200), static_cast<int16_t>(200));//初始化的时候限制输出防止撞到灯条，遍历所有输出数组
+					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-2000), static_cast<int16_t>(2000));//初始化的时候限制输出防止撞到灯条，遍历所有输出数组
 					return APP_OK;
 				}
 				/*全部到位后才进入初始化*/
@@ -160,7 +160,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 					_UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 						static_cast<float_t>(jointCmd.setPosit_pitch1),
 						static_cast<float_t>(jointCmd.setPosit_pitch2));
-					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-200), static_cast<int16_t>(200));
+					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-2000), static_cast<int16_t>(2000));
 					return APP_OK;
 				}
 				else if(jointInfo.isPositArrived_fail){ //初始化失败，校准一次
@@ -172,7 +172,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 					_UpdateOutput_Pitch1(jointCmd.setPosit_pitch1);
 					// Yaw保持不动
 					mtrOutputBuffer[Y] = 0;
-					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-200), static_cast<int16_t>(200));
+					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-2000), static_cast<int16_t>(2000));
 					return APP_OK;
 				}
 			}

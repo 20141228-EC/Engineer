@@ -15,6 +15,7 @@
      *  @param output 输出数组
      */
 
+    /*----------------------------------------功能函数------------------------------------------------*/
     void ReadArmjoint(const CModArm &arm,float_t output[J::COUNT]){
         output[J::J_YAW]  = arm.armInfo.angle_Yaw;
         output[J::J_P1]   = arm.armInfo.angle_Pitch1;
@@ -74,7 +75,7 @@
         return traj[row][FC_GRIP] < 1.0f;
     }
 
-    //控制夹爪的张开和闭合
+    //控制夹爪的张开和闭合，false是闭合，true是张开
     void WriteGripCommand(CModArm &arm, bool close) {
         if (close) {
             arm.armCmd.gripClose = true;
@@ -122,8 +123,11 @@
         }
     }
 
-
-    // 五次关节播放器
+    /*----------------------------------------播放执行函数------------------------------------------------*/
+    /*  单段播放：把机械臂从当前位姿五次多项式平滑运动到一组目标关节角
+        输入是 target[6] 数组（非轨迹文件），自带到位检查和 Ctrl+Z 打断
+        用途：只有目标姿态、无轨迹文件时用（瞄准、归位、对齐 roll）
+    */ 
     bool PlayJointTarget(CModArm &arm,
                          const float_t target[J::COUNT],
                          const SPlayJointTargetOptions &opt) {
@@ -155,7 +159,8 @@
 
             const uint32_t nowTick = HAL_GetTick();
             float_t elapsed = static_cast<float_t>(nowTick - startTick) / 1000.0f;
-            const bool frameTargetCommanded = qplayer.IsFinished(elapsed);
+
+            const bool frameTargetCommanded = qplayer.IsFinished(elapsed);// 自动计算路径的运动时间
 
             // 关节角度播放
             if (frameTargetCommanded) {
@@ -176,13 +181,13 @@
                         s.arrivalStartTick = nowTick;
                     }
                     if (!s.frameJointsArrived) {
-                        if (CheckAllJointsArrived(arm, target, arrivalCfg)) {
+                        if (CheckAllJointsArrived(arm, target, arrivalCfg)) { //到位检查
                             if (!s.stableTiming) {
                                 s.stableTiming = true;
                                 s.stableStartTick = nowTick;
                             }
                             if (nowTick - s.stableStartTick >= arrivalCfg.stableMs) {
-                                s.frameJointsArrived = true;
+                                s.frameJointsArrived = true;// 超时检测
                             }
                         } else {
                             s.stableTiming = false;
@@ -206,8 +211,12 @@
         return true;
     }
 
-    // 按轨迹第 seg 行播放一段
-    // earlyGrip=true: 段开始就切夹爪；false: 关节到位后才切
+    /* 
+       单段播放：按轨迹第 seg 行播放一段，内部调用 PlayJointTarget 
+       比 PlayJointTarget 多处理轨迹行解析、endRollOffset、夹爪切换语义
+       earlyGrip=true 段开始就切夹爪，false 关节到位后才切
+       用途：只播轨迹某一帧时用（如 Shift 确认后的夹爪闭合帧）
+    */
     bool PlayTrajRow(CModArm &arm,
                      const float_t traj[][FC_COUNT], int seg,
                      const float_t *prevTarget,
@@ -253,8 +262,11 @@
         return true;
     }
 
-
-    // 按 traj 第 0..segEnd-1 行逐段播放
+    /* 
+       多段播放：按轨迹第 0..segEnd-1 行逐段播放，段间停顿到位（stop-and-go）
+       中间段不等到位以保持连贯，除非末段或夹爪切换
+       用途：要求中间精确到位时用（如夹爪闭合前的取矿前段）
+    */
     bool PlayTrajRows(CModArm &arm,
                       const float_t traj[][FC_COUNT],
                       int segEnd,
@@ -288,7 +300,11 @@
         return true;
     }
 
-    // 五次插值范围连续播放
+    /*
+        多段播放：用五次样条把 segFrom..segTo 拟合为连续曲线，全程不停顿
+        关键帧处位置/速度/加速度都连续，只在整段结束时检查一次到位
+        用途：要求平滑衔接、不能停顿时用（如夹住矿后的拔出段）
+    */ 
     bool PlaySplineRange(CModArm &arm,
                          const TrajClip &clip,
                          int segFrom,
