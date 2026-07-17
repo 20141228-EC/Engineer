@@ -63,6 +63,8 @@ namespace my_engineer {
             proc_waitMs(5);
         }
 
+        core.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_YAW_ANGLE;
+        core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
         runner.arm_.armCmd.isAutoCtrl = true; ///< 阻止外部 ControlFromKeyboard_ 干扰，手动/自动都需要
 
         // ---- 主流程 ----
@@ -79,6 +81,8 @@ proc_exit:
         core.autoCtrlTaskHandle_ = nullptr;
         core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
+        core.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_INIT_ANGLE;
+        core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_INIT_ANGLE;
         // 退出时把 armCmd 同步到当前实际位姿
         runner.arm_.armCmd.set_angle_Yaw       = runner.arm_.armInfo.angle_Yaw;
         runner.arm_.armCmd.set_angle_Pitch1    = runner.arm_.armInfo.angle_Pitch1;
@@ -86,6 +90,7 @@ proc_exit:
         runner.arm_.armCmd.set_angle_Roll      = runner.arm_.armInfo.angle_Roll;
         runner.arm_.armCmd.set_angle_end_pitch = runner.arm_.armInfo.angle_end_pitch;
         runner.arm_.armCmd.set_angle_end_roll  = runner.arm_.armInfo.angle_end_roll;
+        proc_waitMs(500);
 
         // 任务结束默认进入自定义控制器模式
         if (SysControllerLink.IsControllerOnline()) {
