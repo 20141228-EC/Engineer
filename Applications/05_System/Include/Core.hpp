@@ -75,14 +75,14 @@
 #define EXCHANGE_ORE_GIMBLE_INIT_ANGLE      0.f
 
 /* ----------------------存矿------------------------*/
-#define SAVE_ORE_YAW_ANGLE        1.0f
-#define SAVE_ORE_PITCH1_ANGLE     1.0f
-#define SAVE_ORE_PITCH2_ANGLE     1.0f
-#define SAVE_ORE_ROLL_ANGLE       1.0f
-#define SAVE_ORE_END_PITCH_ANGLE  1.0f
-#define SAVE_ORE_END_ROLL_ANGLE   1.0f
+#define STORE_ORE_ARM_AIM_YAW        0.f
+#define STORE_ORE_ARM_AIM_PITCH1     0.f
+#define STORE_ORE_ARM_AIM_PITCH2     15.0f
+#define STORE_ORE_ARM_AIM_ROLL       10.0f
+#define STORE_ORE_ARM_AIM_END_PITCH  0.f
+#define STORE_ORE_ARM_AIM_END_ROLL   0.f
 #define SAVE_ORE_GRIP_LENGTH      1.0f
-// 待改
+
 
 
 /* -----------------------全部复位----------------------- */
