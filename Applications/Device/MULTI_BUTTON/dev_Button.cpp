@@ -17,6 +17,8 @@ bool CDevButton::islevel_1 = false;
 bool CDevButton::islevel_2 = false;
 bool CDevButton::islevel_3 = false;
 bool CDevButton::islevel_4 = false;
+bool CDevButton::isControllerReset = false;
+bool CDevButton::isRobotReset = false;
 
 
 CDevButton::singlebutton CDevButton::buttons_[static_cast<int>(EButtonID::BUTTON_MAX)] = {};
@@ -30,6 +32,7 @@ uint8_t CDevButton::ButtonGpioRead(uint8_t button_id){
     case EButtonID::LEVEL_2:
     case EButtonID::LEVEL_3:
     case EButtonID::LEVEL_4:
+    case EButtonID::RESET:
       return HAL_GPIO_ReadPin(buttons_[button_id].halGpioPort, buttons_[button_id].halGpioPin);
   }
 
@@ -81,27 +84,31 @@ void CDevButton::ButtonPressUpCallback(void *btn) {
   }
 }
 
-// void CDevButton::ButtonSingleClickCallback(void *btn) {
-//   Button* button = static_cast<Button *>(btn);
-//   uint8_t button_id = button->button_id;
-//   switch(button_id){
-//     case EButtonID::LEVEL_1:
-//       islevel_1 = true;
-//       break;
-//     case EButtonID::LEVEL_2:
-//       islevel_2 = true;
-//       break;
-//     case EButtonID::LEVEL_3:
-//       islevel_3 = true ;
-//       break;
-//     case EButtonID::LEVEL_4:
-//       islevel_4 = true;
-//       break;
-//     default:
-//       break;
-//   }
-// }
+// 单击触发自定义控制器的重启
+void CDevButton::ButtonSingleClickCallback(void *btn) {
+  Button* button = static_cast<Button *>(btn);
+  uint8_t button_id = button->button_id;
+  switch(button_id){
+    case EButtonID::RESET:
+      isControllerReset = true;
+      break;
+    default:
+      break;
+  }
+}
 
+// 长按触发机器人的重启
+void CDevButton::ButtonLongPressCallback(void *btn) {
+  Button* button = static_cast<Button *>(btn);
+  uint8_t button_id = button->button_id;
+  switch(button_id){
+    case EButtonID::RESET:
+      isRobotReset = true;
+      break;
+    default:
+      break;
+  }
+}
 
 /**
  * @brief 初始化设备
@@ -126,13 +133,20 @@ EAppStatus CDevButton::InitDevice(const SDevInitParam_Base *pStructInitParam) {
     if (buttons_[i].buttonID == EButtonID::LEVEL_1 ||
         buttons_[i].buttonID == EButtonID::LEVEL_2 ||
         buttons_[i].buttonID == EButtonID::LEVEL_3 ||
-        buttons_[i].buttonID == EButtonID::LEVEL_4) {
+        buttons_[i].buttonID == EButtonID::LEVEL_4 ) {
       button_init(&buttons_[i].User_button, ButtonGpioRead, buttons_[i].activeLevel, static_cast<uint8_t>(buttons_[i].buttonID));
       button_attach(&buttons_[i].User_button, PressEvent::PRESS_DOWN, ButtonPressDownCallback);
       // button_attach(&buttons_[i].User_button, PressEvent::PRESS_UP, ButtonPressUpCallback);
       // button_attach(&buttons_[i].User_button, PressEvent::LONG_PRESS_HOLD, ButtonLongPressCallback);
       // button_attach(&buttons_[i].User_button, PressEvent::DOUBLE_CLICK, ButtonDoubleClickCallback);
       //button_attach(&buttons_[i].User_button, PressEvent::SINGLE_CLICK, ButtonSingleClickCallback);
+      button_start(&buttons_[i].User_button);
+    }
+
+    if(buttons_[i].buttonID == EButtonID::RESET){
+      button_init(&buttons_[i].User_button, ButtonGpioRead, buttons_[i].activeLevel, static_cast<uint8_t>(buttons_[i].buttonID));
+      button_attach(&buttons_[i].User_button, PressEvent::LONG_PRESS_START, ButtonLongPressCallback);
+      button_attach(&buttons_[i].User_button, PressEvent::SINGLE_CLICK, ButtonSingleClickCallback);
       button_start(&buttons_[i].User_button);
     }
   }

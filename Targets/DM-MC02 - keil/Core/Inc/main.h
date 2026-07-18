@@ -75,8 +75,8 @@ void Error_Handler(void);
 #define LEVEL_3_GPIO_Port GPIOA
 #define LEVEL_4_Pin GPIO_PIN_2
 #define LEVEL_4_GPIO_Port GPIOA
-#define RIGHT_AXIS_Y_Pin GPIO_PIN_5
-#define RIGHT_AXIS_Y_GPIO_Port GPIOA
+#define RESET_Pin GPIO_PIN_5
+#define RESET_GPIO_Port GPIOA
 #define ADC1_VBAT_Pin GPIO_PIN_4
 #define ADC1_VBAT_GPIO_Port GPIOC
 #define BMI_TEMP_PWM_Pin GPIO_PIN_1

@@ -116,6 +116,16 @@ void CSystemControllerLink::UpdateButtonInfo_() {
 		else if (CDevButton::islevel_3) { StartLevelChoose_(2); CDevButton::islevel_3 = false; }
 		else if (CDevButton::islevel_4) { StartLevelChoose_(3); CDevButton::islevel_4 = false; }
 	}
+
+	if(CDevButton::isControllerReset){
+		__set_FAULTMASK(1);
+    	NVIC_SystemReset();
+	}
+
+	if(CDevButton::isRobotReset){
+		// 这发送复位处理信号
+		CDevButton::isRobotReset = false;
+	}
 }
 
 /**

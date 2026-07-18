@@ -69,6 +69,11 @@ EAppStatus InitAllDevice(){
     Button_initparam.buttons_[3].activeLevel = 1;  // 高电平有效
     Button_initparam.buttons_[3].halGpioPort = LEVEL_4_GPIO_Port;
     Button_initparam.buttons_[3].halGpioPin = LEVEL_4_Pin;
+    // 复位按键
+    Button_initparam.buttons_[4].buttonID = CDevButton::EButtonID::RESET;
+    Button_initparam.buttons_[4].activeLevel = 1;  // 高电平有效
+    Button_initparam.buttons_[4].halGpioPort = RESET_GPIO_Port;
+    Button_initparam.buttons_[4].halGpioPin = RESET_Pin;
     Button.InitDevice(&Button_initparam);
 
     // 摇杆
@@ -77,7 +82,7 @@ EAppStatus InitAllDevice(){
     rocker_initparam.deviceID = EDeviceID::DEV_ROCKER;
     rocker_initparam.interfaceID = EInterfaceID::INF_ADC1;
     rocker_initparam.X_channel = CInfADC::EAdcChannel::CHANNEL_NULL;  // PA2 is LEVEL_4 GPIO
-    rocker_initparam.Y_channel = CInfADC::EAdcChannel::CHANNEL_19;  // PA5
+    rocker_initparam.Y_channel = CInfADC::EAdcChannel::CHANNEL_NULL;  // PA5
     rocker.InitDevice(&rocker_initparam);
 
     // 蜂鸣器

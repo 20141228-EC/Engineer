@@ -160,7 +160,7 @@ void CInfADC::_ADC_HalConvCpltCallback(ADC_HandleTypeDef *hadc){
 	if (interfaceStatus == APP_RESET || !useDma_) return;
 
 	adc_data[0] = Read(EAdcChannel::CHANNEL_4);
-	adc_data[1] = Read(EAdcChannel::CHANNEL_19);
+	//adc_data[1] = Read(EAdcChannel::CHANNEL_19);
 
 	return;
 }

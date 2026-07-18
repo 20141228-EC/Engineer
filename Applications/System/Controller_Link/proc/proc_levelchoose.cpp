@@ -1,7 +1,7 @@
 /******************************************************************************
  * @file         proc_levelchoose.cpp
  * @author       ciallo (1002046597@qq.com)
- * @brief        一键选择矿石难度
+ * @brief        一键选择兑换难度
  * @version      V2.0
  * @date         2026-06-03
  *
@@ -25,7 +25,7 @@ void CSystemControllerLink::TickLevelChoose_() {
 
     switch (levelStep_) {
 
-    case ELevelStep::KEY_PRESS:
+    case ELevelStep::KEY_PRESS:// 按键按下触发
         pkg.Key_value1 = H_KEY_VALUE;
         pkg.Key_value2 = 0;
         pkg.x_position = 0;
@@ -36,14 +36,14 @@ void CSystemControllerLink::TickLevelChoose_() {
         levelStep_ = ELevelStep::KEY_RELEASE;
         break;
 
-    case ELevelStep::KEY_RELEASE:
+    case ELevelStep::KEY_RELEASE: // 按键松开
         pkg.Key_value1 = 0;
         pkg.Key_value2 = 0;
         pcontrollerLink_->SendPackage(CDevControllerLink::ID_CHOSELEVEL_DATA, pkg.header);
         levelStep_ = ELevelStep::MOVE_TO_LEVEL;
         break;
 
-    case ELevelStep::MOVE_TO_LEVEL:
+    case ELevelStep::MOVE_TO_LEVEL: // 移动到等级选择窗口
         pkg.x_position = levelTargetX_;
         pkg.y_position = levelTargetY_;
         pkg.mouse_left = 0;

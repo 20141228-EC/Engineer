@@ -21,8 +21,9 @@ public:
     LEVEL_1 = 0,                // 一级难度   
     LEVEL_2 = 1,                // 二级难度 
     LEVEL_3 = 2,                // 三级难度 
-    LEVEL_4 = 3,                // 四级难度 
-    BUTTON_MAX = 4              // 数组大小
+    LEVEL_4 = 3,                // 四级难度
+    RESET = 4,                  // 复位自定义控制器
+    BUTTON_MAX = 5              // 数组大小
   };
 private:
   typedef struct singlebutton{
@@ -58,6 +59,8 @@ public:
   static bool islevel_2;
   static bool islevel_3;
   static bool islevel_4;
+  static bool isControllerReset;
+  static bool isRobotReset;
 
 };
 

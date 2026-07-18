@@ -75,13 +75,13 @@ void CSystemCore::UpdateHandler_() {
         SysControllerLink.controllerInfo.arm.yaw       = pcontroller_->ControllerInfo.posit_yaw;
         SysControllerLink.controllerInfo.arm.pitch1     = pcontroller_->ControllerInfo.posit_pitch1 - CONTROLLER_PITCH1_ZERO_OFFSET;
         SysControllerLink.controllerInfo.arm.pitch2     = pcontroller_->ControllerInfo.posit_pitch2 - CONTROLLER_PITCH2_ZERO_OFFSET;
-        SysControllerLink.controllerInfo.arm.roll       = -pcontroller_->ControllerInfo.posit_roll;       // 保留原右臂符号反转
-        SysControllerLink.controllerInfo.arm.pitch_end  = -pcontroller_->ControllerInfo.posit_pitch_end;  // 保留原右臂符号反转
+        SysControllerLink.controllerInfo.arm.roll       = pcontroller_->ControllerInfo.posit_roll;       // 保留原右臂符号反转
+        SysControllerLink.controllerInfo.arm.pitch_end  = pcontroller_->ControllerInfo.posit_pitch_end;  // 保留原右臂符号反转
         // 接收机器人臂部位置 (机器人 -> 控制器)
-        pcontroller_->ControllerCmd.cmd_yaw       = SysControllerLink.robotInfo.arm.yaw;
+        pcontroller_->ControllerCmd.cmd_yaw       = -SysControllerLink.robotInfo.arm.yaw;
         pcontroller_->ControllerCmd.cmd_pitch1    = SysControllerLink.robotInfo.arm.pitch1;
         pcontroller_->ControllerCmd.cmd_pitch2    = SysControllerLink.robotInfo.arm.pitch2;
-        pcontroller_->ControllerCmd.cmd_roll      = SysControllerLink.robotInfo.arm.roll;
+        pcontroller_->ControllerCmd.cmd_roll      = -SysControllerLink.robotInfo.arm.roll;
         pcontroller_->ControllerCmd.cmd_pitch_end = SysControllerLink.robotInfo.arm.pitch_end;
 
         /* 模式切换

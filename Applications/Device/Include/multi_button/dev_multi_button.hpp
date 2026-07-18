@@ -44,8 +44,8 @@ public:
     PRESS_REPEAT,
     SINGLE_CLICK,
     DOUBLE_CLICK,
-    LONG_PRESS_START,
-    LONG_PRESS_HOLD,
+    LONG_PRESS_START,// 只长按一次就能够触发
+    LONG_PRESS_HOLD,// 长按一次之后反复触发
     number_of_event,
     NONE_PRESS
   };

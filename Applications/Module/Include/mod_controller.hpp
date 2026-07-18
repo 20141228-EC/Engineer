@@ -32,7 +32,6 @@
 #define CONTROLLER_PITCH1_MOTOR_OFFSET 0
 /*----------------------------------零点标定偏移(deg)-------------------------------------------*/
 // 上电时关节未精确停在物理0°导致的偏差，正值表示电机0rad对应的物理角度
-// 例如：偏移8.0表示电机报告0rad时，控制器关节实际在物理8°位置
 #define CONTROLLER_PITCH1_ZERO_OFFSET  0.0f   // P1零点偏移(deg)，根据实测调节
 #define CONTROLLER_PITCH2_ZERO_OFFSET  0.0f   // P2零点偏移(deg)，根据实测调节
 #define CONTROLLER_PITCHEND_ZERO_OFFSET  43.0f   // PitchEnd零点偏移(deg)，根据实测调节
