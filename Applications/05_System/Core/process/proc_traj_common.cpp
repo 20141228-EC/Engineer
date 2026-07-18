@@ -170,8 +170,10 @@
                 WriteArmjoint(arm, joints);
             }
 
-            // 运动期间夹爪保持 opt.gripDuringMotion
-            WriteGripCommand(arm, opt.gripDuringMotion);
+            // 运动期间夹爪保持 opt.gripDuringMotion,如果传入了保持命令则不动
+            if(!opt.gripKeepCurrent){
+                WriteGripCommand(arm, opt.gripDuringMotion);
+            }
 
             // 到位检查
             if (frameTargetCommanded) {
@@ -207,7 +209,9 @@
 
         // 关节到位后才切换到本段目标夹爪状态
         WriteArmjoint(arm, target);
-        WriteGripCommand(arm, opt.gripAfter);
+        if(!opt.gripKeepCurrent){
+            WriteGripCommand(arm, opt.gripAfter);
+        }
         return true;
     }
 

@@ -130,7 +130,7 @@ namespace my_engineer{
     };
 
     struct SArrivalCheckConfig {
-        float_t toleranceDeg = 4.0f;     ///< 关节到位容差，单位：度
+        float_t toleranceDeg = 5.0f;     ///< 关节到位容差，单位：度
         uint32_t stableMs = 100;          ///< 每个关节进入容差后需要连续稳定的时间
         uint32_t timeoutMs = 1000;        ///< 本帧目标指令到达后，等待真实反馈到位的报警时间
         uint32_t hardTimeoutMs = 8000;    ///< 本帧目标指令到达后，等待真实反馈到位的硬超时时间
@@ -154,6 +154,7 @@ namespace my_engineer{
         const float_t *startOverride = nullptr;  // 规划起点覆盖
         float_t minTimeS        = 0.0f;   // 最小时长
         bool    waitForArrival  = true;   // 是否等关节到位
+        bool    gripKeepCurrent = false;  // 保持当前的夹爪的姿态
     };
 
     //轨迹外部声明
