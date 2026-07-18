@@ -55,7 +55,7 @@ namespace my_engineer {
                 core.armmode_ = EArmMode::STORE_R_ORE;
                 break;
             }
-            // if (runner.keyboard_.key_Ctrl) {
+            // if (runner.keyboard_.key_X) {
             //     trajId = TRAJ_AUTO;
             //     core.armmode_ = EArmMode::AUTO;
             //     break;
@@ -69,6 +69,30 @@ namespace my_engineer {
 
         // ---- 主流程 ----
         if (trajId == TRAJ_AUTO) {
+            float_t aimTarget[J::COUNT];// 初始化对准角度
+            aimTarget[J::J_YAW]  = STORE_ORE_ARM_AIM_YAW;
+            aimTarget[J::J_P1]   = STORE_ORE_ARM_AIM_PITCH1;
+            aimTarget[J::J_P2]   = STORE_ORE_ARM_AIM_PITCH2;
+            aimTarget[J::J_ROLL] = STORE_ORE_ARM_AIM_ROLL;
+            aimTarget[J::J_ENDP] = STORE_ORE_ARM_AIM_END_PITCH;
+            aimTarget[J::J_ENDR] = STORE_ORE_ARM_AIM_END_ROLL;
+
+            SPlayJointTargetOptions opt;
+            opt.speedScale = 1.0f;
+            opt.gripDuringMotion = false;
+            opt.gripAfter        = false;// 运动前后的夹爪的控制参数
+            if(!PlayJointTarget(runner.arm_ ,aimTarget ,opt)) goto proc_exit;// 瞄准阶段
+
+            // 等 Shift 确认后再进入自动流程
+            while (true) {
+                if (runner.keyboard_.key_Ctrl && runner.keyboard_.key_Z) goto proc_exit;
+                if (runner.keyboard_.key_Shift) {
+                    while (runner.keyboard_.key_Shift) proc_waitMs(1);   // 等按键释放，防止本次按下被下次循环误判
+                    break;
+                }
+                proc_waitMs(1);
+            }
+
             if (!runner.RunAutoOreTask())
                 goto proc_exit;
         } else {

@@ -66,7 +66,7 @@ EAppStatus CModArm::CComEndRoll::UpdateComponent() {
 	}
 	// 缓慢移动控制逻辑
 	static float_t next_angle = 0.0f;
-	static float_t gradual_kp = 0.05f;
+	static float_t gradual_kp = 0.2f;
 	static float_t gradual_min = 0.03f;
 
 	next_angle += (endRollCmd.setAngle - next_angle) * gradual_kp;			///<一阶低通滤波，避免角度突变

@@ -36,13 +36,13 @@ void CSystemCore::StartSaveOreTask(void *arg) {
         if(keyboard.mouse_L){               ///< 按左键确认后开始执行
 
             /*Set Arm*/
-            core.parm_->armCmd.set_angle_Yaw = SAVE_ORE_YAW_ANGLE;
-            core.parm_->armCmd.set_angle_Pitch1 = SAVE_ORE_PITCH1_ANGLE;
-            core.parm_->armCmd.set_angle_Pitch2 = SAVE_ORE_PITCH2_ANGLE;
-            core.parm_->armCmd.set_angle_Roll = SAVE_ORE_ROLL_ANGLE;
-            core.parm_->armCmd.set_angle_end_pitch = SAVE_ORE_END_PITCH_ANGLE;
-            core.parm_->armCmd.set_angle_end_roll = SAVE_ORE_END_ROLL_ANGLE;
-            core.parm_->armCmd.set_length_grip = SAVE_ORE_GRIP_LENGTH;
+//            core.parm_->armCmd.set_angle_Yaw = SAVE_ORE_YAW_ANGLE;
+//            core.parm_->armCmd.set_angle_Pitch1 = SAVE_ORE_PITCH1_ANGLE;
+//            core.parm_->armCmd.set_angle_Pitch2 = SAVE_ORE_PITCH2_ANGLE;
+//            core.parm_->armCmd.set_angle_Roll = SAVE_ORE_ROLL_ANGLE;
+//            core.parm_->armCmd.set_angle_end_pitch = SAVE_ORE_END_PITCH_ANGLE;
+//            core.parm_->armCmd.set_angle_end_roll = SAVE_ORE_END_ROLL_ANGLE;
+//            core.parm_->armCmd.set_length_grip = SAVE_ORE_GRIP_LENGTH;
 
             // proc_waitMs(1000);
 

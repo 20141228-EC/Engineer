@@ -29,9 +29,9 @@
 /* ----------------------上台阶------------------- */
 #define CLIMBING_YAW_ANGLE        ARM_YAW_INIT_ANGLE
 #define CLIMBING_PITCH1_ANGLE     ARM_PITCH1_INIT_ANGLE
-#define CLIMBING_PITCH2_ANGLE     ARM_PITCH2_INIT_ANGLE
-#define CLIMBING_ROLL_ANGLE       ARM_ROLL_INIT_ANGLE
-#define CLIMBING_END_PITCH_ANGLE  10
+#define CLIMBING_PITCH2_ANGLE     15
+#define CLIMBING_ROLL_ANGLE       98
+#define CLIMBING_END_PITCH_ANGLE  87
 #define CLIMBING_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
 #define CLIMBING_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
 #define CLIMBING_SPEED            20.f      ///< 给一个较小的速度
@@ -75,14 +75,14 @@
 #define EXCHANGE_ORE_GIMBLE_INIT_ANGLE      0.f
 
 /* ----------------------存矿------------------------*/
-#define SAVE_ORE_YAW_ANGLE        1.0f
-#define SAVE_ORE_PITCH1_ANGLE     1.0f
-#define SAVE_ORE_PITCH2_ANGLE     1.0f
-#define SAVE_ORE_ROLL_ANGLE       1.0f
-#define SAVE_ORE_END_PITCH_ANGLE  1.0f
-#define SAVE_ORE_END_ROLL_ANGLE   1.0f
+#define STORE_ORE_ARM_AIM_YAW        0.f
+#define STORE_ORE_ARM_AIM_PITCH1     0.f
+#define STORE_ORE_ARM_AIM_PITCH2     15.0f
+#define STORE_ORE_ARM_AIM_ROLL       10.0f
+#define STORE_ORE_ARM_AIM_END_PITCH  0.f
+#define STORE_ORE_ARM_AIM_END_ROLL   0.f
 #define SAVE_ORE_GRIP_LENGTH      1.0f
-// 待改
+
 
 
 /* -----------------------全部复位----------------------- */
