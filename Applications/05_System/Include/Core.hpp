@@ -35,8 +35,8 @@
 #define CLIMBING_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
 #define CLIMBING_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
 #define CLIMBING_SPEED            20.f      ///< 给一个较小的速度
-#define SAVING_SPEED              -40.f     ///< 回退
-#define SAVING_HIP_ANGLE          6.3f      ///< 自救腿长
+#define SAVING_SPEED              -50.f     ///< 回退
+#define SAVING_HIP_ANGLE          6.8f      ///< 自救腿长
 #define CLIMBING_HIP_ANGLE        0.f      ///< 抬一点腿
 
 /* -----------------------下台阶--------------------*/
@@ -106,6 +106,18 @@
 #define GROUND_ORE_HIP_LENGTH       1.0f
 // 待改
 
+/* ------------------------大陀螺------------------------- */
+#define CYCLE_YAW_ANGLE        -4.0f
+#define CYCLE_PITCH1_ANGLE     91.0f
+#define CYCLE_PITCH2_ANGLE     31.0f
+#define CYCLE_ROLL_ANGLE       9.0f
+#define CYCLE_END_PITCH_ANGLE  -14.0f
+#define CYCLE_END_ROLL_ANGLE   -1.5f
+#define CYCLE_GRIP_LENGTH      1.0f
+#define CYCLE_HIP_LENGTH       1.0f
+#define CYCLE_GIMBAL_YAW_ANGLE -2.0f
+#define CYCLE_GIMBAL_PITCH_ANGLE    -16.0f
+
 
 
 namespace my_engineer {
@@ -132,6 +144,7 @@ public:
         EXCHANGE_ORE,       ///< 兑矿
         STORE_ORE,           ///< 存矿
         GROUND_ORE,         ///< 地矿
+        CYCLE,              ///< 大陀螺
     } currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
     // 面向系统层的控制模式枚举
@@ -148,6 +161,7 @@ public:
         NORMAL,             ///< 普通
         CLIMBING,           ///< 上台阶
         DOWNSTAIR,          ///< 下台阶
+        CYCLE,              ///< 大陀螺
         // ...to be updated...
     } movemode_ = EMoveMode::NONE;
 
@@ -237,9 +251,9 @@ private:
     static void StartExchangeOreTask(void *arg);
     static void StartReturnOriginTask(void *arg);
     static void StartEnergyUnitTask(void *arg);
-
     static void StartStoreTask(void *arg);
     static void StartExchangeGetTask(void *arg);
+    static void StartCycleTask(void *arg);
     
 };
 
