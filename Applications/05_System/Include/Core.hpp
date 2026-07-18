@@ -37,7 +37,7 @@
 #define CLIMBING_SPEED            20.f      ///< 给一个较小的速度
 #define SAVING_SPEED              -40.f     ///< 回退
 #define SAVING_HIP_ANGLE          6.3f      ///< 自救腿长
-#define CLIMBING_HIP_ANGLE        2.5f      ///< 抬一点腿
+#define CLIMBING_HIP_ANGLE        0.f      ///< 抬一点腿
 
 /* -----------------------下台阶--------------------*/
 #define DOWNSTAIR_YAW_ANGLE        ARM_YAW_INIT_ANGLE

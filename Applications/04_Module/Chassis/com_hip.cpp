@@ -222,8 +222,14 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 					float_t l_grav = _UpdateGravity(HipInfo.pos_L_L);
 					float_t r_grav = _UpdateGravity(HipInfo.pos_L_R);
 
-					pMtr[LL]->Control_MIT(0.f, mitCtrl[LL].kd, 0.f, 0.f, 1.f + current_tau[LL]);
-					pMtr[LR]->Control_MIT(0.f, mitCtrl[LR].kd, 0.f, 0.f, -1.f + current_tau[LR]);
+					if(!parent->should_be_saved){
+						pMtr[LL]->Control_MIT(0.f, mitCtrl[LL].kd, 0.f, 0.f, 1.5f + current_tau[LL]);
+						pMtr[LR]->Control_MIT(0.f, mitCtrl[LR].kd, 0.f, 0.f, -1.5f + current_tau[LR]);
+					}
+					else{
+						pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.f, mitCtrl[LL].tau);
+						pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.f, mitCtrl[LR].tau);
+					}
 
 					// pMtr[LL]->Control_MIT(0.f, 0.f, 0.f, 0.f, 0.f);
 					// pMtr[LR]->Control_MIT(0.f, 0.f, 0.f, 0.f, 0.f);
@@ -231,7 +237,7 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 
 					// 离开模式的时候可能需要清零current_tau
 				}
-				else{
+				else{	// 非下台阶模式
 					pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.f, mitCtrl[LL].tau);
 					pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.f, mitCtrl[LR].tau);
 					// pMtr[LL]->Control_MIT(0.f, mitCtrl[LL].kd, 0.f, 0.f, mitCtrl[LL].tau);

@@ -29,7 +29,7 @@ void CSystemCore::StartDownStairTask(void *arg) {
 
 	/* Phase 1: 臂自动移到预设位姿，底盘WASD反转控制(图传180°掉头) */
 	core.parm_->armCmd.isAutoCtrl = true;           ///< 臂自动控制
-	core.gimbal_auto_ctrl = true;					///< 云台自动控制
+	core.pgimbal_->gimbalCmd.isAutoCtrl = true;					///< 云台自动控制
 	core.pchassis_->chassisCmd.isAutoCtrl = true;   ///< 阻止外部WASD，由本任务内部反转处理
 
 	/*Set Arm*/
@@ -50,24 +50,31 @@ void CSystemCore::StartDownStairTask(void *arg) {
 	// 松开ctrl退出下台阶模式
 	while (keyboard.key_Ctrl) {
 
-		// 阻尼衰减
-		core.pchassis_->chassisCmd.speed_X *= 0.97f;
-		core.pchassis_->chassisCmd.speed_Y *= 0.98f;
-		if (abs(core.pchassis_->chassisCmd.speed_X) < 0.5f) core.pchassis_->chassisCmd.speed_X = 0.0f;
-		if (abs(core.pchassis_->chassisCmd.speed_Y) < 0.5f) core.pchassis_->chassisCmd.speed_Y = 0.0f;
+		if(!core.pchassis_->should_be_saved){	// 非自救情况下
+			// 阻尼衰减
+			core.pchassis_->chassisCmd.speed_X *= 0.97f;
+			core.pchassis_->chassisCmd.speed_Y *= 0.98f;
+			if (abs(core.pchassis_->chassisCmd.speed_X) < 0.5f) core.pchassis_->chassisCmd.speed_X = 0.0f;
+			if (abs(core.pchassis_->chassisCmd.speed_Y) < 0.5f) core.pchassis_->chassisCmd.speed_Y = 0.0f;
 
-		// WASD反转: 图传180°掉头后，A/D和W/S方向都颠倒
-		if (keyboard.key_Shift) {
-			core.pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_A - keyboard.key_D) * 5.0f;
-			core.pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_S - keyboard.key_W) * 5.0f;
-			core.pchassis_->chassisCmd.speed_X = std::clamp(core.pchassis_->chassisCmd.speed_X, -50.0f, 50.0f);
-			core.pchassis_->chassisCmd.speed_Y = std::clamp(core.pchassis_->chassisCmd.speed_Y, -100.0f, 100.0f);
-		} else {
-			core.pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_A - keyboard.key_D) * 1.0f;
-			core.pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_S - keyboard.key_W) * 1.0f;
-			core.pchassis_->chassisCmd.speed_X = std::clamp(core.pchassis_->chassisCmd.speed_X, -20.0f, 20.0f);
-			core.pchassis_->chassisCmd.speed_Y = std::clamp(core.pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
+			// WASD反转: 图传180°掉头后，A/D和W/S方向都颠倒
+			if (keyboard.key_Shift) {
+				core.pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_A - keyboard.key_D) * 5.0f;
+				core.pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_S - keyboard.key_W) * 5.0f;
+				core.pchassis_->chassisCmd.speed_X = std::clamp(core.pchassis_->chassisCmd.speed_X, -50.0f, 50.0f);
+				core.pchassis_->chassisCmd.speed_Y = std::clamp(core.pchassis_->chassisCmd.speed_Y, -100.0f, 100.0f);
+			} else {
+				core.pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_A - keyboard.key_D) * 1.0f;
+				core.pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_S - keyboard.key_W) * 1.0f;
+				core.pchassis_->chassisCmd.speed_X = std::clamp(core.pchassis_->chassisCmd.speed_X, -20.0f, 20.0f);
+				core.pchassis_->chassisCmd.speed_Y = std::clamp(core.pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
+			}
 		}
+		else{	// 自救情况下
+			core.pchassis_->chassisCmd.speed_Y = SAVING_SPEED;	// 退到台阶下
+			core.pchassis_->chassisCmd.L_length = SAVING_HIP_ANGLE;	// 立刻抬腿
+		}
+		
 
 		proc_waitMs(5);
 	}

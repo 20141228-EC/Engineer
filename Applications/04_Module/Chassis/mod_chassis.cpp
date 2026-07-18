@@ -301,7 +301,7 @@ void CModChassis::UpdateHandler_(){
             reset_hip = 0;
         }
 
-        if(filter->Imu_Ekf_Info.pitch < -13.f){
+        if(filter->Imu_Ekf_Info.pitch < -16.f){
             should_be_saved = true;     // 仰角超过18°就自救
         }
 
@@ -316,12 +316,17 @@ void CModChassis::UpdateHandler_(){
             comHip_.pidRollCtrl.ResetPidController(); ///< 同时重置PID控制器
             reset_hip = 0;      ///< 清空标志位
         }
+        should_be_saved = false;
     }
     else if(MovMode == EmovMode::DOWNSTAIR){    // 下台阶模式
-			
+		
+        if(filter->Imu_Ekf_Info.pitch < -13.f){
+            should_be_saved = true;     // 仰角超过18°就自救
+        }
+
         float_t roll_err = roll_Target - chassisInfo.roll_Measure;  ///< 当前仰角与目标差值
         float_t roll_rate = filter->Imu_Ekf_Info.gyro_y;    // 当前pitch轴角速度
-        chassisCmd.L_Tau = roll_err * 0.8f - roll_rate * 0.05;          ///< pd控制(纳入加速度影响)
+        chassisCmd.L_Tau = roll_err * 0.8f - roll_rate * 0.05;          ///< pd控制(加入加速度影响)
         ///< 目前只单纯给个力 如果效果好的话后续对连杆建模给精确一些
     }
 
