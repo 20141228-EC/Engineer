@@ -69,6 +69,11 @@ EAppStatus InitAllDevice(){
     Button_initparam.buttons_[3].activeLevel = 1;  // 高电平有效
     Button_initparam.buttons_[3].halGpioPort = RESET_GPIO_Port;
     Button_initparam.buttons_[3].halGpioPin = RESET_Pin;
+    // 末端 roll 翻转
+    Button_initparam.buttons_[4].buttonID = CDevButton::EButtonID::END_ROLL_TOGGLE;
+    Button_initparam.buttons_[4].activeLevel = 1;
+    Button_initparam.buttons_[4].halGpioPort = LEVEL_3_GPIO_Port;
+    Button_initparam.buttons_[4].halGpioPin = LEVEL_3_Pin;
     Button.InitDevice(&Button_initparam);
 
     // 摇杆
