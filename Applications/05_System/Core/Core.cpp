@@ -518,6 +518,13 @@ EAppStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
            return APP_OK;
        }
 
+       case EAutoCtrlProcess::CYCLE: {
+            currentAutoCtrlProcess_ = EAutoCtrlProcess::CYCLE;
+            xTaskCreate(StartCycleTask, "Cycle Task",
+                       512, this, proc_ModuleTaskPriority,
+                       &autoCtrlTaskHandle_);
+       }
+
 //        case EAutoCtrlProcess::ENERGY_UNIT: {
 //            currentAutoCtrlProcess_ = EAutoCtrlProcess::ENERGY_UNIT;
 //            xTaskCreate(StartEnergyUnitTask, "Grab Energy Unit Task",

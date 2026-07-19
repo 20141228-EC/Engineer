@@ -351,6 +351,7 @@ void CSystemCore::ControlFromKeyboard_() {
         if(keyboard.key_Shift && parm_->armInfo.isModuleAvailable){
             //if(keyboard.key_Z) { StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN); }   // Shift + Z 能量单元任务 
             // if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE); }
+            if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::CYCLE);}
         }
         }
 }
