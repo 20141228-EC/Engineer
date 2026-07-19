@@ -384,6 +384,17 @@ void CSystemCore::ControlFromController_() {
                              interp_roll(40), interp_end_pitch(40);
     // 上一次控制器原始数据，用于检测数据更新
     static CSystemControllerLink::SArmAngles last_arm;
+    static bool last_isCustomCtrl = false;
+    const bool cur_isCustomCtrl = parm_ ? parm_->armCmd.isCustomCtrl : false;
+    if (parm_ && cur_isCustomCtrl && !last_isCustomCtrl) {
+        interp_yaw.setTarget(parm_->armCmd.set_angle_Yaw, Round(controller.arm.yaw));
+        interp_p1.setTarget(parm_->armCmd.set_angle_Pitch1, Round(controller.arm.pitch1));
+        interp_p2.setTarget(parm_->armCmd.set_angle_Pitch2, Round(controller.arm.pitch2));
+        interp_roll.setTarget(parm_->armCmd.set_angle_Roll, Round(-controller.arm.roll));
+        interp_end_pitch.setTarget(parm_->armCmd.set_angle_end_pitch, Round(controller.arm.pitch_end));
+        last_arm = controller.arm;
+    }
+    last_isCustomCtrl = cur_isCustomCtrl;
 
 
     // 将模块启动
@@ -489,11 +500,11 @@ void CSystemCore::ControlFromController_() {
         if(keyboard_edge.key_V == CSystemRemote::ERemoteEdge::Rising){
             regrip_keyboardcom = true;
         }
-        const bool regrip_requested = controller.gripper_regrip || regrip_keyboardcom;
+        const bool regrip_requested = regrip_keyboardcom;
         if (regrip_requested) {
             parm_->armCmd.reGripCmd = true;                                  // 传递 re-grip 指令
         }
-        controller.gripper_regrip = false;  // 处理之后清除标志位
+        //controller.gripper_regrip = false;  // 处理之后清除标志位
         regrip_keyboardcom = false;
 
         if(!mode_switching && keyboard_edge.key_C == CSystemRemote::ERemoteEdge::Rising){
@@ -501,7 +512,7 @@ void CSystemCore::ControlFromController_() {
                 ? EGripKeyboardCmd::OPEN
                 : EGripKeyboardCmd::CLOSE;
         }
-        const bool grip_close_cmd = controller.gripper_close || gripKeyboardCmd_ == EGripKeyboardCmd::CLOSE;
+        const bool grip_close_cmd = gripKeyboardCmd_ == EGripKeyboardCmd::CLOSE;
         const bool grip_open_cmd = gripKeyboardCmd_ == EGripKeyboardCmd::OPEN;
         if (mode_switching) {
              // 模式切换期间冻结夹爪，避免 Z+X 切换被解释成张开

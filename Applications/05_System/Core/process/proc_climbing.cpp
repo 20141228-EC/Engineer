@@ -44,7 +44,7 @@ void CSystemCore::StartClimbingTask(void *arg) {
     aimTarget[J::J_ENDR] = CLIMBING_END_ROLL_ANGLE;
 
     SPlayJointTargetOptions opt;
-    opt.speedScale = 1.5f;
+    opt.speedScale = 5.f;
     opt.gripKeepCurrent = true;
     if(!PlayJointTarget(*core.parm_ ,aimTarget ,opt)) goto proc_exit;// 平滑过渡
 	// 对臂的姿态不作限制，操作手根据情况调整
