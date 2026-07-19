@@ -31,7 +31,7 @@ void CSystemCore::StartClimbingTask(void *arg) {
 
 	core.parm_->armCmd.isAutoCtrl = true;           ///< 臂自动控制
 	core.pchassis_->chassisCmd.isAutoCtrl = true;   ///< 底盘自动控制
-	core.gimbal_auto_ctrl = true;					///< 云台自动控制
+	core.pgimbal_->gimbalCmd.isAutoCtrl = true;					///< 云台自动控制
 	
 	/*Set Arm*/
 
@@ -113,7 +113,7 @@ proc_exit:
 	core.pchassis_->is_climbed = false;
 	core.pchassis_->chassisInfo.crawler_on = false;	// 关履带
 	core.pchassis_->should_be_saved = false;	// 清自救标志位
-	core.gimbal_auto_ctrl = false;
+	core.pgimbal_->gimbalCmd.isAutoCtrl = false;;
 	core.autoCtrlTaskHandle_ = nullptr;
 	core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 	core.movemode_ = EMoveMode::NONE;

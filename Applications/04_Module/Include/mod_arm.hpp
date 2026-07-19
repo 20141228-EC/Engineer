@@ -25,8 +25,8 @@
 #define ARM_END_PITCH_PHYSICAL_RANGE_MAX 90.0f
 #define ARM_END_GRIP_PHYSICAL_RANGE_MIN 0.0f
 #define ARM_END_GRIP_PHYSICAL_RANGE_MAX 30.f
-#define ARM_END_ROLL_PHYSICAL_RANGE_MIN  -169.f
-#define ARM_END_ROLL_PHYSICAL_RANGE_MAX  156.f
+#define ARM_END_ROLL_PHYSICAL_RANGE_MIN  -103.f
+#define ARM_END_ROLL_PHYSICAL_RANGE_MAX  221.f
 #define ARM_END_GRIP_PHYSICAL_RANGE  30.f
 
 /*-------------------------------------电机限位----------------------------------------------------*/

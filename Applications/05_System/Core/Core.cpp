@@ -111,7 +111,7 @@ void CSystemCore::UpdateHandler_() {
     else if(SysControllerLink.controllerInfo.level_3){
         curlevel = 3;
         if (pgimbal_) {
-            pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
+            pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_ANGLE;
         }
     }
     if(curlevel != 0 && curlevel != lastlevel && parm_ ){
