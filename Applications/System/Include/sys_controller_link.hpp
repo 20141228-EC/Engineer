@@ -56,8 +56,9 @@ public:
 		bool controller_OK = false;          ///< 控制器状态OK
 		bool return_success = false;         ///< 归位成功标志
 		// EToggleSwitch toggle_switch = TOGGLE_MIDDLE;  ///< 拨杆档位
-		bool gripper_close = false;          ///< 夹爪闭合
-		bool gripper_regrip = false;         ///< 夹爪二次夹紧请求
+		bool level_1 = false; 
+		bool level_2 = false;
+		bool level_3 = false;
 		SArmAngles arm;                      ///< 单臂5轴角度
 		// int8_t rocker_X = 0;                 ///< 摇杆X: roll_end / 底盘左右移动 (-100~100)
 		// int8_t rocker_Y = 0;                 ///< 摇杆Y: 底盘前进 (-100~100)，仅底盘模式有效
@@ -69,6 +70,7 @@ public:
 		bool controlled_by_controller = false; ///< 被控制器控制中
 		bool robot_init_ok = false;            ///< 机器人初始化完成
 		bool p3_lock = false;                   ///< 保留（机器人端协议兼容）
+		bool preset_active = false;            ///< preset 进行中（机器人通知控制器跟随）
 		SArmAngles arm;                        ///< 单臂5轴角度
 		SArmAngles torque;                     ///< 臂部力矩/电流反馈（原始值转float）
 	} robotInfo;
@@ -118,16 +120,15 @@ private:
 	uint16_t levelTargetX_ = 0;
 	uint16_t levelTargetY_ = 0;
 
-	///< 难度位置查找表 [level][x,y]
-	const uint16_t Level_Positions[4][2] = {
-		{833, 511},  ///< LEVEL_1
-		{833, 551},  ///< LEVEL_2
-		{833, 592},  ///< LEVEL_3
-		{833, 633},  ///< LEVEL_4
+	///< 难度位置查找表 [level][x,y]，只兑换前3级
+	const uint16_t Level_Positions[3][2] = {
+		{933, 515},  ///< LEVEL_1
+		{933, 558},  ///< LEVEL_2
+		{933, 605},  ///< LEVEL_3
 	};
 
 	///< 确定键的位置
-	const uint16_t Yes_Position[2] = {841, 765};
+	const uint16_t Yes_Position[2] = {940, 803};
 
 	void StartLevelChoose_(uint8_t level);
 	void TickLevelChoose_();

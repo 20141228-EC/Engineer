@@ -115,7 +115,11 @@ void CSystemCore::UpdateHandler_() {
             dbg_fb_pitch1 = pcontroller_->ControllerCmd.fb_torque_pitch1;
             dbg_fb_pitch2 = pcontroller_->ControllerCmd.fb_torque_pitch2;
             dbg_fb_roll   = pcontroller_->ControllerCmd.fb_torque_roll;
-            if(SysControllerLink.robotInfo.controlled_by_controller){
+            if (SysControllerLink.robotInfo.preset_active) {
+                pcontroller_->ControllerCmd.isFree = false;
+                pcontroller_->ControllerCmd.isfirstChange = true;
+            }
+            else if(SysControllerLink.robotInfo.controlled_by_controller){
                 pcontroller_->ControllerCmd.isfirstChange = true;
                 pcontroller_->ControllerCmd.isFree = true;
             }

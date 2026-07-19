@@ -35,15 +35,13 @@ void StartMonitorTask(void *argument) {
         usb->FormatTransmit(
                 "---------------------------------------------\r\n"
                 "[Arm] yaw:%.2f p1:%.2f p2:%.2f roll:%.2f p_end:%.2f\r\n"
-                "controlled: %d toggle:%d gripper:%d\r\n",
+                "controlled: %d\r\n",
                 SysControllerLink.controllerInfo.arm.yaw,
                 SysControllerLink.controllerInfo.arm.pitch1,
                 SysControllerLink.controllerInfo.arm.pitch2,
                 SysControllerLink.controllerInfo.arm.roll,
                 SysControllerLink.controllerInfo.arm.pitch_end,
-                static_cast<int8_t>(SysControllerLink.robotInfo.controlled_by_controller),
-//                static_cast<int8_t>(SysControllerLink.controllerInfo.toggle_switch),
-                static_cast<int8_t>(SysControllerLink.controllerInfo.gripper_close)
+                static_cast<int8_t>(SysControllerLink.robotInfo.controlled_by_controller)
             );
         proc_waitMs(500);
     }
