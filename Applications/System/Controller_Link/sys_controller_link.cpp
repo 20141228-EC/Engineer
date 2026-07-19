@@ -109,21 +109,26 @@ void CSystemControllerLink::UpdateHandler_() {
 void CSystemControllerLink::UpdateButtonInfo_() {
 	if (systemStatus != APP_OK) return;
 
+	// 开机 5 秒内忽略 level 按键，因为上电的时候gpio会异常的触发
+    if (HAL_GetTick() < 5000) {
+        CDevButton::islevel_1 = false;
+        CDevButton::islevel_2 = false;
+        CDevButton::islevel_3 = false;
+    }
 	// 按键事件
 	if (levelStep_ == ELevelStep::IDLE) {
-		if      (CDevButton::islevel_1) { StartLevelChoose_(0); CDevButton::islevel_1 = false; }
-		else if (CDevButton::islevel_2) { StartLevelChoose_(1); CDevButton::islevel_2 = false; }
-		else if (CDevButton::islevel_3) { StartLevelChoose_(2); CDevButton::islevel_3 = false; }
-		else if (CDevButton::islevel_4) { StartLevelChoose_(3); CDevButton::islevel_4 = false; }
+		if      (CDevButton::islevel_1) { StartLevelChoose_(0); CDevButton::islevel_1 = false;}
+		else if (CDevButton::islevel_2) { StartLevelChoose_(1); CDevButton::islevel_2 = false;}
+		else if (CDevButton::islevel_3) { StartLevelChoose_(2); CDevButton::islevel_3 = false;}
 	}
 
 	if(CDevButton::isControllerReset){
 		__set_FAULTMASK(1);
     	NVIC_SystemReset();
+		CDevButton::isControllerReset = false;
 	}
 
-	if(CDevButton::isRobotReset){
-		// 这发送复位处理信号
+	else if(CDevButton::isRobotReset){
 		CDevButton::isRobotReset = false;
 	}
 }
@@ -141,12 +146,18 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 
 	if (controllerInfo.controller_OK) pkg.status_flags.controller_init_ok = 1;
 	if (controllerInfo.return_success) pkg.status_flags.return_sucess = 1;
-	//pkg.status_flags |= (static_cast<uint8_t>(controllerInfo.toggle_switch) << STATUS_TOGGLE_SHIFT) & STATUS_TOGGLE_MASK;
-	if (controllerInfo.gripper_close) pkg.status_flags.grip = 1;
-	// 二次夹紧
-	if (controllerInfo.gripper_regrip) {
-		pkg.status_flags.regrip = 1;
-		controllerInfo.gripper_regrip = false;
+
+	if (controllerInfo.level_1){
+		pkg.status_flags.level_1 = 1;
+
+	} 
+	if (controllerInfo.level_2) {
+		pkg.status_flags.level_2 = 1;
+
+	}
+	if (controllerInfo.level_3) {
+		pkg.status_flags.level_3 = 1;
+
 	}
 
 	// 单臂角度数据 (float直传, 5轴)
@@ -172,6 +183,7 @@ void CSystemControllerLink::UpdateRobotInfo_() {
 	robotInfo.ask_reset_flag = pkg.status_flags.ask_reset;
 	robotInfo.controlled_by_controller = pkg.status_flags.control_by_controller;
 	robotInfo.robot_init_ok = pkg.status_flags.robot_init_ok;
+	robotInfo.preset_active = pkg.status_flags.preset_active;
 
 	// 解压角度 (int16 -> float, 5轴)
 	robotInfo.arm.yaw       = CDevControllerLink::DecompressAngle(pkg.arm.yaw);
@@ -203,7 +215,9 @@ void CSystemControllerLink::UpdateControllerLinkInfo_() {
 	controllerInfo.controller_OK = pkg.status_flags.controller_init_ok;
 	controllerInfo.return_success = pkg.status_flags.return_sucess;
 	//controllerInfo.toggle_switch = static_cast<EToggleSwitch>((pkg.status_flags & STATUS_TOGGLE_MASK) >> STATUS_TOGGLE_SHIFT);
-	controllerInfo.gripper_close = pkg.status_flags.grip;
+	controllerInfo.level_1 = pkg.status_flags.level_1;
+	controllerInfo.level_2 = pkg.status_flags.level_2;
+	controllerInfo.level_3 = pkg.status_flags.level_3;
 
 	// 单臂角度数据 (float直传, 5轴)
 	controllerInfo.arm.yaw       = pkg.arm.yaw;

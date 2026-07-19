@@ -136,8 +136,9 @@ public:
 		EVarStatus isReturnSuccess = false; ///< 归位是否成功
 		EVarStatus isRobotInit = false; ///< 机器人初始化
 		bool isRest = false; ///< 是否归位
-		bool isLevel4 = false; ///< 是否处于四级状态
-		bool isLevel3 = false; ///< 是否处于三级状态
+		bool isLevel1 = false;
+		bool isLevel2 = false; 
+		bool isLevel3 = false;
 		bool isSelf = false; ///<
 		// int8_t rocker_X = 0; ///< 摇杆X轴值 -100 - 100
 		// int8_t rocker_Y = 0; ///< 摇杆Y轴值 -100 - 100

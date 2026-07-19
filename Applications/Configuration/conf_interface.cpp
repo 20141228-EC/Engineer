@@ -58,7 +58,7 @@ EAppStatus InitAllInterface(){
     inf_laser_right_initparam.rxDmaQueueNum = 4;
     inf_laser_right_initparam.rxDmaBuffSize = 512;
     inf_laser_right_initparam.useTxDma = true;
-    inf_laser_right_initparam.txDmaQueueNum = 2;
+    inf_laser_right_initparam.txDmaQueueNum = 4;
     inf_laser_right_initparam.txDmaBuffSize = 512;
     inf_laser_right.InitInterface(&inf_laser_right_initparam);
 

@@ -12,10 +12,14 @@
 namespace my_engineer {
 
 void CSystemControllerLink::StartLevelChoose_(uint8_t level) {
-    if (level >= 4) return;
+    if (level >= 3) return;
     levelTargetX_ = Level_Positions[level][0];
     levelTargetY_ = Level_Positions[level][1];
     levelStep_ = ELevelStep::KEY_PRESS;
+
+    controllerInfo.level_1 = (level == 0);
+    controllerInfo.level_2 = (level == 1);
+    controllerInfo.level_3 = (level == 2);
 }
 
 void CSystemControllerLink::TickLevelChoose_() {
@@ -83,6 +87,9 @@ void CSystemControllerLink::TickLevelChoose_() {
         pkg.mouse_left = 0;
         pcontrollerLink_->SendPackage(CDevControllerLink::ID_CHOSELEVEL_DATA, pkg.header);
         levelStep_ = ELevelStep::IDLE;
+        controllerInfo.level_1 = false;
+        controllerInfo.level_2 = false;
+        controllerInfo.level_3 = false;
         break;
 
     default:
