@@ -18,11 +18,12 @@ class CDevButton : public CDevMultiButton {
 public:
   enum EButtonID : uint8_t {
     BUTTON_NULL = 255,          // 空按钮标记
-    LEVEL_1 = 0,                // 一级难度   
-    LEVEL_2 = 1,                // 二级难度 
-    LEVEL_3 = 2,                // 三级难度 
+    LEVEL_1 = 0,                // 一级难度
+    LEVEL_2 = 1,                // 二级难度
+    LEVEL_3 = 2,                // 三级难度
     RESET = 3,                  // 复位自定义控制器
-    BUTTON_MAX = 4              // 数组大小
+    END_ROLL_TOGGLE = 4,        // 末端 roll 翻转
+    BUTTON_MAX = 5              // 数组大小
   };
 private:
   typedef struct singlebutton{
@@ -54,11 +55,12 @@ public:
   EAppStatus InitDevice(const SDevInitParam_Base *pStructInitParam) override;
 
   // 按键状态
-  static bool islevel_1;      
+  static bool islevel_1;
   static bool islevel_2;
   static bool islevel_3;
   static bool isControllerReset;
   static bool isRobotReset;
+  static bool isEndRollToggle;
 
 };
 

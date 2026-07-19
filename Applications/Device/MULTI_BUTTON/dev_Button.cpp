@@ -18,6 +18,7 @@ bool CDevButton::islevel_2 = false;
 bool CDevButton::islevel_3 = false;
 bool CDevButton::isControllerReset = false;
 bool CDevButton::isRobotReset = false;
+bool CDevButton::isEndRollToggle = false;
 
 
 CDevButton::singlebutton CDevButton::buttons_[static_cast<int>(EButtonID::BUTTON_MAX)] = {};
@@ -31,6 +32,7 @@ uint8_t CDevButton::ButtonGpioRead(uint8_t button_id){
     case EButtonID::LEVEL_2:
     case EButtonID::LEVEL_3:
     case EButtonID::RESET:
+    case EButtonID::END_ROLL_TOGGLE:
       return HAL_GPIO_ReadPin(buttons_[button_id].halGpioPort, buttons_[button_id].halGpioPin);
   }
 
@@ -51,6 +53,9 @@ void CDevButton::ButtonPressDownCallback(void *btn) {
       break;
     case EButtonID::LEVEL_3:
       islevel_3 = true;
+      break;
+    case EButtonID::END_ROLL_TOGGLE:
+      isEndRollToggle = true;
       break;
     default:
       break;
@@ -124,7 +129,8 @@ EAppStatus CDevButton::InitDevice(const SDevInitParam_Base *pStructInitParam) {
     // 按钮使用按钮库
     if (buttons_[i].buttonID == EButtonID::LEVEL_1 ||
         buttons_[i].buttonID == EButtonID::LEVEL_2 ||
-        buttons_[i].buttonID == EButtonID::LEVEL_3 ) {
+        buttons_[i].buttonID == EButtonID::LEVEL_3 ||
+        buttons_[i].buttonID == EButtonID::END_ROLL_TOGGLE) {
       button_init(&buttons_[i].User_button, ButtonGpioRead, buttons_[i].activeLevel, static_cast<uint8_t>(buttons_[i].buttonID));
       button_attach(&buttons_[i].User_button, PressEvent::PRESS_DOWN, ButtonPressDownCallback);
       // button_attach(&buttons_[i].User_button, PressEvent::PRESS_UP, ButtonPressUpCallback);

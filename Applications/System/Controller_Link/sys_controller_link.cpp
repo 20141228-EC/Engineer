@@ -114,6 +114,7 @@ void CSystemControllerLink::UpdateButtonInfo_() {
         CDevButton::islevel_1 = false;
         CDevButton::islevel_2 = false;
         CDevButton::islevel_3 = false;
+		CDevButton::isEndRollToggle = false;
     }
 	// 按键事件
 	if (levelStep_ == ELevelStep::IDLE) {
@@ -130,6 +131,11 @@ void CSystemControllerLink::UpdateButtonInfo_() {
 
 	else if(CDevButton::isRobotReset){
 		CDevButton::isRobotReset = false;
+	}
+
+	if (CDevButton::isEndRollToggle) {
+		controllerInfo.end_roll_toggle = !controllerInfo.end_roll_toggle;
+		CDevButton::isEndRollToggle = false;
 	}
 }
 
@@ -158,6 +164,9 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 	if (controllerInfo.level_3) {
 		pkg.status_flags.level_3 = 1;
 
+	}
+	if (controllerInfo.end_roll_toggle) {
+		pkg.status_flags.end_roll_toggle = 1;
 	}
 
 	// 单臂角度数据 (float直传, 5轴)

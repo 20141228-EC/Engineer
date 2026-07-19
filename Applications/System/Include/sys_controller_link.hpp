@@ -59,6 +59,7 @@ public:
 		bool level_1 = false; 
 		bool level_2 = false;
 		bool level_3 = false;
+		bool end_roll_toggle = false;        ///< 末端 roll 翻转状态
 		SArmAngles arm;                      ///< 单臂5轴角度
 		// int8_t rocker_X = 0;                 ///< 摇杆X: roll_end / 底盘左右移动 (-100~100)
 		// int8_t rocker_Y = 0;                 ///< 摇杆Y: 底盘前进 (-100~100)，仅底盘模式有效
