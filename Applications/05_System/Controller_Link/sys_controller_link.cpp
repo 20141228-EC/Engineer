@@ -99,6 +99,7 @@ void CSystemControllerLink::UpdateControllerLinkInfo_() {
 	controllerInfo.level_1 = pkg.status_flags.level_1;
 	controllerInfo.level_2 = pkg.status_flags.level_2;
 	controllerInfo.level_3 = pkg.status_flags.level_3;
+	controllerInfo.end_roll_toggle = pkg.status_flags.end_roll_toggle;
 	// 单臂角度数据 (float直传)
 	controllerInfo.arm.yaw       = pkg.arm.yaw;
 	controllerInfo.arm.pitch1    = pkg.arm.pitch1;

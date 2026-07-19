@@ -73,6 +73,7 @@
 #define EXCHANGE_ORE_GRIP_LENGTH      1.0f
 #define EXCHANGE_ORE_GIMBLE_PITCH_ANGLE      -55.0f
 #define EXCHANGE_ORE_GIMBLE_YAW_ANGLE      0.f
+#define EXCHANGE_ORE_GIMBLE_INIT_ANGLE      0.f
 #define EXCHANGE_ORE_GIMBLE_ANGLE      55.f
 
 /* ----------------------存矿------------------------*/
