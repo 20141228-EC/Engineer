@@ -105,6 +105,8 @@ void CSystemCore::StartCycleTask(void *arg)
 proc_exit:
     core.pchassis_->chassisCmd.speed_W = 0.0f;
     core.pchassis_->chassisCmd.isAutoCtrl = false;
+    core.pgimbal_->gimbalCmd.isAutoCtrl = false;
+    core.parm_->armCmd.isAutoCtrl = false;
     core.gimbal_auto_ctrl = false;
     core.autoCtrlTaskHandle_ = nullptr;
     core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
