@@ -84,7 +84,7 @@ proc_exit:
 	core.parm_->armCmd.isAutoCtrl = false;
 	core.pchassis_->chassisCmd.isAutoCtrl = false;
 	core.pgimbal_->gimbalCmd.set_visualyaw = 0.f;//头部回正
-	core.gimbal_auto_ctrl = false;
+	core.pgimbal_->gimbalCmd.isAutoCtrl = false;
 	core.autoCtrlTaskHandle_ = nullptr;
 	core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 	core.movemode_ = EMoveMode::NONE;
