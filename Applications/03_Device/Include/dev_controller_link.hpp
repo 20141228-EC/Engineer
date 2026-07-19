@@ -96,7 +96,8 @@ public:
 		uint8_t ask_reset : 1;  ///< bit0 - 要求复位
 		uint8_t control_by_controller : 1; ///< bit1 - 被控制器控制中
 		uint8_t robot_init_ok : 1;    ///< bit2 - 机器人初始化完成
-		uint8_t reserve : 5;
+		uint8_t preset_active : 1;    ///< bit3 - preset 进行中（机器人通知控制器跟随）
+		uint8_t reserve : 4;
 	} __packed robotStatusFlags_pkt = {};
 
 	/**
@@ -107,9 +108,10 @@ public:
 		uint8_t ask_reset : 1;  			///< bit0 - 要求复位
 		uint8_t return_sucess : 1; 			///< bit1 - 归位成功
 		uint8_t controller_init_ok : 1;    		///< bit2 - 控制器初始化完成
-		uint8_t grip : 1;    				///< bit3 - 夹爪夹住
-		uint8_t regrip : 1;    				///< bit4 - 夹爪二次夹紧请求
-		uint8_t reserve : 3;
+		uint8_t level_1 : 1;    				///< bit3 - level1
+		uint8_t level_2 : 1;    				///< bit4 - level2
+		uint8_t level_3 : 1;    				///< bit5 - level3
+		uint8_t reserve : 2;
 	} __packed ControllerStatusFlags_pkt = {};
 
 	/**

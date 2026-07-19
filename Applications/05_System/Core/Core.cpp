@@ -10,6 +10,7 @@
  */
 
 #include "Core.hpp"
+#include "process/proc_traj_data.hpp"
 
 namespace my_engineer {
 
@@ -103,6 +104,35 @@ void CSystemCore::UpdateHandler_() {
         RESET_SYSTEM();
     }
 
+    static uint8_t lastlevel = 0;
+    uint8_t curlevel = 0;
+    if(SysControllerLink.controllerInfo.level_1)curlevel = 1;
+    else if(SysControllerLink.controllerInfo.level_2)curlevel = 2;
+    else if(SysControllerLink.controllerInfo.level_3){
+        curlevel = 3;
+        if (pgimbal_) {
+            pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
+        }
+    }
+    if(curlevel != 0 && curlevel != lastlevel && parm_ ){
+        presetActive_ = true;        // preset 进行中标志
+        presetLevel_ = curlevel;
+        presetStartTime_ = HAL_GetTick();
+        float_t current[J::COUNT];// 构造空的数组
+        float_t target[J::COUNT];
+        ReadArmjoint(*parm_,current);// 读取当前的角度值
+        const auto &pose = PresetPose_Level[presetLevel_ - 1];
+        target[J::J_YAW] = pose.yaw;
+        target[J::J_P1]  = pose.pitch1;
+        target[J::J_P2]  = pose.pitch2;
+        target[J::J_ROLL] = pose.roll;
+        target[J::J_ENDP] = pose.end_pitch;
+        target[J::J_ENDR] = pose.end_roll;
+        quinticPlayer_.speedScale = 3.f;
+        quinticPlayer_.PlanPointToPoint(current , target);// 时间规划
+    }
+    lastlevel = curlevel;
+
     static bool last_use_Controller = false;
     static uint8_t zx_count = 0;
     static bool zx_flag = false;
@@ -147,6 +177,11 @@ void CSystemCore::UpdateHandler_() {
     if (zx_count > 20 && zx_flag == false) {
         zx_flag = true;
         zx_count = 0;
+        if (presetActive_) {
+            presetActive_ = false;
+            presetHolding_ = false;
+            presetHoldStart_ = 0;
+        }
         // 自动任务执行期间禁止切换控制模式，避免出现切换的bug
         if (currentAutoCtrlProcess_ != EAutoCtrlProcess::NONE) {
             // 任务进行中，忽略切换请求
@@ -239,12 +274,55 @@ void CSystemCore::UpdateHandler_() {
         }
     SysControllerLink.robotInfo.robot_init_ok =
         (parm_ && parm_->armInfo.isModuleAvailable) && (SysRemote.systemStatus == APP_OK);
+    SysControllerLink.robotInfo.preset_active = presetActive_;
 
         // if (use_Controller_ == false) {
         //     // StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE); // 已删除此自动流程
         //     // TODO: 决定切换出自定义控制器模式后的行为
         // }
-    
+    if(presetActive_ && parm_ ){
+        float_t elapsed = static_cast<float_t>(HAL_GetTick() - presetStartTime_) / 1000.0f;
+        float_t joints[J::COUNT];
+        if(!quinticPlayer_.IsFinished(elapsed)){
+            quinticPlayer_.Evaluate(elapsed,joints);
+            parm_->armCmd.set_angle_Yaw       = joints[J::J_YAW];
+            parm_->armCmd.set_angle_Pitch1    = joints[J::J_P1];
+            parm_->armCmd.set_angle_Pitch2    = joints[J::J_P2];
+            parm_->armCmd.set_angle_Roll      = joints[J::J_ROLL];
+            parm_->armCmd.set_angle_end_pitch = joints[J::J_ENDP];
+            parm_->armCmd.set_angle_end_roll  = joints[J::J_ENDR];
+        }
+        else {
+            // 插值完成
+            parm_->armCmd.set_angle_Yaw       = PresetPose_Level[presetLevel_ - 1].yaw;
+            parm_->armCmd.set_angle_Pitch1    = PresetPose_Level[presetLevel_ - 1].pitch1;
+            parm_->armCmd.set_angle_Pitch2    = PresetPose_Level[presetLevel_ - 1].pitch2;
+            parm_->armCmd.set_angle_Roll      = PresetPose_Level[presetLevel_ - 1].roll;
+            parm_->armCmd.set_angle_end_pitch = PresetPose_Level[presetLevel_ - 1].end_pitch;
+            parm_->armCmd.set_angle_end_roll  = PresetPose_Level[presetLevel_ - 1].end_roll;
+
+            bool arrived = parm_->armInfo.isAngleArrived_Yaw
+                    && parm_->armInfo.isAngleArrived_Pitch1
+                    && parm_->armInfo.isAngleArrived_Pitch2
+                    && parm_->armInfo.isAngleArrived_Roll
+                    && parm_->armInfo.isAngleArrived_End_Pitch;
+            if(arrived){
+                    if (!presetHolding_) {
+                        presetHolding_ = true;
+                        presetHoldStart_ = HAL_GetTick();
+                    }
+                    if (HAL_GetTick() - presetHoldStart_ > 250) {
+                        presetHolding_ = false;
+                        presetActive_ = false;
+                        if (SysControllerLink.IsControllerOnline()) {
+                            use_Controller_ = true;
+                        }
+                    }
+            }
+        }
+        return;
+    }
+
     //ControlFromEsp32_(); // ESP32控制
 
     // 由于自动任务会出现莫名的残留现象直接杀死任务会出现残留标志位没有同步，所以在此处做后续的处理

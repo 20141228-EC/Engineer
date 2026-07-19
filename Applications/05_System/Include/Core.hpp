@@ -21,6 +21,7 @@
 #include "algo_imu_ekf.hpp"
 #include "algo_kf_filter.hpp"
 #include "algo_traj_playback.hpp"
+#include "algo_quintic.hpp"
 
 #define I_AM_CONTROLLER 0 // 当前板子是控制器
 
@@ -44,7 +45,7 @@
 #define DOWNSTAIR_PITCH1_ANGLE     ARM_PITCH1_INIT_ANGLE
 #define DOWNSTAIR_PITCH2_ANGLE     ARM_PITCH2_INIT_ANGLE
 #define DOWNSTAIR_ROLL_ANGLE       -1
-#define DOWNSTAIR_END_PITCH_ANGLE  90
+#define DOWNSTAIR_END_PITCH_ANGLE  10
 #define DOWNSTAIR_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
 #define DOWNSTAIR_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
 #define DOWNSTAIR_SPEED            -50.f      ///< 全速的80%
@@ -70,7 +71,7 @@
 #define EXCHANGE_ORE_END_PITCH_ANGLE  1.0f
 #define EXCHANGE_ORE_END_ROLL_ANGLE   1.0f
 #define EXCHANGE_ORE_GRIP_LENGTH      1.0f
-#define EXCHANGE_ORE_GIMBLE_PITCH_ANGLE      -55.0f
+#define EXCHANGE_ORE_GIMBLE_PITCH_ANGLE      55.0f
 #define EXCHANGE_ORE_GIMBLE_YAW_ANGLE      0.f
 #define EXCHANGE_ORE_GIMBLE_INIT_ANGLE      0.f
 
@@ -110,7 +111,15 @@
 
 namespace my_engineer {
 
+struct SArmPresetPose{
+     float yaw = 0.f, pitch1 = 0.f, pitch2 = 0.f, roll = 0.f, end_pitch = 0.f,end_roll = 0.f;
+};
 
+const SArmPresetPose PresetPose_Level[3] = {
+    {/*LEVEL_1:*/ 0.f, 35.f, 47.f, 98.f, 87.f,0.f},
+    {/*LEVEL_2:*/ 0.f, 35.f, 32.f, 10.f, 87.f,0.f},
+    {/*LEVEL_3:*/ 0.f, 35.f, 32.f, 10.f, 87.f,0.f},
+};
 /**
  * @brief 定义系统核心类
  * 
@@ -184,6 +193,7 @@ public:
     EAppStatus InitSystemCore();
 
 private:
+    CAlgoQuintic quinticPlayer_;
     // 定义系统核心的状态
     EAppStatus coreStatus = APP_RESET;
 
@@ -192,6 +202,13 @@ private:
     // 保留上一次的存取矿石的记忆
     uint8_t oreTaskStep_ = 0; 
     bool oreGetDone_ = false;// 确定是否停下
+    
+    uint32_t presetStartTime_;// 记录当前的时间戳
+    // 选择难度等级的时候，初始化臂的动作
+    bool presetActive_ = false;        // preset 进行中标志
+    uint8_t presetLevel_ = 0;          // 当前 preset 等级 (1/2/3)
+    bool presetHolding_ = false;       // preset 到位后等待切换中
+    uint32_t presetHoldStart_ = 0;     // holding 开始时刻
 
     // 模块指针
     CModChassis *pchassis_ = nullptr;

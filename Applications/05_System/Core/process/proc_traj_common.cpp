@@ -37,6 +37,18 @@
         arm.armCmd.set_angle_end_pitch = output[J::J_ENDP];
         arm.armCmd.set_angle_end_roll = output[J::J_ENDR];
     }
+    /** @brief 拷贝机械臂关节角度
+     *  @param input 机械臂对象
+     *  @param target 输出数组
+     */
+    void CopyArmJoint(float_t inputjoint[J::COUNT],const float_t targetjoint[J::COUNT]){
+        inputjoint[J::J_YAW] = targetjoint[J::J_YAW];
+        inputjoint[J::J_P1] = targetjoint[J::J_P1];
+        inputjoint[J::J_P2] = targetjoint[J::J_P2];
+        inputjoint[J::J_ROLL] = targetjoint[J::J_ROLL];
+        inputjoint[J::J_ENDP] = targetjoint[J::J_ENDP];
+        inputjoint[J::J_ENDR] = targetjoint[J::J_ENDR];
+    }
 
     /** @brief 提取轨迹
      *  @param traj 轨迹数据

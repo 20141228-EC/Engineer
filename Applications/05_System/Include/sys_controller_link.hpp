@@ -53,8 +53,9 @@ public:
 		bool controller_OK = false;          ///< 控制器状态OK
 		bool return_success = false;         ///< 归位成功标志
 		//EToggleSwitch toggle_switch = TOGGLE_MIDDLE;  ///< 拨杆档位
-		bool gripper_close = false;          ///< 夹爪闭合
-		bool gripper_regrip = false;         ///< 夹爪二次夹紧请求（脉冲信号）
+		bool level_1 = false;          ///< 等级1
+		bool level_2 = false;          ///< 等级2
+		bool level_3 = false;          ///< 等级3
 		SArmAngles arm;                      ///< 单臂5轴角度
 		int8_t rocker_X = 0;                 ///< 摇杆X: roll_end / 底盘左右移动 (-100~100)
 		int8_t rocker_Y = 0;                 ///< 摇杆Y: 底盘前进 (-100~100)
@@ -65,6 +66,7 @@ public:
 		bool ask_reset_flag = false;         ///< 是否要求复位
 		bool controlled_by_controller = false; ///< 是否被控制器控制
 		bool robot_init_ok = false;          ///< 机器人初始化完成
+		bool preset_active = false;          ///< preset 进行中
 		SArmAngles arm;                      ///< 单臂5轴角度
 		SArmAngles torque;                   ///< 臂部力矩/电流反馈（原始值转float）
 	} robotInfo;

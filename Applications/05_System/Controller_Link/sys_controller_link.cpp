@@ -95,10 +95,10 @@ void CSystemControllerLink::UpdateControllerLinkInfo_() {
 	// 解析状态标志位
 	controllerInfo.controller_OK = pkg.status_flags.controller_init_ok;
 	controllerInfo.return_success = pkg.status_flags.return_sucess;
-	//controllerInfo.toggle_switch = static_cast<EToggleSwitch>((pkg.status_flags & STATUS_TOGGLE_MASK) >> STATUS_TOGGLE_SHIFT);
-	controllerInfo.gripper_close = pkg.status_flags.grip;
-	controllerInfo.gripper_regrip = pkg.status_flags.regrip;
-
+	//难度等级选择
+	controllerInfo.level_1 = pkg.status_flags.level_1;
+	controllerInfo.level_2 = pkg.status_flags.level_2;
+	controllerInfo.level_3 = pkg.status_flags.level_3;
 	// 单臂角度数据 (float直传)
 	controllerInfo.arm.yaw       = pkg.arm.yaw;
 	controllerInfo.arm.pitch1    = pkg.arm.pitch1;
@@ -157,6 +157,7 @@ void CSystemControllerLink::UpdateRobotDataPkg_() {
 	if (robotInfo.ask_reset_flag) pkg.status_flags.ask_reset = 1;
 	if (robotInfo.controlled_by_controller) pkg.status_flags.control_by_controller = 1;
 	if (robotInfo.robot_init_ok) pkg.status_flags.robot_init_ok = 1;
+	if (robotInfo.preset_active) pkg.status_flags.preset_active = 1;
 
 	// 压缩角度 (float -> int16)
 	pkg.arm.yaw       = CDevControllerLink::CompressAngle(robotInfo.arm.yaw);
@@ -188,8 +189,9 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 	if (controllerInfo.controller_OK) pkg.status_flags.controller_init_ok = 1;
 	if (controllerInfo.return_success) pkg.status_flags.return_sucess = 1;
 	//pkg.status_flags.toggle_switch = static_cast<uint8_t>(controllerInfo.toggle_switch);
-	if (controllerInfo.gripper_close) pkg.status_flags.grip = 1;
-
+	if (controllerInfo.level_1) pkg.status_flags.level_1 = 1;
+	if (controllerInfo.level_2) pkg.status_flags.level_2 = 1;
+	if (controllerInfo.level_3) pkg.status_flags.level_3 = 1;
 	// 单臂角度数据 (float直传)
 	pkg.arm.yaw       = controllerInfo.arm.yaw;
 	pkg.arm.pitch1    = controllerInfo.arm.pitch1;

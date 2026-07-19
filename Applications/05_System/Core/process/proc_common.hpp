@@ -191,7 +191,8 @@ namespace my_engineer{
 
     //将 float_t[J::COUNT] 写入 armCmd 的 J::COUNT 个关节
     void WriteArmjoint(CModArm &arm, const float_t output[J::COUNT]);
-
+    //拷贝数组
+    void CopyArmJoint(float_t inputjoint[J::COUNT],const float_t targetjoint[J::COUNT]);
     //从轨迹二维数组提取第 row 行的 J::COUNT 个关节数据
     void Extrarow(const float_t traj[][FC_COUNT], int row, float_t output[J::COUNT]);
 
