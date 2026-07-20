@@ -111,7 +111,8 @@ public:
 		uint8_t level_1 : 1;    				///< bit3 - level1
 		uint8_t level_2 : 1;    				///< bit4 - level2
 		uint8_t level_3 : 1;    				///< bit5 - level3
-		uint8_t reserve : 2;
+		uint8_t end_roll_toggle : 1;    		///< bit6 - 末端 roll 翻转
+		uint8_t reserve : 1;
 	} __packed ControllerStatusFlags_pkt = {};
 
 	/**

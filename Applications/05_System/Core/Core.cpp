@@ -133,6 +133,15 @@ void CSystemCore::UpdateHandler_() {
     }
     lastlevel = curlevel;
 
+    // 末端 roll 翻转按键
+    static bool last_end_roll_toggle = false;
+    if (SysControllerLink.controllerInfo.end_roll_toggle != last_end_roll_toggle) {
+        if (parm_) {
+            parm_->armCmd.set_angle_end_roll = SysControllerLink.controllerInfo.end_roll_toggle ? 0.0f : 180.0f;
+        }
+    }
+    last_end_roll_toggle = SysControllerLink.controllerInfo.end_roll_toggle;
+
     static bool last_use_Controller = false;
     static uint8_t zx_count = 0;
     static bool zx_flag = false;
@@ -333,7 +342,7 @@ void CSystemCore::UpdateHandler_() {
         if (parm_) {
             gripKeyboardCmd_ = parm_->armInfo.isGripped ? EGripKeyboardCmd::CLOSE : EGripKeyboardCmd::OPEN;
             parm_->armCmd.set_speed_grip = 0.0f;
-            parm_->armCmd.set_angle_end_roll = 0.f;
+            parm_->armCmd.set_angle_end_roll = SysControllerLink.controllerInfo.end_roll_toggle ? 0.0f : 180.0f;
         }
         // 图传强制回正
         if (pgimbal_) {

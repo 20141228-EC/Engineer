@@ -231,16 +231,14 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 /*------------------------------------------------------------------------------------*/
 // 物理位置转换为电机位置
 int32_t CModArm::CComJoint::PhyPositToMtrPosit_yaw(float_t phyPosit) {
-	const float_t scale = -static_cast<float_t>(ARM_YAW_MOTOR_RANGE)
-		/ (ARM_YAW_PHYSICAL_RANGE_MAX - ARM_YAW_PHYSICAL_RANGE_MIN);
+	const float_t scale = -1.15*65535/360.f;
 
 	return static_cast<int32_t>(phyPosit * scale);
 }
 
 // 电机位置转换为物理位置
 float_t CModArm::CComJoint::MtrPositToPhyPosit_yaw(int32_t mtrPosit) {
-	const float_t scale = -static_cast<float_t>(ARM_YAW_MOTOR_RANGE)
-		/ (ARM_YAW_PHYSICAL_RANGE_MAX - ARM_YAW_PHYSICAL_RANGE_MIN);
+	const float_t scale = -1.15*65535/360.f;
 
 	return static_cast<float_t>(mtrPosit) / scale;
 }
