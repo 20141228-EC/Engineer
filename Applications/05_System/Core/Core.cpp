@@ -136,7 +136,7 @@ void CSystemCore::UpdateHandler_() {
     // 末端 roll 翻转按键
     static bool last_end_roll_toggle = false;
     if (SysControllerLink.controllerInfo.end_roll_toggle != last_end_roll_toggle) {
-        if (parm_) {
+        if (parm_  && !parm_->armCmd.isAutoCtrl) {
             parm_->armCmd.set_angle_end_roll = SysControllerLink.controllerInfo.end_roll_toggle ? 0.0f : 180.0f;
         }
     }

@@ -40,6 +40,9 @@ public:
         120.0f,  // endR
     };
 
+    /// 速度比例系数
+    float_t speedScale = 1.0f;
+
     /**
      * @brief 轨迹关键帧数组
      * @param traj     关键帧数组（time/yaw/p1/p2/roll/endP/endR/grip/speed）

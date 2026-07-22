@@ -93,12 +93,12 @@ public:
         SJointPrarm jointParams[JointId::COUNT] = {
         {90.0f,180.0f}, //yaw
         {60.0f,120.0f}, //pitch1
-        {80.0f,160.0f}, //pitch2, 
+        {80.0f,160.0f}, //pitch2,
         {120.0f,300.0f}, //roll,
         {120.0f,300.0f}, //pitch_end
         {60.0f,120.0f}, //end_roll,
         }; // 每个关节的运动参数
-    } TrajConfig;  //
+    } TrajConfig;
 
     float_t speedScale = 1.0f; ///< 速度比例系数，>1加速，<1减速
 
@@ -125,8 +125,11 @@ public:
 private:
     STrapezoidalSpeed jointTrajs[JointId::COUNT]; // 每个关节各自的轨迹规划器
     float_t maxTime_ = 0; // 所有关节完成运动所需的最长时间
-    
+
 };
+
+extern const CAlgoTrajPlayback::SJointPrarm FastJointParams[CAlgoTrajPlayback::JointId::COUNT];
+
 } // namespace my_engineer
 
 #endif // ALGO_TRAJ_PLAYBACK_HPP

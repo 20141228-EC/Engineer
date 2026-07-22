@@ -41,11 +41,20 @@ void CSystemCore::StartClimbingTask(void *arg) {
     aimTarget[J::J_P2]   = CLIMBING_PITCH2_ANGLE;
     aimTarget[J::J_ROLL] = CLIMBING_ROLL_ANGLE;
     aimTarget[J::J_ENDP] = CLIMBING_END_PITCH_ANGLE;
-    aimTarget[J::J_ENDR] = CLIMBING_END_ROLL_ANGLE;
+    aimTarget[J::J_ENDR] = SysControllerLink.controllerInfo.end_roll_toggle ? 0.0f : 180.0f;
 
     SPlayJointTargetOptions opt;
-    opt.speedScale = 5.f;
+    opt.speedScale = 5.5f;
     opt.gripKeepCurrent = true;
+    static const CAlgoTrajPlayback::SJointPrarm climbingJoints[J::COUNT] = {
+        {225, 450},  // yaw
+        {150, 300},  // pitch1
+        {200, 400},  // pitch2
+        {300, 750},  // roll
+        {300, 750},  // pitch_end
+        {150, 300},  // end_roll
+    };
+    opt.jointParamsOverride = climbingJoints;
     if(!PlayJointTarget(*core.parm_ ,aimTarget ,opt)) goto proc_exit;// 平滑过渡
 	// 对臂的姿态不作限制，操作手根据情况调整
 

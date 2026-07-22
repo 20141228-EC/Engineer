@@ -135,6 +135,13 @@
         }
     }
 
+    void SetParam(CAlgoQuinticSpline &spline, CAlgoTrajPlayback::SConfig &param){
+        for (int i = 0; i < CAlgoQuinticSpline::AXES; i++) {
+                spline.velLimit[i] = static_cast<float>(param.jointParams[i].velMax);
+                spline.accLimit[i] = static_cast<float>(param.jointParams[i].accMax);
+            }
+    }
+
     /*----------------------------------------播放执行函数------------------------------------------------*/
     /*  单段播放：把机械臂从当前位姿五次多项式平滑运动到一组目标关节角
         输入是 target[6] 数组（非轨迹文件），自带到位检查和 Ctrl+Z 打断
@@ -157,6 +164,10 @@
 
         CAlgoQuintic qplayer;
         qplayer.speedScale = opt.speedScale;
+        if (opt.jointParamsOverride) {
+            for (int i = 0; i < J::COUNT; i++)
+                qplayer.config_.jointParams[i] = opt.jointParamsOverride[i];
+        }
         qplayer.PlanPointToPoint(current, target, opt.minTimeS);
 
         SPlayJointTargetState s;
@@ -225,6 +236,24 @@
             WriteGripCommand(arm, opt.gripAfter);
         }
         return true;
+    }
+
+    /* 单关节平滑规划到绝对角度*/
+    bool MoveSingleJointToAbs(CModArm &arm,
+                              int jointIdx,
+                              float_t targetAbs,
+                              const SPlayJointTargetOptions &opt) {
+        float_t current[J::COUNT];
+        ReadArmjoint(arm, current);              // 只读一次反馈
+
+        float_t target[J::COUNT];
+        for (int i = 0; i < J::COUNT; i++) target[i] = current[i];
+        target[jointIdx] = targetAbs;           // 仅修改目标关节
+
+        SPlayJointTargetOptions newOpt = opt;
+        newOpt.startOverride = current;
+
+        return PlayJointTarget(arm, target, newOpt);
     }
 
     /* 
@@ -326,11 +355,13 @@
                          int segFrom,
                          int segTo,
                          CAlgoQuinticSpline &spline,
-                         float_t rollOff) {
+                         float_t rollOff,
+                         float_t speedScale) {
         if (segTo < 0) segTo = clip.frameCount - 1;
         const int n = segTo - segFrom + 1;
         if (n < 2) return true;
 
+        spline.speedScale = speedScale;
         spline.Build(clip.frame, clip.frameCount, segFrom, segTo, rollOff);
 
         const uint32_t t0 = HAL_GetTick();

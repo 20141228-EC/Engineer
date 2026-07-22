@@ -430,12 +430,21 @@ void CSystemCore::ControlFromController_() {
             if (abs(pchassis_->chassisCmd.speed_X) < 0.5f) pchassis_->chassisCmd.speed_X = 0.0f;
             if (abs(pchassis_->chassisCmd.speed_Y) < 0.5f) pchassis_->chassisCmd.speed_Y = 0.0f;
 
+            if (keyboard.key_Shift) {
+                pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 5.0f;   ///<通过差值来实现一行代码实现左右转弯
+                pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 5.0f;
+                pchassis_->chassisCmd.speed_X =
+                std::clamp(pchassis_->chassisCmd.speed_X, -50.0f, 50.0f);
+                pchassis_->chassisCmd.speed_Y =
+                std::clamp(pchassis_->chassisCmd.speed_Y, -100.0f, 100.0f);
+            } else {
                 pchassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 1.0f;
                 pchassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 1.0f;
                 pchassis_->chassisCmd.speed_X =
-                std::clamp(pchassis_->chassisCmd.speed_X, -15.0f, 15.0f);
+                std::clamp(pchassis_->chassisCmd.speed_X, -20.0f, 20.0f);
                 pchassis_->chassisCmd.speed_Y =
-                std::clamp(pchassis_->chassisCmd.speed_Y, -20.0f, 20.0f);
+                std::clamp(pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
+            }
             if(keyboard.key_B
              &&!keyboard.key_Ctrl){
                 pchassis_->chassisCmd.L_length += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 0.01f;

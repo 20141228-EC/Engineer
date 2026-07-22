@@ -324,6 +324,7 @@ EAppStatus InitAllDevice(){
     gimbalMotor_Pitch_initparam.deviceID = EDeviceID::DEV_GIMBAL_MTR_PITCH;
     gimbalMotor_Pitch_initparam.interfaceID = EInterfaceID::INF_CAN2;
     gimbalMotor_Pitch_initparam.djiMtrID = CDevMtrDJI::EDjiMtrID::ID_1;
+    gimbalMotor_Pitch_initparam.stallThreshold = 1500;
     gimbalMotor_Pitch_initparam.useAngleToPosit = true;
     gimbalMotor_Pitch_initparam.useStallMonit = true;
     gimbalMotor_Pitch_initparam.stallMonitDataSrc = CDevMtr::DATA_TORQUE;

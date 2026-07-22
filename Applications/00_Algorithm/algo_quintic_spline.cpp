@@ -52,8 +52,8 @@ void CAlgoQuinticSpline::Build(const float_t traj[][9], int count,
             const float_t absDp = std::fabs(pos[i + 1][j] - pos[i][j]);
             if (absDp < 1e-4f) continue;
 
-            const float_t v = velLimit[j];
-            const float_t a = accLimit[j];
+            const float_t v = velLimit[j] * speedScale;
+            const float_t a = accLimit[j] * speedScale;
             if (v < 1e-6f || a < 1e-6f) continue;
 
             const float_t Tvel = absDp * 1.875f / v;
@@ -62,7 +62,7 @@ void CAlgoQuinticSpline::Build(const float_t traj[][9], int count,
             if (Tij > Tseg) Tseg = Tij;
         }
         if (Tseg < 0.1f) Tseg = 0.1f;
-        timeS[i + 1] = timeS[i] + Tseg * 1.3f;
+        timeS[i + 1] = timeS[i] + Tseg * 1.f;
     }
     totalTimeMs_ = timeS[n - 1] * 1000.0f;
 
@@ -90,9 +90,10 @@ void CAlgoQuinticSpline::Build(const float_t traj[][9], int count,
                     vel[i][j] = (pos[i + 1][j] - pos[i - 1][j]) / dtSum;
                 }
 
-                // 速度限幅
-                if (vel[i][j] >  velLimit[j]) vel[i][j] =  velLimit[j];
-                if (vel[i][j] < -velLimit[j]) vel[i][j] = -velLimit[j];
+                // 速度限幅（按 speedScale 缩放）
+                const float_t vLim = velLimit[j] * speedScale;
+                if (vel[i][j] >  vLim) vel[i][j] =  vLim;
+                if (vel[i][j] < -vLim) vel[i][j] = -vLim;
 
                 // 加速度估算
                 float_t accPrev = (dtPrev > 1e-6f) ? (vel[i][j] - vel[i - 1][j]) / dtPrev : 0.0f;
