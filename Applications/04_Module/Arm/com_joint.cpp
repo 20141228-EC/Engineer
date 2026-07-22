@@ -261,7 +261,7 @@ float_t CModArm::CComJoint::MtrPositToPhyPosit_pitch1(int32_t mtrPosit) {
 /*------------------------------------------------------------------------------------*/
 int32_t CModArm::CComJoint::PhyPositToMtrPosit_pitch2(float_t phyPosit) {
 	const int32_t zeroOffset = 0;
-	const float_t scale = -ARM_PITCH2_MOTOR_RATIO*ARM_PITCH2_MOTOR_REDUCTION_RATIO;
+	const float_t scale = -182.04*1.5;
 
 	return static_cast<int32_t>((phyPosit * scale) + zeroOffset);
 }
@@ -269,7 +269,7 @@ int32_t CModArm::CComJoint::PhyPositToMtrPosit_pitch2(float_t phyPosit) {
 // 电机位置转换为物理位置
 float_t CModArm::CComJoint::MtrPositToPhyPosit_pitch2(int32_t mtrPosit) {
 	const int32_t zeroOffset = 0;
-	const float_t scale = -ARM_PITCH2_MOTOR_RATIO*ARM_PITCH2_MOTOR_REDUCTION_RATIO;
+	const float_t scale = -182.04*1.5;
 
 	return (static_cast<float_t>(mtrPosit - zeroOffset) / scale);
 }
