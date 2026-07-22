@@ -987,7 +987,7 @@ void CSystemReferee::UI_UpdateArmYawFigureDrawing_() {
   static auto &arm_info = reinterpret_cast<CModArm *>(ModuleIDMap.at(EModuleID::MOD_ARM))->armInfo;
   static auto &gimbal_info = reinterpret_cast<CModGimbal *>(ModuleIDMap.at(EModuleID::MOD_GIMBAL))->gimbalInfo;
 
-  float rad = (arm_info.angle_Yaw + gimbal_info.angle_visualyaw) * 2 * PI / 360.0f;
+  float rad = -(arm_info.angle_Yaw + gimbal_info.angle_visualyaw) * 2 * PI / 360.0f;
   
   armYawFigureMsg.message.figureConfig[0].operate = 2; // circle static
     

@@ -18,7 +18,7 @@
 #include <map>
 #include <cmath>
 
-#define STORE_ROLL_UP_OFFSET    +180.0f  ///< 末端 roll 翻转偏移（朝上）
+#define STORE_ROLL_UP_OFFSET    -180.0f  ///< 末端 roll 翻转偏移（朝上）
 #define STORE_ROLL_DOWN_OFFSET  0.0f     ///< 末端 roll 默认偏移（朝下）
 
 /**
@@ -127,6 +127,7 @@ namespace my_engineer{
     struct SOreStep {
         TrajClip getClip;                       // 取矿
         TrajClip storeClip;                     // 存矿
+        float_t  rollOff = 0.0f;                // 末端 roll 偏移（叠加在轨迹 endR 上）
     };
 
     struct SArrivalCheckConfig {
@@ -152,10 +153,13 @@ namespace my_engineer{
         bool    gripDuringMotion = true;   // 运动期间夹爪状态
         bool    gripAfter        = true;   // 到位后夹爪状态
         const float_t *startOverride = nullptr;  // 规划起点覆盖
+        const CAlgoTrajPlayback::SJointPrarm *jointParamsOverride = nullptr;  // 自定义关节速度/加速度
         float_t minTimeS        = 0.0f;   // 最小时长
         bool    waitForArrival  = true;   // 是否等关节到位
         bool    gripKeepCurrent = false;  // 保持当前的夹爪的姿态
     };
+
+    // FastJointParams 定义在 algo_traj_playback.hpp（紧贴 SJointPrarm 类型）
 
     //轨迹外部声明
     extern const float_t Traj_Grab[][FC_COUNT];
@@ -204,6 +208,13 @@ namespace my_engineer{
                          const float_t target[J::COUNT],
                          const SPlayJointTargetOptions &opt);
 
+    // 单关节平滑规划到绝对角度（其余关节保持当前位姿，避免直接赋值的冲击）
+    // 速度/加速度/夹爪策略由调用方通过 opt 传入，函数本身不硬编码任何参数
+    bool MoveSingleJointToAbs(CModArm &arm,
+                              int jointIdx,
+                              float_t targetAbs,
+                              const SPlayJointTargetOptions &opt);
+
     // 按轨迹第 seg 行播放一段
     bool PlayTrajRow(CModArm &arm,
                      const float_t traj[][FC_COUNT], int seg,
@@ -226,7 +237,10 @@ namespace my_engineer{
                          int segFrom,
                          int segTo,
                          CAlgoQuinticSpline &spline,
-                         float_t rollOff = 0.0f);
+                         float_t rollOff = 0.0f,
+                         float_t speedScale = 1.0f);
+    // 自定义参数设置
+    void SetParam(CAlgoQuinticSpline &spline, CAlgoTrajPlayback::SConfig &param);
 }
 
 #endif // PROC_TRAJ_COMMON_HPP

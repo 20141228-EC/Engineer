@@ -17,7 +17,7 @@
 
 #define GIMBAL_VISUAL_MOTOR_MOTOR_DIR -1     ///< 图传yaw电机方向 (1=正向, -1=反向)
 #define GIMBAL_VISUAL_MOTOR_INIT_ANGLE 1    ///< 图传yaw初始角度
-#define GIMBAL_PITCH_INIT_ANGLE 0
+#define GIMBAL_PITCH_INIT_ANGLE 6.9f
 
 // Pitch轴宏定义
 #define GIMBAL_PITCH_MOTOR_DIR        -1     ///< Pitch电机方向
@@ -25,7 +25,7 @@
 #define GIMBAL_PITCH_MOTOR_RANGE    66980  ///< 编码器范围 
 #define GIMBAL_PITCH_MEC    33490  //偏移
 #define GIMBAL_PITCH_MOTOR_RATIO      (GIMBAL_PITCH_MOTOR_RANGE / GIMBAL_PITCH_PHYSICAL_RANGE)
-#define GIMBAL_PITCH_GRAV_FF  200       ///< 重力前馈
+#define GIMBAL_PITCH_GRAV_FF  0       ///< 重力前馈
 #define deg2rad(x) ((x) * 0.017453292519943295769236907684886)
 #define rad2deg(x) ((x) * 57.295779513082320876798154814105)
 

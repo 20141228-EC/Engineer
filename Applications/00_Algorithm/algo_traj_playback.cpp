@@ -12,6 +12,15 @@
 
 namespace my_engineer{
 
+    const CAlgoTrajPlayback::SJointPrarm FastJointParams[CAlgoTrajPlayback::JointId::COUNT] = {
+        {225.0f, 450.0f},   // yaw
+        {150.0f, 300.0f},   // pitch1
+        {200.0f, 400.0f},   // pitch2
+        {300.0f, 750.0f},   // roll
+        {300.0f, 750.0f},   // pitch_end
+        {150.0f, 300.0f},   // end_roll
+    };
+
     /**
      * @brief 规划梯形角速度曲线
      * @param _startpoint  起始位置 (度)

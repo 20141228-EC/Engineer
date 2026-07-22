@@ -48,23 +48,25 @@ namespace my_engineer {
             if (runner.keyboard_.mouse_L) {
                 trajId = TRAJ_STORE_L;
                 core.armmode_ = EArmMode::STORE_L_ORE;
+                core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
                 break;
             }
             if (runner.keyboard_.mouse_R) {
                 trajId = TRAJ_STORE_R;
                 core.armmode_ = EArmMode::STORE_R_ORE;
+                core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
                 break;
             }
-            // if (runner.keyboard_.key_X) {
-            //     trajId = TRAJ_AUTO;
-            //     core.armmode_ = EArmMode::AUTO;
-            //     break;
-            // }
+            if (runner.keyboard_.key_X) {
+                trajId = TRAJ_AUTO;
+                core.armmode_ = EArmMode::AUTO;
+                core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_INIT_ANGLE;
+                break;
+            }
             proc_waitMs(5);
         }
 
         core.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_YAW_ANGLE;
-        core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
         runner.arm_.armCmd.isAutoCtrl = true; ///< 阻止外部 ControlFromKeyboard_ 干扰，手动/自动都需要
 
         // ---- 主流程 ----
@@ -78,7 +80,7 @@ namespace my_engineer {
             aimTarget[J::J_ENDR] = STORE_ORE_ARM_AIM_END_ROLL;
 
             SPlayJointTargetOptions opt;
-            opt.speedScale = 1.0f;
+            opt.speedScale = 4.0f;
             opt.gripDuringMotion = false;
             opt.gripAfter        = false;// 运动前后的夹爪的控制参数
             if(!PlayJointTarget(runner.arm_ ,aimTarget ,opt)) goto proc_exit;// 瞄准阶段
@@ -151,42 +153,31 @@ proc_exit:
             proc_waitMs(1);
         }
 
-        // 对齐末端 roll
+        // 对齐末端 roll 到存矿轨迹首帧
         if (!AlignEndRollToStore(Traj, endRollOffset_)) return false;
 
         // 逐段播放：seg 0 等位 + 逐帧 + lastTarget 链式
         return PlayTrajRows(arm_, Traj.frame, Traj.frameCount, nullptr, endRollOffset_);
     }
 
-    // 对齐末端 roll 到存矿轨迹首帧的末端 roll（仅改 end_roll，其余关节保持当前位姿）
+    // 对齐末端 roll 到存矿轨迹首帧的末端 roll
     bool CStoreOreTaskRunner::AlignEndRollToStore(const TrajClip &clip, float_t rollOff) {
         float_t firstFrameTarget[J::COUNT];
         Extrarow(clip.frame, 0, firstFrameTarget);
 
-        float_t preAlignTarget[J::COUNT];
-        ReadArmjoint(arm_, preAlignTarget);                              // 当前位置作为起点
-        preAlignTarget[J::J_ENDR] = firstFrameTarget[J::J_ENDR] + rollOff; // 仅修改 end_roll
-
-        const bool gripNow = (arm_.armInfo.gripState == CModArm::SArmInfo::EGripState::HOLD);
-        // 提高末端roll转速猛转、注意限位块不要撞坏了
         SPlayJointTargetOptions opt;
-        opt.speedScale = 10.0f;
-        opt.gripDuringMotion = gripNow;
-        opt.gripAfter = gripNow;
-        opt.startOverride = nullptr;
-        if (!PlayJointTarget(arm_, preAlignTarget, opt)) {
-            return false;
-        }
-        return true;
+        opt.speedScale = 4.5f;
+        opt.jointParamsOverride = FastJointParams;
+        opt.gripKeepCurrent = true;  // 保持当前夹爪位姿
+
+        const float_t targetEndR = firstFrameTarget[J::J_ENDR] + rollOff;
+        return MoveSingleJointToAbs(arm_, J::J_ENDR, targetEndR, opt);
     }
 
     // 取矿自动任务
     bool CStoreOreTaskRunner::RunAutoOreTask() {
         // 选矿阶段：Q减 E加 R清零 Ctrl确认
         // 等按键释放
-        while (keyboard_.key_Ctrl || keyboard_.key_Q || keyboard_.key_E || keyboard_.key_R) {
-            proc_waitMs(5);
-        }
         while (true) {
             if (edge_.key_Q == CSystemRemote::ERemoteEdge::Rising) {
                 core_.oreTaskStep_ = (core_.oreTaskStep_ - 1 + OreStepCount) % OreStepCount;
@@ -197,22 +188,22 @@ proc_exit:
             if (edge_.key_R == CSystemRemote::ERemoteEdge::Rising) {
                 core_.oreTaskStep_ = 0;
             }
-            if (keyboard_.key_Ctrl) break;
-            proc_waitMs(5);
+            if (edge_.key_Ctrl == CSystemRemote::ERemoteEdge::Rising) break;
+            proc_waitMs(1);
         }
 
         for (int step = core_.oreTaskStep_; step < OreStepCount; step++) {
-            const auto &oreStep = OreStepConfig[step];
-            const bool needStore = (step % 3 != 2);      // 第3、6矿不存，留在夹爪上等兑换
-            const float_t rollOff = (step >= 2 && step <= 4) ? STORE_ROLL_UP_OFFSET : STORE_ROLL_DOWN_OFFSET;
+            const auto &oreStep = OreStepConfig[step];// 将顺序硬编码到数组中
+            const bool needStore = (step % 3 != 2);// 如果不是第3次取的矿或者是第6次取的矿石就不要存矿
+            const float_t rollOff = oreStep.rollOff;  // 每矿单独配置的末端 roll 偏移
 
             /*------------------取矿---------------------*/
-            if (!PlayGetClip(oreStep.getClip, rollOff)) return false;
+            if (!PlayGetClip(oreStep.getClip, 0)) return false;// 取矿石的时候已经设定好角度了
 
             /*------------------存矿---------------------*/
             if (needStore) {
-                if (!AlignEndRollToStore(oreStep.storeClip, rollOff)) return false;
-                if (!PlayTrajRows(arm_, oreStep.storeClip.frame, oreStep.storeClip.frameCount, nullptr, rollOff)) return false;
+                if (!AlignEndRollToStore(oreStep.storeClip, oreStep.rollOff)) return false; //存矿石的时候才需要翻转
+                if (!PlayTrajRows(arm_, oreStep.storeClip.frame, oreStep.storeClip.frameCount, nullptr, oreStep.rollOff)) return false;
             }
 
             // 每成功完成一次存取矿就记录进度
@@ -281,7 +272,14 @@ proc_exit:
         // 后段: 五次样条连续播放
         if (useQuintic) {
             static CAlgoQuinticSpline spline;
-            if (!PlaySplineRange(arm_, clip, gripCloseSeg, clip.frameCount - 1, spline, rollOff))
+            static const float_t grabVelLimit[CAlgoQuinticSpline::AXES] = {180, 120, 160, 240, 240, 120};
+            static const float_t grabAccLimit[CAlgoQuinticSpline::AXES] = {360, 240, 320, 600, 600, 240};
+            for (int i = 0; i < CAlgoQuinticSpline::AXES; i++) {
+                spline.velLimit[i] = grabVelLimit[i];
+                spline.accLimit[i] = grabAccLimit[i];
+            }
+            const float_t splineSpeedScale = clip.frame[gripCloseSeg][FC_SPEED];
+            if (!PlaySplineRange(arm_, clip, gripCloseSeg, clip.frameCount - 1, spline, rollOff, splineSpeedScale))
                 return false;
         }
         return true;
