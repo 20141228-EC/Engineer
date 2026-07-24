@@ -20,6 +20,21 @@
             ],
             "compilerPath": "D:\\Tool\\gun_tool\\bin\\arm-none-eabi-gcc.exe",
             "intelliSenseMode": "windows-gcc-x64"
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "STM32H723xx",
+                "USE_HAL_DRIVER"
+            ],
+            "compilerPath": "/usr/bin/env arm-none-eabi-gcc",
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-arm",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
         }
     ],
     "version": 4

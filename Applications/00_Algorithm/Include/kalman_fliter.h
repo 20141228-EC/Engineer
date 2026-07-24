@@ -28,7 +28,7 @@ extern "C" {
 #include "arm_math.h"
 //#include "dsp/matrix_functions.h"
 #include "math.h"
-#include "freeRTOS.h"
+#include "FreeRTOS.h"
 
 // 若运算速度不够,可以使用q31代替f32,但是精度会降低
 #define mat arm_matrix_instance_f32

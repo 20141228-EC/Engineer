@@ -64,4 +64,14 @@
     },
     "cmake.generator": "Ninja",
     "makefile.configureOnOpen": true,
+    "clangd.arguments": [
+        "--log=verbose",
+        "--background-index",
+        "--compile-commands-dir=build",
+        // 关键：允许 clangd 调用任何路径下的 arm 编译器来提取头文件
+        "--query-driver=/**/arm-none-eabi-*"
+    ],
+    "clangd.fallbackFlags": [
+        "--target=arm-none-eabi"
+    ]
 }

@@ -10,6 +10,7 @@
  */
 
 #include "Core.hpp"
+#include "sys_custom_data.hpp"
 
 namespace my_engineer {
 
@@ -59,6 +60,11 @@ EAppStatus CSystemCore::InitSystemCore() {
     boardLinkInitParam.systemID = ESystemID::SYS_BOARD_LINK;
     boardLinkInitParam.boardLinkDevID = EDeviceID::DEV_BOARD_LINK;
     SysBoardLink.InitSystem(&boardLinkInitParam);
+
+    CSystemCustomDataCom::SSystemInitParam_CustomDataCom customDataInitParam;
+    customDataInitParam.systemID = ESystemID::SYS_CUSTOM_DATA;
+    customDataInitParam.customDataDevID = EDeviceID::DEV_CUSTOM_DATA_COM;
+    SysCustomDataCom.InitSystem(&customDataInitParam);
 
     // 获取模块的指针（安全查找，避免异常）
     auto it_chassis = ModuleIDMap.find(EModuleID::MOD_CHASSIS);

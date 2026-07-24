@@ -9,7 +9,7 @@
 #include "algo_imu_ekf.hpp"
 #include "mems/mems_bmi088.hpp"
 #include "conf_device.hpp"
-#include "bmi_EKF.h"
+#include "bmi_ekf.h"
 #include <math.h>
 
 namespace my_engineer
