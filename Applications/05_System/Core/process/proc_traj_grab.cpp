@@ -88,16 +88,6 @@ namespace my_engineer {
             opt.gripAfter        = false;// 运动前后的夹爪的控制参数
             if(!PlayJointTarget(runner.arm_ ,aimTarget ,opt)) goto proc_exit;// 瞄准阶段
 
-            // // 等 Shift 确认后再进入自动流程
-            // while (true) {
-            //     if (runner.keyboard_.key_Ctrl && runner.keyboard_.key_Z) goto proc_exit;
-            //     if (runner.keyboard_.key_Shift) {
-            //         while (runner.keyboard_.key_Shift) proc_waitMs(1);   // 等按键释放，防止本次按下被下次循环误判
-            //         break;
-            //     }
-            //     proc_waitMs(1);
-            // }
-
             if (!runner.RunAutoOreTask())
                 goto proc_exit;
         } else {
@@ -109,9 +99,10 @@ proc_exit:
         runner.arm_.armCmd.isAutoCtrl = false;
         core.autoCtrlTaskHandle_ = nullptr;
         core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
-
-        core.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_INIT_ANGLE;
+        
+        core.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_YAW_ANGLE;
         core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_INIT_ANGLE;
+        core.pgimbal_->gimbalCmd.isAutoCtrl = false;
         // 退出时把 armCmd 同步到当前实际位姿
         runner.arm_.armCmd.set_angle_Yaw       = runner.arm_.armInfo.angle_Yaw;
         runner.arm_.armCmd.set_angle_Pitch1    = runner.arm_.armInfo.angle_Pitch1;
@@ -195,7 +186,7 @@ proc_exit:
             if (edge_.key_R == CSystemRemote::ERemoteEdge::Rising) {
                 core_.oreTaskStep_ = 0;
             }
-            if (edge_.key_Ctrl == CSystemRemote::ERemoteEdge::Rising) break;
+            if (edge_.key_Shift == CSystemRemote::ERemoteEdge::Rising) break;
             proc_waitMs(1);
         }
 
@@ -209,13 +200,16 @@ proc_exit:
 
             /*------------------存矿---------------------*/
             if (needStore) {
+                core_.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_YAW_ANGLE;
+                core_.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
                 if (!AlignEndRollToClipStart(oreStep.storeClip, oreStep.rollOff)) return false;
                 if (!PlayTrajRows(arm_, oreStep.storeClip.frame, oreStep.storeClip.frameCount, nullptr, oreStep.rollOff)) return false;
             }
 
             // 每成功完成一次存取矿就记录进度
             core_.oreTaskStep_ = step + 1;
-
+            core_.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_YAW_ANGLE;
+            core_.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_INIT_ANGLE;
             // 第3矿 / 第6矿取完不存，退出等待兑换
             if (!needStore) {
                 core_.oreGetDone_ = (step >= OreStepCount - 1);

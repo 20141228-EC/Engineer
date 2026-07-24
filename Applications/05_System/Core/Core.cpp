@@ -108,12 +108,7 @@ void CSystemCore::UpdateHandler_() {
     uint8_t curlevel = 0;
     if(SysControllerLink.controllerInfo.level_1)curlevel = 1;
     else if(SysControllerLink.controllerInfo.level_2)curlevel = 2;
-    else if(SysControllerLink.controllerInfo.level_3){
-        curlevel = 3;
-        if (pgimbal_) {
-            pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_ANGLE;
-        }
-    }
+    else if(SysControllerLink.controllerInfo.level_3)curlevel = 3;
     if(curlevel != 0 && curlevel != lastlevel && parm_ ){
         presetActive_ = true;        // preset 进行中标志
         presetLevel_ = curlevel;

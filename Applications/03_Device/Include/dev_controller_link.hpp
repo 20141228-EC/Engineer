@@ -121,10 +121,10 @@ public:
 	 * 数据段大小: 1 bytes
 	 */
 	struct SControllerFuncFlags {
-		uint8_t left_exchange : 1;         ///< bit0 - 左边取矿 (PC11, LEFT_EXCHANGE)
-		uint8_t right_exchange : 1;        ///< bit1 - 右边取矿 (PC10, RIGHT_EXCHANGE)
-		uint8_t auto_exchange : 1;         ///< bit2 - 自动兑矿 (PB8, AUTO)
-		uint8_t self_rescue : 1;           ///< bit3 - 自救模式 (PB9, SAVE)
+		uint8_t left_exchange : 1;         ///< bit0 - 左边取矿
+		uint8_t right_exchange : 1;        ///< bit1 - 右边取矿
+		uint8_t auto_exchange : 1;         ///< bit2 - 自动兑矿
+		uint8_t self_rescue : 1;           ///< bit3 - 自救模式
 		uint8_t reserve : 4;               ///< bit4-7 - 预留扩展
 	} __packed ControllerFuncFlags_pkt = {};
 
