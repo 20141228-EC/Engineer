@@ -42,28 +42,31 @@ namespace my_engineer {
             proc_waitMs(5);
         }
 
-        // 循环等待鼠标左键/右键选择轨迹
+        // 选择存矿/兑矿轨迹
         ETrajID trajId;
-        while (true) {
-            if (runner.keyboard_.mouse_L) {
-                trajId = TRAJ_STORE_L;
-                core.armmode_ = EArmMode::STORE_L_ORE;
-                core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
-                break;
+        if (core.exchange_side_ == CSystemCore::EExchangeSide::AUTO) {
+            // 控制器模式
+            trajId = TRAJ_AUTO;
+            core.armmode_ = EArmMode::AUTO;
+            core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_INIT_ANGLE;
+            core.exchange_side_ = CSystemCore::EExchangeSide::NONE;  ///< 清零
+        } else {
+            // 键盘模式：循环等待鼠标左键/右键/X键选择轨迹
+            while (true) {
+                if (runner.keyboard_.mouse_L) {
+                    trajId = TRAJ_STORE_L;
+                    core.armmode_ = EArmMode::STORE_L_ORE;
+                    core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
+                    break;
+                }
+                if (runner.keyboard_.mouse_R) {
+                    trajId = TRAJ_STORE_R;
+                    core.armmode_ = EArmMode::STORE_R_ORE;
+                    core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
+                    break;
+                }
+                proc_waitMs(5);
             }
-            if (runner.keyboard_.mouse_R) {
-                trajId = TRAJ_STORE_R;
-                core.armmode_ = EArmMode::STORE_R_ORE;
-                core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
-                break;
-            }
-            if (runner.keyboard_.key_X) {
-                trajId = TRAJ_AUTO;
-                core.armmode_ = EArmMode::AUTO;
-                core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_INIT_ANGLE;
-                break;
-            }
-            proc_waitMs(5);
         }
 
         core.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_YAW_ANGLE;
@@ -85,15 +88,15 @@ namespace my_engineer {
             opt.gripAfter        = false;// 运动前后的夹爪的控制参数
             if(!PlayJointTarget(runner.arm_ ,aimTarget ,opt)) goto proc_exit;// 瞄准阶段
 
-            // 等 Shift 确认后再进入自动流程
-            while (true) {
-                if (runner.keyboard_.key_Ctrl && runner.keyboard_.key_Z) goto proc_exit;
-                if (runner.keyboard_.key_Shift) {
-                    while (runner.keyboard_.key_Shift) proc_waitMs(1);   // 等按键释放，防止本次按下被下次循环误判
-                    break;
-                }
-                proc_waitMs(1);
-            }
+            // // 等 Shift 确认后再进入自动流程
+            // while (true) {
+            //     if (runner.keyboard_.key_Ctrl && runner.keyboard_.key_Z) goto proc_exit;
+            //     if (runner.keyboard_.key_Shift) {
+            //         while (runner.keyboard_.key_Shift) proc_waitMs(1);   // 等按键释放，防止本次按下被下次循环误判
+            //         break;
+            //     }
+            //     proc_waitMs(1);
+            // }
 
             if (!runner.RunAutoOreTask())
                 goto proc_exit;
@@ -154,23 +157,27 @@ proc_exit:
         }
 
         // 对齐末端 roll 到存矿轨迹首帧
-        if (!AlignEndRollToStore(Traj, endRollOffset_)) return false;
+        if (!AlignEndRollToClipStart(Traj, endRollOffset_)) return false;
 
         // 逐段播放：seg 0 等位 + 逐帧 + lastTarget 链式
         return PlayTrajRows(arm_, Traj.frame, Traj.frameCount, nullptr, endRollOffset_);
     }
 
-    // 对齐末端 roll 到存矿轨迹首帧的末端 roll
-    bool CStoreOreTaskRunner::AlignEndRollToStore(const TrajClip &clip, float_t rollOff) {
+    // 单独对齐末端 roll 到轨迹首帧，避免其大角度运动拖慢整段多轴轨迹
+    bool CStoreOreTaskRunner::AlignEndRollToClipStart(const TrajClip &clip, float_t rollOff) {
         float_t firstFrameTarget[J::COUNT];
         Extrarow(clip.frame, 0, firstFrameTarget);
 
+        const float_t targetEndR = firstFrameTarget[J::J_ENDR] + rollOff;
+        if (std::fabs(arm_.armInfo.angle_end_roll - targetEndR) < 5.0f) {
+            return true;
+        }
+
         SPlayJointTargetOptions opt;
-        opt.speedScale = 4.5f;
+        opt.speedScale = 3.5f;
         opt.jointParamsOverride = FastJointParams;
         opt.gripKeepCurrent = true;  // 保持当前夹爪位姿
 
-        const float_t targetEndR = firstFrameTarget[J::J_ENDR] + rollOff;
         return MoveSingleJointToAbs(arm_, J::J_ENDR, targetEndR, opt);
     }
 
@@ -202,7 +209,7 @@ proc_exit:
 
             /*------------------存矿---------------------*/
             if (needStore) {
-                if (!AlignEndRollToStore(oreStep.storeClip, oreStep.rollOff)) return false; //存矿石的时候才需要翻转
+                if (!AlignEndRollToClipStart(oreStep.storeClip, oreStep.rollOff)) return false;
                 if (!PlayTrajRows(arm_, oreStep.storeClip.frame, oreStep.storeClip.frameCount, nullptr, oreStep.rollOff)) return false;
             }
 
@@ -224,6 +231,8 @@ proc_exit:
 
     // 取矿片段：前段用 PlayTrajRows 逐帧到位，后段用 PlaySplineRange 五次样条平滑拔出
     bool CStoreOreTaskRunner::PlayGetClip(const TrajClip &clip, float_t rollOff) {
+        if (!AlignEndRollToClipStart(clip, rollOff)) return false;
+
         float_t lastTarget[J::COUNT];
 
         // 找第一个夹爪闭合帧
@@ -272,11 +281,9 @@ proc_exit:
         // 后段: 五次样条连续播放
         if (useQuintic) {
             static CAlgoQuinticSpline spline;
-            static const float_t grabVelLimit[CAlgoQuinticSpline::AXES] = {180, 120, 160, 240, 240, 120};
-            static const float_t grabAccLimit[CAlgoQuinticSpline::AXES] = {360, 240, 320, 600, 600, 240};
             for (int i = 0; i < CAlgoQuinticSpline::AXES; i++) {
-                spline.velLimit[i] = grabVelLimit[i];
-                spline.accLimit[i] = grabAccLimit[i];
+                spline.velLimit[i] = FastJointParams[i].velMax;
+                spline.accLimit[i] = FastJointParams[i].accMax;
             }
             const float_t splineSpeedScale = clip.frame[gripCloseSeg][FC_SPEED];
             if (!PlaySplineRange(arm_, clip, gripCloseSeg, clip.frameCount - 1, spline, rollOff, splineSpeedScale))

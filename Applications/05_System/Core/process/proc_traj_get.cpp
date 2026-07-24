@@ -25,20 +25,31 @@ namespace my_engineer {
         auto &keyboard = SysRemote.remoteInfo.keyboard;
         auto &arm  = *core.parm_;
 
-        // 循环等待鼠标左键/右键选择轨迹
+        // 选择左/右取矿轨迹
         ETrajID trajId;
-        while(true){
-            if(keyboard.mouse_L){
-                trajId = TRAJ_EXCHANGE_L;          ///< 兑左矿
-                core.armmode_ = EArmMode::EXCHANGE_L_ORE;  // 更新系统层标志位
-                break;
+        if (core.exchange_side_ == CSystemCore::EExchangeSide::LEFT) {
+            trajId = TRAJ_EXCHANGE_L;
+            core.armmode_ = EArmMode::EXCHANGE_L_ORE;
+            core.exchange_side_ = CSystemCore::EExchangeSide::NONE;  ///< 清零
+        } else if (core.exchange_side_ == CSystemCore::EExchangeSide::RIGHT) {
+            trajId = TRAJ_EXCHANGE_R;
+            core.armmode_ = EArmMode::EXCHANGE_R_ORE;
+            core.exchange_side_ = CSystemCore::EExchangeSide::NONE;  ///< 清零
+        } else {
+            // 键盘模式：循环等待鼠标左键/右键选择轨迹
+            while(true){
+                if(keyboard.mouse_L){
+                    trajId = TRAJ_EXCHANGE_L;          ///< 兑左矿
+                    core.armmode_ = EArmMode::EXCHANGE_L_ORE;  // 更新系统层标志位
+                    break;
+                }
+                if(keyboard.mouse_R){
+                    trajId = TRAJ_EXCHANGE_R;              ///< 右键: 取右
+                    core.armmode_ = EArmMode::EXCHANGE_R_ORE;
+                    break;
+                }
+                proc_waitMs(5);
             }
-            if(keyboard.mouse_R){
-                trajId = TRAJ_EXCHANGE_R;              ///< 右键: 取右
-                core.armmode_ = EArmMode::EXCHANGE_R_ORE;
-                break;
-            }
-            proc_waitMs(5);
         }
         core.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_YAW_ANGLE;
         core.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
