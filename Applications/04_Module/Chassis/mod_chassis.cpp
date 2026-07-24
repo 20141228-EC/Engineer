@@ -549,12 +549,22 @@ void CModChassis::UpdateHandler_(){
     CDevMtrDJI::FillCanTxBuffer(comWheelset_.motor[CComWheelset::RB],
                                 comWheelset_.mtrCanTxNode[CComWheelset::RB]->dataBuffer,
                                 comWheelset_.mtrOutputBuffer[CComWheelset::RB]);            
-    CDevMtrDJI::FillCanTxBuffer(comCrawler_.motor[CComCrawler::L],
+    if(chassisInfo.crawler_on){
+        CDevMtrDJI::FillCanTxBuffer(comCrawler_.motor[CComCrawler::L],
                                 comCrawler_.mtrCanTxNode[CComCrawler::L]->dataBuffer,
                                 comCrawler_.mtrOutputBuffer[CComCrawler::L]);
-    CDevMtrDJI::FillCanTxBuffer(comCrawler_.motor[CComCrawler::R],
+        CDevMtrDJI::FillCanTxBuffer(comCrawler_.motor[CComCrawler::R],
                                 comCrawler_.mtrCanTxNode[CComCrawler::R]->dataBuffer,
                                 comCrawler_.mtrOutputBuffer[CComCrawler::R]);
+    }
+    else{
+        CDevMtrDJI::FillCanTxBuffer(comCrawler_.motor[CComCrawler::L],
+                                comCrawler_.mtrCanTxNode[CComCrawler::L]->dataBuffer,
+                                0);
+        CDevMtrDJI::FillCanTxBuffer(comCrawler_.motor[CComCrawler::R],
+                                comCrawler_.mtrCanTxNode[CComCrawler::R]->dataBuffer,
+                                0);
+    }
 
 }
 

@@ -380,8 +380,8 @@ void CSystemReferee::UI_InitDrawing() {
   positionFigureMsg.message.figureConfig[0].operate = 1;
   positionFigureMsg.message.figureConfig[0].figureType = 2;
   positionFigureMsg.message.figureConfig[0].layerID = 2;
-  positionFigureMsg.message.figureConfig[0].posit_X = 960;
-  positionFigureMsg.message.figureConfig[0].posit_Y = 200;
+  positionFigureMsg.message.figureConfig[0].posit_X = 650;
+  positionFigureMsg.message.figureConfig[0].posit_Y = 700;
   positionFigureMsg.message.figureConfig[0].color = 8;
   positionFigureMsg.message.figureConfig[0].details_3 = 80;      // Radius
   positionFigureMsg.message.figureConfig[0].width = 2;            // Line Width
@@ -393,11 +393,11 @@ void CSystemReferee::UI_InitDrawing() {
   positionFigureMsg.message.figureConfig[1].operate = 1;
   positionFigureMsg.message.figureConfig[1].figureType = 0;
   positionFigureMsg.message.figureConfig[1].layerID = 1;
-  positionFigureMsg.message.figureConfig[1].posit_X = 880;
-  positionFigureMsg.message.figureConfig[1].posit_Y = 200;
+  positionFigureMsg.message.figureConfig[1].posit_X = 570;
+  positionFigureMsg.message.figureConfig[1].posit_Y = 700;
   positionFigureMsg.message.figureConfig[1].color = 3;
-  positionFigureMsg.message.figureConfig[1].details_4 = 1040;      // End Posit X
-  positionFigureMsg.message.figureConfig[1].details_5 = 200;      // End Posit Y
+  positionFigureMsg.message.figureConfig[1].details_4 = 730;      // End Posit X
+  positionFigureMsg.message.figureConfig[1].details_5 = 700;      // End Posit Y
   positionFigureMsg.message.figureConfig[1].width = 5;            // Line Width
 
   // 前进方向示意图直线
@@ -514,7 +514,7 @@ void CSystemReferee::UI_InitDrawing() {
   armYawFigureMsg.message.figureConfig[0].color = 8;            // White
   armYawFigureMsg.message.figureConfig[0].width = 4;            // Line Width
   armYawFigureMsg.message.figureConfig[0].posit_X = 650;
-  armYawFigureMsg.message.figureConfig[0].posit_Y = 600;
+  armYawFigureMsg.message.figureConfig[0].posit_Y = 450;
   armYawFigureMsg.message.figureConfig[0].details_3 = 80;       // Radius
 
   armYawFigureMsg.message.figureConfig[1].figureName[0] = 0;    // Frame ID
@@ -526,9 +526,9 @@ void CSystemReferee::UI_InitDrawing() {
   armYawFigureMsg.message.figureConfig[1].color = 4;            // Purplish Red
   armYawFigureMsg.message.figureConfig[1].width = 4;            // Line Width
   armYawFigureMsg.message.figureConfig[1].posit_X = 650;
-  armYawFigureMsg.message.figureConfig[1].posit_Y = 600;
+  armYawFigureMsg.message.figureConfig[1].posit_Y = 450;
   armYawFigureMsg.message.figureConfig[1].details_4 = 650;
-  armYawFigureMsg.message.figureConfig[1].details_5 = 600 + 80; // 90 degrees up
+  armYawFigureMsg.message.figureConfig[1].details_5 = 450 + 80; // 90 degrees up
 
   armYawFigureMsg.message.figureConfig[2].figureName[0] = 0;    // Frame ID
   armYawFigureMsg.message.figureConfig[2].figureName[1] = 4;    // Layer ID
@@ -539,9 +539,9 @@ void CSystemReferee::UI_InitDrawing() {
   armYawFigureMsg.message.figureConfig[2].color = 8;            // White
   armYawFigureMsg.message.figureConfig[2].width = 5;            // Line Width
   armYawFigureMsg.message.figureConfig[2].posit_X = 650;
-  armYawFigureMsg.message.figureConfig[2].posit_Y = 600;
+  armYawFigureMsg.message.figureConfig[2].posit_Y = 450;
   armYawFigureMsg.message.figureConfig[2].details_4 = 650;
-  armYawFigureMsg.message.figureConfig[2].details_5 = 600 + 80;
+  armYawFigureMsg.message.figureConfig[2].details_5 = 450 + 80;
 
   armYawFigureMsg.message.figureConfig[3].operate = 0;
   armYawFigureMsg.message.figureConfig[4].operate = 0;
@@ -974,10 +974,10 @@ void CSystemReferee::UI_UpdatePositionFigureDrawing_() {
   static auto &chassis_info = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->chassisInfo;
   positionFigureMsg.message.figureConfig[0].operate = 2;
   positionFigureMsg.message.figureConfig[1].operate = 2;
-  positionFigureMsg.message.figureConfig[1].posit_X = 960 - (uint32_t)(80 * cos(fabs(chassis_info.roll_Measure) * 2 * PI / 180.f));
-  positionFigureMsg.message.figureConfig[1].posit_Y = 200 + (uint32_t)(80 * sin(fabs(chassis_info.roll_Measure) * 2 * PI / 180.f));
-  positionFigureMsg.message.figureConfig[1].details_4 = 960 + (uint32_t)(80 * cos(fabs(chassis_info.roll_Measure) * 2 * PI / 180.f));
-  positionFigureMsg.message.figureConfig[1].details_5 = 200 - (uint32_t)(80 * sin(fabs(chassis_info.roll_Measure) * 2 * PI / 180.f));
+  positionFigureMsg.message.figureConfig[1].posit_X = 650 - (uint32_t)(80 * cos(fabs(chassis_info.roll_Measure) * 2 * PI / 180.f));
+  positionFigureMsg.message.figureConfig[1].posit_Y = 700 + (uint32_t)(80 * sin(fabs(chassis_info.roll_Measure) * 2 * PI / 180.f));
+  positionFigureMsg.message.figureConfig[1].details_4 = 650 + (uint32_t)(80 * cos(fabs(chassis_info.roll_Measure) * 2 * PI / 180.f));
+  positionFigureMsg.message.figureConfig[1].details_5 = 700 - (uint32_t)(80 * sin(fabs(chassis_info.roll_Measure) * 2 * PI / 180.f));
   positionFigureMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&positionFigureMsg), sizeof(positionFigureMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&positionFigureMsg), sizeof(positionFigureMsg));
 }
@@ -987,19 +987,19 @@ void CSystemReferee::UI_UpdateArmYawFigureDrawing_() {
   static auto &arm_info = reinterpret_cast<CModArm *>(ModuleIDMap.at(EModuleID::MOD_ARM))->armInfo;
   static auto &gimbal_info = reinterpret_cast<CModGimbal *>(ModuleIDMap.at(EModuleID::MOD_GIMBAL))->gimbalInfo;
 
-  float rad = -(arm_info.angle_Yaw + gimbal_info.angle_visualyaw) * 2 * PI / 360.0f;
+  float rad = -(arm_info.angle_Yaw - gimbal_info.angle_visualyaw) * 2 * PI / 360.0f;
   
   armYawFigureMsg.message.figureConfig[0].operate = 2; // circle static
     
   //底盘示意直线 随臂的yaw变而变
   armYawFigureMsg.message.figureConfig[1].operate = 2;
   armYawFigureMsg.message.figureConfig[1].details_4 = (uint32_t)(650.0f - 80.0f * sin(rad));
-  armYawFigureMsg.message.figureConfig[1].details_5 = (uint32_t)(600.0f + 80.0f * cos(rad));
+  armYawFigureMsg.message.figureConfig[1].details_5 = (uint32_t)(450.0f + 80.0f * cos(rad));
     
   //臂示意直线 保持 90° 不动
   armYawFigureMsg.message.figureConfig[2].operate = 2;
   armYawFigureMsg.message.figureConfig[2].details_4 = 650;
-  armYawFigureMsg.message.figureConfig[2].details_5 = 600 + 80;
+  armYawFigureMsg.message.figureConfig[2].details_5 = 450 + 80;
   armYawFigureMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&armYawFigureMsg), sizeof(armYawFigureMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&armYawFigureMsg), sizeof(armYawFigureMsg));
 }
@@ -1302,28 +1302,28 @@ void CSystemReferee::StartSysRefereeUiTask(void *arg) {
 
     // 在这里面更新动态UI
 		SysReferee.UI_UpdateCurModeTextDrawing_();
-		proc_waitMs(35);
+		proc_waitMs(30);
 
 		// SysReferee.UI_UpdateVisionFigureDrawing_();
 		// proc_waitMs(100);
 
 		SysReferee.UI_UpdateStateFigureDrawing_();
-		proc_waitMs(35);
+		proc_waitMs(30);
 
     SysReferee.UI_UpdateHipTextDrawing_();
-    proc_waitMs(35);
+    proc_waitMs(30);
 
     SysReferee.UI_UpdatePitchTextDrawing_();
-    proc_waitMs(35);
+    proc_waitMs(30);
 
     SysReferee.UI_UpdatePositionFigureDrawing_();
-    proc_waitMs(35);
+    proc_waitMs(30);
 
     SysReferee.UI_UpdateArmAngleFigureDrawing_();
-    proc_waitMs(35);
+    proc_waitMs(30);
 
     SysReferee.UI_UpdateArmYawFigureDrawing_();
-    proc_waitMs(35);
+    proc_waitMs(30);
 
 		// SysReferee.UI_UpdateVisionFigureDrawing_();
 

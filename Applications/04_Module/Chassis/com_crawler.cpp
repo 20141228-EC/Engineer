@@ -33,7 +33,7 @@ EAppStatus CModChassis::CComCrawler::InitComponent(SModInitParam_Base &param){
 
 	// 设置发送节点
     mtrCanTxNode[L] = chassisParam.crawlerMotorTxNodeID_L;
-    mtrCanTxNode[R] = chassisParam.crawlerMotorTxNodeID_L;
+    mtrCanTxNode[R] = chassisParam.crawlerMotorTxNodeID_R;
 
 	// 初始化PID控制器
     chassisParam.CrawlerSpdPidParam.threadNum = 2;
@@ -55,7 +55,7 @@ EAppStatus CModChassis::CComCrawler::InitComponent(SModInitParam_Base &param){
  */
 EAppStatus CModChassis::CComCrawler::UpdateComponent() {
 	// 检查组件状态
-	if (componentStatus == APP_RESET) return APP_ERROR;
+	if (componentStatus == APP_RESET || !(parent->chassisInfo.crawler_on)) return APP_ERROR;
 
 	// 更新组件信息
 	CrawlerInfo.speed_L = motor[L]->motorData[CDevMtr::DATA_SPEED];
@@ -63,7 +63,6 @@ EAppStatus CModChassis::CComCrawler::UpdateComponent() {
 
 	switch (Component_FSMFlag_) {
 		case FSM_RESET: {
-			CrawlerCmd.speed_crawler = false;
 			mtrOutputBuffer.fill(0);
             return APP_OK;
 		}
@@ -99,7 +98,7 @@ EAppStatus CModChassis::CComCrawler::UpdateComponent() {
 
 EAppStatus CModChassis::CComCrawler::_UpdateOutput(float_t speed){
 
-	// 从底盘电机中读取当前速度存入缓冲区
+	// 从履带电机中读取当前速度存入缓冲区
     DataBuffer<float_t> crawlerSpdMeasure = {
         static_cast<float_t>(motor[L]->motorData[CDevMtr::DATA_SPEED]),
         static_cast<float_t>(motor[R]->motorData[CDevMtr::DATA_SPEED]),
