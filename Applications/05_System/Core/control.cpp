@@ -356,6 +356,7 @@ void CSystemCore::ControlFromKeyboard_() {
             // if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE); }
             if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::CYCLE);}
         }
+        /******************* 功能按键 *******************/
         if (parm_ && pchassis_) {
             // 左取矿
             if (controller.left_exchange) {
@@ -373,6 +374,15 @@ void CSystemCore::ControlFromKeyboard_() {
                 }
                 controller.right_exchange = false;
             }
+            // 自动兑矿
+            if (controller.auto_exchange) {
+                exchange_side_ = EExchangeSide::AUTO;
+                if (StartAutoCtrlTask_(EAutoCtrlProcess::STORE_ORE) != APP_OK) {
+                    exchange_side_ = EExchangeSide::NONE;
+                }
+                controller.auto_exchange = false;
+            }
+            // TODO 自救模式：预留，暂不接入
         }
     }
 }
@@ -586,34 +596,6 @@ void CSystemCore::ControlFromController_() {
         //pgimbal_->gimbalCmd.set_visualyaw += static_cast<float_t>(keyboard.mouse_Y - keyboard.mouse_X) * 1.0f / freq;
     }
 
-    /******************* 功能按键 *******************/
-    if (parm_ && pchassis_) {
-        // 左取矿
-        if (controller.left_exchange) {
-            exchange_side_ = EExchangeSide::LEFT;
-            if (StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE) != APP_OK) {
-                exchange_side_ = EExchangeSide::NONE;   ///< 启动失败回收预选，避免残留污染下次
-            }
-            controller.left_exchange = false;
-        }
-        // 右取矿
-        if (controller.right_exchange) {
-            exchange_side_ = EExchangeSide::RIGHT;
-            if (StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE) != APP_OK) {
-                exchange_side_ = EExchangeSide::NONE;
-            }
-            controller.right_exchange = false;
-        }
-        // 自动兑矿
-        if (controller.auto_exchange) {
-            exchange_side_ = EExchangeSide::AUTO;
-            if (StartAutoCtrlTask_(EAutoCtrlProcess::STORE_ORE) != APP_OK) {
-                exchange_side_ = EExchangeSide::NONE;
-            }
-            controller.auto_exchange = false;
-        }
-        // TODO 自救模式：预留，暂不接入
-    }
 
 
 /*删除自定义控制器对应的兑矿操作
