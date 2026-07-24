@@ -100,16 +100,17 @@ void CSystemControllerLink::UpdateControllerLinkInfo_() {
 	controllerInfo.level_2 = pkg.status_flags.level_2;
 	controllerInfo.level_3 = pkg.status_flags.level_3;
 	controllerInfo.end_roll_toggle = pkg.status_flags.end_roll_toggle;
+
+	if (pkg.func_flags.left_exchange)  controllerInfo.left_exchange  = true;
+	if (pkg.func_flags.right_exchange) controllerInfo.right_exchange = true;
+	if (pkg.func_flags.auto_exchange)  controllerInfo.auto_exchange  = true;
+	if (pkg.func_flags.self_rescue)    controllerInfo.self_rescue    = true;
 	// 单臂角度数据 (float直传)
 	controllerInfo.arm.yaw       = pkg.arm.yaw;
 	controllerInfo.arm.pitch1    = pkg.arm.pitch1;
 	controllerInfo.arm.pitch2    = pkg.arm.pitch2;
 	controllerInfo.arm.roll      = pkg.arm.roll;
 	controllerInfo.arm.pitch_end = pkg.arm.pitch_end;
-
-	// 摇杆数据
-	controllerInfo.rocker_X = pkg.rocker_X;
-	controllerInfo.rocker_Y = pkg.rocker_Y;
 }
 
 /**
@@ -199,10 +200,6 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 	pkg.arm.pitch2    = controllerInfo.arm.pitch2;
 	pkg.arm.roll      = controllerInfo.arm.roll;
 	pkg.arm.pitch_end = controllerInfo.arm.pitch_end;
-
-	// 摇杆数据
-	pkg.rocker_X = controllerInfo.rocker_X;
-	pkg.rocker_Y = controllerInfo.rocker_Y;
 }
 
 /**

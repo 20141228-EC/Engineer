@@ -116,6 +116,19 @@ public:
 	} __packed ControllerStatusFlags_pkt = {};
 
 	/**
+	 * @brief 控制器功能标志位包 (Controller -> Robot)
+	 * 独立于状态标志位，专门承载功能按键/模式指令
+	 * 数据段大小: 1 bytes
+	 */
+	struct SControllerFuncFlags {
+		uint8_t left_exchange : 1;         ///< bit0 - 左边取矿 (PC11, LEFT_EXCHANGE)
+		uint8_t right_exchange : 1;        ///< bit1 - 右边取矿 (PC10, RIGHT_EXCHANGE)
+		uint8_t auto_exchange : 1;         ///< bit2 - 自动兑矿 (PB8, AUTO)
+		uint8_t self_rescue : 1;           ///< bit3 - 自救模式 (PB9, SAVE)
+		uint8_t reserve : 4;               ///< bit4-7 - 预留扩展
+	} __packed ControllerFuncFlags_pkt = {};
+
+	/**
 	 * @brief 机器人数据包 (Robot -> Controller)
 	 * 数据段大小: 30 bytes (满足30字节限制)
 	 * 完整包大小: 7(header) + 30(data) + 2(CRC16) = 39 bytes
@@ -137,10 +150,9 @@ public:
 	struct SControllerDataPkg {
 		SPkgHeader header;
 		SControllerStatusFlags status_flags ;           ///< 状态标志位 (bit-packed)      1B
+		SControllerFuncFlags func_flags;           		///< 功能标志位 (bit-packed)      1B
 		SArmAnglesPkg arm;                  			///< 单臂5轴角度 (float)          20B
-		int8_t rocker_X = 0;               				///< 摇杆X (-100~100)             1B
-		int8_t rocker_Y = 0;                			///< 摇杆Y (-100~100)             1B
-		uint8_t reserved[7] = {0};          			///< 保留字段                      7B
+		uint8_t reserved[8] = {0};          			///< 保留字段                      8B
 		uint16_t CRC16 = 0x0000;            			///< CRC16校验
 	} __packed controllerData_info_pkg = {};
 

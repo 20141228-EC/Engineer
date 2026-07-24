@@ -146,33 +146,6 @@ void CSystemCore::UpdateHandler_() {
     static uint8_t zx_count = 0;
     static bool zx_flag = false;
 
-    // static uint8_t print_cnt = 0;
-    // if (print_cnt-- == 0) {
-    //     print_cnt = 200;
-    //     Print("------------------------------\n");
-    //     if (parm_) {
-    //         Print("Arm_Yaw_Cmd: %d, Info: %d, Err: %d\n",
-    //               static_cast<int>(parm_->armCmd.set_angle_Yaw), static_cast<int>(parm_->armInfo.angle_Yaw),
-    //               static_cast<int>(parm_->armInfo.angle_Yaw - parm_->armCmd.set_angle_Yaw));
-    //         Print("Arm_Pitch1_Cmd: %d, Info: %d, Err: %d\n",
-    //               static_cast<int>(parm_->armCmd.set_angle_Pitch1), static_cast<int>(parm_->armInfo.angle_Pitch1),
-    //               static_cast<int>(parm_->armInfo.angle_Pitch1 - parm_->armCmd.set_angle_Pitch1));
-    //         Print("Arm_Pitch2_Cmd: %d, Info: %d, Err: %d\n",
-    //               static_cast<int>(parm_->armCmd.set_angle_Pitch2), static_cast<int>(parm_->armInfo.angle_Pitch2),
-    //               static_cast<int>(parm_->armInfo.angle_Pitch2 - parm_->armCmd.set_angle_Pitch2));
-    //         Print("Arm_Roll_Cmd: %d, Info: %d, Err: %d\n",
-    //               static_cast<int>(parm_->armCmd.set_angle_Roll), static_cast<int>(parm_->armInfo.angle_Roll),
-    //               static_cast<int>(parm_->armInfo.angle_Roll - parm_->armCmd.set_angle_Roll));
-    //         Print("Arm_EndPitch_Cmd: %d, Info: %d, Err: %d\n",
-    //               static_cast<int>(parm_->armCmd.set_angle_end_pitch), static_cast<int>(parm_->armInfo.angle_end_pitch),
-    //               static_cast<int>(parm_->armInfo.angle_end_pitch - parm_->armCmd.set_angle_end_pitch));
-    //         Print("Arm_EndRoll_Cmd: %d, Info: %d, Err: %d\n",
-    //               static_cast<int>(parm_->armCmd.set_angle_end_roll), static_cast<int>(parm_->armInfo.angle_end_roll),
-    //               static_cast<int>(parm_->armInfo.angle_end_roll - parm_->armCmd.set_angle_end_roll));
-    //     }
-
-    // }
-
     bool zx = SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X; ///< 如果同时按下z和x
     if (SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X) {
         zx_count++;
@@ -203,6 +176,12 @@ void CSystemCore::UpdateHandler_() {
         }
     }
     if (use_Controller_ != last_use_Controller) {
+        // 模式切换瞬间清零所有功能
+        SysControllerLink.controllerInfo.left_exchange  = false;
+        SysControllerLink.controllerInfo.right_exchange = false;
+        SysControllerLink.controllerInfo.auto_exchange  = false;
+        SysControllerLink.controllerInfo.self_rescue    = false;
+        exchange_side_ = EExchangeSide::NONE;
         if (use_Controller_ == true) {
             SysControllerLink.robotInfo.controlled_by_controller = true;
             if (parm_) {

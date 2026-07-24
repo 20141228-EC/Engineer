@@ -57,9 +57,12 @@ public:
 		bool level_2 = false;          ///< 等级2
 		bool level_3 = false;          ///< 等级3
 		bool end_roll_toggle = false;  ///< 末端 roll 翻转状态
+
+		bool left_exchange = false;    ///< 左边取矿
+		bool right_exchange = false;   ///< 右边取矿
+		bool auto_exchange = false;    ///< 自动兑矿
+		bool self_rescue = false;      ///< 自救模式
 		SArmAngles arm;                      ///< 单臂5轴角度
-		int8_t rocker_X = 0;                 ///< 摇杆X: roll_end / 底盘左右移动 (-100~100)
-		int8_t rocker_Y = 0;                 ///< 摇杆Y: 底盘前进 (-100~100)
 	} controllerInfo;
 
 	// 机器人信息结构体(Robot -> Controller)

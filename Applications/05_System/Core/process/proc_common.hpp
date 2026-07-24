@@ -177,7 +177,7 @@ namespace my_engineer{
         bool RunManualStoreTask(ETrajID trajId);
         bool RunAutoOreTask();
         bool PlayGetClip(const TrajClip &clip, float_t rollOff = 0.0f);
-        bool AlignEndRollToStore(const TrajClip &clip, float_t rollOff);
+        bool AlignEndRollToClipStart(const TrajClip &clip, float_t rollOff);
 
         CSystemCore &core_;
         CModArm &arm_;

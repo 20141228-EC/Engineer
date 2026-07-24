@@ -201,7 +201,7 @@ void CSystemCore::ControlFromKeyboard_() {
 
     auto &keyboard = SysRemote.remoteInfo.keyboard;
     auto &keyboard_edge = SysRemote.remoteInfo.keyboard_edge;
-
+    auto &controller = SysControllerLink.controllerInfo;
 
     static bool lastMouseStatus_L = false, lastMouseStatus_R = false;
 
@@ -254,6 +254,7 @@ void CSystemCore::ControlFromKeyboard_() {
              &&keyboard_edge.key_G == CSystemRemote::ERemoteEdge::Rising) {
                 pchassis_->chassisInfo.crawler_on = !pchassis_->chassisInfo.crawler_on;
             }
+        }
     }
 
     /******************* 云台手动控制 *******************/
@@ -328,11 +329,13 @@ void CSystemCore::ControlFromKeyboard_() {
 
             // Ctrl + X: 启动存矿任务
             if(keyboard.key_X){
+                exchange_side_ = EExchangeSide::NONE;
                 StartAutoCtrlTask_(EAutoCtrlProcess::STORE_ORE);
             }
 
             // Ctrl + B: 启动取矿任务
             if(keyboard.key_B){
+                exchange_side_ = EExchangeSide::NONE;
                 StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE);
             }
             // Ctrl + R: 启动全部复位任务
@@ -353,8 +356,25 @@ void CSystemCore::ControlFromKeyboard_() {
             // if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE); }
             if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::CYCLE);}
         }
+        if (parm_ && pchassis_) {
+            // 左取矿
+            if (controller.left_exchange) {
+                exchange_side_ = EExchangeSide::LEFT;
+                if (StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE) != APP_OK) {
+                    exchange_side_ = EExchangeSide::NONE;   ///< 启动失败回收预选，避免残留污染下次
+                }
+                controller.left_exchange = false;
+            }
+            // 右取矿
+            if (controller.right_exchange) {
+                exchange_side_ = EExchangeSide::RIGHT;
+                if (StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE) != APP_OK) {
+                    exchange_side_ = EExchangeSide::NONE;
+                }
+                controller.right_exchange = false;
+            }
         }
-}
+    }
 }
 
 /**
@@ -564,6 +584,35 @@ void CSystemCore::ControlFromController_() {
             pgimbal_->gimbalInfo.isIntoControll = true;
         }
         //pgimbal_->gimbalCmd.set_visualyaw += static_cast<float_t>(keyboard.mouse_Y - keyboard.mouse_X) * 1.0f / freq;
+    }
+
+    /******************* 功能按键 *******************/
+    if (parm_ && pchassis_) {
+        // 左取矿
+        if (controller.left_exchange) {
+            exchange_side_ = EExchangeSide::LEFT;
+            if (StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE) != APP_OK) {
+                exchange_side_ = EExchangeSide::NONE;   ///< 启动失败回收预选，避免残留污染下次
+            }
+            controller.left_exchange = false;
+        }
+        // 右取矿
+        if (controller.right_exchange) {
+            exchange_side_ = EExchangeSide::RIGHT;
+            if (StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE) != APP_OK) {
+                exchange_side_ = EExchangeSide::NONE;
+            }
+            controller.right_exchange = false;
+        }
+        // 自动兑矿
+        if (controller.auto_exchange) {
+            exchange_side_ = EExchangeSide::AUTO;
+            if (StartAutoCtrlTask_(EAutoCtrlProcess::STORE_ORE) != APP_OK) {
+                exchange_side_ = EExchangeSide::NONE;
+            }
+            controller.auto_exchange = false;
+        }
+        // TODO 自救模式：预留，暂不接入
     }
 
 

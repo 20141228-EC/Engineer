@@ -157,6 +157,9 @@ public:
         CYCLE,              ///< 大陀螺
     } currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
+    // 取矿左右预选
+    enum class EExchangeSide { NONE, LEFT, RIGHT,AUTO} exchange_side_ = EExchangeSide::NONE;
+
     // 面向系统层的控制模式枚举
     enum class ECtrlMode {
         NONE,
