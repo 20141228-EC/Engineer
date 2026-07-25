@@ -82,6 +82,42 @@
         return arrived;
     }
 
+    /** @brief 检查所有关节到位，并作超时判断
+     */
+    static bool WaitAllJointsArrived(CModArm &arm,
+                                     const float_t target[J::COUNT],
+                                     const SArrivalCheckConfig &cfg) {
+        const uint32_t startTick = HAL_GetTick();
+        uint32_t stableStartTick = 0;
+        bool stableTiming = false; // 开始计时标志位
+
+        while (true) {
+            if (SysRemote.remoteInfo.keyboard.key_Ctrl
+                && SysRemote.remoteInfo.keyboard.key_Z) {
+                return false;
+            }
+
+            const uint32_t nowTick = HAL_GetTick();
+            if (CheckAllJointsArrived(arm, target, cfg)) {
+                if (!stableTiming) {
+                    stableTiming = true;
+                    stableStartTick = nowTick;
+                }
+                if (nowTick - stableStartTick >= cfg.stableMs) {
+                    return true;
+                }
+            } else {
+                stableTiming = false;
+            }
+
+            if (nowTick - startTick >= cfg.hardTimeoutMs) {
+                return false;
+            }
+
+            proc_waitMs(1);
+        }
+    }
+
     // 提取第 row 行的夹爪状态：0=夹紧, 非0=松开
     bool ExtractGripClose(const float_t traj[][FC_COUNT], int row) {
         return traj[row][FC_GRIP] < 1.0f;
@@ -170,68 +206,40 @@
         }
         qplayer.PlanPointToPoint(current, target, opt.minTimeS);
 
-        SPlayJointTargetState s;
-        uint32_t startTick = HAL_GetTick();
+        const uint32_t startTick = HAL_GetTick();
 
+        // 第一阶段：持续播放轨迹，直到规划时间结束
         while (true) {
-            // Ctrl+Z 打断
             if (SysRemote.remoteInfo.keyboard.key_Ctrl
                 && SysRemote.remoteInfo.keyboard.key_Z) {
                 return false;
             }
 
             const uint32_t nowTick = HAL_GetTick();
-            float_t elapsed = static_cast<float_t>(nowTick - startTick) / 1000.0f;
+            const float_t elapsed = static_cast<float_t>(nowTick - startTick) / 1000.0f;
+            if (qplayer.IsFinished(elapsed)) break;
 
-            const bool frameTargetCommanded = qplayer.IsFinished(elapsed);// 自动计算路径的运动时间
+            qplayer.Evaluate(elapsed, joints);
+            WriteArmjoint(arm, joints);
 
-            // 关节角度播放
-            if (frameTargetCommanded) {
-                WriteArmjoint(arm, target);
-            } else {
-                qplayer.Evaluate(elapsed, joints);
-                WriteArmjoint(arm, joints);
-            }
-
-            // 运动期间夹爪保持 opt.gripDuringMotion,如果传入了保持命令则不动
             if(!opt.gripKeepCurrent){
                 WriteGripCommand(arm, opt.gripDuringMotion);
-            }
-
-            // 到位检查
-            if (frameTargetCommanded) {
-                if (opt.waitForArrival) {
-                    if (!s.arrivalCheckStarted) {
-                        s.arrivalCheckStarted = true;
-                        s.arrivalStartTick = nowTick;
-                    }
-                    if (!s.frameJointsArrived) {
-                        if (CheckAllJointsArrived(arm, target, arrivalCfg)) { //到位检查
-                            if (!s.stableTiming) {
-                                s.stableTiming = true;
-                                s.stableStartTick = nowTick;
-                            }
-                            if (nowTick - s.stableStartTick >= arrivalCfg.stableMs) {
-                                s.frameJointsArrived = true;// 超时检测
-                            }
-                        } else {
-                            s.stableTiming = false;
-                        }
-                        if (nowTick - s.arrivalStartTick >= arrivalCfg.hardTimeoutMs) {
-                            return false;
-                        }
-                    }
-                    if (s.frameJointsArrived) break;
-                } else {
-                    break;
-                }
             }
 
             proc_waitMs(1);
         }
 
-        // 关节到位后才切换到本段目标夹爪状态
+        // 第二阶段：固定最终目标，并按需等待真实反馈稳定到位
         WriteArmjoint(arm, target);
+        if(!opt.gripKeepCurrent){
+            WriteGripCommand(arm, opt.gripDuringMotion);
+        }
+
+        if (opt.waitForArrival
+            && !WaitAllJointsArrived(arm, target, arrivalCfg)) {
+            return false;
+        }
+
         if(!opt.gripKeepCurrent){
             WriteGripCommand(arm, opt.gripAfter);
         }
@@ -369,7 +377,6 @@
         float_t joints[CAlgoQuinticSpline::AXES];
 
         while (true) {
-            // Ctrl+Z 中断
             if (SysRemote.remoteInfo.keyboard.key_Ctrl
                 && SysRemote.remoteInfo.keyboard.key_Z) {
                 return false;
@@ -377,45 +384,21 @@
 
             const uint32_t nowTick = HAL_GetTick();
             const float_t elapsedMs = static_cast<float_t>(nowTick - t0);
+            if (spline.IsFinished(elapsedMs)) break;
 
-            // 轨迹结束：写入最终帧关节角度 + 等到位
-            if (spline.IsFinished(elapsedMs)) {
-                float_t finalTarget[J::COUNT];
-                Extrarow(clip.frame, segTo, finalTarget);
-                finalTarget[J::J_ENDR] += rollOff;
-                WriteArmjoint(arm, finalTarget);
-
-                {
-                    const SArrivalCheckConfig cfg;
-                    uint32_t arrivalTick = nowTick;
-                    bool stable = false;
-                    uint32_t stableTick = 0;
-                    while (true) {
-                        if (SysRemote.remoteInfo.keyboard.key_Ctrl
-                            && SysRemote.remoteInfo.keyboard.key_Z) {
-                            return false;
-                        }
-                        if (CheckAllJointsArrived(arm, finalTarget, cfg)) {
-                            if (!stable) { stable = true; stableTick = HAL_GetTick(); }
-                            if (HAL_GetTick() - stableTick >= cfg.stableMs) break;
-                        } else {
-                            stable = false;
-                            if (HAL_GetTick() - arrivalTick >= cfg.hardTimeoutMs) {
-                                return false;
-                            }
-                        }
-                        proc_waitMs(1);
-                    }
-                }
-                return true;
-            }
-
-            // 五次样条计算关节角度
             spline.Evaluate(elapsedMs, joints);
             WriteArmjoint(arm, joints);
 
             proc_waitMs(1);
         }
+
+        float_t finalTarget[J::COUNT];
+        Extrarow(clip.frame, segTo, finalTarget);
+        finalTarget[J::J_ENDR] += rollOff;
+        WriteArmjoint(arm, finalTarget);
+
+        const SArrivalCheckConfig cfg;
+        return WaitAllJointsArrived(arm, finalTarget, cfg);
     }
 
  }// namespace my_engineer
