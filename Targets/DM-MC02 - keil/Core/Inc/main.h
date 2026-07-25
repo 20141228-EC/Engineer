@@ -105,12 +105,16 @@ void Error_Handler(void);
 #define SWCLK_GPIO_Port GPIOA
 #define KEY_INT_Pin GPIO_PIN_15
 #define KEY_INT_GPIO_Port GPIOA
+#define RIGHT_EXCHANGE_Pin GPIO_PIN_10
+#define RIGHT_EXCHANGE_GPIO_Port GPIOC
+#define LEFT_EXCHANGE_Pin GPIO_PIN_11
+#define LEFT_EXCHANGE_GPIO_Port GPIOC
 #define DBUS_RX_Pin GPIO_PIN_2
 #define DBUS_RX_GPIO_Port GPIOD
-#define GRIPPER_LEFT_Pin GPIO_PIN_8
-#define GRIPPER_LEFT_GPIO_Port GPIOB
-#define GRIPPER_RIGHT_Pin GPIO_PIN_9
-#define GRIPPER_RIGHT_GPIO_Port GPIOB
+#define AUTO_Pin GPIO_PIN_8
+#define AUTO_GPIO_Port GPIOB
+#define SAVE_Pin GPIO_PIN_9
+#define SAVE_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
