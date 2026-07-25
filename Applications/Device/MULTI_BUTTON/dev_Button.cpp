@@ -19,6 +19,11 @@ bool CDevButton::islevel_3 = false;
 bool CDevButton::isControllerReset = false;
 bool CDevButton::isRobotReset = false;
 bool CDevButton::isEndRollToggle = false;
+// 功能按键状态
+bool CDevButton::isLeftExchange = false;
+bool CDevButton::isRightExchange = false;
+bool CDevButton::isAutoExchange = false;
+bool CDevButton::isSelfRescue = false;
 
 
 CDevButton::singlebutton CDevButton::buttons_[static_cast<int>(EButtonID::BUTTON_MAX)] = {};
@@ -33,6 +38,10 @@ uint8_t CDevButton::ButtonGpioRead(uint8_t button_id){
     case EButtonID::LEVEL_3:
     case EButtonID::RESET:
     case EButtonID::END_ROLL_TOGGLE:
+    case EButtonID::LEFT_EXCHANGE:
+    case EButtonID::RIGHT_EXCHANGE:
+    case EButtonID::AUTO_EXCHANGE:
+    case EButtonID::SELF_RESCUE:
       return HAL_GPIO_ReadPin(buttons_[button_id].halGpioPort, buttons_[button_id].halGpioPin);
   }
 
@@ -75,6 +84,18 @@ void CDevButton::ButtonPressUpCallback(void *btn) {
       break;
     case EButtonID::LEVEL_3:
       islevel_3 = false;
+      break;
+    case EButtonID::LEFT_EXCHANGE:
+      isLeftExchange = true;
+      break;
+    case EButtonID::RIGHT_EXCHANGE:
+      isRightExchange = true;
+      break;
+    case EButtonID::AUTO_EXCHANGE:
+      isAutoExchange = true;
+      break;
+    case EButtonID::SELF_RESCUE:
+      isSelfRescue = true;
       break;
     default:
       break;
@@ -126,17 +147,23 @@ EAppStatus CDevButton::InitDevice(const SDevInitParam_Base *pStructInitParam) {
     buttons_[i].buttonID = initParam->buttons_[i].buttonID;
     buttons_[i] = initParam->buttons_[i];
 
-    // 按钮使用按钮库
+    // 难度/翻转按键
     if (buttons_[i].buttonID == EButtonID::LEVEL_1 ||
         buttons_[i].buttonID == EButtonID::LEVEL_2 ||
         buttons_[i].buttonID == EButtonID::LEVEL_3 ||
         buttons_[i].buttonID == EButtonID::END_ROLL_TOGGLE) {
       button_init(&buttons_[i].User_button, ButtonGpioRead, buttons_[i].activeLevel, static_cast<uint8_t>(buttons_[i].buttonID));
       button_attach(&buttons_[i].User_button, PressEvent::PRESS_DOWN, ButtonPressDownCallback);
-      // button_attach(&buttons_[i].User_button, PressEvent::PRESS_UP, ButtonPressUpCallback);
-      // button_attach(&buttons_[i].User_button, PressEvent::LONG_PRESS_HOLD, ButtonLongPressCallback);
-      // button_attach(&buttons_[i].User_button, PressEvent::DOUBLE_CLICK, ButtonDoubleClickCallback);
-      //button_attach(&buttons_[i].User_button, PressEvent::SINGLE_CLICK, ButtonSingleClickCallback);
+      button_attach(&buttons_[i].User_button, PressEvent::PRESS_UP, ButtonPressUpCallback);
+      button_start(&buttons_[i].User_button);
+    }
+
+    if (buttons_[i].buttonID == EButtonID::LEFT_EXCHANGE ||
+        buttons_[i].buttonID == EButtonID::RIGHT_EXCHANGE ||
+        buttons_[i].buttonID == EButtonID::AUTO_EXCHANGE ||
+        buttons_[i].buttonID == EButtonID::SELF_RESCUE) {
+      button_init(&buttons_[i].User_button, ButtonGpioRead, buttons_[i].activeLevel, static_cast<uint8_t>(buttons_[i].buttonID));
+      button_attach(&buttons_[i].User_button, PressEvent::PRESS_UP, ButtonPressUpCallback);
       button_start(&buttons_[i].User_button);
     }
 

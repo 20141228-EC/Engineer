@@ -21,8 +21,8 @@
 // 直接把机器人的物理位置给自定义控制器，懒得转换了
 #define CONTROLLER_YAW_PHYSICAL_RANGE 300.0f
 #define CONTROLLER_YAW_MOTOR_RANGE 6809.f
-#define CONTROLLER_YAW_PHYSICAL_RANGE_MIN -97.5f
-#define CONTROLLER_YAW_PHYSICAL_RANGE_MAX 97.5f
+#define CONTROLLER_YAW_PHYSICAL_RANGE_MIN -165.5f
+#define CONTROLLER_YAW_PHYSICAL_RANGE_MAX 180.5f
 #define CONTROLLER_YAW_MOTOR_MACH 8171
 /*------------------------------------------------------------------------------------------*/
 #define CONTROLLER_PITCH1_PHYSICAL_RANGE_MIN 0.0f

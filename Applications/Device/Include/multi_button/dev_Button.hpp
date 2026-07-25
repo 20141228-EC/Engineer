@@ -23,7 +23,11 @@ public:
     LEVEL_3 = 2,                // 三级难度
     RESET = 3,                  // 复位自定义控制器
     END_ROLL_TOGGLE = 4,        // 末端 roll 翻转
-    BUTTON_MAX = 5              // 数组大小
+    LEFT_EXCHANGE = 5,          // 左边取矿
+    RIGHT_EXCHANGE = 6,         // 右边取矿
+    AUTO_EXCHANGE = 7,          // 自动兑矿
+    SELF_RESCUE = 8,            // 自救模式
+    BUTTON_MAX = 9              // 数组大小
   };
 private:
   typedef struct singlebutton{
@@ -61,6 +65,11 @@ public:
   static bool isControllerReset;
   static bool isRobotReset;
   static bool isEndRollToggle;
+  // 功能按键状态
+  static bool isLeftExchange;
+  static bool isRightExchange;
+  static bool isAutoExchange;
+  static bool isSelfRescue;
 
 };
 
