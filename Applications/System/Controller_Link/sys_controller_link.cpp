@@ -109,12 +109,16 @@ void CSystemControllerLink::UpdateHandler_() {
 void CSystemControllerLink::UpdateButtonInfo_() {
 	if (systemStatus != APP_OK) return;
 
-	// 开机 5 秒内忽略 level 按键，因为上电的时候gpio会异常的触发
+	// 开机 5 秒内忽略所有按键，因为上电的时候gpio会异常的触发
     if (HAL_GetTick() < 5000) {
         CDevButton::islevel_1 = false;
         CDevButton::islevel_2 = false;
         CDevButton::islevel_3 = false;
 		CDevButton::isEndRollToggle = false;
+		CDevButton::isLeftExchange  = false;
+		CDevButton::isRightExchange = false;
+		CDevButton::isAutoExchange  = false;
+		CDevButton::isSelfRescue    = false;
     }
 	// 按键事件
 	if (levelStep_ == ELevelStep::IDLE) {
@@ -137,6 +141,16 @@ void CSystemControllerLink::UpdateButtonInfo_() {
 		controllerInfo.end_roll_toggle = !controllerInfo.end_roll_toggle;
 		CDevButton::isEndRollToggle = false;
 	}
+
+	controllerInfo.left_exchange  = false;
+	controllerInfo.right_exchange = false;
+	controllerInfo.auto_exchange  = false;
+	controllerInfo.self_rescue    = false;
+
+	if (CDevButton::isLeftExchange)  { controllerInfo.left_exchange  = true; CDevButton::isLeftExchange  = false; }
+	if (CDevButton::isRightExchange) { controllerInfo.right_exchange = true; CDevButton::isRightExchange = false; }
+	if (CDevButton::isAutoExchange)  { controllerInfo.auto_exchange  = true; CDevButton::isAutoExchange  = false; }
+	if (CDevButton::isSelfRescue)    { controllerInfo.self_rescue    = true; CDevButton::isSelfRescue    = false; }
 }
 
 /**
@@ -148,26 +162,21 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 
 	auto &pkg = pcontrollerLink_->controllerData_info_pkg;
 
+	// 状态标志位
 	pkg.status_flags = {};
+	pkg.status_flags.controller_init_ok = controllerInfo.controller_OK;
+	pkg.status_flags.return_sucess      = controllerInfo.return_success;
+	pkg.status_flags.level_1            = controllerInfo.level_1;
+	pkg.status_flags.level_2            = controllerInfo.level_2;
+	pkg.status_flags.level_3            = controllerInfo.level_3;
+	pkg.status_flags.end_roll_toggle    = controllerInfo.end_roll_toggle;
 
-	if (controllerInfo.controller_OK) pkg.status_flags.controller_init_ok = 1;
-	if (controllerInfo.return_success) pkg.status_flags.return_sucess = 1;
-
-	if (controllerInfo.level_1){
-		pkg.status_flags.level_1 = 1;
-
-	} 
-	if (controllerInfo.level_2) {
-		pkg.status_flags.level_2 = 1;
-
-	}
-	if (controllerInfo.level_3) {
-		pkg.status_flags.level_3 = 1;
-
-	}
-	if (controllerInfo.end_roll_toggle) {
-		pkg.status_flags.end_roll_toggle = 1;
-	}
+	// 功能标志位
+	pkg.func_flags = {};
+	pkg.func_flags.left_exchange  = controllerInfo.left_exchange;
+	pkg.func_flags.right_exchange = controllerInfo.right_exchange;
+	pkg.func_flags.auto_exchange  = controllerInfo.auto_exchange;
+	pkg.func_flags.self_rescue    = controllerInfo.self_rescue;
 
 	// 单臂角度数据 (float直传, 5轴)
 	pkg.arm.yaw       = controllerInfo.arm.yaw;
@@ -175,8 +184,6 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 	pkg.arm.pitch2    = controllerInfo.arm.pitch2;
 	pkg.arm.roll      = controllerInfo.arm.roll;
 	pkg.arm.pitch_end = controllerInfo.arm.pitch_end;
-
-	// 摇杆数据
 }
 
 /**

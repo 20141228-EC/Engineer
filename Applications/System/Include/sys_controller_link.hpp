@@ -56,10 +56,15 @@ public:
 		bool controller_OK = false;          ///< 控制器状态OK
 		bool return_success = false;         ///< 归位成功标志
 		// EToggleSwitch toggle_switch = TOGGLE_MIDDLE;  ///< 拨杆档位
-		bool level_1 = false; 
+		bool level_1 = false;
 		bool level_2 = false;
 		bool level_3 = false;
 		bool end_roll_toggle = false;        ///< 末端 roll 翻转状态
+		// 功能按键标志位 
+		bool left_exchange = false;          ///< 左边取矿
+		bool right_exchange = false;         ///< 右边取矿
+		bool auto_exchange = false;          ///< 自动兑矿
+		bool self_rescue = false;            ///< 自救模式
 		SArmAngles arm;                      ///< 单臂5轴角度
 		// int8_t rocker_X = 0;                 ///< 摇杆X: roll_end / 底盘左右移动 (-100~100)
 		// int8_t rocker_Y = 0;                 ///< 摇杆Y: 底盘前进 (-100~100)，仅底盘模式有效

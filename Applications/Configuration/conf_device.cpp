@@ -74,6 +74,26 @@ EAppStatus InitAllDevice(){
     Button_initparam.buttons_[4].activeLevel = 1;
     Button_initparam.buttons_[4].halGpioPort = LEVEL_3_GPIO_Port;
     Button_initparam.buttons_[4].halGpioPin = LEVEL_3_Pin;
+    // 左边取矿
+    Button_initparam.buttons_[5].buttonID = CDevButton::EButtonID::LEFT_EXCHANGE;
+    Button_initparam.buttons_[5].activeLevel = 1;
+    Button_initparam.buttons_[5].halGpioPort = LEFT_EXCHANGE_GPIO_Port;
+    Button_initparam.buttons_[5].halGpioPin = LEFT_EXCHANGE_Pin;
+    // 右边取矿
+    Button_initparam.buttons_[6].buttonID = CDevButton::EButtonID::RIGHT_EXCHANGE;
+    Button_initparam.buttons_[6].activeLevel = 1;
+    Button_initparam.buttons_[6].halGpioPort = RIGHT_EXCHANGE_GPIO_Port;
+    Button_initparam.buttons_[6].halGpioPin = RIGHT_EXCHANGE_Pin;
+    // 自动兑矿
+    Button_initparam.buttons_[7].buttonID = CDevButton::EButtonID::AUTO_EXCHANGE;
+    Button_initparam.buttons_[7].activeLevel = 1;
+    Button_initparam.buttons_[7].halGpioPort = AUTO_GPIO_Port;
+    Button_initparam.buttons_[7].halGpioPin = AUTO_Pin;
+    // 自救模式
+    Button_initparam.buttons_[8].buttonID = CDevButton::EButtonID::SELF_RESCUE;
+    Button_initparam.buttons_[8].activeLevel = 1;
+    Button_initparam.buttons_[8].halGpioPort = SAVE_GPIO_Port;
+    Button_initparam.buttons_[8].halGpioPin = SAVE_Pin;
     Button.InitDevice(&Button_initparam);
 
     // 摇杆
