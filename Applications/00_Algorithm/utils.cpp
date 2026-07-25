@@ -59,3 +59,38 @@ float math::sign(const float& val) {
   return 0;
 }
 
+/**
+ * @brief 生成伪随机数
+ *
+ * 使用 xorshift32 算法，计算量较小，适合嵌入式环境
+ *
+ * @param state 随机数状态，不能为 0
+ * @return uint32_t 新的伪随机数
+ */
+uint32_t math::NextRandom(uint32_t &state)
+{
+    state ^= state << 13;
+    state ^= state >> 17;
+    state ^= state << 5;
+
+    return state;
+}
+
+/**
+ * @brief 生成指定范围内的随机浮点数
+ *
+ * @param state    随机数状态
+ * @param minValue 最小值
+ * @param maxValue 最大值
+ * @return float [minValue, maxValue] 范围内的随机数
+ */
+float math::RandomRange(uint32_t &state, float minValue, float maxValue)
+{
+    constexpr float kUint32Max = 4294967295.0f;
+
+    const float unitRandom =
+        static_cast<float>(NextRandom(state)) / kUint32Max;
+
+    return minValue + (maxValue - minValue) * unitRandom;
+}
+

@@ -293,7 +293,7 @@ EAppStatus InitAllModule() {
     gimbalInitParam.PitchPosPidParam.ki = 0.0f;
     gimbalInitParam.PitchPosPidParam.kd = 0.0f;
     gimbalInitParam.PitchPosPidParam.maxIntegral = 3000.0f;
-    gimbalInitParam.PitchPosPidParam.maxOutput = 4000.0f;
+    gimbalInitParam.PitchPosPidParam.maxOutput = 2500.0f;
     // Pitch速度PID参数
     gimbalInitParam.PitchSpdPidParam.kp = 0.5f;
     gimbalInitParam.PitchSpdPidParam.ki = 0.05f;

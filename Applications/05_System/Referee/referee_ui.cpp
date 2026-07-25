@@ -283,31 +283,31 @@ void CSystemReferee::UI_InitDrawing() {
   stateFigureMsg.message.figureConfig[0].details_3 = 10;       // Radius
   stateFigureMsg.message.figureConfig[0].width = 14;           // Line Width
 
-  // 取矿六边形（逆时针）
-  // stateFigureMsg.message.figureConfig[1].figureName[0] = 0;    // Frame ID
-  // stateFigureMsg.message.figureConfig[1].figureName[1] = 1;    // Layer ID
-  // stateFigureMsg.message.figureConfig[1].figureName[2] = 4;    // Figure ID
-  // stateFigureMsg.message.figureConfig[1].operate = 1;
-  // stateFigureMsg.message.figureConfig[1].figureType = 0;
-  // stateFigureMsg.message.figureConfig[1].layerID = 1;
-  // stateFigureMsg.message.figureConfig[1].posit_X = 960 + 60;
-  // stateFigureMsg.message.figureConfig[1].posit_Y = 540 + 104,
-  // stateFigureMsg.message.figureConfig[1].color = 8;
-  // stateFigureMsg.message.figureConfig[1].details_4 = 960 - 60;      // End Posit X
-  // stateFigureMsg.message.figureConfig[1].details_5 = 540 + 104;      // End Posit Y
-  // stateFigureMsg.message.figureConfig[1].width = 2;            // Line Width
-  
+  // 自动取矿对位线
+  stateFigureMsg.message.figureConfig[1].figureName[0] = 0;    // Frame ID
+  stateFigureMsg.message.figureConfig[1].figureName[1] = 1;    // Layer ID
+  stateFigureMsg.message.figureConfig[1].figureName[2] = 4;    // Figure ID
+  stateFigureMsg.message.figureConfig[1].operate = 1;
+  stateFigureMsg.message.figureConfig[1].figureType = 0;
+  stateFigureMsg.message.figureConfig[1].layerID = 1;
+  stateFigureMsg.message.figureConfig[1].posit_X = 984;
+  stateFigureMsg.message.figureConfig[1].posit_Y = 800;
+  stateFigureMsg.message.figureConfig[1].color = 3;
+  stateFigureMsg.message.figureConfig[1].details_4 = 984;      // End Posit X
+  stateFigureMsg.message.figureConfig[1].details_5 = 500;      // End Posit Y
+  stateFigureMsg.message.figureConfig[1].width = 2;            // Line Width
+
   // stateFigureMsg.message.figureConfig[2].figureName[0] = 0;    // Frame ID
   // stateFigureMsg.message.figureConfig[2].figureName[1] = 1;    // Layer ID
   // stateFigureMsg.message.figureConfig[2].figureName[2] = 5;    // Figure ID
   // stateFigureMsg.message.figureConfig[2].operate = 1;
   // stateFigureMsg.message.figureConfig[2].figureType = 0;
   // stateFigureMsg.message.figureConfig[2].layerID = 1;
-  // stateFigureMsg.message.figureConfig[2].posit_X = 960 - 60;
-  // stateFigureMsg.message.figureConfig[2].posit_Y = 540 + 104,
+  // stateFigureMsg.message.figureConfig[2].posit_X = 941;
+  // stateFigureMsg.message.figureConfig[2].posit_Y = 673;
   // stateFigureMsg.message.figureConfig[2].color = 8;
-  // stateFigureMsg.message.figureConfig[2].details_4 = 960 - 120;      // End Posit X
-  // stateFigureMsg.message.figureConfig[2].details_5 = 540;      // End Posit Y
+  // stateFigureMsg.message.figureConfig[2].details_4 = 897;      // End Posit X
+  // stateFigureMsg.message.figureConfig[2].details_5 = 598;      // End Posit Y
   // stateFigureMsg.message.figureConfig[2].width = 2;            // Line Width
 
   // stateFigureMsg.message.figureConfig[3].figureName[0] = 0;    // Frame ID
@@ -316,11 +316,11 @@ void CSystemReferee::UI_InitDrawing() {
   // stateFigureMsg.message.figureConfig[3].operate = 1;
   // stateFigureMsg.message.figureConfig[3].figureType = 0;
   // stateFigureMsg.message.figureConfig[3].layerID = 1;
-  // stateFigureMsg.message.figureConfig[3].posit_X = 960 - 120;
-  // stateFigureMsg.message.figureConfig[3].posit_Y = 540,
+  // stateFigureMsg.message.figureConfig[3].posit_X = 897;
+  // stateFigureMsg.message.figureConfig[3].posit_Y = 598;
   // stateFigureMsg.message.figureConfig[3].color = 8;
-  // stateFigureMsg.message.figureConfig[3].details_4 = 960 - 60;      // End Posit X
-  // stateFigureMsg.message.figureConfig[3].details_5 = 540 - 104;      // End Posit Y
+  // stateFigureMsg.message.figureConfig[3].details_4 = 941;      // End Posit X
+  // stateFigureMsg.message.figureConfig[3].details_5 = 523;      // End Posit Y
   // stateFigureMsg.message.figureConfig[3].width = 2;            // Line Width
 
   // stateFigureMsg.message.figureConfig[4].figureName[0] = 0;    // Frame ID
@@ -329,11 +329,11 @@ void CSystemReferee::UI_InitDrawing() {
   // stateFigureMsg.message.figureConfig[4].operate = 1;
   // stateFigureMsg.message.figureConfig[4].figureType = 0;
   // stateFigureMsg.message.figureConfig[4].layerID = 1;
-  // stateFigureMsg.message.figureConfig[4].posit_X = 960 - 300;
-  // stateFigureMsg.message.figureConfig[4].posit_Y = 540 - 104,
-  // stateFigureMsg.message.figureConfig[4].color = 0;
-  // stateFigureMsg.message.figureConfig[4].details_4 = 960 + 300;      // End Posit X
-  // stateFigureMsg.message.figureConfig[4].details_5 = 540 - 104;      // End Posit Y
+  // stateFigureMsg.message.figureConfig[4].posit_X = 941;
+  // stateFigureMsg.message.figureConfig[4].posit_Y = 523;
+  // stateFigureMsg.message.figureConfig[4].color = 8;
+  // stateFigureMsg.message.figureConfig[4].details_4 = 1028;     // End Posit X
+  // stateFigureMsg.message.figureConfig[4].details_5 = 523;      // End Posit Y
   // stateFigureMsg.message.figureConfig[4].width = 2;            // Line Width
 
   // stateFigureMsg.message.figureConfig[5].figureName[0] = 0;    // Frame ID
@@ -342,11 +342,11 @@ void CSystemReferee::UI_InitDrawing() {
   // stateFigureMsg.message.figureConfig[5].operate = 1;
   // stateFigureMsg.message.figureConfig[5].figureType = 0;
   // stateFigureMsg.message.figureConfig[5].layerID = 1;
-  // stateFigureMsg.message.figureConfig[5].posit_X = 960 + 60;
-  // stateFigureMsg.message.figureConfig[5].posit_Y = 540 - 104,
+  // stateFigureMsg.message.figureConfig[5].posit_X = 1028;
+  // stateFigureMsg.message.figureConfig[5].posit_Y = 523;
   // stateFigureMsg.message.figureConfig[5].color = 8;
-  // stateFigureMsg.message.figureConfig[5].details_4 = 960 + 120;      // End Posit X
-  // stateFigureMsg.message.figureConfig[5].details_5 = 540;      // End Posit Y
+  // stateFigureMsg.message.figureConfig[5].details_4 = 1071;     // End Posit X
+  // stateFigureMsg.message.figureConfig[5].details_5 = 598;      // End Posit Y
   // stateFigureMsg.message.figureConfig[5].width = 2;            // Line Width
 
   // stateFigureMsg.message.figureConfig[6].figureName[0] = 0;    // Frame ID
@@ -355,11 +355,11 @@ void CSystemReferee::UI_InitDrawing() {
   // stateFigureMsg.message.figureConfig[6].operate = 1;
   // stateFigureMsg.message.figureConfig[6].figureType = 0;
   // stateFigureMsg.message.figureConfig[6].layerID = 1;
-  // stateFigureMsg.message.figureConfig[6].posit_X = 960 + 120;
-  // stateFigureMsg.message.figureConfig[6].posit_Y = 540;
+  // stateFigureMsg.message.figureConfig[6].posit_X = 1071;
+  // stateFigureMsg.message.figureConfig[6].posit_Y = 598;
   // stateFigureMsg.message.figureConfig[6].color = 8;
-  // stateFigureMsg.message.figureConfig[6].details_4 = 960 + 60;      // End Posit X
-  // stateFigureMsg.message.figureConfig[6].details_5 = 540 + 104;      // End Posit Y
+  // stateFigureMsg.message.figureConfig[6].details_4 = 1028;     // End Posit X
+  // stateFigureMsg.message.figureConfig[6].details_5 = 673;      // End Posit Y
   // stateFigureMsg.message.figureConfig[6].width = 2;            // Line Width
 
   /* Figure - Position Config */
@@ -676,7 +676,7 @@ void CSystemReferee::UI_StartRadarTextDrawing_() {
 void CSystemReferee::UI_StartStateFigureDrawing_() {
 	stateFigureMsg.message.figureConfig[0].operate = 1;
 	// 六边形已注释，未用到的 config 保持 operate=0 防止覆盖其他 Figure
-	stateFigureMsg.message.figureConfig[1].operate = 0;
+	stateFigureMsg.message.figureConfig[1].operate = 1;
 	stateFigureMsg.message.figureConfig[2].operate = 0;
 	stateFigureMsg.message.figureConfig[3].operate = 0;
 	stateFigureMsg.message.figureConfig[4].operate = 0;
@@ -857,9 +857,13 @@ void CSystemReferee::UI_UpdateStateFigureDrawing_() {
 	stateFigureMsg.message.figureConfig[0].operate = 2;
 	stateFigureMsg.message.figureConfig[0].color = (chassis_info.crawler_on) ? 3 : 7;
 
-	// 六边形未启用，其余 config 保持 operate=0
-	stateFigureMsg.message.figureConfig[1].operate = 0;
-	stateFigureMsg.message.figureConfig[2].operate = 0;
+  // 自动取矿对位线
+  if(SystemCore.currentAutoCtrlProcess_ == CSystemCore::EAutoCtrlProcess::STORE_ORE){
+    stateFigureMsg.message.figureConfig[1].operate = 1;
+  }
+  else{
+    stateFigureMsg.message.figureConfig[1].operate = 3;
+  }
 	stateFigureMsg.message.figureConfig[3].operate = 0;
 	stateFigureMsg.message.figureConfig[4].operate = 0;
 	stateFigureMsg.message.figureConfig[5].operate = 0;
@@ -1302,28 +1306,28 @@ void CSystemReferee::StartSysRefereeUiTask(void *arg) {
 
     // 在这里面更新动态UI
 		SysReferee.UI_UpdateCurModeTextDrawing_();
-		proc_waitMs(30);
+		proc_waitMs(35);
 
 		// SysReferee.UI_UpdateVisionFigureDrawing_();
 		// proc_waitMs(100);
 
 		SysReferee.UI_UpdateStateFigureDrawing_();
-		proc_waitMs(30);
+		proc_waitMs(35);
 
     SysReferee.UI_UpdateHipTextDrawing_();
-    proc_waitMs(30);
+    proc_waitMs(35);
 
     SysReferee.UI_UpdatePitchTextDrawing_();
-    proc_waitMs(30);
+    proc_waitMs(35);
 
     SysReferee.UI_UpdatePositionFigureDrawing_();
-    proc_waitMs(30);
+    proc_waitMs(35);
 
     SysReferee.UI_UpdateArmAngleFigureDrawing_();
-    proc_waitMs(30);
+    proc_waitMs(35);
 
     SysReferee.UI_UpdateArmYawFigureDrawing_();
-    proc_waitMs(30);
+    proc_waitMs(35);
 
 		// SysReferee.UI_UpdateVisionFigureDrawing_();
 
