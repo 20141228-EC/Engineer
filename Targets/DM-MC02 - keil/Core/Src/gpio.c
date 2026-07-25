@@ -96,8 +96,14 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(KEY_INT_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : GRIPPER_LEFT_Pin GRIPPER_RIGHT_Pin */
-  GPIO_InitStruct.Pin = GRIPPER_LEFT_Pin|GRIPPER_RIGHT_Pin;
+  /*Configure GPIO pins : RIGHT_EXCHANGE_Pin LEFT_EXCHANGE_Pin */
+  GPIO_InitStruct.Pin = RIGHT_EXCHANGE_Pin|LEFT_EXCHANGE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : AUTO_Pin SAVE_Pin */
+  GPIO_InitStruct.Pin = AUTO_Pin|SAVE_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
