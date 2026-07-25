@@ -123,8 +123,15 @@ void CSystemCore::UpdateHandler_() {
         target[J::J_ROLL] = pose.roll;
         target[J::J_ENDP] = pose.end_pitch;
         target[J::J_ENDR] = pose.end_roll;
+        for (int i = 0; i < J::COUNT; ++i) {
+            quinticPlayer_.config_.jointParams[i] = FastJointParams[i];
+        }
         quinticPlayer_.speedScale = 3.f;
         quinticPlayer_.PlanPointToPoint(current , target);// 时间规划
+        if (pgimbal_) {
+            pgimbal_->gimbalCmd.set_pitch = -23.1f;
+            pgimbal_->gimbalCmd.set_visualyaw = 0.f;
+        }
     }
     lastlevel = curlevel;
 
@@ -294,7 +301,7 @@ void CSystemCore::UpdateHandler_() {
                         presetHolding_ = true;
                         presetHoldStart_ = HAL_GetTick();
                     }
-                    if (HAL_GetTick() - presetHoldStart_ > 250) {
+                    if (HAL_GetTick() - presetHoldStart_ > 300) {
                         presetHolding_ = false;
                         presetActive_ = false;
                         if (SysControllerLink.IsControllerOnline()) {

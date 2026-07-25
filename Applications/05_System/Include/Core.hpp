@@ -129,9 +129,9 @@ struct SArmPresetPose{
 };
 
 const SArmPresetPose PresetPose_Level[3] = {
-    {/*LEVEL_1:*/ 0.f, 35.f, 47.f, 98.f, 87.f,0.f},
-    {/*LEVEL_2:*/ 0.f, 35.f, 32.f, 10.f, 87.f,0.f},
-    {/*LEVEL_3:*/ 0.f, 35.f, 32.f, 10.f, 87.f,0.f},
+    {/*LEVEL_1:*/ -2.7f, 17.1f, 20.2f,  102.f, 86.f,200.f},
+    {/*LEVEL_2:*/ -2.7f, 14.9f, 20.4f, -1.f,  65.f, 170.f},
+    {/*LEVEL_3:*/ -2.7f, 14.9f, 20.4f, -1.f,  65.f, 170.f},
 };
 /**
  * @brief 定义系统核心类
