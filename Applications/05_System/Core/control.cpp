@@ -242,7 +242,7 @@ void CSystemCore::ControlFromKeyboard_() {
                 std::clamp(pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
             }
             if(keyboard.key_B){
-                pchassis_->chassisCmd.L_length += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 0.01f;
+                pchassis_->chassisCmd.L_length += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 0.006f;
             }
             if(keyboard.key_Ctrl
                 && keyboard.key_B

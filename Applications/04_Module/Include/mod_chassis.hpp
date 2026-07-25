@@ -47,7 +47,7 @@
 
 // 一些阈值
 #define IS_CLIMBING_TORQUE 1.2f  // 履带正在爬升的扭矩判断阈值
-#define IS_CLIMBED_TOR_DIFF 0.32f    // 已经上了台阶的前后轮组扭矩差判断阈值
+#define IS_CLIMBED_TOR_DIFF 0.26f    // 已经上了台阶的前后轮组扭矩差判断阈值
 
 #define ENABLE_CRAWLER_POWER_LIMIT 1 // 是否开启履带功率限制(1为开启，0为不限制履带功率)
 
