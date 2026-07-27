@@ -79,7 +79,7 @@
 #define ARM_INIT_SAFE_PITCH1_ANGLE 70.0f
 #define ARM_INIT_SAFE_PITCH2_ANGLE 70.0f
 
-#define POSIT_JOINT1_YAW_MACH 22384
+#define POSIT_JOINT1_YAW_MACH 19382
 #define POSIT_JOINT1_YAW_MACH_PHY 0.f
 #define ARM_YAW_MOTOR_RANGE_LHK 61551
 
@@ -87,7 +87,7 @@
 #define POSIT_JOINT2_PITCH1_MACH_PHY 0.f
 #define POSIT_JOINT2_PITCH1_INIT_PHY 6.0f
 
-#define POSIT_JOINT3_PITCH2_MACH 11764	 //data = 12678 p1为0度时p2最大角度编码器值和0度编码器值的差值。但是如果是跳变了65535则要将跳变之前的减掉
+#define POSIT_JOINT3_PITCH2_MACH 11764	 // data = 12678，跨过0/65535边界时按65536周期处理
 #define POSIT_JOINT3_PITCH2_MACH_PHY 0.f
 #define POSIT_JOINT3_PITCH2_INIT_PHY 20.0f
 
@@ -300,7 +300,6 @@ private:
 
 		bool onlyGravity_ = false;  ///< 纯重力模式
 		void SetOnlyGravity(bool enable) { onlyGravity_ = enable; }
-
 		// 到位阈值
 		int32_t arrivalThresh_pitch1 = 700;
 		int32_t arrivalThresh_pitch2 = 700;
