@@ -135,14 +135,28 @@ void CSystemCore::UpdateHandler_() {
     }
     lastlevel = curlevel;
 
-    // 末端 roll 翻转按键
+    // 末端 roll 翻转按键：只登记目标，实际角度交给下面的斜坡
     static bool last_end_roll_toggle = false;
+    static bool endRollFlipping = false;
     if (SysControllerLink.controllerInfo.end_roll_toggle != last_end_roll_toggle) {
         if (parm_  && !parm_->armCmd.isAutoCtrl) {
-            parm_->armCmd.set_angle_end_roll = SysControllerLink.controllerInfo.end_roll_toggle ? 0.0f : 180.0f;
+            endRollRamp_.SetTarget(SysControllerLink.controllerInfo.end_roll_toggle ? 0.0f : 180.0f,
+                                   END_ROLL_FLIP_SPEED / freq);
+            endRollFlipping = true;
         }
     }
     last_end_roll_toggle = SysControllerLink.controllerInfo.end_roll_toggle;
+
+    // 斜坡限速逼近
+    if (endRollFlipping) {
+        if (parm_ == nullptr || parm_->armCmd.isAutoCtrl || presetActive_) {
+            endRollFlipping = false;    ///< 自动任务/preset 接管了机械臂，放弃本次翻转
+        } else {
+            endRollRamp_.SetValue(parm_->armCmd.set_angle_end_roll);  ///< 同步外部对 armCmd 的增量修改
+            parm_->armCmd.set_angle_end_roll = endRollRamp_.Update();
+            if (endRollRamp_.IsArrived()) endRollFlipping = false;
+        }
+    }
 
     static bool last_use_Controller = false;
     static uint8_t zx_count = 0;
@@ -323,7 +337,10 @@ void CSystemCore::UpdateHandler_() {
         if (parm_) {
             gripKeyboardCmd_ = parm_->armInfo.isGripped ? EGripKeyboardCmd::CLOSE : EGripKeyboardCmd::OPEN;
             parm_->armCmd.set_speed_grip = 0.0f;
-            parm_->armCmd.set_angle_end_roll = SysControllerLink.controllerInfo.end_roll_toggle ? 0.0f : 180.0f;
+            // 同样走斜坡：任务退出时 armCmd 已同步到实际反馈，此处阶跃会再冲一次电机
+            endRollRamp_.SetTarget(SysControllerLink.controllerInfo.end_roll_toggle ? 0.0f : 180.0f,
+                                   END_ROLL_FLIP_SPEED / freq);
+            endRollFlipping = true;
         }
         // 图传强制回正
         if (pgimbal_) {

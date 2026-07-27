@@ -150,8 +150,8 @@ proc_exit:
         // 对齐末端 roll 到存矿轨迹首帧
         if (!AlignEndRollToClipStart(Traj, endRollOffset_)) return false;
 
-        // 逐段播放：seg 0 等位 + 逐帧 + lastTarget 链式
-        return PlayTrajRows(arm_, Traj.frame, Traj.frameCount, nullptr, endRollOffset_);
+        // 逐段播放：seg 0 等位 + 逐帧到位
+        return PlayTrajRows(arm_, Traj.frame, Traj.frameCount, nullptr, nullptr,endRollOffset_);
     }
 
     // 单独对齐末端 roll 到轨迹首帧，避免其大角度运动拖慢整段多轴轨迹
@@ -193,7 +193,6 @@ proc_exit:
         for (int step = core_.oreTaskStep_; step < OreStepCount; step++) {
             const auto &oreStep = OreStepConfig[step];// 将顺序硬编码到数组中
             const bool needStore = (step % 3 != 2);// 如果不是第3次取的矿或者是第6次取的矿石就不要存矿
-            const float_t rollOff = oreStep.rollOff;  // 每矿单独配置的末端 roll 偏移
 
             /*------------------取矿---------------------*/
             if (!PlayGetClip(oreStep.getClip, 0)) return false;// 取矿石的时候已经设定好角度了
@@ -203,7 +202,7 @@ proc_exit:
                 core_.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_YAW_ANGLE;
                 core_.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
                 if (!AlignEndRollToClipStart(oreStep.storeClip, oreStep.rollOff)) return false;
-                if (!PlayTrajRows(arm_, oreStep.storeClip.frame, oreStep.storeClip.frameCount, nullptr, oreStep.rollOff)) return false;
+                if (!PlayTrajRows(arm_, oreStep.storeClip.frame, oreStep.storeClip.frameCount, nullptr,nullptr, oreStep.rollOff)) return false;
             }
 
             // 每成功完成一次存取矿就记录进度
@@ -227,8 +226,6 @@ proc_exit:
     bool CStoreOreTaskRunner::PlayGetClip(const TrajClip &clip, float_t rollOff) {
         if (!AlignEndRollToClipStart(clip, rollOff)) return false;
 
-        float_t lastTarget[J::COUNT];
-
         // 找第一个夹爪闭合帧
         int gripCloseSeg = -1;
         for (int seg = 1; seg < clip.frameCount; seg++) {
@@ -244,7 +241,7 @@ proc_exit:
         // 前段: 逐帧 PlayTrajRows（跑到夹爪闭合帧的前一帧）
         {
             const int frontEnd = useQuintic ? gripCloseSeg : clip.frameCount;
-            if (!PlayTrajRows(arm_, clip.frame, frontEnd, lastTarget, rollOff))
+            if (!PlayTrajRows(arm_, clip.frame, frontEnd, nullptr, nullptr, rollOff))
                 return false;
         }
 
@@ -266,10 +263,8 @@ proc_exit:
             }
 
             // 播放夹爪闭合帧
-            if (!PlayTrajRow(arm_, clip.frame, gripCloseSeg, lastTarget, true, rollOff))
+            if (!PlayTrajRow(arm_, clip.frame, gripCloseSeg, true, rollOff))
                 return false;
-            Extrarow(clip.frame, gripCloseSeg, lastTarget);
-            lastTarget[J::J_ENDR] += rollOff;
         }
 
         // 后段: 五次样条连续播放

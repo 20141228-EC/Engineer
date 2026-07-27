@@ -59,7 +59,7 @@ namespace my_engineer {
             arm.armCmd.isAutoCtrl = true;
 
             // 逐段播放
-            if (!PlayTrajRows(arm, Traj.frame, Traj.frameCount))
+            if (!PlayTrajRows(arm, Traj.frame, Traj.frameCount,FastJointParams))
                 goto proc_exit;
         }
 

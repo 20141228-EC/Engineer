@@ -66,11 +66,10 @@
  *   }
  *
  *   ii. 分段策略（前段逐帧到位 + 后段样条平滑）
- *   float_t lastTarget[J::COUNT];
  *   int gripCloseSeg = ...;    // 找夹爪闭合帧
  *
- *   // 前段：逐段到位（lastTarget 输出给后段用）
- *   if (!PlayTrajRows(arm, clip.frame, gripCloseSeg, lastTarget)) return false;
+ *   // 前段：逐段到位（第 4 参数为关节速度表，传 FastJointParams 走快参数）
+ *   if (!PlayTrajRows(arm, clip.frame, gripCloseSeg, FastJointParams)) return false;
  *
  *   // Shift 确认
  *
@@ -206,17 +205,19 @@ namespace my_engineer{
                               const SPlayJointTargetOptions &opt);
 
     // 按轨迹第 seg 行播放一段
+    // Prarm: 关节速度/加速度表，nullptr 时用 CAlgoQuintic 的默认慢参数
     bool PlayTrajRow(CModArm &arm,
                      const float_t traj[][FC_COUNT], int seg,
-                     const float_t *prevTarget = nullptr,
                      bool waitForArrival = true,
                      float_t endRollOffset = 0.0f,
-                     bool earlyGrip = false);
+                     bool earlyGrip = false,
+                     const CAlgoTrajPlayback::SJointPrarm *Prarm = nullptr);
 
     // 按 traj 数组的第 0..segEnd-1 行逐段播放
     bool PlayTrajRows(CModArm &arm,
                       const float_t traj[][FC_COUNT],
                       int segEnd,
+                      const CAlgoTrajPlayback::SJointPrarm * Prarm = nullptr,
                       float_t *lastTargetOut = nullptr,
                       float_t endRollOffset = 0.0f,
                       bool earlyGrip = false);
