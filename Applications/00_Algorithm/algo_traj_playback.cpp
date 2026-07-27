@@ -18,7 +18,7 @@ namespace my_engineer{
         {200.0f, 400.0f},   // pitch2
         {300.0f, 750.0f},   // roll
         {300.0f, 750.0f},   // pitch_end
-        {150.0f, 300.0f},   // end_roll
+        {300.0f, 700.0f},   // end_roll
     };
 
     /**

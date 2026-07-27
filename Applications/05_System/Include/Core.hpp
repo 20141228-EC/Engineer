@@ -25,6 +25,9 @@
 
 #define I_AM_CONTROLLER 0 // 当前板子是控制器
 
+/* --------------------末端 roll 一键翻转------------------- */
+#define END_ROLL_FLIP_SPEED       700.f         ///< 翻转限速
+
 /*-------------------------------------AUTO_PROCESS_SET----------------------------------------------------------*/
 
 /* ----------------------上台阶------------------- */
@@ -212,6 +215,7 @@ public:
 
 private:
     CAlgoQuintic quinticPlayer_;
+    CAlgoRamp endRollRamp_;            ///< 末端 roll 一键翻转的限速斜坡
     // 定义系统核心的状态
     EAppStatus coreStatus = APP_RESET;
 

@@ -272,10 +272,10 @@
     */
     bool PlayTrajRow(CModArm &arm,
                      const float_t traj[][FC_COUNT], int seg,
-                     const float_t *prevTarget,
                      bool waitForArrival,
                      float_t endRollOffset,
-                     bool earlyGrip) {
+                     bool earlyGrip,
+                     const CAlgoTrajPlayback::SJointPrarm *Prarm) {
         float_t target[J::COUNT];
         const bool gripAfter = ExtractGripClose(traj, seg);   // 本段目标夹爪状态
 
@@ -301,8 +301,9 @@
         opt.speedScale = traj[seg][FC_SPEED];
         opt.gripDuringMotion = gripDuringMotion;
         opt.gripAfter = gripAfter;
-        opt.startOverride = nullptr;// 直接传上一次的目标值的效果比较差，所以这里直接设置nullptr
+        opt.startOverride = nullptr;// 规划起点用实时反馈，比链式沿用上一段目标值的跟随效果更好
         opt.minTimeS = 0.f;
+        opt.jointParamsOverride = Prarm;
         opt.waitForArrival = waitForArrival || gripActuallyChanged;  // 夹爪切换时强制等关节到位
         if (!PlayJointTarget(arm, target, opt))
             return false;
@@ -323,6 +324,7 @@
     bool PlayTrajRows(CModArm &arm,
                       const float_t traj[][FC_COUNT],
                       int segEnd,
+                      const CAlgoTrajPlayback::SJointPrarm * Prarm,
                       float_t *lastTargetOut,
                       float_t endRollOffset,
                       bool earlyGrip) {
@@ -331,17 +333,17 @@
         float_t lastTarget[J::COUNT];
 
         // seg 0: 固定起点等到位
-        if (!PlayTrajRow(arm, traj, 0, nullptr, true, endRollOffset, earlyGrip))
+        if (!PlayTrajRow(arm, traj, 0, true, endRollOffset, earlyGrip, Prarm))
             return false;
         Extrarow(traj, 0, lastTarget);
         lastTarget[J::J_ENDR] += endRollOffset;
 
-        // seg 1..segEnd-1: 逐段播放，prevTarget 链式
+        // seg 1..segEnd-1: 逐段播放，每段规划起点取实时反馈
         for (int seg = 1; seg < segEnd; seg++) {
             const bool isLastSeg = (seg == segEnd - 1);
             const bool gripChanged = (ExtractGripClose(traj, seg) != ExtractGripClose(traj, seg - 1));
             const bool waitArrival = isLastSeg || gripChanged;
-            if (!PlayTrajRow(arm, traj, seg, lastTarget, waitArrival, endRollOffset, earlyGrip))
+            if (!PlayTrajRow(arm, traj, seg, waitArrival, endRollOffset, earlyGrip, Prarm))
                 return false;
             Extrarow(traj, seg, lastTarget);
             lastTarget[J::J_ENDR] += endRollOffset;
