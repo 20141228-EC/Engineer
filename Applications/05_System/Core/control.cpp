@@ -280,7 +280,7 @@ void CSystemCore::ControlFromKeyboard_() {
             // !SysBoardLink.pArm_Cmd->isAutoCtrl) {
             // yaw(Q键)
             if(keyboard.key_Q)
-                parm_->armCmd.set_angle_Yaw += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 60.0f / freq;
+                parm_->armCmd.set_angle_Yaw += static_cast<float_t>(keyboard.mouse_R - keyboard.mouse_L) * 60.0f / freq;
             // pitch1(E键)
             if(keyboard.key_E)
                 parm_->armCmd.set_angle_Pitch1 += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 70.0f / freq;
