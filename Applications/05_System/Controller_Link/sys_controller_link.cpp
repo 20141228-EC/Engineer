@@ -104,7 +104,7 @@ void CSystemControllerLink::UpdateControllerLinkInfo_() {
 	if (pkg.func_flags.left_exchange)  controllerInfo.left_exchange  = true;
 	if (pkg.func_flags.right_exchange) controllerInfo.right_exchange = true;
 	if (pkg.func_flags.auto_exchange)  controllerInfo.auto_exchange  = true;
-	if (pkg.func_flags.self_rescue)    controllerInfo.self_rescue    = true;
+	if (pkg.func_flags.self_rescue)    controllerInfo.cycle          = true;
 	// 单臂角度数据 (float直传)
 	controllerInfo.arm.yaw       = pkg.arm.yaw;
 	controllerInfo.arm.pitch1    = pkg.arm.pitch1;

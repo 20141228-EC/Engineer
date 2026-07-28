@@ -243,12 +243,15 @@ void CSystemCore::ControlFromKeyboard_() {
             }
             if(keyboard.key_B){
                 pchassis_->chassisCmd.L_length += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 0.006f;
+                pgimbal_->gimbalCmd.set_pitch = GIMBAL_PITCH_INIT_ANGLE + pchassis_->chassisInfo.L_Length * 0.52f;// 同步抬升
             }
             if(keyboard.key_Ctrl
                 && keyboard.key_B
                 && keyboard.key_Shift
                 && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
                 pchassis_->reset_hip = !pchassis_->reset_hip;
+                pgimbal_->gimbalCmd.set_pitch = 0.f;
+                pgimbal_->gimbalCmd.set_visualyaw = 0.f;
             }
             if(keyboard_edge.key_F == CSystemRemote::ERemoteEdge::Rising
              &&keyboard_edge.key_G == CSystemRemote::ERemoteEdge::Rising) {
@@ -266,10 +269,6 @@ void CSystemCore::ControlFromKeyboard_() {
             }
             if (keyboard.key_F) {
                 pgimbal_->gimbalCmd.set_pitch += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 60.f / freq;
-            }
-            if(keyboard.key_Shift){// shift键自动复位
-                pgimbal_->gimbalCmd.set_pitch = 0.f;
-                pgimbal_->gimbalCmd.set_visualyaw = 0.f;
             }
         }
     }
@@ -382,7 +381,19 @@ void CSystemCore::ControlFromKeyboard_() {
                 }
                 controller.auto_exchange = false;
             }
-            // TODO 自救模式：预留，暂不接入
+            // 大陀螺模式
+            static bool last_cycle = false;
+            bool cycle_rising = controller.cycle && !last_cycle;
+            last_cycle = controller.cycle;
+            if (cycle_rising) {
+                if (isCycleActive_) {
+                    isCycleActive_ = false;             ///< 退出
+                } else if (currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
+                    isCycleActive_ = true;              ///< 启动
+                    StartAutoCtrlTask_(EAutoCtrlProcess::CYCLE);
+                }
+            }
+            controller.cycle = false;
         }
     }
 }

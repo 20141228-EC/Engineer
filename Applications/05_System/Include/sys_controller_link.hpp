@@ -61,7 +61,7 @@ public:
 		bool left_exchange = false;    ///< 左边取矿
 		bool right_exchange = false;   ///< 右边取矿
 		bool auto_exchange = false;    ///< 自动兑矿
-		bool self_rescue = false;      ///< 自救模式
+		bool cycle = false;            ///< 大陀螺模式
 		SArmAngles arm;                      ///< 单臂5轴角度
 	} controllerInfo;
 
