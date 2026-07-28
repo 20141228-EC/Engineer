@@ -574,7 +574,15 @@ void CModChassis::UpdateHandler_(){
  * @return EAppStatus 
  */
 void CModChassis::HeartbeatHandler_(){
-
+    if(comWheelset_.motor[0]->deviceStatus != APP_OK || 
+        comWheelset_.motor[1]->deviceStatus != APP_OK ||
+        comWheelset_.motor[2]->deviceStatus != APP_OK ||
+        comWheelset_.motor[3]->deviceStatus != APP_OK){
+            moduleStatus = APP_RESET;   // 如果有任意一个轮子不在线 就不给动
+        }
+        else{   // 都在线
+            moduleStatus = APP_OK;
+        }
 }
 
 /**
