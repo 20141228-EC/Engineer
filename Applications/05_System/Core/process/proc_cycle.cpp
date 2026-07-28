@@ -174,8 +174,8 @@ void CSystemCore::StartCycleTask(void *arg)
      * 主控制循环
      **************************************************************************/
 
-    // 按住 Shift 时持续执行
-    while (keyboard.key_Shift)
+    // 按住 Shift 或 按键激活时持续执行
+    while (keyboard.key_Shift || core.isCycleActive_)
     {
         const float_t currentYaw =
             core.pchassis_->filter->Imu_Ekf_Info.yaw;
@@ -241,6 +241,7 @@ proc_exit:
     core.pchassis_->chassisCmd.isAutoCtrl = false;
     core.pgimbal_->gimbalCmd.isAutoCtrl = false;
     core.parm_->armCmd.isAutoCtrl = false;
+    core.isCycleActive_ = false;
     core.autoCtrlTaskHandle_ = nullptr;
     core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
     proc_return();

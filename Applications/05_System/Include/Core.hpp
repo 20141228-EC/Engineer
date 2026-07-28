@@ -242,6 +242,9 @@ private:
     // 自动任务句柄
     TaskHandle_t autoCtrlTaskHandle_ = nullptr;
 
+    // 大陀螺触发按键
+    bool isCycleActive_ = false;
+
     // 自定义控制器模式下的夹爪键盘指令状态
     EGripKeyboardCmd gripKeyboardCmd_ = EGripKeyboardCmd::HOLD;
 

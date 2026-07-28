@@ -196,7 +196,7 @@ void CSystemCore::UpdateHandler_() {
         SysControllerLink.controllerInfo.left_exchange  = false;
         SysControllerLink.controllerInfo.right_exchange = false;
         SysControllerLink.controllerInfo.auto_exchange  = false;
-        SysControllerLink.controllerInfo.self_rescue    = false;
+        SysControllerLink.controllerInfo.cycle          = false;
         exchange_side_ = EExchangeSide::NONE;
         if (use_Controller_ == true) {
             SysControllerLink.robotInfo.controlled_by_controller = true;
@@ -338,7 +338,7 @@ void CSystemCore::UpdateHandler_() {
             gripKeyboardCmd_ = parm_->armInfo.isGripped ? EGripKeyboardCmd::CLOSE : EGripKeyboardCmd::OPEN;
             parm_->armCmd.set_speed_grip = 0.0f;
             // 同样走斜坡：任务退出时 armCmd 已同步到实际反馈，此处阶跃会再冲一次电机
-            endRollRamp_.SetTarget(SysControllerLink.controllerInfo.end_roll_toggle ? 0.0f : 180.0f,
+            endRollRamp_.SetTarget(SysControllerLink.controllerInfo.end_roll_toggle ? 0.0f : 176.0f,
                                    END_ROLL_FLIP_SPEED / freq);
             endRollFlipping = true;
         }
