@@ -489,12 +489,15 @@ void CSystemCore::ControlFromController_() {
             if(keyboard.key_B
              &&!keyboard.key_Ctrl){
                 pchassis_->chassisCmd.L_length += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 0.01f;
+                pgimbal_->gimbalCmd.set_pitch = GIMBAL_PITCH_INIT_ANGLE + pchassis_->chassisInfo.L_Length * 0.52f;// 同步抬升
             }
             if(keyboard.key_Ctrl
                 && keyboard.key_B
                 && keyboard.key_Shift
                 && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
                 pchassis_->reset_hip = !pchassis_->reset_hip;
+                pgimbal_->gimbalCmd.set_pitch = 0.f;
+                pgimbal_->gimbalCmd.set_visualyaw = 0.f;
             }
             if(keyboard_edge.key_F == CSystemRemote::ERemoteEdge::Rising
              &&keyboard_edge.key_G == CSystemRemote::ERemoteEdge::Rising) {
