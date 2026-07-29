@@ -285,7 +285,7 @@ void CModChassis::UpdateHandler_(){
 
     comHip_.MovMode_ = MovMode; ///< 更新面向底层髋关节组件的运动模式
 
-    float_t roll_Target = -0.8f; ///< 目标pitch角度
+    float_t roll_Target = -1.5f; ///< 目标pitch角度
 
     // 更新Roll角
     chassisInfo.roll_Measure = filter->Imu_Ekf_Info.pitch;

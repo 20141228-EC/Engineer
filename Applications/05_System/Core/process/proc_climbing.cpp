@@ -83,7 +83,7 @@ void CSystemCore::StartClimbingTask(void *arg) {
 					// core.movemode_ = EMoveMode::CLIMBING;
 					// core.pchassis_->MovMode = CModChassis::EmovMode::CLIMBING;
 					if(core.pchassis_->filter->Imu_Ekf_Info.pitch > 0){
-						core.pchassis_->chassisCmd.L_length += 90.f / 1000.f - core.pchassis_->filter->Imu_Ekf_Info.pitch * 20.f / 1000.f;
+						core.pchassis_->chassisCmd.L_length += 90.f / 1000.f - core.pchassis_->filter->Imu_Ekf_Info.pitch * 25.f / 1000.f;
 					}
 					else{
 						core.pchassis_->chassisCmd.L_length += 90.f / 1000.f;
