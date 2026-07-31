@@ -326,7 +326,7 @@ void CModChassis::UpdateHandler_(){
 
         float_t roll_err = roll_Target - chassisInfo.roll_Measure;  ///< 当前仰角与目标差值
         float_t roll_rate = filter->Imu_Ekf_Info.gyro_y;    // 当前pitch轴角速度
-        chassisCmd.L_Tau = roll_err * 0.8f - roll_rate * 0.05;          ///< pd控制(加入加速度影响)
+        chassisCmd.L_Tau = roll_err * 0.5f - roll_rate * 0.05;          ///< pd控制(加入加速度影响)
         ///< 目前只单纯给个力 如果效果好的话后续对连杆建模给精确一些
     }
 
