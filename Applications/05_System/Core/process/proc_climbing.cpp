@@ -67,19 +67,19 @@ void CSystemCore::StartClimbingTask(void *arg) {
 					// proc_waitMs(100);	// 等待100ms
 					// core.movemode_ = EMoveMode::CLIMBING;
 					// core.pchassis_->MovMode = CModChassis::EmovMode::CLIMBING;
-					core.pchassis_->chassisCmd.L_length += 90.f / 1000.f;
+					core.pchassis_->chassisCmd.L_length += 5.f / 1000.f;
 					// 此时开始自动抬腿
 					if(core.pchassis_->filter->Imu_Ekf_Info.pitch > 0.f && core.pchassis_->filter->Imu_Ekf_Info.pitch < 60.f){
-						core.pchassis_->chassisCmd.L_length += 90.f / 1000.f - core.pchassis_->filter->Imu_Ekf_Info.pitch * 25.f / 1000.f;
+						core.pchassis_->chassisCmd.L_length += 5.f / 1000.f - core.pchassis_->filter->Imu_Ekf_Info.pitch * 3.f / 1000.f;
 					}
 					else{
-						core.pchassis_->chassisCmd.L_length += 90.f / 1000.f;
+						core.pchassis_->chassisCmd.L_length += 5.f / 1000.f;
 					}
 				}
 				// if(core.pchassis_->is_climbed && core.pchassis_->time_to_reset_hip){
 				if(core.pchassis_->is_climbed){
 					core.pchassis_->is_climbing = false;
-					proc_waitMs(50);
+					proc_waitMs(100);
 					core.pchassis_->reset_hip = true;		// 检测到前轮爬上台阶之后就收腿 可能会需要一个延时
 					core.pchassis_->is_climbed = false;
 				}
@@ -92,7 +92,7 @@ void CSystemCore::StartClimbingTask(void *arg) {
 			}
 			else{		// 如果操作手判断卡住了导致腿没自动收，那就按住鼠标右键
 				core.pchassis_->is_climbing = false;
-				core.pchassis_->chassisCmd.L_length -= 90.f / 1000.f;
+				core.pchassis_->chassisCmd.L_length -= 5.f / 1000.f;
 				// 此时开始慢慢收腿
 			}
 		}
@@ -101,7 +101,7 @@ void CSystemCore::StartClimbingTask(void *arg) {
 			core.pchassis_->chassisCmd.L_length = SAVING_HIP_ANGLE;	// 立刻抬腿
 		}
 		
-        proc_waitMs(20);
+        proc_waitMs(1);
     }
 	// 松开ctrl退出上台阶模式
 
