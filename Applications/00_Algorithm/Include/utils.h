@@ -22,6 +22,9 @@ float limitMax(float val, const float& max);
 float loopLimit(float val, const float& min, const float& max);
 float sign(const float& val);
 
+uint32_t NextRandom(uint32_t &state);
+float RandomRange(uint32_t &state, float minValue, float maxValue);
+
 }  // namespace math
 
 #endif  // UTILS_H

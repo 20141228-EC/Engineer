@@ -59,3 +59,19 @@ float math::sign(const float& val) {
   return 0;
 }
 
+uint32_t math::NextRandom(uint32_t &state)
+{
+  state ^= state << 13;
+  state ^= state >> 17;
+  state ^= state << 5;
+  return state;
+}
+
+float math::RandomRange(uint32_t &state, float minValue, float maxValue)
+{
+  constexpr float kUint32Max = 4294967295.0f;
+  const float unitRandom =
+      static_cast<float>(NextRandom(state)) / kUint32Max;
+  return minValue + (maxValue - minValue) * unitRandom;
+}
+

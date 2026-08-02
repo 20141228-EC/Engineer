@@ -21,8 +21,12 @@
 #include "algo_imu_ekf.hpp"
 #include "algo_kf_filter.hpp"
 #include "algo_traj_playback.hpp"
+#include "algo_quintic.hpp"
 
 #define I_AM_CONTROLLER 0 // 当前板子是控制器
+
+/* --------------------末端 roll 一键翻转------------------- */
+#define END_ROLL_FLIP_SPEED       700.f         ///< 翻转限速
 
 /*-------------------------------------AUTO_PROCESS_SET----------------------------------------------------------*/
 
@@ -70,6 +74,10 @@
 #define EXCHANGE_ORE_END_PITCH_ANGLE  1.0f
 #define EXCHANGE_ORE_END_ROLL_ANGLE   1.0f
 #define EXCHANGE_ORE_GRIP_LENGTH      1.0f
+#define EXCHANGE_ORE_GIMBLE_PITCH_ANGLE      -55.0f
+#define EXCHANGE_ORE_GIMBLE_YAW_ANGLE      0.f
+#define EXCHANGE_ORE_GIMBLE_INIT_ANGLE      55.f
+#define EXCHANGE_ORE_GIMBLE_ANGLE      55.f
 // 待改
 
 /* ----------------------存矿------------------------*/
@@ -104,10 +112,34 @@
 #define GROUND_ORE_HIP_LENGTH       1.0f
 // 待改
 
+/* ------------------------大陀螺------------------------- */
+#define CYCLE_YAW_ANGLE        -4.0f
+#define CYCLE_PITCH1_ANGLE     91.0f
+#define CYCLE_PITCH2_ANGLE     31.0f
+#define CYCLE_ROLL_ANGLE       9.0f
+#define CYCLE_END_PITCH_ANGLE  -14.0f
+#define CYCLE_END_ROLL_ANGLE   -1.5f
+#define CYCLE_GRIP_LENGTH      1.0f
+#define CYCLE_HIP_LENGTH       1.0f
+#define CYCLE_GIMBAL_YAW_ANGLE -2.0f
+#define CYCLE_GIMBAL_PITCH_ANGLE    -16.0f
+
 
 
 namespace my_engineer {
 
+struct SArmPresetPose{
+     float yaw = 0.f, pitch1 = 0.f, pitch2 = 0.f, pitch3 = 0.f, roll = 0.f, end_pitch = 0.f, end_roll = 0.f;
+};
+
+// preset 预设位姿
+const SArmPresetPose PresetPose_Level[3] = {
+    {/*LEVEL_1:*/ -2.7f, 17.1f, 20.2f, 0.f, 102.f, 86.f, 0.f},
+    {/*LEVEL_2:*/ -2.7f, 14.9f, 20.4f, 0.f, -1.f,  65.f, 0.f},
+    {/*LEVEL_3:*/ -2.7f, 14.9f, 20.4f, 0.f, -1.f,  65.f, 0.f},
+};
+
+class CStoreOreTaskRunner;
 
 /**
  * @brief 定义系统核心类
@@ -117,6 +149,7 @@ class CSystemCore final {
     // 友元函数
     friend void StartUpdateTask(void *argument);
     friend void StartHeartbeatTask(void *argument);
+    friend class CStoreOreTaskRunner;
 
 public:
     // 定义自动操作的任务类型并实例化表示当前任务类型
@@ -129,7 +162,7 @@ public:
         EXCHANGE_ORE,       ///< 兑矿
         STORE_ORE,           ///< 存矿
         GROUND_ORE,         ///< 地矿
-
+        CYCLE,              ///< 大陀螺
     } currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
     // 面向系统层的控制模式枚举
@@ -146,6 +179,7 @@ public:
         NORMAL,             ///< 普通
         CLIMBING,           ///< 上台阶
         DOWNSTAIR,          ///< 下台阶
+        CYCLE,              ///< 大陀螺
         // ...to be updated...
     } movemode_ = EMoveMode::NONE;
 
@@ -154,10 +188,14 @@ public:
         NORMAL,             ///< 普通
         STORE_L_ORE,           ///< 左边存矿
         STORE_R_ORE,          ///< 右边存矿
-        GET_L_ORE,           ///< 左边取矿
-        GET_R_ORE,          ///< 右边取矿
+        EXCHANGE_L_ORE,           ///< 左边取矿
+        EXCHANGE_R_ORE,          ///< 右边取矿
+        AUTO
         // ...to be updated...
     } armmode_ = EArmMode::NONE;
+
+    // 取矿左右预选
+    enum class EExchangeSide { NONE, LEFT, RIGHT, AUTO } exchange_side_ = EExchangeSide::NONE;
 
     enum class EGripKeyboardCmd : uint8_t {
         HOLD,
@@ -172,6 +210,8 @@ public:
 
     EVarStatus use_Controller_ = false; ///< 是否使用控制器
 
+    bool isCycleActive_ = false;
+
     EVarStatus gimbal_auto_ctrl = false;   ///< 云台是否自动控制
 
     EVarStatus arm_init_fail = false;          ///< 臂初始化失败
@@ -180,11 +220,23 @@ public:
     EAppStatus InitSystemCore();
 
 private:
+    CAlgoQuintic quinticPlayer_;
+    CAlgoRamp endRollRamp_;            ///< 末端 roll 一键翻转的限速斜坡
     // 定义系统核心的状态
     EAppStatus coreStatus = APP_RESET;
 
+    uint8_t oreTaskStep_ = 0;
+    bool oreGetDone_ = false;// 确定是否停下
+
     // 定义系统核心响应频率
     const float_t freq = 1000.f;
+
+    // 选择难度等级时，初始化臂的动作
+    uint32_t presetStartTime_ = 0;     // 记录当前的时间戳
+    bool presetActive_ = false;        // preset 进行中标志
+    uint8_t presetLevel_ = 0;          // 当前 preset 等级 (1/2/3)
+    bool presetHolding_ = false;       // preset 到位后等待切换中
+    uint32_t presetHoldStart_ = 0;     // holding 开始时刻
 
     // 模块指针
     CModChassis *pchassis_ = nullptr;
@@ -232,6 +284,7 @@ private:
     static void StartEnergyUnitTask(void *arg);
     static void StartStoreTask(void *arg);
     static void StartExchangeGetTask(void *arg);
+    static void StartCycleTask(void *arg);
     
 };
 

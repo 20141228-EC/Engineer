@@ -96,20 +96,25 @@ void CSystemControllerLink::UpdateControllerLinkInfo_() {
 	controllerInfo.controller_OK = pkg.status_flags.controller_init_ok;
 	controllerInfo.return_success = pkg.status_flags.return_sucess;
 	//controllerInfo.toggle_switch = static_cast<EToggleSwitch>((pkg.status_flags & STATUS_TOGGLE_MASK) >> STATUS_TOGGLE_SHIFT);
-	controllerInfo.gripper_close = pkg.status_flags.grip;
-	controllerInfo.gripper_regrip = pkg.status_flags.regrip;
+	controllerInfo.level_1 = pkg.status_flags.level_1;
+	controllerInfo.level_2 = pkg.status_flags.level_2;
+	controllerInfo.level_3 = pkg.status_flags.level_3;
+	controllerInfo.end_roll_toggle = pkg.status_flags.end_roll_toggle;
 
-	// 单臂角度数据 (float直传)
+	// 解析功能标志位
+	if (pkg.func_flags.left_exchange)  controllerInfo.left_exchange  = true;
+	if (pkg.func_flags.right_exchange) controllerInfo.right_exchange = true;
+	if (pkg.func_flags.auto_exchange)  controllerInfo.auto_exchange  = true;
+	if (pkg.func_flags.self_rescue)    controllerInfo.self_rescue    = true;
+	if (pkg.func_flags.self_rescue)    controllerInfo.cycle          = true;
+
+	// 单臂角度数据 (float直传, 6轴)
 	controllerInfo.arm.yaw       = pkg.arm.yaw;
 	controllerInfo.arm.pitch1    = pkg.arm.pitch1;
 	controllerInfo.arm.pitch2    = pkg.arm.pitch2;
 	controllerInfo.arm.pitch3	= pkg.arm.pitch3;
 	controllerInfo.arm.roll      = pkg.arm.roll;
 	controllerInfo.arm.pitch_end = pkg.arm.pitch_end;
-
-	// 摇杆数据
-	controllerInfo.rocker_X = pkg.rocker_X;
-	controllerInfo.rocker_Y = pkg.rocker_Y;
 }
 
 /**
@@ -127,6 +132,7 @@ void CSystemControllerLink::UpdateRobotInfo_() {
 	robotInfo.controlled_by_controller = pkg.status_flags.control_by_controller;
 	robotInfo.robot_init_ok = pkg.status_flags.robot_init_ok;
 	robotInfo.p3_lock = pkg.status_flags.p3_lock;
+	robotInfo.preset_active = pkg.status_flags.preset_active;
 
 	// 解压角度 (int16 -> float)
 	robotInfo.arm.yaw       = CDevControllerLink::DecompressAngle(pkg.arm.yaw);
@@ -162,6 +168,7 @@ void CSystemControllerLink::UpdateRobotDataPkg_() {
 	if (robotInfo.controlled_by_controller) pkg.status_flags.control_by_controller = 1;
 	if (robotInfo.robot_init_ok) pkg.status_flags.robot_init_ok = 1;
 	if (robotInfo.p3_lock) pkg.status_flags.p3_lock = 1;
+	if (robotInfo.preset_active) pkg.status_flags.preset_active = 1;
 
 	// 压缩角度 (float -> int16)
 	pkg.arm.yaw       = CDevControllerLink::CompressAngle(robotInfo.arm.yaw);
@@ -195,19 +202,25 @@ void CSystemControllerLink::UpdateControllerDataPkg_() {
 	if (controllerInfo.controller_OK) pkg.status_flags.controller_init_ok = 1;
 	if (controllerInfo.return_success) pkg.status_flags.return_sucess = 1;
 	//pkg.status_flags.toggle_switch = static_cast<uint8_t>(controllerInfo.toggle_switch);
-	if (controllerInfo.gripper_close) pkg.status_flags.grip = 1;
+	if (controllerInfo.level_1) pkg.status_flags.level_1 = 1;
+	if (controllerInfo.level_2) pkg.status_flags.level_2 = 1;
+	if (controllerInfo.level_3) pkg.status_flags.level_3 = 1;
+	if (controllerInfo.end_roll_toggle) pkg.status_flags.end_roll_toggle = 1;
 
-	// 单臂角度数据 (float直传)
+	// 功能标志位
+	pkg.func_flags = {};
+	if (controllerInfo.left_exchange)  pkg.func_flags.left_exchange  = 1;
+	if (controllerInfo.right_exchange) pkg.func_flags.right_exchange = 1;
+	if (controllerInfo.auto_exchange)  pkg.func_flags.auto_exchange  = 1;
+	if (controllerInfo.self_rescue)    pkg.func_flags.self_rescue    = 1;
+
+	// 单臂角度数据 (float直传, 6轴)
 	pkg.arm.yaw       = controllerInfo.arm.yaw;
 	pkg.arm.pitch1    = controllerInfo.arm.pitch1;
 	pkg.arm.pitch2    = controllerInfo.arm.pitch2;
 	pkg.arm.pitch3    = controllerInfo.arm.pitch3;
 	pkg.arm.roll      = controllerInfo.arm.roll;
 	pkg.arm.pitch_end = controllerInfo.arm.pitch_end;
-
-	// 摇杆数据
-	pkg.rocker_X = controllerInfo.rocker_X;
-	pkg.rocker_Y = controllerInfo.rocker_Y;
 }
 
 /**

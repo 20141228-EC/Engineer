@@ -231,6 +231,30 @@ void CSystemReferee::UI_InitDrawing() {
   gripCloseMsg.message.figureConfig[0].details_3 = 10; // radius
   gripCloseMsg.message.figureConfig[0].width = 14;
 
+  // /* Text - Arm Init Fail Config */
+  // armInitFailTextMsg.header = CDevReferee::SPkgHeader();
+  // armInitFailTextMsg.header.len = sizeof(armInitFailTextMsg) - 9;
+  // armInitFailTextMsg.header.cmdId = CDevReferee::ECommandID::ID_ROBOT_MSG;
+  // armInitFailTextMsg.header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&armInitFailTextMsg.header), 4);
+  // armInitFailTextMsg.transmitterID = (refereeInfo.robot.robotCamp == 2) ? 100 : 0;
+  // armInitFailTextMsg.transmitterID += (refereeInfo.robot.robotID);
+  // armInitFailTextMsg.receiverID = (refereeInfo.robot.robotCamp == 2) ? 0x164 : 0x100;
+  // armInitFailTextMsg.receiverID += (refereeInfo.robot.robotID);
+  // armInitFailTextMsg.messageID = CDevReferee::EMessageID::ID_UI_DRAW_TEXT;
+  // armInitFailTextMsg.message.figureConfig.figureName[0] = 0;    // Frame ID
+  // armInitFailTextMsg.message.figureConfig.figureName[1] = 0;    // Layer ID
+  // armInitFailTextMsg.message.figureConfig.figureName[2] = 13;   // Figure ID
+  // armInitFailTextMsg.message.figureConfig.operate = 1;
+  // armInitFailTextMsg.message.figureConfig.figureType = 7;
+  // armInitFailTextMsg.message.figureConfig.layerID = 0;
+  // armInitFailTextMsg.message.figureConfig.details_1 = 20;       // Font Size
+  // armInitFailTextMsg.message.figureConfig.posit_X = 1400;
+  // armInitFailTextMsg.message.figureConfig.posit_Y = 740;
+  // armInitFailTextMsg.message.figureConfig.color = 4;
+  // armInitFailTextMsg.message.figureConfig.details_2 = 9;        // String Length
+  // armInitFailTextMsg.message.figureConfig.width = 2;            // Line Width
+  // strcpy(reinterpret_cast<char *>(armInitFailTextMsg.message.text), "ARM_INIT:");
+
   /* Text - hipInfo Config */
   hipInfoTextMsg.header = CDevReferee::SPkgHeader();
   hipInfoTextMsg.header.len = sizeof(hipInfoTextMsg) - 9;
@@ -866,6 +890,14 @@ void CSystemReferee::UI_UpdateCurModeTextDrawing_() {
         break;
       }
 
+      case CSystemCore::EAutoCtrlProcess::CYCLE: {
+        curModeTextMsg.message.figureConfig.details_2 = 5;
+        curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 2.5);
+        curModeTextMsg.message.figureConfig.posit_Y = 780;
+        strcpy(reinterpret_cast<char *>(curModeTextMsg.message.text), "CYCLE");
+        break;
+      }
+
       case CSystemCore::EAutoCtrlProcess::EXCHANGE_ORE: {
         curModeTextMsg.message.figureConfig.details_2 = 8;
         curModeTextMsg.message.figureConfig.posit_X = 960 - (25 * 5.5);
@@ -901,6 +933,7 @@ void CSystemReferee::UI_UpdateStateFigureDrawing_() {
 
   static auto &chassis_info = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->chassisInfo;
   static auto &grip_info = reinterpret_cast<CModArm *>(ModuleIDMap.at(EModuleID::MOD_ARM))->armCmd;
+ //static auto &arm_info = reinterpret_cast<CModArm *>(ModuleIDMap.at(EModuleID::MOD_ARM))->armInfo;
 
 	stateFigureMsg.message.figureConfig[0].operate = 2;
 	stateFigureMsg.message.figureConfig[0].color = (chassis_info.crawler_on) ? 3 : 7;
@@ -963,6 +996,18 @@ void CSystemReferee::UI_UpdateStateFigureDrawing_() {
   gripCloseMsg.message.figureConfig[0].color = (grip_info.gripClose) ? 3 : 7;
   gripCloseMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&gripCloseMsg), sizeof(gripCloseMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&gripCloseMsg), sizeof(gripCloseMsg));
+
+  proc_waitMs(50);
+
+  // // 臂初始化失败指示：红色=超时失败，绿色=正常
+  // armInitFailTextMsg.message.figureConfig.operate = 2;
+  // if (arm_info.isInitTimeout) {
+  //   armInitFailTextMsg.message.figureConfig.color = 1;  // 红色
+  // } else {
+  //   armInitFailTextMsg.message.figureConfig.color = 7;  // 灰色（隐藏）
+  // }
+  // armInitFailTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&armInitFailTextMsg), sizeof(armInitFailTextMsg) - 2);
+  // pInterface_->Transmit(reinterpret_cast<uint8_t *>(&armInitFailTextMsg), sizeof(armInitFailTextMsg));
 }
 
 void CSystemReferee::UI_UpdateVisionFigureDrawing_() {

@@ -301,9 +301,9 @@ void CModChassis::UpdateHandler_(){
             reset_hip = 0;
         }
 
-        // if(filter->Imu_Ave_Info.imu_ave_roll < -18.f){
-        //     should_be_saved = true;     // 仰角超过18°就自救
-        // }
+        if(filter->Imu_Ekf_Info.roll < -18.f){
+            should_be_saved = true;     // 仰角超过18°就自救
+        }
 
         // if(should_be_saved){    // 如果需要自救，就立刻抬腿
         //     roll_target_climbing = comHip_.pidRollCtrl.UpdatePidController(roll_Target, chassisInfo.roll_Measure);

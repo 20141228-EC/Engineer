@@ -11,11 +11,12 @@
  ******************************************************************************/
 
 #include "proc_common.hpp"
+#include "traj_data.hpp"
 
 namespace my_engineer {
 
     /******************************************************************************
-    * @brief    取能量单元任务
+    * @brief    兑换能量单元任务
     ******************************************************************************/
     void CSystemCore::StartExchangeGetTask(void *arg){
         if (arg == nullptr) proc_return();
@@ -24,61 +25,44 @@ namespace my_engineer {
         auto &keyboard = SysRemote.remoteInfo.keyboard;
         auto &arm  = *core.parm_;
 
-        CAlgoTrajPlayback player;
         arm.armCmd.resetEndAll = true;
         while(arm.comEnd_.initState_ !=  CModArm::CComEnd::EEndInitState::DONE){//如果没有初始化完成直接堵死在这里防止后续操作手手速过快
             proc_waitMs(1);
         }
-        // 循环等待鼠标左键/右键选择轨迹
+        // 选择取矿轨迹（控制器功能按键 / 键盘手动选择）
         ETrajID trajId;
-        while(true){
-            if(keyboard.mouse_L){
-                trajId = TRAJ_GET_L;              ///< 左键: 取左
-                core.armmode_ = EArmMode::STORE_L_ORE;  // 更新系统层标志位
-                break;
+        if (core.exchange_side_ == CSystemCore::EExchangeSide::LEFT) {
+            trajId = TRAJ_EXCHANGE_L;
+            core.armmode_ = EArmMode::EXCHANGE_L_ORE;
+            core.exchange_side_ = CSystemCore::EExchangeSide::NONE;
+        } else if (core.exchange_side_ == CSystemCore::EExchangeSide::RIGHT) {
+            trajId = TRAJ_EXCHANGE_R;
+            core.armmode_ = EArmMode::EXCHANGE_R_ORE;
+            core.exchange_side_ = CSystemCore::EExchangeSide::NONE;
+        } else {
+            while(true){
+                if(keyboard.mouse_L){
+                    trajId = TRAJ_EXCHANGE_L;
+                    core.armmode_ = EArmMode::EXCHANGE_L_ORE;
+                    break;
+                }
+                if(keyboard.mouse_R){
+                    trajId = TRAJ_EXCHANGE_R;
+                    core.armmode_ = EArmMode::EXCHANGE_R_ORE;
+                    break;
+                }
+                proc_waitMs(5);
             }
-            if(keyboard.mouse_R){
-                trajId = TRAJ_GET_R;              ///< 右键: 取右
-                core.armmode_ = EArmMode::STORE_R_ORE; 
-                break;
-            }
-            proc_waitMs(5);
         }
 
-        auto it = TrajMap.find(trajId);
-        if(it == TrajMap.end()) goto proc_exit;
 
-        /* Roll 手动标定：F/G 键微调末端 Roll（与控制器模式一致），Ctrl键确认 */
+            auto &Traj = (trajId == TRAJ_EXCHANGE_R) ? ExchangesingleClip_R : ExchangesingleClip_L;
         {
-            arm.armCmd.isAutoCtrl = true;    ///< 阻止外部ControlFromKeyboard_干扰
-            while(!keyboard.key_Ctrl){
-                arm.armCmd.set_angle_end_roll += static_cast<float_t>(keyboard.key_F - keyboard.key_G) * 60.0f / 1000.f;
-                proc_waitMs(1);
-            }
-            // Ctrl确认: 当前电机Roll位置设为零点偏移
-            //arm.comEnd_.rollZeroOffset = arm.comEnd_.endInfo.posit_Roll;
-        }
-
-        {
-            const auto Traj = it->second; // 取到轨迹帧
             arm.armCmd.isAutoCtrl = true;
 
-            //从第二段开始用它作为规划起点，避免反馈起点漂移
-            float_t lastTarget[J::COUNT];
-
-            /*step 1 :臂先到达固定的起始位姿*/
-            if(!PlayFrameSegment(arm, Traj.frame, 0, player, true, 0.0f, nullptr)) goto proc_exit;
-            Extrarow(Traj.frame, 0, lastTarget);
-            proc_waitMs(50);    //等待夹爪收缩
-
-            /*step 2 :逐段播放轨迹*/
-            for(int seg = 1; seg < Traj.frameCount; seg++){
-                // 读实际关节位置覆盖 lastTarget，清除上一段的累积跟踪误差
-                ReadArmjoint(arm, lastTarget);
-                // earlyGrip=true: 夹爪切换与关节运动重叠，省去到位后单独等夹爪的时间
-                if(!PlayFrameSegment(arm, Traj.frame, seg, player, true, 0.0f, lastTarget)) goto proc_exit;
-                Extrarow(Traj.frame, seg, lastTarget);
-            }
+            // 逐段播放
+            if (!PlayTrajRows(arm, Traj.frame, Traj.frameCount))
+                goto proc_exit;
         }
 
 

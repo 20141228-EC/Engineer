@@ -36,10 +36,13 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 			case FSM_RESET: {
 
 				arm.armInfo.isModuleAvailable = false;
+				arm.armInfo.isInitTimeout = false;   // 清除超时标志，给下次INIT全新机会
+				arm.initStartTick_ = 0;              // 重置计时器
 				arm.comjoint_.StopComponent();
 				arm.comRoll_.StopComponent();
 				arm.comEnd_.StopComponent();
 				arm.comGrip_.StopComponent();
+				arm.SetGravityCompEnable(false);
 
 				proc_waitMs(20);
 				continue; // 跳过下面的代码，直接进入下一次循环
@@ -99,8 +102,11 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 							arm.comRoll_.rollInfo.isAngleArrived);
 
 				arm.armInfo.isModuleAvailable = true;
+				arm.SetGravityCompEnable(true);
+				arm.SetGravityCompObserve(false);// 开关重补就设置这个就可以，因为这个能够计算重补且不直接加到输出中
 				arm.Module_FSMFlag_ = FSM_CTRL;
 				arm.moduleStatus = APP_OK;
+				arm.initStartTick_ = 0; // 重置计时器
 
 				break;
 			}
@@ -108,6 +114,9 @@ void CModArm::StartArmModuleTask(void *argument) {					///< 该任务在mod_arm.
 			case FSM_CTRL: {
 
 				arm.RestrictArmCommand_();
+
+				// 重力补偿模式切换
+				arm.SetGravityOnlyMode(arm.armCmd.enableGravOnly);
 
 				arm.comjoint_.jointCmd.setPosit_yaw = 
 					CComJoint::PhyPositToMtrPosit_yaw(arm.armCmd.set_angle_Yaw);			///< 在这个文件中设置目标的位置，在com_joint.cpp中进行pid计算

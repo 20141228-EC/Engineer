@@ -122,7 +122,6 @@ private:
     float_t sustainable_output_ = 0.0f; ///< 可持续输出
     uint32_t sustainable_time_ = 0.0f; ///< 可持续时间
     uint32_t recover_time_ = 0.0f; ///< 恢复时间
-    bool Need_Grav_Compensation_ = false; ///< 是否需要重力补偿，用于CalcOutput()中
     // EGravLoadMode Grav_Load_Mode_ = EGravLoadMode::NOGRAVLOAD; ///< 重补模式
 
     // pid线程数与定时器频率

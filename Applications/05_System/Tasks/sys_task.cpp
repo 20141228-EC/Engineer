@@ -44,7 +44,7 @@ uint32_t sys_test_n = 0;
  */
 void StartUpdateTask(void *argument) {
 	
-	static uint8_t TickRate = 4;
+	static uint8_t TickRate = 2;
     
     // 初始化系统核心
     SystemCore.InitSystemCore();                ///<等所有模块初始化完成之后再初始化系统核心，并且是在任务创建的时候初始化
@@ -76,8 +76,8 @@ void StartUpdateTask(void *argument) {
         // 执行can发送
         TxNode_Can3_200.Transmit(); ///< 履带电机
 		if(--TickRate == 0) {              ///<此处的作用是一个分频器，这里可以考虑用信号量控制can的负载                  
-		    TxNode_Can3_280.Transmit(); ///< 机械臂后四轴电机 250Hz
-            TickRate = 4;
+		    TxNode_Can3_280.Transmit(); ///< 机械臂后四轴电机 500Hz
+            TickRate = 2;
         }
         
         // TxNode_Can2_280.Transmit(test_data);

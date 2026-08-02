@@ -54,11 +54,17 @@ public:
 		bool controller_OK = false;          ///< 控制器状态OK
 		bool return_success = false;         ///< 归位成功标志
 		//EToggleSwitch toggle_switch = TOGGLE_MIDDLE;  ///< 拨杆档位
-		bool gripper_close = false;          ///< 夹爪闭合
-		bool gripper_regrip = false;         ///< 夹爪二次夹紧请求（脉冲信号）
-		SArmAngles arm;                      ///< 单臂5轴角度
-		int8_t rocker_X = 0;                 ///< 摇杆X: roll_end / 底盘左右移动 (-100~100)
-		int8_t rocker_Y = 0;                 ///< 摇杆Y: 底盘前进 (-100~100)
+		bool level_1 = false;          ///< 等级1
+		bool level_2 = false;          ///< 等级2
+		bool level_3 = false;          ///< 等级3
+		bool end_roll_toggle = false;  ///< 末端 roll 翻转状态
+		// 功能按键标志位
+		bool left_exchange = false;    ///< 左边取矿
+		bool right_exchange = false;   ///< 右边取矿
+		bool auto_exchange = false;    ///< 自动兑矿
+		bool self_rescue = false;      ///< 自救模式
+		bool cycle = false;            ///< 大陀螺
+		SArmAngles arm;                      ///< 单臂6轴角度
 	} controllerInfo;
 
 	// 机器人信息结构体(Robot -> Controller)
@@ -67,6 +73,7 @@ public:
 		bool controlled_by_controller = false; ///< 是否被控制器控制
 		bool robot_init_ok = false;          ///< 机器人初始化完成
 		bool p3_lock = false;                ///< P3锁定标志
+		bool preset_active = false;          ///< preset 进行中（通知控制器跟随）
 		SArmAngles arm;                      ///< 单臂6轴角度
 		SArmAngles torque;                   ///< 臂部力矩/电流反馈（原始值转float）
 	} robotInfo;
