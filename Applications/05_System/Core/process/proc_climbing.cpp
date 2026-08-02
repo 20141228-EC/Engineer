@@ -69,6 +69,12 @@ void CSystemCore::StartClimbingTask(void *arg) {
 					// core.pchassis_->MovMode = CModChassis::EmovMode::CLIMBING;
 					core.pchassis_->chassisCmd.L_length += 90.f / 1000.f;
 					// 此时开始自动抬腿
+					if(core.pchassis_->filter->Imu_Ekf_Info.pitch > 0.f && core.pchassis_->filter->Imu_Ekf_Info.pitch < 60.f){
+						core.pchassis_->chassisCmd.L_length += 90.f / 1000.f - core.pchassis_->filter->Imu_Ekf_Info.pitch * 25.f / 1000.f;
+					}
+					else{
+						core.pchassis_->chassisCmd.L_length += 90.f / 1000.f;
+					}
 				}
 				// if(core.pchassis_->is_climbed && core.pchassis_->time_to_reset_hip){
 				if(core.pchassis_->is_climbed){
