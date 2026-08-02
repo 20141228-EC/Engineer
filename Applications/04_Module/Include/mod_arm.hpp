@@ -85,7 +85,7 @@
 #define ARM_INIT_SAFE_PITCH2_ANGLE 70.0f
 #define ARM_INIT_SAFE_PITCH3_ANGLE -11.0f
 
-#define POSIT_JOINT1_YAW_MACH 53902
+#define POSIT_JOINT1_YAW_MACH 17963
 #define POSIT_JOINT1_YAW_MACH_PHY 0.f
 #define ARM_YAW_MOTOR_RANGE_LHK 61551
 
@@ -145,7 +145,8 @@
 #define DMJ4310_Torque_Constant			0.975	///< 对应电机的扭矩常数
 
 #include "mod_common.hpp"
-
+#include "algo_grav_comp.hpp"
+#include "algo_other.hpp"
 
 namespace my_engineer {
 
@@ -202,6 +203,8 @@ public:
 			float_t detectTorque      = 2800.0f; ///< 滤波力矩超过此值即判定夹取成功
 			float_t filterAlpha       = 0.95f;   ///< LowPassFilter滤波系数α
 		} GripDetectParam;
+
+		SArmGravityParam gravParam;
 	};
 
 	// 定义机械臂信息结构体并实例化
@@ -251,6 +254,7 @@ public:
 		bool resetEndPitch = false; ///< 是否重置末端Pitch角度
 		bool resetEndAll = false; ///< 是否完整重初始化末端
 		bool resetbyControl = false; ///<通过自定义控制器进行重试
+		bool enableGravOnly = false; ///< 纯重力补偿模式: true=旁路PID仅输出重力前馈, false=正常模式
 	} armCmd;
 
 	CModArm() = default;
@@ -268,7 +272,9 @@ public:
 
 	// 初始化模块
 	EAppStatus InitModule(SModInitParam_Base &param) final;
-
+	void SetGravityCompEnable(bool enable) { gravComp_.SetEnable(enable); }
+	void SetGravityCompObserve(bool observe) { gravComp_.SetObserveMode(observe); }///< 重力补偿观察模式
+	void SetGravityOnlyMode(bool enable);  ///< 纯重力补偿模式
 	uint8_t should_limit_yaw = 0; ///< 是否限制Yaw角度
 
 private:
@@ -319,11 +325,12 @@ private:
 		float_t initTrajTime_ = 0.0f;
 		bool isInitTrajActive_ = false;
 
-		// 重补输出
-		float_t Grav_Pitch1_Out = 0;
-		float_t Grav_Pitch2_Out = 0;
-		float_t g_pitch1 = 0;
-		float_t g_pitch2 = 0;
+		float_t grav_ff_pitch1 = 0.0f;
+		float_t grav_ff_pitch2 = 0.0f;
+		float_t grav_ff_pitch3 = 0.0f;
+
+		bool onlyGravity_ = false;  ///< 纯重力模式
+		void SetOnlyGravity(bool enable) { onlyGravity_ = enable; }
 
 		// 电机实例指针
 		CDevMtr* motor[4] = {nullptr};
@@ -369,6 +376,7 @@ private:
 		// 定义Roll关节信息结构体
 		struct SRollInfo {
 			float_t angle = 0.0f;           ///< Roll关节当前角度
+			float_t torque = 0.0f;          ///< Roll关节反馈力矩
 			bool isAngleArrived = false;    ///< Roll角度是否到达目标
 		} rollInfo;
 
@@ -389,8 +397,11 @@ private:
 		// 电机实例指针
 		CDevMtr* motor = nullptr;
 
-		// 重补输出
-		float_t Grav_Roll_Out = 0;
+		float_t grav_ff_roll = 0.0f;
+
+		bool onlyGravity_ = false;  ///< 纯重力补偿
+		void SetOnlyGravity(bool enable) { onlyGravity_ = enable; }
+
 
 		static float_t MtrAngleToPhyAngle(float_t angle) {
 			// 将电机角度转换为物理角度
@@ -500,6 +511,7 @@ private:
 			int32_t setPosit_grip = 0;        ///< 夹爪目标位置（编码器），位置环模式使用
 			int32_t outTime_tick = 0;         ///< 二次夹紧脉冲起始 tick
 			int32_t regripStableCnt = 0;      ///< 二次夹紧稳定计数
+			int32_t regripMaxTravel = 10;     ///< 二次夹紧允许的最大额外收紧量
 			float_t setSpeed_grip = 0.0f;     ///< 夹爪目标速度（正=张开，负=闭合），速度环模式使用
 			bool regripPulse = false;         ///< 二次夹紧脉冲进行中（HOLD 状态下的内部子状态）
 			bool cmdReGrip = false;           ///< 二次夹紧请求（边沿脉冲，由上层写入，下层消费后清零）
@@ -593,16 +605,19 @@ private:
 	EAppStatus RestrictArmCommand_();
 
 	// 重补输出更新函数
-	EAppStatus Grav_Compemsation_Pitch1();
-	EAppStatus Grav_Compemsation_Pitch2();
-	EAppStatus Grav_Compemsation_Roll();
+	// EAppStatus Grav_Compemsation_Pitch1();
+	// EAppStatus Grav_Compemsation_Pitch2();
+	// EAppStatus Grav_Compemsation_Roll();
 	//超时判断检测函数
 	void initTimeoutdect();
 
+	CAlgoArmGravityComp gravComp_;
+	SArmGravityState gravState_; ///< 重力补偿输入状态
+	SArmGravityOutput gravOut_;  ///< 重力补偿输出结果
+	bool gravityOnlyMode_ = false;  ///< 纯重力补偿模式标志
 };
 
 ///< 全局变量
-extern bool Need_Grav_Compensation; ///< 是否启用重力补偿
 extern bool Is_Recording_ArmTorque; ///<是否正在记录数据
 extern DataBuffer<float_t> arm_Info[3][10]; ///<用于记录臂的力矩，三个关节，10个数据点
 extern uint16_t index; ///< 数组索引

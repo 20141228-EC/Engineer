@@ -56,7 +56,8 @@ EAppStatus CModArm::CComRoll::UpdateComponent() {
 
 	// 更新组件信息
 	rollInfo.angle = rad2deg(pMtr->motorPhyAngle);
-	rollInfo.isAngleArrived = (fabs(rollInfo.angle - rollCmd.setAngle) < 3.0f);
+	rollInfo.torque = CDevMtrDM_MIT::uint_to_float( pMtr->motorData[CDevMtr::DATA_TORQUE], -pMtr->get_tau_max(), pMtr->get_tau_max(), 12); // 12位无符号转
+	rollInfo.isAngleArrived = fabs(rollInfo.angle - rollCmd.setAngle) < 3.f;
 
 	uint8_t test1 = 0;
 	if(test1 == 1) {
@@ -104,7 +105,9 @@ EAppStatus CModArm::CComRoll::UpdateComponent() {
 		}
 
 		case FSM_CTRL: {
-			pMtr->Control_MIT(mitCtrl.kp, mitCtrl.kd, deg2rad(next_angle), 0.0f, this->Grav_Roll_Out);
+			float_t kp = onlyGravity_ ? 0.0f : mitCtrl.kp;
+			float_t kd = onlyGravity_ ? 0.0f : mitCtrl.kd;
+			pMtr->Control_MIT(kp, kd, deg2rad(next_angle), 0.0f, this->grav_ff_roll);
 			return APP_OK;
 		}
 
@@ -118,4 +121,3 @@ EAppStatus CModArm::CComRoll::UpdateComponent() {
 }
 
 } // namespace my_engineer
-

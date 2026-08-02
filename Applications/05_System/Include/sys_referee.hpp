@@ -84,6 +84,8 @@ private:
 
 	CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawSingleMsg> p3LockMsg, gripCloseMsg;
 
+	//CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> armInitFailTextMsg;
+
     CDevReferee *pRefereeDev_ = nullptr;
 
     CInfUART * pInterface_ = nullptr;

@@ -131,6 +131,7 @@ public:
         NORMAL = 0, ///< 普通模式(拨轮控腿长)
         CLIMBING,   ///< 上台阶模式(陀螺仪控腿长)
         DOWNSTAIR,  ///< 下台阶模式(后腿腾空时收腿)
+        CYCLE,      ///< 大陀螺模式
     };
 
     CModChassis() = default;

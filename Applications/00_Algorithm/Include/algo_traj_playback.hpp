@@ -127,8 +127,11 @@ public:
 private:
     STrapezoidalSpeed jointTrajs[JointId::COUNT]; // 每个关节各自的轨迹规划器
     float_t maxTime_ = 0; // 所有关节完成运动所需的最长时间
-    
+
 };
+
+// preset 用的快速关节参数
+extern const CAlgoTrajPlayback::SJointPrarm FastJointParams[CAlgoTrajPlayback::JointId::COUNT];
 } // namespace my_engineer
 
 #endif // ALGO_TRAJ_PLAYBACK_HPP

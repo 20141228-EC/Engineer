@@ -201,6 +201,7 @@ void CSystemCore::ControlFromKeyboard_() {
 
     auto &keyboard = SysRemote.remoteInfo.keyboard;
     auto &keyboard_edge = SysRemote.remoteInfo.keyboard_edge;
+    auto &controller = SysControllerLink.controllerInfo;  ///< 自定义控制器功能按键
 
 
     static bool lastMouseStatus_L = false, lastMouseStatus_R = false;
@@ -357,9 +358,48 @@ void CSystemCore::ControlFromKeyboard_() {
             */
         }
         if(keyboard.key_Shift && parm_->armInfo.isModuleAvailable){
-            //if(keyboard.key_Z) { StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN); }   // Shift + Z 能量单元任务 
-            // if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::DOGHOLE); }
+            if(keyboard.key_C) { StartAutoCtrlTask_(EAutoCtrlProcess::CYCLE); }
         }
+        /******************* 功能按键 *******************/
+        if (parm_ && pchassis_) {
+            // 左取矿
+            if (controller.left_exchange) {
+                exchange_side_ = EExchangeSide::LEFT;
+                if (StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE) != APP_OK) {
+                    exchange_side_ = EExchangeSide::NONE;   ///< 启动失败回收预选，避免残留污染下次
+                }
+                controller.left_exchange = false;
+            }
+            // 右取矿
+            if (controller.right_exchange) {
+                exchange_side_ = EExchangeSide::RIGHT;
+                if (StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE_ORE) != APP_OK) {
+                    exchange_side_ = EExchangeSide::NONE;
+                }
+                controller.right_exchange = false;
+            }
+            // 自动兑矿
+            if (controller.auto_exchange) {
+                exchange_side_ = EExchangeSide::AUTO;
+                if (StartAutoCtrlTask_(EAutoCtrlProcess::STORE_ORE) != APP_OK) {
+                    exchange_side_ = EExchangeSide::NONE;
+                }
+                controller.auto_exchange = false;
+            }
+            
+                static bool last_cycle = false;
+                bool cycle_rising = controller.cycle && !last_cycle;
+                last_cycle = controller.cycle;
+                if (cycle_rising) {
+                    if (isCycleActive_) {
+                        isCycleActive_ = false;
+                    } else if (currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
+                        isCycleActive_ = true;
+                        StartAutoCtrlTask_(EAutoCtrlProcess::CYCLE);
+                    }
+                }
+                controller.cycle = false;  
+            }
         }
 }
 }
@@ -513,11 +553,10 @@ void CSystemCore::ControlFromController_() {
         if(keyboard_edge.key_V == CSystemRemote::ERemoteEdge::Rising){
             regrip_keyboardcom = true;
         }
-        const bool regrip_requested = controller.gripper_regrip || regrip_keyboardcom;
+        const bool regrip_requested = regrip_keyboardcom;
         if (regrip_requested) {
             parm_->armCmd.reGripCmd = true;                                  // 传递 re-grip 指令
         }
-        controller.gripper_regrip = false;  // 处理之后清除标志位
         regrip_keyboardcom = false;
 
         // if (controller.gripper_close) {
@@ -532,7 +571,7 @@ void CSystemCore::ControlFromController_() {
                 ? EGripKeyboardCmd::OPEN
                 : EGripKeyboardCmd::CLOSE;
         }
-        const bool grip_close_cmd = controller.gripper_close || gripKeyboardCmd_ == EGripKeyboardCmd::CLOSE;
+        const bool grip_close_cmd = gripKeyboardCmd_ == EGripKeyboardCmd::CLOSE;
         const bool grip_open_cmd = gripKeyboardCmd_ == EGripKeyboardCmd::OPEN;
         if (mode_switching) {
              // 模式切换期间冻结夹爪，避免 Z+X 切换被解释成张开

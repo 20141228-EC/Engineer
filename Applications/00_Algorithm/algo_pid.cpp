@@ -44,7 +44,6 @@ EAppStatus CAlgoPid::InitPID(const SAlgoInitParam_Pid *pStructInitParam){
     sustainable_output_ = param.sustainable_output;
     sustainable_time_ = param.sustainable_time;
     recover_time_ = param.recover_time;
-    // Need_Grav_Compensation_ = param.Need_Grav_compensation;
     // Grav_Load_Mode_ = param.Grav_Load_Mode;
 
     // 重置一次pid输出
@@ -221,30 +220,6 @@ float CAlgoPid::CalcOutput_(const float error, SPidThreadInfo &info){
 
     // 更新上一次的误差
     info.lastError = error;
-
-    // if(this->Need_Grav_Compensation_) ///< 需要重力补偿
-    // {
-    //     ///< 对输出直接进行线性叠加
-    //     switch(this->Grav_Load_Mode_)
-    //     {
-    //         case EGravLoadMode::PITCH1_G:
-    //         {
-    //             ///<
-    //             break;
-    //         }
-    //         case EGravLoadMode::PITCH2_G:
-    //         {
-    //             ///<
-    //             break;
-    //         }
-    //         case EGravLoadMode::END_ROLL_G:
-    //         {
-    //             ///<
-    //             break;
-    //         }
-    //         default:break;
-    //     }
-    // }
 
     return info.output;
 }

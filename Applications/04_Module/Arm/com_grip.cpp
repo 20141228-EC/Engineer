@@ -139,20 +139,6 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                 gripDetect_.filteredTorque = LowPassFilter(
                     gripDetect_.filteredTorque, fabsf(static_cast<float_t>(motor->motorData[CDevMtr::DATA_TORQUE])), gripDetect_.filterAlpha);
 
-                /*底层的电机包的堵转检测感觉有点问题*/
-                // griGripMotor_.Torque = motor->motorData[CDevMtr::DATA_TORQUE];
-                // griGripMotor_.SpeedLimit = abs(motor->motorData[CDevMtr::DATA_SPEED]);
-                // if(griGripMotor_.Torque > 2000 && griGripMotor_.SpeedLimit < 250){
-                //     griGripMotor_.cntstable++;
-                // }
-                // if(griGripMotor_.cntstable > 50){
-                //     griGripMotor_.cntstable = 0;
-                //     griGripMotor_.state = SGripMotorDetect::EGripMotorState::STALL;
-                // }
-                // else {
-                //     griGripMotor_.state = SGripMotorDetect::EGripMotorState::RUNNING;
-                // }
-
                 // cmdClose/cmdOpen核心层的写入控制张开和闭合
                 if (gripCmd.cmdClose) {
                     if (gripInfo.posit_grip <= gripCloseStopPosit) {
@@ -165,16 +151,6 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                             gripDetect_.edgeReady = false;
                             gripInfo.repeatInit = false;
                         }
-                        // if (griGripMotor_.state == SGripMotorDetect::EGripMotorState::STALL) {
-                        //     motor->motorData[CDevMtr::DATA_POSIT] = 0;
-                        //     gripCmd = SGripCmd();
-                        //     gripInfo.state = SGripInfo::EGripState::HOLD;
-                        //     gripInfo.isGripped = true;
-                        //     gripInfo.holdPosit_Grip = 0;
-                        //     gripDetect_.edgeReady = false;
-                        //     pidSpdCtrl.ResetPidController();
-                        //     return _UpdateOutputSpd(0);
-                        // }感觉闭合状态的时候是不用堵转的
                     } else if (gripInfo.posit_grip <= gripCloseSlowPosit) {
                         // 处于闭合减速区：按距离线性减速
                         gripCmd.setSpeed_grip = -CalcGripSlowSpeed(
@@ -226,8 +202,10 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                     pidSpdCtrl.ResetPidController();
 
                     if (gripInfo.state == SGripInfo::EGripState::HOLD) {
-                        // 已夹住直接启动hold
-                        // 这样 gripState 对上层始终为 HOLD，存矿轨迹首段不会误判为松开
+                        if (gripInfo.posit_grip < gripInfo.holdPosit_Grip - gripCmd.regripMaxTravel) {
+                            gripInfo.isGripped = false;
+                            return _UpdateOutputSpd(0);
+                        }
                         gripCmd.regripPulse = true;
                         gripCmd.outTime_tick = HAL_GetTick();
                         gripCmd.regripStableCnt = 0;
@@ -320,6 +298,14 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                                 gripCmd.regripPulse = false;
                                 gripCmd.regripStableCnt = 0;
                                 gripInfo.holdPosit_Grip = gripInfo.posit_grip;
+                                return _UpdateOutputSpd(0);
+                            }
+
+                            // 防止空夹丝杆过冲自锁
+                            if (gripInfo.posit_grip < gripInfo.holdPosit_Grip - gripCmd.regripMaxTravel) {
+                                gripCmd.regripPulse = false;
+                                gripCmd.regripStableCnt = 0;
+                                gripInfo.isGripped = false;  // 标记矿石丢失
                                 return _UpdateOutputSpd(0);
                             }
 

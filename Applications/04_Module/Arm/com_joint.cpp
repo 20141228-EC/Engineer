@@ -82,9 +82,9 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 	jointInfo.posit_pitch2 = motor[P2]->motorData[CDevMtr::DATA_POSIT] * ARM_PITCH2_MOTOR_DIR;	  ///<将电机的机械角度更新到关节类中
 	jointInfo.posit_pitch3 = motor[P3]->motorData[CDevMtr::DATA_POSIT] * ARM_PITCH3_MOTOR_DIR;
 	
-	jointInfo.isPositArrived_yaw = abs(jointInfo.posit_yaw - jointCmd.setPosit_yaw) < 700;
+	jointInfo.isPositArrived_yaw = abs(jointInfo.posit_yaw - jointCmd.setPosit_yaw) < 500;
 	jointInfo.isPositArrived_pitch1 = abs(jointInfo.posit_pitch1 - jointCmd.setPosit_pitch1) < 700;
-	jointInfo.isPositArrived_pitch2 = abs(jointInfo.posit_pitch2 - jointCmd.setPosit_pitch2) < 700;///<要求机械臂每一次运动到要在目标位置的限制范围内才能够进行下一步的动作
+	jointInfo.isPositArrived_pitch2 = abs(jointInfo.posit_pitch2 - jointCmd.setPosit_pitch2) < 700;
 	jointInfo.isPositArrived_pitch3 = abs(jointInfo.posit_pitch3 - jointCmd.setPosit_pitch3) < 700;
 
 	switch (Component_FSMFlag_) {
@@ -100,7 +100,6 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 			pidPosCtrl_pitch3.ResetPidController();
 			pidSpdCtrl_pitch3.ResetPidController();
 			isreset_flag = false;
-			Need_Grav_Compensation = false;
 			return APP_OK;
 		}
 
@@ -116,15 +115,15 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				pidPosCtrl_pitch3.ResetPidController();
 				pidSpdCtrl_pitch3.ResetPidController();
 				/*设置每个关节的绝对角度*/
-				// motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT1_YAW_MACH;
-				// while(motor[Y]->motorData[CDevMtr::DATA_POSIT] < -32767)
-				// 	motor[Y]->motorData[CDevMtr::DATA_POSIT] += 65535;
-				// while(motor[Y]->motorData[CDevMtr::DATA_POSIT] > 32767)
-				// 	motor[Y]->motorData[CDevMtr::DATA_POSIT] += 65535;
-				// motor[Y]->motorData[CDevMtr::DATA_POSIT]  += POSIT_JOINT1_YAW_MACH_PHY * 182.04f * POSIT_JOINT1_YAW_MACH;	
-				// jointCmd.setPosit_yaw =  PhyPositToMtrPosit_yaw(ARM_INIT_SAFE_YAW_ANGLE);	
+				motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT1_YAW_MACH;
+				while(motor[Y]->motorData[CDevMtr::DATA_POSIT] < -32767)
+					motor[Y]->motorData[CDevMtr::DATA_POSIT] += 65535;
+				while(motor[Y]->motorData[CDevMtr::DATA_POSIT] > 32767)
+					motor[Y]->motorData[CDevMtr::DATA_POSIT] -= 65535;
+				motor[Y]->motorData[CDevMtr::DATA_POSIT]  += POSIT_JOINT1_YAW_MACH_PHY * 182.04f * POSIT_JOINT1_YAW_MACH;	
+				jointCmd.setPosit_yaw =  PhyPositToMtrPosit_yaw(ARM_INIT_SAFE_YAW_ANGLE);	
 				
-				motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] * ARM_YAW_MOTOR_DIR;
+				// motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] * ARM_YAW_MOTOR_DIR;
 
 				motor[P1]->motorData[CDevMtr::DATA_POSIT] = motor[P1]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT2_PITCH1_MACH;		///<刚上电的时候获取初始值.距离机械中值的偏差
 				while(motor[P1]->motorData[CDevMtr::DATA_POSIT] < -32767)
@@ -171,7 +170,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 				}
 				/*全部到位后才进入初始化*/
 				else if(jointInfo.isPositArrived_pitch3 && jointInfo.isPositArrived_pitch2 && jointInfo.isPositArrived_pitch1 && alreadySetYaw == false){
-					jointCmd.setPosit_yaw = POSIT_JOINT1_YAW_MACH;								///<yaw轴在p1,p2抬升到安全位置之后才动
+					jointCmd.setPosit_yaw = 0;								///<yaw轴在p1,p2抬升到安全位置之后才动
 					alreadySetYaw = true;
 					_UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 						static_cast<float_t>(jointCmd.setPosit_pitch1),
@@ -180,8 +179,9 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 					for (auto &out : mtrOutputBuffer) out = std::clamp(out, static_cast<int16_t>(-3000), static_cast<int16_t>(3000));
 					return APP_OK;
 				}
-				else if(jointInfo.isPositArrived_fail){ //初始化失败，校准一次
-					motor[Y]->motorData[CDevMtr::DATA_POSIT]  = motor[Y]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT1_YAW_MACH;
+				else if(motor[Y]->motorStatus == CDevMtr::EMotorStatus::STALL){				///<通过堵转来重新标定零点,防止编码器值回绕
+						motor[Y]->motorData[CDevMtr::DATA_POSIT] = motor[Y]->motorData[CDevMtr::DATA_ANGLE] - POSIT_JOINT1_YAW_MACH; ///< 是Yaw电机的初始位置
+						jointCmd.setPosit_yaw = 0;
 				}
 				/*先抬起两个臂后，yaw才能动 - 至少有一个pitch没到位*/
 				else {
@@ -227,8 +227,7 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 		case FSM_CTRL: {
 			//jointCmd.setPosit_yaw = std::clamp(jointCmd.setPosit_yaw, static_cast<int32_t>(-rangeLimit_yaw/2),  static_cast<int32_t>(rangeLimit_yaw/2));///<对Yaw进行机械限位
 			
-			is_record = true; ///< 臂初始化完之后开始记录数据
-			// Need_Grav_Compensation = true; //臂初始化完之后启用重力补偿
+			//is_record = true; ///< 臂初始化完之后开始记录数据
 			return _UpdateOutput(static_cast<float_t>(jointCmd.setPosit_yaw),
 				static_cast<float_t>(jointCmd.setPosit_pitch1),
 				static_cast<float_t>(jointCmd.setPosit_pitch2),
@@ -259,16 +258,14 @@ EAppStatus CModArm::CComJoint::UpdateComponent() {
 /*------------------------------------------------------------------------------------*/
 // 物理位置转换为电机位置
 int32_t CModArm::CComJoint::PhyPositToMtrPosit_yaw(float_t phyPosit) {
-	const float_t scale = -static_cast<float_t>(ARM_YAW_MOTOR_RANGE)
-		/ (ARM_YAW_PHYSICAL_RANGE_MAX - ARM_YAW_PHYSICAL_RANGE_MIN);
+	const float_t scale = -1.15*65535/360.f;
 
 	return static_cast<int32_t>(phyPosit * scale);
 }
 
 // 电机位置转换为物理位置
 float_t CModArm::CComJoint::MtrPositToPhyPosit_yaw(int32_t mtrPosit) {
-	const float_t scale = -static_cast<float_t>(ARM_YAW_MOTOR_RANGE)
-		/ (ARM_YAW_PHYSICAL_RANGE_MAX - ARM_YAW_PHYSICAL_RANGE_MIN);
+	const float_t scale = -1.15*65535/360.f;
 
 	return static_cast<float_t>(mtrPosit) / scale;
 }
@@ -348,28 +345,32 @@ EAppStatus CModArm::CComJoint::_UpdateOutput(float_t posit_yaw, float_t posit_pi
 	auto output_pitch2 = pidSpdCtrl_pitch2.UpdatePidController(Spd_pitch2, SpdMeasure_pitch2);
 	auto output_pitch3 = pidSpdCtrl_pitch3.UpdatePidController(Spd_pitch3, SpdMeasure_pitch3);
 
-	if(is_record)
-	{
-		if(Is_Recording_ArmTorque) ///< 正在记录数据
-		{
-			if(index < RECORD_MAX - 1) 
-			{
-				arm_Info[PITCH1][index] = output_pitch1; ///< 大p的扭矩
-				arm_Info[PITCH2][index] = output_pitch2; ///< 小p的扭矩
-				index ++;
-				///< 这里还差用来传输数据的代码
-			}
-			else ///< 数据记录完毕
-			{
-				Is_Recording_ArmTorque = false; ///< 停止记录数据
-			}
-		}	
-	}
+	// if(is_record)
+	// {
+	// 	if(Is_Recording_ArmTorque) ///< 正在记录数据
+	// 	{
+	// 		if(index < RECORD_MAX - 1) 
+	// 		{
+	// 			arm_Info[PITCH1][index] = output_pitch1; ///< 大p的扭矩
+	// 			arm_Info[PITCH2][index] = output_pitch2; ///< 小p的扭矩
+	// 			index ++;
+	// 			///< 这里还差用来传输数据的代码
+	// 		}
+	// 		else ///< 数据记录完毕
+	// 		{
+	// 			Is_Recording_ArmTorque = false; ///< 停止记录数据
+	// 		}
+	// 	}	
+	// }
 
-	if(Need_Grav_Compensation) ///< 如果启用重力补偿
-	{
-		output_pitch1[0] += this->Grav_Pitch1_Out;
-		output_pitch2[0] += this->Grav_Pitch2_Out;
+	if (onlyGravity_) {
+		output_pitch1[0] = this->grav_ff_pitch1;
+		output_pitch2[0] = this->grav_ff_pitch2;
+		output_pitch3[0] = this->grav_ff_pitch3;
+	} else {
+		output_pitch1[0] += this->grav_ff_pitch1;
+		output_pitch2[0] += this->grav_ff_pitch2;
+		output_pitch3[0] += this->grav_ff_pitch3;
 	}
 	
 	mtrOutputBuffer = { 
