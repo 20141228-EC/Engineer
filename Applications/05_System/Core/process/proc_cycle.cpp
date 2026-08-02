@@ -38,7 +38,7 @@ void CSystemCore::StartCycleTask(void *arg)
     constexpr float_t kRotateSpeedKp = 2.0f;
     constexpr uint16_t kStableLoopCount = 80U;
 
-    const float_t baseYawAngle = core.pchassis_->filter->Imu_Ave_Info.imu_ave_yaw;
+    const float_t baseYawAngle = core.pchassis_->filter->Imu_Ekf_Info.yaw;
 
     static uint32_t randomState = 0xA341316CU;
     const int32_t yawSeed = static_cast<int32_t>((baseYawAngle + 180.0f) * 1000.0f);
@@ -77,7 +77,7 @@ void CSystemCore::StartCycleTask(void *arg)
     while (keyboard.key_Shift || core.isCycleActive_)
     {
         const float_t currentYaw =
-            core.pchassis_->filter->Imu_Ave_Info.imu_ave_yaw;
+            core.pchassis_->filter->Imu_Ekf_Info.yaw;
 
         const float_t yawError = math::loopLimit( targetYawAngle - currentYaw, -180.0f, 180.0f);
         const float_t absYawError = std::fabs(yawError);
