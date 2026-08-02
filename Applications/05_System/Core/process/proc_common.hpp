@@ -166,6 +166,7 @@ namespace my_engineer{
         bool RunManualStoreTask(ETrajID trajId);
         bool RunAutoOreTask();
         bool PlayGetClip(const TrajClip &clip, float_t rollOff = 0.0f);
+        bool PlayStoreClipSpline(const TrajClip &clip, float_t rollOff);
         bool AlignEndRollToClipStart(const TrajClip &clip, float_t rollOff);
 
         CSystemCore &core_;
@@ -191,6 +192,9 @@ namespace my_engineer{
 
     //提取第 row 行的夹爪状态：返回true=夹紧，false=松开
     bool ExtractGripClose(const float_t traj[][FC_COUNT], int row);
+
+    bool WaitGripArrived(CModArm &arm, bool close, bool checkCtrl,
+                         const SArrivalCheckConfig &cfg);
 
     // 五次 P2P 播放器
     bool PlayJointTarget(CModArm &arm,
