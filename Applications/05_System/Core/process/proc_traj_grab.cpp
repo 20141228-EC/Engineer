@@ -172,6 +172,48 @@ proc_exit:
         return MoveSingleJointToAbs(arm_, J::J_ENDR, targetEndR, opt);
     }
 
+    bool CStoreOreTaskRunner::PlayStoreClipSpline(const TrajClip &clip, float_t rollOff) {
+        int gripOpenSeg = -1;
+        for (int seg = 1; seg < clip.frameCount; seg++) {
+            if (ExtractGripClose(clip.frame, seg - 1)
+                && !ExtractGripClose(clip.frame, seg)) {
+                gripOpenSeg = seg;
+                break;
+            }
+        }
+        if (gripOpenSeg < 1) return false;
+
+        static CAlgoQuinticSpline spline;
+        for (int i = 0; i < CAlgoQuinticSpline::AXES; i++) {
+            spline.velLimit[i] = FastJointParams[i].velMax;
+            spline.accLimit[i] = FastJointParams[i].accMax;
+        }// 配置快速的轨迹参数
+        
+        // 3段策略:先是平滑参数
+        if (!PlaySplineRange(arm_, clip, 0, gripOpenSeg - 1, spline,
+                             rollOff, 2.f)) {
+            return false;
+        }
+        
+        //精准到位
+        if (!PlayTrajRow(arm_, clip.frame, gripOpenSeg, true, rollOff))
+            return false;
+
+        //后半段再次平滑参数    
+        if (gripOpenSeg < clip.frameCount - 1) {
+            static CAlgoQuinticSpline retractSpline;
+            for (int i = 0; i < CAlgoQuinticSpline::AXES; i++) {
+                retractSpline.velLimit[i] = FastJointParams[i].velMax;
+                retractSpline.accLimit[i] = FastJointParams[i].accMax;
+            }
+            if (!PlaySplineRange(arm_, clip, gripOpenSeg, clip.frameCount - 1,
+                                 retractSpline, rollOff, 3.f)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     // 取矿自动任务
     bool CStoreOreTaskRunner::RunAutoOreTask() {
         // 选矿阶段：Q减 E加 R清零 Ctrl确认
@@ -202,7 +244,7 @@ proc_exit:
                 core_.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_YAW_ANGLE;
                 core_.pgimbal_->gimbalCmd.set_pitch = EXCHANGE_ORE_GIMBLE_PITCH_ANGLE;
                 if (!AlignEndRollToClipStart(oreStep.storeClip, oreStep.rollOff)) return false;
-                if (!PlayTrajRows(arm_, oreStep.storeClip.frame, oreStep.storeClip.frameCount, nullptr,nullptr, oreStep.rollOff)) return false;
+                if (!PlayStoreClipSpline(oreStep.storeClip, oreStep.rollOff)) return false;
             }
 
             // 每成功完成一次存取矿就记录进度
@@ -241,7 +283,7 @@ proc_exit:
         // 前段: 逐帧 PlayTrajRows（跑到夹爪闭合帧的前一帧）
         {
             const int frontEnd = useQuintic ? gripCloseSeg : clip.frameCount;
-            if (!PlayTrajRows(arm_, clip.frame, frontEnd, nullptr, nullptr, rollOff))
+            if (!PlayTrajRows(arm_, clip.frame, frontEnd, FastJointParams, nullptr, rollOff))
                 return false;
         }
 
@@ -274,8 +316,8 @@ proc_exit:
                 spline.velLimit[i] = FastJointParams[i].velMax;
                 spline.accLimit[i] = FastJointParams[i].accMax;
             }
-            const float_t splineSpeedScale = clip.frame[gripCloseSeg][FC_SPEED];
-            if (!PlaySplineRange(arm_, clip, gripCloseSeg, clip.frameCount - 1, spline, rollOff, splineSpeedScale))
+            if (!PlaySplineRange(arm_, clip, gripCloseSeg, clip.frameCount - 1,
+                                 spline, rollOff, 3.5))
                 return false;
         }
         return true;
