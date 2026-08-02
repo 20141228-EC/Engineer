@@ -66,10 +66,10 @@ void CSystemCore::StartClimbingTask(void *arg) {
 					// core.movemode_ = EMoveMode::CLIMBING;
 					// core.pchassis_->MovMode = CModChassis::EmovMode::CLIMBING;
 					if(core.pchassis_->filter->Imu_Ekf_Info.pitch > 0){
-						core.pchassis_->chassisCmd.L_length += 90.f / 1000.f - core.pchassis_->filter->Imu_Ekf_Info.pitch * 25.f / 1000.f;
+						core.pchassis_->chassisCmd.L_length += 5.f / 1000.f - core.pchassis_->filter->Imu_Ekf_Info.pitch * 1.5f / 1000.f;
 					}
 					else{
-						core.pchassis_->chassisCmd.L_length += 90.f / 1000.f;
+						core.pchassis_->chassisCmd.L_length += 5.f / 1000.f;
 					}
 					// 此时开始自动抬腿
 				}
@@ -89,7 +89,7 @@ void CSystemCore::StartClimbingTask(void *arg) {
 			}
 			else{		// 如果操作手判断卡住了导致腿没自动收，那就按住鼠标右键
 				core.pchassis_->is_climbing = false;
-				core.pchassis_->chassisCmd.L_length -= 90.f / 1000.f;
+				core.pchassis_->chassisCmd.L_length -= 5.f / 1000.f;
 				// 此时开始慢慢收腿
 			}
 		}
@@ -98,7 +98,7 @@ void CSystemCore::StartClimbingTask(void *arg) {
 			core.pchassis_->chassisCmd.L_length = SAVING_HIP_ANGLE;	// 立刻抬腿
 		}
 		
-        proc_waitMs(20);
+        proc_waitMs(1);
     }
 	// 松开ctrl退出上台阶模式
 
