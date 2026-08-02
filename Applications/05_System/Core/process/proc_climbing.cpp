@@ -33,30 +33,13 @@ void CSystemCore::StartClimbingTask(void *arg) {
 	core.pchassis_->chassisCmd.isAutoCtrl = true;   ///< 底盘自动控制
 	core.pgimbal_->gimbalCmd.isAutoCtrl = true;					///< 云台自动控制
 	
-	/*Set Arm*/
-
-	float_t aimTarget[J::COUNT];// 构造空的数组
-    aimTarget[J::J_YAW]  = CLIMBING_YAW_ANGLE;
-    aimTarget[J::J_P1]   = CLIMBING_PITCH1_ANGLE;
-    aimTarget[J::J_P2]   = CLIMBING_PITCH2_ANGLE;
-    aimTarget[J::J_ROLL] = CLIMBING_ROLL_ANGLE;
-    aimTarget[J::J_ENDP] = CLIMBING_END_PITCH_ANGLE;
-    aimTarget[J::J_ENDR] = SysControllerLink.controllerInfo.end_roll_toggle ? 0.0f : 180.0f;
-
-    SPlayJointTargetOptions opt;
-    opt.speedScale = 5.5f;
-    opt.gripKeepCurrent = true;
-    static const CAlgoTrajPlayback::SJointPrarm climbingJoints[J::COUNT] = {
-        {225, 450},  // yaw
-        {150, 300},  // pitch1
-        {200, 400},  // pitch2
-        {300, 750},  // roll
-        {300, 750},  // pitch_end
-        {150, 300},  // end_roll
-    };
-    opt.jointParamsOverride = climbingJoints;
-    if(!PlayJointTarget(*core.parm_ ,aimTarget ,opt)) goto proc_exit;// 平滑过渡
-	// 对臂的姿态不作限制，操作手根据情况调整
+	/* Set Arm */
+    core.parm_->armCmd.set_angle_Yaw = CLIMBING_YAW_ANGLE;
+    core.parm_->armCmd.set_angle_Pitch1 = CLIMBING_PITCH1_ANGLE;
+    core.parm_->armCmd.set_angle_Pitch2 = CLIMBING_PITCH2_ANGLE;
+    core.parm_->armCmd.set_angle_Roll = CLIMBING_ROLL_ANGLE;
+    core.parm_->armCmd.set_angle_end_pitch = CLIMBING_END_PITCH_ANGLE;
+    core.parm_->armCmd.set_angle_end_roll = CLIMBING_END_ROLL_ANGLE;
 
 	/*Set Chassis*/
 	core.pchassis_->chassisInfo.crawler_on = true;	// 开履带
@@ -93,7 +76,7 @@ void CSystemCore::StartClimbingTask(void *arg) {
 				// if(core.pchassis_->is_climbed && core.pchassis_->time_to_reset_hip){
 				if(core.pchassis_->is_climbed){
 					core.pchassis_->is_climbing = false;
-					proc_waitMs(40);
+					proc_waitMs(10);
 					core.pchassis_->reset_hip = true;		// 检测到前轮爬上台阶之后就收腿 可能会需要一个延时
 					core.pchassis_->is_climbed = false;
 				}
