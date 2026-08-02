@@ -296,7 +296,7 @@ void CSystemReferee::UI_InitDrawing() {
   pitchTextMsg.message.figureConfig.figureType = 5;
   pitchTextMsg.message.figureConfig.layerID = 0;
   pitchTextMsg.message.figureConfig.details_1 = 20;       // Font Size
-  pitchTextMsg.message.figureConfig.details_3 = chassis.roll_Measure[0] * 1000.f;
+  pitchTextMsg.message.figureConfig.details_3 = chassis.roll_Measure * 1000.f;
   pitchTextMsg.message.figureConfig.posit_X = 1520;
   pitchTextMsg.message.figureConfig.posit_Y = 640,  // 700
   pitchTextMsg.message.figureConfig.color = 4;
@@ -1070,7 +1070,7 @@ void CSystemReferee::UI_UpdatePitchTextDrawing_() {
   static auto &chassis_info = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->chassisInfo;
   std::fill(&pitchTextMsg.message.text[0], &pitchTextMsg.message.text[29], 0);
   pitchTextMsg.message.figureConfig.operate = 2;
-  int32_t int_val = (int32_t)(chassis_info.roll_Measure[0] * 1000.f);
+  int32_t int_val = (int32_t)(chassis_info.roll_Measure * 1000.f);
   pitchTextMsg.message.figureConfig.details_3 = int_val & 0x3FF;
   pitchTextMsg.message.figureConfig.details_4 = (int_val >> 10) & 0x7FF;
   pitchTextMsg.message.figureConfig.details_5 = (int_val >> 21) & 0x7FF;  ///< 分为高中低11 11 10位发送
@@ -1086,10 +1086,10 @@ void CSystemReferee::UI_UpdatePositionFigureDrawing_() {
   static auto &chassis_info = reinterpret_cast<CModChassis *>(ModuleIDMap.at(EModuleID::MOD_CHASSIS))->chassisInfo;
   positionFigureMsg.message.figureConfig[0].operate = 2;
   positionFigureMsg.message.figureConfig[1].operate = 2;
-  positionFigureMsg.message.figureConfig[1].posit_X = 960 - (uint32_t)(80 * cos(fabs(chassis_info.roll_Measure[0]) * 2 * PI / 180.f));
-  positionFigureMsg.message.figureConfig[1].posit_Y = 200 + (uint32_t)(80 * sin(fabs(chassis_info.roll_Measure[0]) * 2 * PI / 180.f));
-  positionFigureMsg.message.figureConfig[1].details_4 = 960 + (uint32_t)(80 * cos(fabs(chassis_info.roll_Measure[0]) * 2 * PI / 180.f));
-  positionFigureMsg.message.figureConfig[1].details_5 = 200 - (uint32_t)(80 * sin(fabs(chassis_info.roll_Measure[0]) * 2 * PI / 180.f));
+  positionFigureMsg.message.figureConfig[1].posit_X = 960 - (uint32_t)(80 * cos(fabs(chassis_info.roll_Measure) * 2 * PI / 180.f));
+  positionFigureMsg.message.figureConfig[1].posit_Y = 200 + (uint32_t)(80 * sin(fabs(chassis_info.roll_Measure) * 2 * PI / 180.f));
+  positionFigureMsg.message.figureConfig[1].details_4 = 960 + (uint32_t)(80 * cos(fabs(chassis_info.roll_Measure) * 2 * PI / 180.f));
+  positionFigureMsg.message.figureConfig[1].details_5 = 200 - (uint32_t)(80 * sin(fabs(chassis_info.roll_Measure) * 2 * PI / 180.f));
   positionFigureMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&positionFigureMsg), sizeof(positionFigureMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&positionFigureMsg), sizeof(positionFigureMsg));
 }

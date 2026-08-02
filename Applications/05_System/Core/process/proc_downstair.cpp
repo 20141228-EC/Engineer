@@ -45,8 +45,10 @@ void CSystemCore::StartDownStairTask(void *arg) {
 
 	proc_waitMs(300);	// 等待臂到位
 
-	/* Phase 1: 等待鼠标左键确认，WASD反转以适应图传180°掉头 */
-	while (!keyboard.mouse_L) {
+	core.movemode_ = EMoveMode::DOWNSTAIR;  // 更新系统层标志位
+	core.pchassis_->MovMode = CModChassis::EmovMode::DOWNSTAIR;     // 更新模块层标志位
+	// 松开ctrl退出下台阶模式
+	while (keyboard.key_Ctrl) {
 
 		// 阻尼衰减
 		core.pchassis_->chassisCmd.speed_X *= 0.97f;
@@ -67,27 +69,8 @@ void CSystemCore::StartDownStairTask(void *arg) {
 			core.pchassis_->chassisCmd.speed_Y = std::clamp(core.pchassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
 		}
 
-		proc_waitMs(20);
+		proc_waitMs(5);
 	}
-    core.movemode_ = EMoveMode::DOWNSTAIR;  // 更新系统层标志位
-	core.pchassis_->MovMode = CModChassis::EmovMode::DOWNSTAIR;     // 更新模块层标志位
-
-	/* Phase 2: 下台阶 */
-    while (keyboard.key_Ctrl)
-    {
-		if(core.pchassis_->chassisInfo.L_Length < 80.f){
-			core.pchassis_->chassisCmd.L_length += 120.f / 1000.f;
-		}
-		else{
-			core.pchassis_->chassisCmd.speed_Y = DOWNSTAIR_SPEED;	// 保持底盘速度
-			// if(core.pchassis_->Leg_is_soar){    // 等待后腿腾空
-			// 	core.pchassis_->chassisCmd.L_length -= 120.f / 1000.f;	// 收腿
-			// }
-			
-		}
-		proc_waitMs(20);
-    }
-	// 松开ctrl退出下台阶模式
 
 // 退出
 proc_exit:
@@ -99,6 +82,7 @@ proc_exit:
 	core.currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 	core.movemode_ = EMoveMode::NONE;
 	core.pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
+	core.pchassis_->reset_hip = true;
 	proc_return();
 
 }

@@ -14,9 +14,12 @@
 
 #include "mod_common.hpp"
 #include "algo_ave_filter.hpp"
+#include "algo_imu_ekf.hpp"
 
 #define L_LIFT_MOTOR_DIR -1 //-1                 ///< 左腿编码器与腿长增加方向是否一致 一致为1 否则为-1
 #define R_LIFT_MOTOR_DIR 1 //1                  ///< 右腿编码器与腿长增加方向是否一致 一致为1 否则为-1
+#define L_TAU_MOTOR_DIR 1                       ///< 电机输出正向力的方向与抬腿方向是否一致
+#define R_TAU_MOTOR_DIR -1                      ///< 电机输出正向力的方向与抬腿方向是否一致
 #define ROLL_LIFT_DIR   -1                   ///< roll轴增大方向是否和抬头方向一致 一致为1 否则为-1
 #define CHASSIS_HIP_INIT_LENGTH 0.0f        ///< 初始化腿长 后续待改
 #define CHASSIS_HIP_INIT_ECD_L  -0.1f//15.f//
@@ -108,7 +111,7 @@ public:
         float_t speed_W = 0.0f; ///< 底盘角速度
         float_t L_Length = 0.0f; ///< 后腿腿长
         EVarStatus crawler_on = false;  ///< 启动履带的标志位
-        DataBuffer<float_t> roll_Measure;   // 整车roll轴角度
+        float_t roll_Measure;   // 整车roll轴角度
         float_t accel_y = 0.f;  ///< 陀螺仪测到的y轴平动加速度
     } chassisInfo;
 
@@ -119,11 +122,12 @@ public:
         float_t speed_Y = 0;    ///< 底盘Y轴速度(范围-100％~100％)
         float_t speed_W = 0;    ///< 底盘角速度(范围-100％~100％)
         float_t L_length = 0.0f; ///< 后腿腿长
+        float_t L_Tau = 0.f;    ///< 后腿期望Fy
         float_t speed_crawler = 0;  ///< 履带电机速度
     } chassisCmd;
 
-    // 互补滤波算法实例指针
-    CAlgo_IMU_Ave *filter = nullptr;
+    // 陀螺仪滤波算法实例指针
+    CAlgo_IMU_EKF *filter = nullptr;
 
     // 运动模式
     enum class EmovMode 
@@ -172,6 +176,12 @@ public:
 
     // 上台阶用于自救标志位
     EVarStatus should_be_saved = false;
+
+    // 下台阶时头朝下超过一段时间
+    uint8_t is_bow_Timeout = 0;
+    
+    // 下台阶时头朝上超过一段时间
+    uint8_t is_raise_Timeout = 0;
 
 private:
 
@@ -249,6 +259,8 @@ private:
         struct SHipCommand {
             float_t L_Set_Angle = 0.0f; ///< 左腿腿长（编码器值）
             float_t R_Set_Angle = 0.0f; ///< 右腿腿长（编码器值）        
+            float_t L_Set_Tau = 0.f;    ///< 左腿力矩
+            float_t R_Set_Tau = 0.f;    ///< 右腿力矩
         } HipCmd;
 
         // MIT控制结构体
@@ -285,6 +297,8 @@ private:
 
         // 声明组件输出更新函数(负责根据控制量进行解算，以及进行PID运算，最后得到输出值)
         EAppStatus _UpdateOutput(float_t posit_L, float_t posit_R);
+
+        float_t _UpdateGravity(float_t posit);
     
         // 电机can发送节点
         std::array<CInfCAN::CCanTxNode*, 2> mtrCanTxNode;

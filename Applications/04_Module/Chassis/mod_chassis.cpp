@@ -34,6 +34,7 @@ bool is_climbed_debug = false;
 bool is_slip = false;   // 打滑标志位
 uint16_t reset_hip_time = 0;
 float_t totalDemand_debug = 0.f;
+float_t debug_kp = 0.f;
 
 
 namespace my_engineer {
@@ -55,7 +56,7 @@ EAppStatus CModChassis::InitModule(SModInitParam_Base &param){
     moduleID = chassisParam.moduleID;
 
     //获取算法指针
-    filter = static_cast<CAlgo_IMU_Ave*>(AlgoIDMap.at(chassisParam.FilterID));
+    filter = static_cast<CAlgo_IMU_EKF*>(AlgoIDMap.at(chassisParam.FilterID));
     if(!filter){
         return APP_ERROR;
     }
@@ -249,23 +250,6 @@ void CModChassis::UpdateHandler_(){
     // 检查模块状态
     if (moduleStatus == APP_RESET) return;
 
-    // // 用于无符号类型的转化
-    // static auto uint_to_float = [](uint16_t x_uint, float xmin, float xmax, uint8_t bits) -> float {
-    //     float span = xmax - xmin;
-    //     float data_norm = static_cast<float>(x_uint) / ((1 << bits) - 1);
-    //     return data_norm * span + xmin;
-    // };
-
-    // // 用于有符号类型的转化
-    // static auto int_to_float = [](int16_t x_int, float xmin, float xmax, uint8_t bits) -> float {
-    //     float span = xmax - xmin;
-    //     // 计算有符号数的最大值：2^(bits-1) - 1 （12位则为2047）
-    //     int32_t int_max = (1 << (bits - 1)) - 1;
-    //     // 有符号数归一化：映射到[-1, 1]区间，再缩放至[xmin, xmax]
-    //     float data_norm = static_cast<float>(x_int) / static_cast<float>(int_max);
-    //     return (data_norm + 1.0f) * 0.5f * span + xmin;
-    // };
-
     // 计算每个电机轴上的实际物理扭矩 (N·m)，并做一阶低通滤波
     constexpr float WHEEL_TORQUE_LPF_ALPHA = 0.2f;
     static bool wheelTorqueFilterInited = false;
@@ -296,41 +280,49 @@ void CModChassis::UpdateHandler_(){
 
     static uint8_t HalfTickRate = 0;
 	HalfTickRate = 1 - HalfTickRate;
+    
+    static uint8_t QuarterTickRate = 0;
 
     comHip_.MovMode_ = MovMode; ///< 更新面向底层髋关节组件的运动模式
 
-    DataBuffer<float_t> roll_Target = {0.0f}; ///< 目标roll角度，目前暂时写这个，后续出车之后根据实际可能有些误差待改
+    float_t roll_Target = 0.1f; ///< 目标roll角度，目前暂时写这个，后续出车之后根据实际可能有些误差待改
 
     // 更新Roll角
-    chassisInfo.roll_Measure = {filter->Imu_Ave_Info.imu_ave_roll};
+    chassisInfo.roll_Measure = filter->Imu_Ekf_Info.roll;
 
     // 更新加速度
-    chassisInfo.accel_y = filter->Imu_Ave_Info.accel_y;
+    chassisInfo.accel_y = filter->Imu_Ekf_Info.accel_y;
 
-    // 底盘roll轴是一个三环pid控制，最外环为控roll轴角度，输出目标腿长，内环是控腿长
-    DataBuffer<float_t> roll_target_climbing;
     if(comHip_.MovMode_ == EmovMode::CLIMBING)
     {   
         if(reset_hip){  // 要求复位腿
             chassisCmd.L_length = 0; ///< 直接回到初始化腿长
-            roll_target_climbing = {0};
             comHip_.pidRollCtrl.ResetPidController(); ///< 同时重置PID控制器
             reset_hip = 0;
         }
 
-        if(filter->Imu_Ave_Info.imu_ave_roll < -18.f){
-            should_be_saved = true;     // 仰角超过18°就自救
-        }
+        // if(filter->Imu_Ave_Info.imu_ave_roll < -18.f){
+        //     should_be_saved = true;     // 仰角超过18°就自救
+        // }
 
         // if(should_be_saved){    // 如果需要自救，就立刻抬腿
         //     roll_target_climbing = comHip_.pidRollCtrl.UpdatePidController(roll_Target, chassisInfo.roll_Measure);
         //     chassisCmd.L_length += roll_target_climbing[0] * ROLL_DEG_ECD_RATIO * ROLL_LIFT_DIR * 1.f / 1000.f / 10.f; ///< 在当前腿长目标基础上进行累加
         // }
     } 
-    else if(MovMode == EmovMode::NORMAL && reset_hip){   ///< 普通行进模式下复位腿标志位用一次清一次
+    else if(MovMode == EmovMode::NORMAL){   ///< 普通行进模式下复位腿标志位用一次清一次
+        if(reset_hip){
             chassisCmd.L_length = 0; ///< 直接回到初始化腿长
             comHip_.pidRollCtrl.ResetPidController(); ///< 同时重置PID控制器
             reset_hip = 0;      ///< 清空标志位
+        }
+    }
+    else if(MovMode == EmovMode::DOWNSTAIR){    // 下台阶模式
+			
+        float_t roll_err = roll_Target - chassisInfo.roll_Measure;  ///< 当前仰角与目标差值
+        float_t roll_rate = filter->Imu_Ekf_Info.gyro_x;    // 当前roll轴角速度
+        chassisCmd.L_Tau = roll_err * 0.3f - roll_rate * 0.05;          ///< pd控制
+        ///< 目前只单纯给个力 如果效果好的话后续对连杆建模给精确一些
     }
 
     // constexpr float CRAWLER_TORQUE_LPF_ALPHA = 0.2f;
@@ -426,7 +418,11 @@ void CModChassis::UpdateHandler_(){
    // 更新髋关节
    if(HalfTickRate){comHip_.UpdateComponent();} ///< 降为500Hz
     // 更新履带组件
-    comCrawler_.UpdateComponent();
+    if(--QuarterTickRate == 0){
+        comCrawler_.UpdateComponent();      ///< 降为250Hz
+        QuarterTickRate = 4;
+    }
+    
 
     // ===============================================
     // ==== 履带功率限制：截断履带的扭矩下发超出配额 ====
@@ -612,6 +608,7 @@ EAppStatus CModChassis::RestrictChassisCommand_() {
     // }
     // else{
         chassisCmd.L_length = std::clamp(chassisCmd.L_length, 0.f, 9.4f);
+        chassisCmd.L_Tau = std::clamp(chassisCmd.L_Tau, -50.f, 50.f);
     // } 
 
     return APP_OK;

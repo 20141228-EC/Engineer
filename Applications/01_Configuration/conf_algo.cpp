@@ -31,23 +31,22 @@ EAppStatus InitAllAlgo(){
     // 使用初始化后的参数创建ImuAveFilter实例
     static auto ImuAveFilter = CAlgo_IMU_Ave(imu_ave_initparam);
 
-    /****************初始化卡尔曼滤波****************/
-    CAlgo_Kf::SAlgoKfInitParam kf_initparam;
-    kf_initparam.AlgoID = EAlgoID::ALGO_KF;
-    kf_initparam.DT = 0.001f;
-    kf_initparam.measurement_degree = {1};
-    kf_initparam.measurement_map = {1};
-    kf_initparam.memsDevID = EDeviceID::DEV_MEMS_BMI088;
-    kf_initparam.r_diagonal_elements = {0.01f};
-    kf_initparam.state_min_variance = {0.0001f};
-    kf_initparam.u_size = 0;
-    kf_initparam.use_auto_adjustment = false;
-    kf_initparam.x_size = 1;
-    kf_initparam.z_size = 1;
-    // test param...
+    /**************** 初始化 IMU EKF 姿态滤波 ****************/
+    CAlgo_IMU_EKF::SAlgoImuEkfInitParam imu_ekf_initparam;
 
-    // 使用初始化后的参数创建KfFilter实例
-    static auto KfFilter = CAlgo_Kf(kf_initparam);
+    imu_ekf_initparam.AlgoID = EAlgoID::ALGO_IMU_EKF;
+    imu_ekf_initparam.memsDevID = EDeviceID::DEV_MEMS_BMI088;
+    imu_ekf_initparam.DT = 0.001f;
+
+    imu_ekf_initparam.process_noise_q = 10.0f;
+    imu_ekf_initparam.process_noise_b = 0.001f;
+    imu_ekf_initparam.measure_noise = 1000000.0f;
+    imu_ekf_initparam.lambda = 0.9996f;
+
+    imu_ekf_initparam.use_transform = false;
+
+    // 创建ImuEkfFilter实例
+    static auto ImuEkfFilter = CAlgo_IMU_EKF(imu_ekf_initparam);
 
     return APP_OK;
 }

@@ -202,11 +202,11 @@ size_t CDevReferee::GetDataSegmentLength(ECommandID cmdId) {
 	switch (cmdId) {
     case ECommandID::ID_RACE_STATUS: return 11;
     case ECommandID::ID_RACE_RESULT: return 1;
-    case ECommandID::ID_ROBOT_HP: return 32;
+    case ECommandID::ID_ROBOT_HP: return 20;
     case ECommandID::ID_VENUE_EVENT: return 4;
     case ECommandID::ID_WARNING: return 3;
-    case ECommandID::ID_ROBOT_STATUS: return 13;
-    case ECommandID::ID_ROBOT_PERF: return 16;
+    case ECommandID::ID_ROBOT_STATUS: return 17;
+    case ECommandID::ID_ROBOT_PERF: return 14;
     case ECommandID::ID_ROBOT_POSIT: return 24;
     case ECommandID::ID_ROBOT_BUFF: return 6;
     case ECommandID::ID_DMG_INFO: return 1;

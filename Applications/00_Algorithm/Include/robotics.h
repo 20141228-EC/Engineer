@@ -171,6 +171,25 @@ class Serial_Link {
   }
 
   /**
+   * @brief 默认构造函数
+   */
+  Serial_Link()
+  {
+      gravity_ = matrixf::zeros<3,1>();
+      gravity_[2][0] = -9.81f;
+  }
+
+  /**
+   * @brief 设置连杆
+   * @param 连杆对象
+   */
+  void setLinks(Link links[_n])
+  {
+      for(int i = 0; i < _n; ++i)
+          links_[i] = links[i];
+  }
+
+  /**
    * @brief 正运动学求解：计算末端执行器相对于基坐标系的齐次变换矩阵T_n^0
    * @param q 关节变量向量
    * @return 末端执行器齐次变换矩阵T_n^0

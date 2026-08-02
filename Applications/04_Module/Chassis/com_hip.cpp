@@ -17,8 +17,6 @@
  float_t debug_output_buffer_L = 0.f;
  float_t debug_actual_speed_LL = 0.f;
  float_t debug_raw_speed_LL = 0.f;
-
- float_t debug_kp = 4.f;
  float_t debug_accel_filter_alpha = 0.8f;
 
  float_t debug_forward_L = 0.f;
@@ -87,7 +85,7 @@ EAppStatus CModChassis::CComHip::InitComponent(SModInitParam_Base &param){
  * @return EAppStatus 
  */
 EAppStatus CModChassis::CComHip::UpdateComponent() {
-	// 检查组件状态
+	// 检查组件状态 
 	if (componentStatus == APP_RESET) return APP_ERROR;
 
 	CDevMtrDM_MIT *pMtr[2];
@@ -184,23 +182,62 @@ EAppStatus CModChassis::CComHip::UpdateComponent() {
 			// 	pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(next_angle[LR]), 0.0f, 0.0f);
 			// }
 			// else{
-				float_t raw_torque_L = debug_kp * accel_y * 1;
-				float_t raw_torque_R = debug_kp * accel_y * -1;
-
-				debug_hip_accel_filtered_torque_L = LowPassFilter(debug_hip_accel_filtered_torque_L, raw_torque_L, debug_accel_filter_alpha);
-				debug_hip_accel_filtered_torque_R = LowPassFilter(debug_hip_accel_filtered_torque_R, raw_torque_R, debug_accel_filter_alpha);
 
 				// if(fabs(accel_y) > 1.f){
 				// 	pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.0f, mitCtrl[LL].tau + debug_hip_accel_filtered_torque_L);
 				// 	pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.0f, mitCtrl[LR].tau + debug_hip_accel_filtered_torque_R);
 				// }
 				// else{
+					// pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.f, mitCtrl[LL].tau);
+					// pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.f, mitCtrl[LR].tau);
+				if(parent->MovMode == EmovMode::DOWNSTAIR){		// 下台阶模式中
+					// 1. 获取目标力矩
+					float_t target_tau_L = HipCmd.L_Set_Tau;
+					float_t target_tau_R = HipCmd.R_Set_Tau;	// 先不给重补 只给姿态平衡力
+					// float_t target_tau_L = mitCtrl[LL].tau + HipCmd.L_Set_Tau;
+					// float_t target_tau_R = mitCtrl[LR].tau + HipCmd.R_Set_Tau;
+
+					// 2. 力矩斜坡限制 (Slew Rate Limiter)
+					static float_t current_tau[2] = {0.0f, 0.0f};
+					// 每次控制周期(任务频率)允许的最大力矩变化量，需要根据实际效果调试
+					// 假设计算周期是1ms，0.1f 意味着力矩每秒最多变化 100 Nm
+					const float_t max_tau_step = 0.03f; 
+
+					// 左腿斜坡处理
+					if (target_tau_L - current_tau[LL] > max_tau_step) {
+						current_tau[LL] += max_tau_step;
+					} else if (target_tau_L - current_tau[LL] < -max_tau_step) {
+						current_tau[LL] -= max_tau_step;
+					} else {
+						current_tau[LL] = target_tau_L;
+					}
+
+					// 右腿斜坡处理
+					if (target_tau_R - current_tau[LR] > max_tau_step) {
+						current_tau[LR] += max_tau_step;
+					} else if (target_tau_R - current_tau[LR] < -max_tau_step) {
+						current_tau[LR] -= max_tau_step;
+					} else {
+						current_tau[LR] = target_tau_R;
+					}
+
+					float_t l_grav = _UpdateGravity(HipInfo.pos_L_L);
+					float_t r_grav = _UpdateGravity(HipInfo.pos_L_R);
+
+					// 3. 发送控制指令
+					pMtr[LL]->Control_MIT(0.f, mitCtrl[LL].kd, 0.f, 0.f, 3.5f + current_tau[LL]);
+					pMtr[LR]->Control_MIT(0.f, mitCtrl[LR].kd, 0.f, 0.f, -3.5f + current_tau[LR]);
+					// 一个重力前馈加上姿态平衡pid输出最终发力矩给电机
+
+					// 离开模式的时候可能需要清零current_tau
+				}
+				else{
 					pMtr[LL]->Control_MIT(mitCtrl[LL].kp, mitCtrl[LL].kd, deg2rad(HipCmd.L_Set_Angle), 0.f, mitCtrl[LL].tau);
 					pMtr[LR]->Control_MIT(mitCtrl[LR].kp, mitCtrl[LR].kd, deg2rad(HipCmd.R_Set_Angle), 0.f, mitCtrl[LR].tau);
+					// pMtr[LL]->Control_MIT(0.f, mitCtrl[LL].kd, 0.f, 0.f, mitCtrl[LL].tau);
+					// pMtr[LR]->Control_MIT(0.f, mitCtrl[LR].kd, 0.f, 0.f, mitCtrl[LR].tau);
+				}
 				// }
-				debug_forward_L = mitCtrl[LL].tau + debug_hip_accel_filtered_torque_L;
-				debug_forward_R = mitCtrl[LR].tau + debug_hip_accel_filtered_torque_R;
-				// 用前馈扭矩做加速度补偿
 			// }
 			return APP_OK;
 			// _UpdateOutput(HipCmd.L_Set_Angle, HipCmd.R_Set_Angle);
@@ -289,6 +326,20 @@ EAppStatus CModChassis::CComHip::_UpdateOutput(float_t posit_L, float_t posit_R)
 	
 		
 	return APP_OK;
+}
+
+/**
+ * @brief 更新重补输出
+ * @retval	腿的线性重补输出
+ * 
+ */
+float_t CModChassis::CComHip::_UpdateGravity(float_t posit){
+
+	float_t TAU_MAX = 4.5;		// 前轮在台阶上时撑起车重的最小力矩
+	float_t posit_range = 0.108;	// 腿长的变化范围的倒数
+	
+		
+	return TAU_MAX * posit * posit_range;
 }
 
 } // namespace my_engineer
