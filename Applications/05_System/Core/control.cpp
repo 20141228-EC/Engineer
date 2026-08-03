@@ -243,7 +243,9 @@ void CSystemCore::ControlFromKeyboard_() {
             }
             if(keyboard.key_B){
                 pchassis_->chassisCmd.L_length += static_cast<float_t>(keyboard.mouse_L - keyboard.mouse_R) * 0.006f;
-                pgimbal_->gimbalCmd.set_pitch = GIMBAL_PITCH_INIT_ANGLE + pchassis_->chassisInfo.L_Length * 0.52f;// 同步抬升
+                if(keyboard.mouse_L != keyboard.mouse_R){
+                    pgimbal_->gimbalCmd.set_pitch = GIMBAL_PITCH_INIT_ANGLE + pchassis_->chassisInfo.L_Length * 0.52f;// 同步抬升
+                }
             }
             if(keyboard.key_Ctrl
                 && keyboard.key_B
