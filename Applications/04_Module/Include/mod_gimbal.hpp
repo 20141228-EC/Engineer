@@ -17,7 +17,7 @@
 
 #define GIMBAL_VISUAL_MOTOR_MOTOR_DIR -1     ///< 图传yaw电机方向 (1=正向, -1=反向)
 #define GIMBAL_VISUAL_MOTOR_INIT_ANGLE 1    ///< 图传yaw初始角度
-#define GIMBAL_PITCH_INIT_ANGLE 6.9f
+#define GIMBAL_PITCH_INIT_ANGLE -7.f
 
 // Pitch轴宏定义
 #define GIMBAL_PITCH_MOTOR_DIR        -1     ///< Pitch电机方向

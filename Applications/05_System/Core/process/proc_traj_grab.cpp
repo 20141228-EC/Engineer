@@ -191,7 +191,7 @@ proc_exit:
         
         // 3段策略:先是平滑参数
         if (!PlaySplineRange(arm_, clip, 0, gripOpenSeg - 1, spline,
-                             rollOff, 2.f)) {
+                             rollOff, 4.f)) {
             return false;
         }
         
@@ -280,11 +280,19 @@ proc_exit:
         // 轨迹分割：前段逐帧到位，后段五次样条平滑
         const bool useQuintic = (gripCloseSeg > 0 && gripCloseSeg < clip.frameCount - 1);
 
-        // 前段: 逐帧 PlayTrajRows（跑到夹爪闭合帧的前一帧）
+        // 前段: 样条连续播放（跑到夹爪闭合帧的前一帧）
         {
             const int frontEnd = useQuintic ? gripCloseSeg : clip.frameCount;
-            if (!PlayTrajRows(arm_, clip.frame, frontEnd, FastJointParams, nullptr, rollOff))
-                return false;
+            if (frontEnd > 1) {
+                static CAlgoQuinticSpline frontSpline;
+                for (int i = 0; i < CAlgoQuinticSpline::AXES; i++) {
+                    frontSpline.velLimit[i] = FastJointParams[i].velMax;
+                    frontSpline.accLimit[i] = FastJointParams[i].accMax;
+                }
+                if (!PlaySplineRange(arm_, clip, 0, frontEnd - 1,
+                                     frontSpline, rollOff, 3.0f))
+                    return false;
+            }
         }
 
         // Shift 确认（Ctrl+Z 中断  10s 超时）
@@ -317,7 +325,7 @@ proc_exit:
                 spline.accLimit[i] = FastJointParams[i].accMax;
             }
             if (!PlaySplineRange(arm_, clip, gripCloseSeg, clip.frameCount - 1,
-                                 spline, rollOff, 3.5))
+                                 spline, rollOff, 4.f))
                 return false;
         }
         return true;

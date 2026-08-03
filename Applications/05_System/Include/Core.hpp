@@ -78,7 +78,7 @@
 #define EXCHANGE_ORE_GRIP_LENGTH      1.0f
 #define EXCHANGE_ORE_GIMBLE_PITCH_ANGLE      -55.0f
 #define EXCHANGE_ORE_GIMBLE_YAW_ANGLE      0.f
-#define EXCHANGE_ORE_GIMBLE_INIT_ANGLE      GIMBAL_PITCH_INIT_ANGLE
+#define EXCHANGE_ORE_GIMBLE_INIT_ANGLE      6.9f
 #define EXCHANGE_ORE_GIMBLE_ANGLE      55.f
 
 /* ----------------------存矿------------------------*/
@@ -134,7 +134,7 @@ struct SArmPresetPose{
 };
 
 const SArmPresetPose PresetPose_Level[3] = {
-    {/*LEVEL_1:*/ -2.7f, 17.1f, 20.2f,  102.f, 86.f,200.f},
+    {/*LEVEL_1:*/ -2.7f, 2.1f, 14.2f,  -84.f, 86.f,200.f},
     {/*LEVEL_2:*/ -2.7f, 14.9f, 20.4f, -1.f,  65.f, 170.f},
     {/*LEVEL_3:*/ -2.7f, 14.9f, 20.4f, -1.f,  65.f, 170.f},
 };
@@ -147,6 +147,7 @@ class CSystemCore final {
     friend void StartUpdateTask(void *argument);
     friend void StartHeartbeatTask(void *argument);
     friend class CStoreOreTaskRunner;  ///< 允许 Runner 访问 oreTaskStep_ / oreGetDone_ 等私有成员
+    friend class CSystemReferee;       ///< 允许裁判系统读取 oreTaskStep_ 用于 UI 显示
 
 public:
     // 定义自动操作的任务类型并实例化表示当前任务类型
