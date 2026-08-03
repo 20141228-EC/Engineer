@@ -32,8 +32,8 @@
 
 /* ----------------------上台阶------------------- */
 #define CLIMBING_YAW_ANGLE        ARM_YAW_INIT_ANGLE
-#define CLIMBING_PITCH1_ANGLE     ARM_PITCH1_INIT_ANGLE
-#define CLIMBING_PITCH2_ANGLE     ARM_PITCH2_INIT_ANGLE
+#define CLIMBING_PITCH1_ANGLE     45.f
+#define CLIMBING_PITCH2_ANGLE     20.f
 #define CLIMBING_ROLL_ANGLE       ARM_ROLL_INIT_ANGLE
 #define CLIMBING_END_PITCH_ANGLE  80
 #define CLIMBING_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
@@ -41,7 +41,7 @@
 #define CLIMBING_SPEED            20.f      ///< 给一个较小的速度
 #define SAVING_SPEED              -60.f     ///< 回退
 #define SAVING_HIP_ANGLE          6.3f      ///< 自救腿长
-#define CLIMBING_HIP_ANGLE        2.5f      ///< 抬一点腿
+#define CLIMBING_HIP_ANGLE        0.f      ///< 抬一点腿
 
 /* -----------------------下台阶--------------------*/
 #define DOWNSTAIR_YAW_ANGLE        ARM_YAW_INIT_ANGLE

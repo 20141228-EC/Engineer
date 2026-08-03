@@ -33,7 +33,7 @@ void CSystemCore::StartClimbingTask(void *arg) {
 	
 	// /*Set Arm*/
 	core.parm_->armCmd.set_angle_Yaw = CLIMBING_YAW_ANGLE;
-	// core.parm_->armCmd.set_angle_Pitch1 = CLIMBING_PITCH1_ANGLE;
+	core.parm_->armCmd.set_angle_Pitch1 = CLIMBING_PITCH1_ANGLE;
 	core.parm_->armCmd.set_angle_Pitch2 = CLIMBING_PITCH2_ANGLE;
 	core.parm_->armCmd.set_angle_Roll = CLIMBING_ROLL_ANGLE;
 	core.parm_->armCmd.set_angle_end_pitch = CLIMBING_END_PITCH_ANGLE;
@@ -79,7 +79,7 @@ void CSystemCore::StartClimbingTask(void *arg) {
 				// if(core.pchassis_->is_climbed && core.pchassis_->time_to_reset_hip){
 				if(core.pchassis_->is_climbed){
 					core.pchassis_->is_climbing = false;
-					proc_waitMs(100);
+					// proc_waitMs(100);
 					core.pchassis_->reset_hip = true;		// 检测到前轮爬上台阶之后就收腿 可能会需要一个延时
 					core.pchassis_->is_climbed = false;
 				}
