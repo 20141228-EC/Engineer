@@ -540,7 +540,7 @@ void CSystemCore::ControlFromController_() {
             ARM_YAW_PHYSICAL_RANGE_MIN, ARM_YAW_PHYSICAL_RANGE_MAX);
 
         // 末端roll轴
-        parm_->armCmd.set_angle_end_roll += static_cast<float_t>(keyboard.key_G - keyboard.key_F) * 180.0f / freq;
+        parm_->armCmd.set_angle_end_roll += static_cast<float_t>(keyboard.key_G - keyboard.key_F) * 100.0f / freq;
         //parm_->armCmd.set_angle_end_roll += (controller.rocker_X / 100.f) * 100.f / freq;  // 摇杆增量
         // parm_->armCmd.set_angle_end_roll += 110.0f*(keyboard.key_F - keyboard.key_G)/freq;
         // if( SysRemote.remoteInfo.keyboard.key_Z){
