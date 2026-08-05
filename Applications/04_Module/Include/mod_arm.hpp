@@ -107,7 +107,7 @@
 #define GRIP_CLOSE_SPEED  15000.0f   ///< 夹爪闭合速度，电机的上限速度
 #define GRIP_INIT_SPEED   6000.0f   ///< 标定速度，恒定低速直到堵转
 #define GRIP_MIN_MOVE_SPEED 6000.0f ///< 力矩减速后最小运动速度，低于此值直接归零避免蠕动
-#define GRIP_INIT_STALL_CURRENT 100.0f  ///< 标定堵转电流阈值
+#define GRIP_INIT_STALL_CURRENT 70.0f  ///< 标定堵转电流阈值
 #define GRIP_INIT_STALL_COUNT   150.f       ///< 标定堵转确认计数
 #define GRIP_CLOSE_START_GRACE  180.f        ///< 闭合启动计数器
 #define GRIP_GRIP_HOLD_COUNT    20.f        ///< 夹取确认计数
