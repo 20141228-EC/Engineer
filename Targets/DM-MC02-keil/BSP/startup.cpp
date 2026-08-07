@@ -50,7 +50,7 @@ extern "C" {
  *
  * @return (int) None
  */
- int main() {
+	int main() {
   // __disable_irq();  // 禁用全局中断
   /* Enable CPU Cache */
   SCB_EnableICache();
@@ -68,7 +68,7 @@ extern "C" {
 																
 
   /* Peripheral Initialize */
-  // MX_IWDG1_Init();
+  MX_IWDG1_Init();
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_ADC1_Init();
