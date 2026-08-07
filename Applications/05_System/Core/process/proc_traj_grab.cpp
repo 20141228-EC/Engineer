@@ -38,20 +38,22 @@ namespace my_engineer {
         runner.arm_.armCmd.set_angle_end_pitch = runner.arm_.armInfo.angle_end_pitch;
         runner.arm_.armCmd.set_angle_end_roll  = runner.arm_.armInfo.angle_end_roll;
 
-        // 等待所有按键释放，防止残留状态直接进入上一次的模式
-        while (runner.keyboard_.key_Ctrl || runner.keyboard_.mouse_L || runner.keyboard_.mouse_R) {
-            proc_waitMs(5);
-        }
+        // // 等待所有按键释放，防止残留状态直接进入上一次的模式
+        // while (runner.keyboard_.key_Ctrl || runner.keyboard_.mouse_L || runner.keyboard_.mouse_R) {
+        //     proc_waitMs(5);
+        // }
 
         // 选择存矿/兑矿轨迹（控制器功能按键 / 键盘手动选择）
         ETrajID trajId;
-        if (core.exchange_side_ == CSystemCore::EExchangeSide::AUTO) {
-            // // 控制器自动兑矿模式
-            // trajId = TRAJ_AUTO;
-            // core.armmode_ = EArmMode::AUTO;
-            // core.exchange_side_ = CSystemCore::EExchangeSide::NONE;
-        } else {
-            while (true) {
+        // if (core.exchange_side_ == CSystemCore::EExchangeSide::AUTO) {
+        //     // // 控制器自动兑矿模式
+        //     // trajId = TRAJ_AUTO;
+        //     // core.armmode_ = EArmMode::AUTO;
+        //     // core.exchange_side_ = CSystemCore::EExchangeSide::NONE;
+        // } else {
+
+        // }
+        while (true) {
                 if (runner.keyboard_.mouse_L) {
                     trajId = TRAJ_STORE_L;
                     core.armmode_ = EArmMode::STORE_L_ORE;
@@ -64,8 +66,6 @@ namespace my_engineer {
                 }
                 proc_waitMs(5);
             }
-        }
-
         if (core.pgimbal_) core.pgimbal_->gimbalCmd.set_visualyaw = EXCHANGE_ORE_GIMBLE_YAW_ANGLE;
 
         runner.arm_.armCmd.isAutoCtrl = true; ///< 阻止外部ControlFromKeyboard_干扰，手动/自动都需要
