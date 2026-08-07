@@ -107,6 +107,11 @@ void CSystemCore::StartClimbingTask(void *arg) {
 
 // 退出
 proc_exit:
+	core.parm_->armCmd.set_angle_Yaw = CLIMBING_YAW_ANGLE;
+	core.parm_->armCmd.set_angle_Pitch1 = ARM_PITCH1_INIT_ANGLE;
+	core.parm_->armCmd.set_angle_Pitch2 = ARM_PITCH2_INIT_ANGLE;
+	core.parm_->armCmd.set_angle_Roll = ARM_ROLL_INIT_ANGLE;
+	core.parm_->armCmd.set_angle_end_pitch = ARM_END_PITCH_INIT_ANGLE;
 	core.parm_->armCmd.isAutoCtrl = false;
 	core.pchassis_->chassisCmd.isAutoCtrl = false;
 	core.pchassis_->is_climbing = false;

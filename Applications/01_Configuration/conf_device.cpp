@@ -231,7 +231,7 @@ EAppStatus InitAllDevice(){
     armMotor_Yaw_initparam.deviceID = EDeviceID::DEV_ARM_MTR_YAW;
     armMotor_Yaw_initparam.interfaceID = EInterfaceID::INF_CAN3;
     armMotor_Yaw_initparam.ktMtrID = CDevMtrKT::EKtMtrID::ID_1;
-    armMotor_Yaw_initparam.encoderResolution = 65535;
+    armMotor_Yaw_initparam.encoderResolution = 65536;
     armMotor_Yaw_initparam.useAngleToPosit = true;
     armMotor_Yaw_initparam.useStallMonit = true;
     armMotor_Yaw_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
@@ -244,7 +244,7 @@ EAppStatus InitAllDevice(){
     armMotor_Pitch1_initparam.deviceID = EDeviceID::DEV_ARM_MTR_PITCH1;
     armMotor_Pitch1_initparam.interfaceID = EInterfaceID::INF_CAN3;
     armMotor_Pitch1_initparam.ktMtrID = CDevMtrKT::EKtMtrID::ID_2;
-    armMotor_Pitch1_initparam.encoderResolution = 65535;
+    armMotor_Pitch1_initparam.encoderResolution = 65536;
     armMotor_Pitch1_initparam.useAngleToPosit = true;
     armMotor_Pitch1_initparam.useStallMonit = true;
     armMotor_Pitch1_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
@@ -257,7 +257,7 @@ EAppStatus InitAllDevice(){
     armMotor_Pitch2_initparam.deviceID = EDeviceID::DEV_ARM_MTR_PITCH2;
     armMotor_Pitch2_initparam.interfaceID = EInterfaceID::INF_CAN3;
     armMotor_Pitch2_initparam.ktMtrID = CDevMtrKT::EKtMtrID::ID_3;
-    armMotor_Pitch2_initparam.encoderResolution = 65535;
+    armMotor_Pitch2_initparam.encoderResolution = 65536;
     armMotor_Pitch2_initparam.useAngleToPosit = true;
     armMotor_Pitch2_initparam.useStallMonit = true;
     armMotor_Pitch2_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
@@ -270,7 +270,7 @@ EAppStatus InitAllDevice(){
     armMotor_Pitch3_initparam.deviceID = EDeviceID::DEV_ARM_MTR_PITCH3;
     armMotor_Pitch3_initparam.interfaceID = EInterfaceID::INF_CAN3;
     armMotor_Pitch3_initparam.ktMtrID = CDevMtrKT::EKtMtrID::ID_4;
-    armMotor_Pitch3_initparam.encoderResolution = 65535;
+    armMotor_Pitch3_initparam.encoderResolution = 65536;
     armMotor_Pitch3_initparam.useAngleToPosit = true;
     armMotor_Pitch3_initparam.useStallMonit = true;
     armMotor_Pitch3_initparam.stallMonitDataSrc = CDevMtr::DATA_CURRENT;
