@@ -211,7 +211,7 @@ EAppStatus CModArm::CComGrip::UpdateComponent() {
                         gripCmd.regripStableCnt = 0;
                     } else {
                         // 未夹住：当作普通闭合命令，走 RELEASE 分支正常流程
-                        gripCmd.setSpeed_grip = -6000;//整个速度按照实际的情况修改
+                        gripCmd.setSpeed_grip = -8000;//整个速度按照实际的情况修改
                     }
                 }
 

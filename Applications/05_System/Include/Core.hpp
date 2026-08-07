@@ -39,7 +39,7 @@
 #define CLIMBING_END_ROLL_ANGLE   ARM_END_ROLL_INIT_ANGLE
 #define CLIMBING_GRIP_LENGTH      ARM_GRIP_INIT_LENGTH
 #define CLIMBING_SPEED            20.f      ///< 给一个较小的速度
-#define SAVING_SPEED              -60.f     ///< 回退
+#define SAVING_SPEED              -70.f     ///< 回退
 #define SAVING_HIP_ANGLE          6.3f      ///< 自救腿长
 #define CLIMBING_HIP_ANGLE        0.f      ///< 抬一点腿
 
@@ -134,9 +134,9 @@ struct SArmPresetPose{
 
 // preset 预设位姿
 const SArmPresetPose PresetPose_Level[3] = {
-    {/*LEVEL_1:*/ -2.7f, 17.1f, 20.2f, 0.f, 102.f, 86.f, 0.f},
-    {/*LEVEL_2:*/ -2.7f, 14.9f, 20.4f, 0.f, -1.f,  65.f, 0.f},
-    {/*LEVEL_3:*/ -2.7f, 14.9f, 20.4f, 0.f, -1.f,  65.f, 0.f},
+    {/*LEVEL_1:*/ -2.7f, 20.1f, 17.2f, 0.f, 92.f, -86.f, 0.f},
+    {/*LEVEL_2:*/ -2.7f, 14.9f, 20.4f, 0.f, -1.f, -65.f, 0.f},
+    {/*LEVEL_3:*/ -2.7f, 14.9f, 20.4f, 0.f, -1.f, -65.f, 0.f},
 };
 
 class CStoreOreTaskRunner;
