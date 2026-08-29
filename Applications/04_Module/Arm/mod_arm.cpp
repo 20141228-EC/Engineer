@@ -13,7 +13,6 @@
 #include "mod_arm.hpp"
 
 
-
 namespace my_engineer {
 
 CModArm *pArm_test = nullptr;
@@ -44,6 +43,37 @@ EAppStatus CModArm::InitModule(SModInitParam_Base &param) {
 	comEnd_.InitComponent(param);
 	comGrip_.InitComponent(param);
 
+	// 初始化七轴连杆对象
+		/*
+			Link(float theta, float d, float a, float alpha, Joint_Type_e type = R,
+				 float offset = 0, float qmin = 0, float qmax = 0, float m = 1,
+				 Matrixf<3, 1> rc = matrixf::zeros<3, 1>(),
+				 Matrixf<3, 3> I = matrixf::zeros<3, 3>());
+		*/
+	seven_axis[0] = robotics::Link(0, 0.074643345f, 0, PI/2, 
+						robotics::joint_type::R, 0.0f, ARM_YAW_PHYSICAL_RANGE_MIN, ARM_YAW_PHYSICAL_RANGE_MAX);
+		// yaw
+	seven_axis[1] = robotics::Link(0, 0, 0.299648237, 0, 
+						robotics::joint_type::R, 0.0f, ARM_PITCH1_PHYSICAL_RANGE_MIN, ARM_PITCH1_PHYSICAL_RANGE_MAX);
+		// pitch1
+	seven_axis[2] = robotics::Link(0, 0, 0.160038963, 0, 
+						robotics::joint_type::R, 0.0f, ARM_PITCH2_PHYSICAL_RANGE_MIN, ARM_PITCH2_PHYSICAL_RANGE_MAX);
+		// pitch2
+	seven_axis[3] = robotics::Link(0, 0, 0, PI/2, 
+						robotics::joint_type::R, 0.0f, ARM_PITCH3_PHYSICAL_RANGE_MIN, ARM_PITCH3_PHYSICAL_RANGE_MAX);
+		// pitch3
+	seven_axis[4] = robotics::Link(0, 0.387225360, 0, PI/2, 
+						robotics::joint_type::R, 0.0f, ARM_ROLL_PHYSICAL_RANGE_MIN, ARM_ROLL_PHYSICAL_RANGE_MAX);
+		// roll
+	seven_axis[5] = robotics::Link(0, 0, 0, PI/2, 
+						robotics::joint_type::R, 0.0f, ARM_END_PITCH_PHYSICAL_RANGE_MIN, ARM_END_PITCH_PHYSICAL_RANGE_MAX);
+		// endRoll
+	seven_axis[6] = robotics::Link(0, 0, 0, 0, 
+						robotics::joint_type::R, 0.0f, ARM_END_ROLL_PHYSICAL_RANGE_MIN, ARM_END_ROLL_PHYSICAL_RANGE_MAX);
+		// endPitch
+
+	// 初始化七轴臂对象
+	seven_axis_arm.setLinks(seven_axis);
 
 	// 创建任务并注册模块
 	CreateModuleTask_();
@@ -107,6 +137,15 @@ void CModArm::UpdateHandler_() {
 		Grav_Compemsation_Pitch2();
 		Grav_Compemsation_Roll();
 	}
+
+	// 更新当前各关节角度值(发给上位机和作为当前初始关节向量)
+	currentArmAngle[0][0] = armInfo.angle_Yaw;
+	currentArmAngle[1][0] = armInfo.angle_Pitch1;
+	currentArmAngle[2][0] = armInfo.angle_Pitch2;
+	currentArmAngle[3][0] = armInfo.angle_Pitch3;
+	currentArmAngle[4][0] = armInfo.angle_Roll;
+	currentArmAngle[5][0] = armInfo.angle_end_pitch;
+	currentArmAngle[6][0] = armInfo.angle_end_roll;
 
 	// 填充电机发送缓冲区
 	CDevMtrKT::FillCanTxBuffer(comjoint_.motor[CComJoint::P1],							///<用的是关节底层信息的发送

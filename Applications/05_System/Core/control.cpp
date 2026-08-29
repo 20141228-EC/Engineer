@@ -379,8 +379,6 @@ void CSystemCore::ControlFromController_() {
 
     auto &keyboard_edge = SysRemote.remoteInfo.keyboard_edge;
 
-    SysControllerLink.robotInfo.controlled_by_controller = true;
-
     // 夹爪控制：Core层仅传递标志位，速度渐变由组件层处理
         // 检测是否正在进行模式切换（Z+X同时按住），切换期间冻结夹爪防止意外松开
     bool mode_switching = SysRemote.remoteInfo.keyboard.key_Z
@@ -388,7 +386,7 @@ void CSystemCore::ControlFromController_() {
 
     // 线性插值器（25Hz数据  1000Hz控制，周期 = 40步）
     static CAlgoLinearInterp interp_yaw(40), interp_p1(40), interp_p2(40),
-                             interp_roll(40), interp_end_pitch(40), interp_p3(40);
+                             interp_roll(40), interp_end_pitch(40), interp_p3(40), interp_end_roll(40);
     // 上一次控制器原始数据，用于检测数据更新
     static CSystemControllerLink::SArmAngles last_arm;
 
@@ -402,6 +400,29 @@ void CSystemCore::ControlFromController_() {
         parm_->should_limit_yaw = 0;
     }
 
+    if(!parm_->armInfo.isModuleAvailable){
+        return;     // 如果臂没初始化就直接返回
+    }
+
+    SysControllerLink.send_flag = true;     // 初始化完毕就发一个请求
+
+    // 过了初始化才在这里面更新臂的角度
+    SysControllerLink.robotInfo.arm.yaw = parm_->currentArmAngle[0][0];
+    SysControllerLink.robotInfo.arm.pitch1 = parm_->currentArmAngle[1][0];
+    SysControllerLink.robotInfo.arm.pitch2 = parm_->currentArmAngle[2][0];
+    SysControllerLink.robotInfo.arm.pitch3 = parm_->currentArmAngle[3][0];
+    SysControllerLink.robotInfo.arm.roll = parm_->currentArmAngle[4][0];
+    SysControllerLink.robotInfo.arm.pitch_end = parm_->currentArmAngle[5][0];
+    SysControllerLink.robotInfo.arm.roll_end = parm_->currentArmAngle[6][0];
+
+    SysControllerLink.requestInfo.arm.yaw = parm_->currentArmAngle[0][0];
+    SysControllerLink.requestInfo.arm.pitch1 = parm_->currentArmAngle[1][0];
+    SysControllerLink.requestInfo.arm.pitch2 = parm_->currentArmAngle[2][0];
+    SysControllerLink.requestInfo.arm.pitch3 = parm_->currentArmAngle[3][0];
+    SysControllerLink.requestInfo.arm.roll = parm_->currentArmAngle[4][0];
+    SysControllerLink.requestInfo.arm.pitch_end = parm_->currentArmAngle[5][0];
+    SysControllerLink.requestInfo.arm.roll_end = parm_->currentArmAngle[6][0];
+
     /******************* 底盘控制 *******************/
 
     // 平滑更新角速度
@@ -411,13 +432,6 @@ void CSystemCore::ControlFromController_() {
 
         pchassis_->chassisCmd.speed_W += static_cast<float_t>(keyboard.key_E - keyboard.key_Q) * 15.0f;
         pchassis_->chassisCmd.speed_W = std::clamp(pchassis_->chassisCmd.speed_W, -20.0f, 20.0f);
-        
-        // 鼠标移动过快则认为是误操作，切换回键盘控制
-        if(abs(keyboard.mouse_X) > 350) {
-            use_Controller_ = false;
-            SysControllerLink.robotInfo.controlled_by_controller = false;
-            return;
-        }
 
         if (!pchassis_->chassisCmd.isAutoCtrl)
         {
@@ -470,12 +484,15 @@ void CSystemCore::ControlFromController_() {
         // target_p2 = std::clamp(target_p2, 0.0f, p2_upper);
 
         // 设定各轴插值，并且过滤死区
-        if(fabs(arm.yaw    - last_arm.yaw ) > 0.1f)interp_yaw.setTarget(parm_->armCmd.set_angle_Yaw, Round(arm.yaw));
-        if(fabs(arm.pitch1 - last_arm.pitch1) > 0.1f)interp_p1.setTarget(parm_->armCmd.set_angle_Pitch1, Round(arm.pitch1));
-        if(fabs(arm.pitch2 - last_arm.pitch2) > 0.1f)interp_p2.setTarget(parm_->armCmd.set_angle_Pitch2, Round(arm.pitch2));
-        if(fabs(arm.pitch3 - last_arm.pitch3) > 0.1f)interp_p3.setTarget(parm_->armCmd.set_angle_Pitch3, Round(arm.pitch3));
-        if(fabs(arm.roll   - last_arm.roll   ) > 0.1f)interp_roll.setTarget(parm_->armCmd.set_angle_Roll, Round(-arm.roll));
-        if(fabs(arm.pitch_end - last_arm.pitch_end) > 0.1f)interp_end_pitch.setTarget(parm_->armCmd.set_angle_end_pitch, Round(arm.pitch_end));
+        if(fabs(arm.yaw    - last_arm.yaw ) > 0.1f)interp_yaw.setTarget(parm_->armCmd.set_angle_Yaw, Round(arm.yaw * 360 / PI));
+        if(fabs(arm.pitch1 - last_arm.pitch1) > 0.1f)interp_p1.setTarget(parm_->armCmd.set_angle_Pitch1, Round(arm.pitch1 * 360 / PI));
+        if(fabs(arm.pitch2 - last_arm.pitch2) > 0.1f)interp_p2.setTarget(parm_->armCmd.set_angle_Pitch2, Round(arm.pitch2 * 360 / PI));
+        if(fabs(arm.pitch3 - last_arm.pitch3) > 0.1f)interp_p3.setTarget(parm_->armCmd.set_angle_Pitch3, Round(arm.pitch3 * 360 / PI));
+        if(fabs(arm.roll   - last_arm.roll   ) > 0.1f)interp_roll.setTarget(parm_->armCmd.set_angle_Roll, Round(-arm.roll * 360 / PI));
+        if(fabs(arm.pitch_end - last_arm.pitch_end) > 0.1f)interp_end_pitch.setTarget(parm_->armCmd.set_angle_end_pitch, Round(arm.pitch_end * 360 / PI));
+        if(fabs(arm.roll_end - last_arm.roll_end) > 0.1f)interp_end_roll.setTarget(parm_->armCmd.set_angle_end_roll, Round(arm.roll_end * 360 / PI));
+        
+        
         last_arm = arm;
         // 每个控制周期执行插值
         parm_->armCmd.set_angle_Yaw    = interp_yaw.update();
@@ -484,6 +501,7 @@ void CSystemCore::ControlFromController_() {
         parm_->armCmd.set_angle_Pitch3 = interp_p3.update();
         parm_->armCmd.set_angle_Roll   = interp_roll.update();
         parm_->armCmd.set_angle_end_pitch = interp_end_pitch.update();
+        parm_->armCmd.set_angle_end_roll = interp_end_roll.update();
         
         // const float alpha = 0.98f;  ///< 低通滤波平滑系数（越大越平滑，0.95~0.98 对应约40~80ms过渡）
         // // 低通滤波平滑控制
@@ -499,7 +517,7 @@ void CSystemCore::ControlFromController_() {
             ARM_YAW_PHYSICAL_RANGE_MIN, ARM_YAW_PHYSICAL_RANGE_MAX);
 
         // 末端roll轴
-        parm_->armCmd.set_angle_end_roll += static_cast<float_t>(keyboard.key_F - keyboard.key_G) * 60.0f / freq;
+        // parm_->armCmd.set_angle_end_roll += static_cast<float_t>(keyboard.key_F - keyboard.key_G) * 60.0f / freq;
         //parm_->armCmd.set_angle_end_roll += (controller.rocker_X / 100.f) * 100.f / freq;  // 摇杆增量
         // parm_->armCmd.set_angle_end_roll += 110.0f*(keyboard.key_F - keyboard.key_G)/freq;
         // if( SysRemote.remoteInfo.keyboard.key_Z){
@@ -514,12 +532,6 @@ void CSystemCore::ControlFromController_() {
         if(keyboard_edge.key_V == CSystemRemote::ERemoteEdge::Rising){
             regrip_keyboardcom = true;
         }
-        const bool regrip_requested = controller.gripper_regrip || regrip_keyboardcom;
-        if (regrip_requested) {
-            parm_->armCmd.reGripCmd = true;                                  // 传递 re-grip 指令
-        }
-        controller.gripper_regrip = false;  // 处理之后清除标志位
-        regrip_keyboardcom = false;
 
         // if (controller.gripper_close) {
         //     parm_->armCmd.set_speed_grip = -grip_speed;   // 闭合
@@ -528,28 +540,6 @@ void CSystemCore::ControlFromController_() {
         // } else {
         //     parm_->armCmd.set_speed_grip = 0;             // 模式切换冻结
         // }
-        if(!mode_switching && keyboard_edge.key_C == CSystemRemote::ERemoteEdge::Rising){
-            gripKeyboardCmd_ = (gripKeyboardCmd_ == EGripKeyboardCmd::CLOSE)
-                ? EGripKeyboardCmd::OPEN
-                : EGripKeyboardCmd::CLOSE;
-        }
-        const bool grip_close_cmd = controller.gripper_close || gripKeyboardCmd_ == EGripKeyboardCmd::CLOSE;
-        const bool grip_open_cmd = gripKeyboardCmd_ == EGripKeyboardCmd::OPEN;
-        if (mode_switching) {
-             // 模式切换期间冻结夹爪，避免 Z+X 切换被解释成张开
-             parm_->armCmd.gripClose = false;
-             parm_->armCmd.gripOpen = false;
-        } else if (grip_close_cmd) {
-             parm_->armCmd.gripClose = true;
-             parm_->armCmd.gripOpen = false;
-             // isGripped 判断由组件层 HOLD 状态自动处理
-        } else if (grip_open_cmd) {
-             parm_->armCmd.gripClose = false;
-             parm_->armCmd.gripOpen = true;
-        } else {
-             parm_->armCmd.gripClose = false;
-             parm_->armCmd.gripOpen = false;
-         }
     }
         // LowPassFilter(parm_->armCmd.set_angle_end_roll,
         //     Round(controller.angle_roll_end), 0.5f);
@@ -557,9 +547,6 @@ void CSystemCore::ControlFromController_() {
         //     last_rocker_key_status == CSystemControllerLink::KEY_STATUS::RELEASE) {
         //     psubgantry_->subGantryCmd.setPumpOn_Gantry = !psubgantry_->subGantryCmd.setPumpOn_Gantry;
         // }
-        if(keyboard_edge.key_B == CSystemRemote::ERemoteEdge::Rising){
-            robotdata.p3_lock = !robotdata.p3_lock;
-        }
         // if((keyboard_edge.key_Z == CSystemRemote::ERemoteEdge::Rising 
         //     && keyboard_edge.key_Ctrl== CSystemRemote::ERemoteEdge::Rising 
         //     //&& keyboard_edge.key_Shift== CSystemRemote::ERemoteEdge::Rising 

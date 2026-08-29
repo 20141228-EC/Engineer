@@ -96,16 +96,6 @@ namespace my_engineer {
         arm.armCmd.set_angle_end_pitch = arm.armInfo.angle_end_pitch;
         arm.armCmd.set_angle_end_roll  = arm.armInfo.angle_end_roll;
 
-        // 任务结束默认进入自定义控制器模式（仅在控制器在线时切换，否则保留键盘模式避免立刻被自动退出）
-        if (SysControllerLink.IsControllerOnline()) {
-            SysControllerLink.robotInfo.controlled_by_controller = true;
-            core.use_Controller_ = true;
-            arm.armCmd.isCustomCtrl = true;     ///< 同步标志位，避免下个周期的窗口期行为异常
-        } else {
-            SysControllerLink.robotInfo.controlled_by_controller = false;
-            core.use_Controller_ = false;
-            arm.armCmd.isCustomCtrl = false;
-        }
         core.armmode_ = EArmMode::NORMAL;   //没有任务的状态
         proc_return();
     }

@@ -928,20 +928,13 @@ void CSystemReferee::UI_UpdateStateFigureDrawing_() {
 
   proc_waitMs(50);
 
-  p3LockTextMsg.message.figureConfig.operate = 2;
-  if(SysControllerLink.robotInfo.p3_lock) {
-    p3LockTextMsg.message.figureConfig.color = 2;
-  }
-  else {
-    p3LockTextMsg.message.figureConfig.color = 7;
-  }
   p3LockTextMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&p3LockTextMsg), sizeof(p3LockTextMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&p3LockTextMsg), sizeof(p3LockTextMsg));
 
   proc_waitMs(50);
 
   p3LockMsg.message.figureConfig[0].operate = 2;
-  p3LockMsg.message.figureConfig[0].color = (SysControllerLink.robotInfo.p3_lock) ? 3 : 7;
+  p3LockMsg.message.figureConfig[0].color = (1) ? 3 : 7;
   p3LockMsg.CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(&p3LockMsg), sizeof(p3LockMsg) - 2);
   pInterface_->Transmit(reinterpret_cast<uint8_t *>(&p3LockMsg), sizeof(p3LockMsg));
 

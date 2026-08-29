@@ -66,7 +66,7 @@ EAppStatus InitAllInterface(){
     inf_vision_initparam.rxDmaQueueNum = 4;
     inf_vision_initparam.rxDmaBuffSize = 512;
     inf_vision_initparam.useTxDma = true;
-    inf_vision_initparam.txDmaQueueNum = 2;
+    inf_vision_initparam.txDmaQueueNum = 4;
     inf_vision_initparam.txDmaBuffSize = 512;
     inf_vision.InitInterface(&inf_vision_initparam);
 

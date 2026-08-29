@@ -70,10 +70,10 @@ EAppStatus CDevControllerLink::SendPackage(EPackageID packageID, SPkgHeader &pac
 
 		case ID_CONTROLLER_DATA: {
 			auto pkg = reinterpret_cast<SControllerDataPkg *>(&packageHeader);
-			pkg->header.SOF = 0xA5;
+			pkg->header.SOF[0] = 0xAA;
+			pkg->header.SOF[1] = 0x55;
 			pkg->header.seq++;
 			pkg->header.pkgLen = sizeof(SControllerDataPkg) - sizeof(SPkgHeader) - 2; // 30 bytes
-			pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&(pkg->header)), 4);
 			pkg->header.cmd_Id = 0x0302;
 			pkg->CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(pkg), sizeof(SControllerDataPkg) - 2);
 
@@ -82,14 +82,27 @@ EAppStatus CDevControllerLink::SendPackage(EPackageID packageID, SPkgHeader &pac
 
 		case ID_ROBOT_DATA: {
 			auto pkg = reinterpret_cast<SRobotDataPkg *>(&packageHeader);
-			pkg->header.SOF = 0xA5;
+			pkg->header.SOF[0] = 0xAA;
+			pkg->header.SOF[1] = 0x55;
 			pkg->header.seq++;
 			pkg->header.pkgLen = sizeof(SRobotDataPkg) - sizeof(SPkgHeader) - 2; // 30 bytes
-			pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&(pkg->header)), 4);
-			pkg->header.cmd_Id = 0x0309;
+			pkg->header.cmd_Id = 0x04;
+			pkg->idx++;
 			pkg->CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(pkg), sizeof(SRobotDataPkg) - 2);
 
 			return uartInterface_->Transmit(reinterpret_cast<uint8_t *>(pkg), sizeof(SRobotDataPkg));
+		}
+
+		case ID_REQUEST_DATA: {
+			auto pkg = reinterpret_cast<SRequestPkg *>(&packageHeader);
+			pkg->header.SOF[0] = 0xAA;
+			pkg->header.SOF[1] = 0x55;
+			pkg->header.seq++;
+			pkg->header.pkgLen = sizeof(SRequestPkg) - sizeof(SPkgHeader) - 2; // 30 bytes
+			pkg->header.cmd_Id = 0x01;
+			pkg->CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(pkg), sizeof(SRequestPkg) - 2);
+
+			return uartInterface_->Transmit(reinterpret_cast<uint8_t *>(pkg), sizeof(SRequestPkg));
 		}
 
 		default:
@@ -151,27 +164,66 @@ EAppStatus CDevControllerLink::ResolveRxPackage_(std::array<uint8_t, 512> &buffe
 
 	for (size_t i = 0; i < buffer.size(); i++)
 	{
-		if (buffer[i] != 0xA5) {
+		if (buffer[i] != 0xAA || buffer[i + 1] != 0x55) {
 			continue;
 		}
 
 		auto header = reinterpret_cast<SPkgHeader *>(&buffer[i]);
-		if (CCrcValidator::Crc8Verify(&buffer[i], header->CRC8, 4) != APP_OK) {
-			continue;
-		}
 
 		switch (header->cmd_Id) {
 
-			case 0x0302: {
-				if (i + sizeof(SControllerDataPkg) > buffer.size())
-					break;
-				auto pkg = reinterpret_cast<SControllerDataPkg *>(header);
-				if (CCrcValidator::Crc16Verify(reinterpret_cast<uint8_t *>(pkg), pkg->CRC16, sizeof(SControllerDataPkg) - 2) != APP_OK)
-					break;
-				controllerData_info_pkg = *pkg;
-				i += sizeof(SControllerDataPkg) - 1;
-				break;
-			}
+	case 0x02: {
+		if (i + sizeof(SControllerDataPkg) > buffer.size())
+			break;
+		auto pkg = reinterpret_cast<SControllerDataPkg *>(header);
+		if (CCrcValidator::Crc16Verify(reinterpret_cast<uint8_t *>(pkg), pkg->CRC16, sizeof(SControllerDataPkg) - 2) != APP_OK)
+			break;
+		controllerData_info_pkg = *pkg;
+
+		const uint32_t ANGLE_OFFSET = 9;
+		const uint32_t ANGLE_DATA_LEN = 28;
+		// 边界保护：防止包空间不足
+			uint8_t* base = reinterpret_cast<uint8_t*>(pkg) + ANGLE_OFFSET;
+
+			uint8_t yaw_buf[4] = {base[0], base[1], base[2], base[3]};
+			float_t yaw;
+			memcpy(&yaw, yaw_buf, sizeof(float_t));
+
+			uint8_t pitch1_buf[4] = {base[4], base[5], base[6], base[7]};
+			float_t pitch1;
+			memcpy(&pitch1, pitch1_buf, sizeof(float_t));
+
+			uint8_t pitch2_buf[4] = {base[8], base[9], base[10], base[11]};
+			float_t pitch2;
+			memcpy(&pitch2, pitch2_buf, sizeof(float_t));
+
+			uint8_t pitch3_buf[4] = {base[12], base[13], base[14], base[15]};
+			float_t pitch3;
+			memcpy(&pitch3, pitch3_buf, sizeof(float_t));
+
+			uint8_t roll_buf[4] = {base[16], base[17], base[18], base[19]};
+			float_t roll;
+			memcpy(&roll, roll_buf, sizeof(float_t));
+
+			uint8_t pitch_end_buf[4] = {base[20], base[21], base[22], base[23]};
+			float_t pitch_end;
+			memcpy(&pitch_end, pitch_end_buf, sizeof(float_t));
+
+			uint8_t roll_end_buf[4] = {base[24], base[25], base[26], base[27]};
+			float_t roll_end;
+			memcpy(&roll_end, roll_end_buf, sizeof(float_t));
+
+			controllerData_info_pkg.arm.yaw = 30;
+			controllerData_info_pkg.arm.pitch1 = pitch1;
+			controllerData_info_pkg.arm.pitch2 = pitch2;
+			controllerData_info_pkg.arm.pitch3 = pitch3;
+			controllerData_info_pkg.arm.roll = roll;
+			controllerData_info_pkg.arm.pitch_end = pitch_end;
+			controllerData_info_pkg.arm.roll_end = roll_end;
+
+		i += sizeof(SControllerDataPkg) - 1;
+		break;
+	}
 
 			case 0x0309: {
 				if (i + sizeof(SRobotDataPkg) > buffer.size())

@@ -107,33 +107,6 @@ void CSystemCore::UpdateHandler_() {
     static uint8_t zx_count = 0;
     static bool zx_flag = false;
 
-    // static uint8_t print_cnt = 0;
-    // if (print_cnt-- == 0) {
-    //     print_cnt = 200;
-    //     Print("------------------------------\n");
-    //     if (parm_) {
-    //         Print("Arm_Yaw_Cmd: %d, Info: %d, Err: %d\n",
-    //               static_cast<int>(parm_->armCmd.set_angle_Yaw), static_cast<int>(parm_->armInfo.angle_Yaw),
-    //               static_cast<int>(parm_->armInfo.angle_Yaw - parm_->armCmd.set_angle_Yaw));
-    //         Print("Arm_Pitch1_Cmd: %d, Info: %d, Err: %d\n",
-    //               static_cast<int>(parm_->armCmd.set_angle_Pitch1), static_cast<int>(parm_->armInfo.angle_Pitch1),
-    //               static_cast<int>(parm_->armInfo.angle_Pitch1 - parm_->armCmd.set_angle_Pitch1));
-    //         Print("Arm_Pitch2_Cmd: %d, Info: %d, Err: %d\n",
-    //               static_cast<int>(parm_->armCmd.set_angle_Pitch2), static_cast<int>(parm_->armInfo.angle_Pitch2),
-    //               static_cast<int>(parm_->armInfo.angle_Pitch2 - parm_->armCmd.set_angle_Pitch2));
-    //         Print("Arm_Roll_Cmd: %d, Info: %d, Err: %d\n",
-    //               static_cast<int>(parm_->armCmd.set_angle_Roll), static_cast<int>(parm_->armInfo.angle_Roll),
-    //               static_cast<int>(parm_->armInfo.angle_Roll - parm_->armCmd.set_angle_Roll));
-    //         Print("Arm_EndPitch_Cmd: %d, Info: %d, Err: %d\n",
-    //               static_cast<int>(parm_->armCmd.set_angle_end_pitch), static_cast<int>(parm_->armInfo.angle_end_pitch),
-    //               static_cast<int>(parm_->armInfo.angle_end_pitch - parm_->armCmd.set_angle_end_pitch));
-    //         Print("Arm_EndRoll_Cmd: %d, Info: %d, Err: %d\n",
-    //               static_cast<int>(parm_->armCmd.set_angle_end_roll), static_cast<int>(parm_->armInfo.angle_end_roll),
-    //               static_cast<int>(parm_->armInfo.angle_end_roll - parm_->armCmd.set_angle_end_roll));
-    //     }
-
-    // }
-
     bool zx = SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X; ///< 如果同时按下z和x
     if (SysRemote.remoteInfo.keyboard.key_Z && SysRemote.remoteInfo.keyboard.key_X) {
         zx_count++;
@@ -160,7 +133,6 @@ void CSystemCore::UpdateHandler_() {
     }
     if (use_Controller_ != last_use_Controller) {
         if (use_Controller_ == true) {
-            SysControllerLink.robotInfo.controlled_by_controller = true;
             if (parm_) {
                 auto &armCmd = parm_->armCmd;
                 const auto &armInfo = parm_->armInfo;
@@ -195,137 +167,27 @@ void CSystemCore::UpdateHandler_() {
             // // SysControllerLink.robotInfo.ask_reset_flag = true;
             // }
         }
-        if (use_Controller_ == false) { //切换出自定义控制器的瞬间保留最后一帧数值避免后续出现大幅跳变，且切换出自定义控制器模式后不再受控制器输入影响
-            SysControllerLink.robotInfo.controlled_by_controller = false;
-            if (parm_) {
-                auto &armCmd = parm_->armCmd;
-                const auto &armInfo = parm_->armInfo;
-                armCmd.isCustomCtrl = false;
-                armCmd.set_angle_Yaw = armInfo.angle_Yaw;
-                armCmd.set_angle_Pitch1 = armInfo.angle_Pitch1;
-                armCmd.set_angle_Pitch2 = armInfo.angle_Pitch2;
-                armCmd.set_angle_Pitch3 = armInfo.angle_Pitch3;
-                armCmd.set_angle_Roll = armInfo.angle_Roll;
-                armCmd.set_angle_end_pitch = armInfo.angle_end_pitch;
-                armCmd.set_angle_end_roll = armInfo.angle_end_roll;
-                if(armInfo.isGripped){
-                    armCmd.set_length_grip = armInfo.holdLength_grip;
-                    gripKeyboardCmd_ = EGripKeyboardCmd::CLOSE; 
-                    armCmd.gripClose = true;
-                    armCmd.gripOpen = false;
-                }else{
-                    armCmd.set_length_grip = armInfo.length_grip;
-                    gripKeyboardCmd_ = EGripKeyboardCmd::HOLD;
-                    armCmd.gripClose = false;
-                    armCmd.gripOpen = false;
-                }
-            }
-            if (pgimbal_) {
-                pgimbal_->gimbalInfo.isIntoControll = false; ///< 清除云台归位标志，下次进入时重新归位
-            }
-        }
-    }
-    if (parm_) {   //反馈给控制器的数据
-        // 角度
-            SysControllerLink.robotInfo.arm.yaw       = parm_->armInfo.angle_Yaw;
-            SysControllerLink.robotInfo.arm.pitch1     = parm_->armInfo.angle_Pitch1;
-            SysControllerLink.robotInfo.arm.pitch2     = parm_->armInfo.angle_Pitch2;
-            SysControllerLink.robotInfo.arm.pitch3     = parm_->armInfo.angle_Pitch3;
-            SysControllerLink.robotInfo.arm.roll       = parm_->armInfo.angle_Roll;
-            SysControllerLink.robotInfo.arm.pitch_end  = parm_->armInfo.angle_end_pitch;
-
-            // 力矩/电流：直接传原始值，避免转物理量后被int16截断为0
-            SysControllerLink.robotInfo.torque.yaw       = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::Y]->motorData[CDevMtr::DATA_CURRENT]);
-            SysControllerLink.robotInfo.torque.pitch1    = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::P1]->motorData[CDevMtr::DATA_CURRENT]);
-            SysControllerLink.robotInfo.torque.pitch2    = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::P2]->motorData[CDevMtr::DATA_CURRENT]);
-            SysControllerLink.robotInfo.torque.pitch3    = static_cast<float>(parm_->comjoint_.motor[CModArm::CComJoint::P3]->motorData[CDevMtr::DATA_CURRENT]);
-            SysControllerLink.robotInfo.torque.roll      = static_cast<float>(parm_->comRoll_.motor->motorData[CDevMtr::DATA_TORQUE]);
-            SysControllerLink.robotInfo.torque.pitch_end = 0.f;  // 末端由双M2006差速驱动，暂不处理
-        }
-    SysControllerLink.robotInfo.robot_init_ok =
-        (parm_ && parm_->armInfo.isModuleAvailable) && (SysRemote.systemStatus == APP_OK);
-
-        // if (use_Controller_ == false) {
-        //     // StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE); // 已删除此自动流程
-        //     // TODO: 决定切换出自定义控制器模式后的行为
-        // }
-    
-    ControlFromEsp32_(); // ESP32控制
-
-    // 由于自动任务会出现莫名的残留现象直接杀死任务会出现残留标志位没有同步，所以在此处做后续的处理
-    static EAutoCtrlProcess lastAutoCtrlProcess = EAutoCtrlProcess::NONE;
-    if (lastAutoCtrlProcess != EAutoCtrlProcess::NONE
-        && currentAutoCtrlProcess_ == EAutoCtrlProcess::NONE) {
-        // 夹爪恢复
-        if (parm_) {
-            gripKeyboardCmd_ = parm_->armInfo.isGripped ? EGripKeyboardCmd::CLOSE : EGripKeyboardCmd::OPEN;
-            parm_->armCmd.set_speed_grip = 0.0f;
-            // 轨迹任务主动切回控制器模式时，保留末端Roll角度避免跳变
-            // if (!use_Controller_) {
-            //     parm_->armCmd.set_angle_end_roll = 0.f;
-            // }
-            parm_->armCmd.set_angle_end_roll = 0.f;
-        }
-        // 图传强制回正
-        if (pgimbal_) {
-            pgimbal_->gimbalCmd.set_visualyaw = GIMBAL_VISUAL_MOTOR_INIT_ANGLE;
-        }
-        gimbal_auto_ctrl = false;
-        //pgimbal_->gimbalCmd.isAutoCtrl = false; 
-        // 底盘回到正常的控制
-        if (pchassis_) {
-            pchassis_->MovMode = CModChassis::EmovMode::NORMAL;
-        }
-        movemode_ = EMoveMode::NONE;
-    }
-    lastAutoCtrlProcess = currentAutoCtrlProcess_;
-
-    // 每周期重置手动夹爪标志，由对应控制函数按需设置
-    if (parm_ && !parm_->armCmd.isAutoCtrl) {
-        parm_->armCmd.gripClose = false;
-        parm_->armCmd.gripOpen = false;
-        parm_->armCmd.set_speed_grip = 0.0f;
     }
 
-    if (use_Controller_ == true){//在不主动切换模式的情况下，如果控制器掉线自动退出控制器模式
-        // 控制器掉线保护
-        if (!SysControllerLink.IsControllerOnline()) {
-            use_Controller_ = false;
-            SysControllerLink.robotInfo.controlled_by_controller = false;//控制器被反向控制
-            if (parm_) { // 同理自动保存最后一帧的数据
-                parm_->armCmd.isCustomCtrl = false;
-                parm_->armCmd.set_angle_Yaw = parm_->armInfo.angle_Yaw;
-                parm_->armCmd.set_angle_Pitch1 = parm_->armInfo.angle_Pitch1;
-                parm_->armCmd.set_angle_Pitch2 = parm_->armInfo.angle_Pitch2;
-                parm_->armCmd.set_angle_Pitch3 = parm_->armInfo.angle_Pitch3;
-                parm_->armCmd.set_angle_Roll = parm_->armInfo.angle_Roll;
-                parm_->armCmd.set_angle_end_pitch = parm_->armInfo.angle_end_pitch;
-                parm_->armCmd.set_angle_end_roll = parm_->armInfo.angle_end_roll;
-                parm_->armCmd.set_length_grip = parm_->armInfo.length_grip;  ///< 保存当前夹爪位置
-            }
-            if (pgimbal_) {
-                pgimbal_->gimbalInfo.isIntoControll = false; ///< 控制器掉线也清除云台归位标志
-            }
-        } else {
-            ControlFromController_();
-            ctrlmode_ = ECtrlMode::CONTROLLER_CTRL; ///< 自定义控制器控制
-        }
-    }
-    else
-    {
+    // if (use_Controller_ == true){
+    //         ControlFromController_();
+    //         ctrlmode_ = ECtrlMode::CONTROLLER_CTRL; ///< 自定义控制器控制
+    // }
+    // else
+    // {
         // 左下右上键盘控制
         if (SysRemote.remoteInfo.remote.switch_L == 2
         && SysRemote.remoteInfo.remote.switch_R == 1)
         {
-            ControlFromKeyboard_();
-            ctrlmode_ = ECtrlMode::KEY_CTRL; ///< 键鼠控制
+            ControlFromController_();
+            ctrlmode_ = ECtrlMode::CONTROLLER_CTRL; ///< 自定义控制器控制
         }
         else ///< 其他情况均为遥控器控制
         {
             ControlFromRemote_();
             ctrlmode_ = ECtrlMode::RC_CTRL; ///< 遥控器控制
         }
-    }
+    // }
 
     BoardLink_Info_Update_(); ///< 更新板间通信数据包
     

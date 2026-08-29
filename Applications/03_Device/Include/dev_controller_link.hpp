@@ -55,12 +55,13 @@ struct SArmAnglesPkg {
  * 总大小: 6 × 2 = 12 bytes
  */
 struct SArmAnglesCompressed {
-	int16_t yaw = 0;        ///< Yaw角度 (×100)
-	int16_t pitch1 = 0;     ///< Pitch1角度 (×100)
-	int16_t pitch2 = 0;     ///< Pitch2角度 (×100)
-	int16_t pitch3 = 0;     ///< Pitch3角度 (×100)
-	int16_t roll = 0;       ///< Roll角度 (×100)
-	int16_t pitch_end = 0;  ///< PitchEnd角度 (×100)
+	float_t yaw = 0;        ///< Yaw角度 (×100)
+	float_t pitch1 = 0;     ///< Pitch1角度 (×100)
+	float_t pitch2 = 0;     ///< Pitch2角度 (×100)
+	float_t pitch3 = 0;     ///< Pitch3角度 (×100)
+	float_t roll = 0;       ///< Roll角度 (×100)
+	float_t pitch_end = 0;  ///< PitchEnd角度 (×100)
+	float_t roll_end = 0;
 } __packed;
 
 /**
@@ -93,13 +94,14 @@ public:
 		ID_NULL = 0,
 		ID_CONTROLLER_DATA,
 		ID_ROBOT_DATA,
+		ID_REQUEST_DATA,
+		ID_FEEDBACK_DATA
 	};
 
 	struct SPkgHeader {
-		uint8_t SOF = 0xA5; ///< 包头
-		uint16_t pkgLen = 0; ///< 包长度
+		uint8_t SOF[2] = {0xAA, 0x55}; ///< 包头
 		uint8_t seq = 0; ///< 包序号
-		uint8_t CRC8 = 0x00; ///< CRC8校验
+		uint16_t pkgLen = 0; ///< 包长度(1+有效载荷)
 		uint16_t cmd_Id = 0x0000; ///< 命令ID
 	} __packed; //禁止编译器的内存对齐优化
 
@@ -135,12 +137,21 @@ public:
 	 */
 	struct SRobotDataPkg {
 		SPkgHeader header;
-		SRobotStatusFlags status_flags;        ///< 状态标志位           1B
+		uint16_t idx = 0;
 		SArmAnglesCompressed arm;              ///< 臂部角度 (int16)    12B
-		SArmTorqueCompressed torque;           ///< 臂部力矩/电流       12B
-		int8_t reserved[5] = {0};              ///< 保留字段             5B
 		uint16_t CRC16 = 0x0000;               ///< CRC16校验
 	} __packed robotData_info_pkg = { };
+
+	/**
+	 * @brief 机器人请求包 (Robot -> Controller)
+	 * 数据段大小: 30 bytes (满足30字节限制)
+	 * 完整包大小: 7(header) + 30(data) + 2(CRC16) = 39 bytes
+	 */
+	struct SRequestPkg {
+		SPkgHeader header;
+		SArmAnglesCompressed arm;              ///< 臂部角度 (int16)    12B
+		uint16_t CRC16 = 0x0000;               ///< CRC16校验
+	} __packed request_info_pkg = { };
 
 	/**
 	 * @brief 控制器数据包 (Controller -> Robot)
@@ -149,13 +160,43 @@ public:
 	 */
 	struct SControllerDataPkg {
 		SPkgHeader header;
-		SControllerStatusFlags status_flags ;           ///< 状态标志位 (bit-packed)      1B
-		SArmAnglesPkg arm;                  			///< 单臂5轴角度 (float)          24B
-		int8_t rocker_X = 0;               				///< 摇杆X (-100~100)             1B
-		int8_t rocker_Y = 0;                			///< 摇杆Y (-100~100)             1B
-		uint8_t reserved[3] = {0};          			///< 保留字段                      7B
-		uint16_t CRC16 = 0x0000;            			///< CRC16校验
+		uint16_t idx;	// 第几个轨迹的索引
+		SArmAnglesCompressed arm;              ///< 臂部角度 (int16)    12B
+		uint16_t CRC16 = 0x0000;               ///< CRC16校验
 	} __packed controllerData_info_pkg = {};
+
+	/**
+	 * @brief 测试用，上位机->下位机
+	 * 包大小：7 + 24 + 2 = 33bytes
+	 * 
+	 */
+	struct STargetTracePkg {
+		SPkgHeader header;
+		float_t x;
+		float_t y;
+		float_t z;
+		float_t yaw;
+		float_t roll;
+		float_t pitch;				///< 世界坐标系位置
+		uint16_t CRC16 = 0x0000;	///< CRC16校验
+	}__packed targettrace_pkg = {};
+
+	/**
+	 * @brief 测试用，下位机->上位机
+	 * 包大小：7 + 28 + 2 = 37bytes
+	 * 
+	 */
+	struct SFeedBackPkg {
+		SPkgHeader header;
+		float_t yaw_angle;
+		float_t pitch1_angle;
+		float_t pitch2_angle;
+		float_t pitch3_angle;
+		float_t roll_angle;
+		float_t endpitch_angle;
+		float_t endroll_angle;		///< 七轴关节角
+		uint16_t CRC16 = 0x0000;	///< CRC16校验
+	}__packed feedback_pkg = {};
 
 	enum class EControllerLinkStatus {
 		RESET,

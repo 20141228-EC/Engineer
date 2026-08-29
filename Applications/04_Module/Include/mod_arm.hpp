@@ -145,7 +145,7 @@
 #define DMJ4310_Torque_Constant			0.975	///< 对应电机的扭矩常数
 
 #include "mod_common.hpp"
-
+#include "robotics.h"
 
 namespace my_engineer {
 
@@ -270,6 +270,10 @@ public:
 	EAppStatus InitModule(SModInitParam_Base &param) final;
 
 	uint8_t should_limit_yaw = 0; ///< 是否限制Yaw角度
+	
+	robotics::Link seven_axis[7];	// 七轴连杆对象
+	robotics::Serial_Link<7> seven_axis_arm;	// 七轴臂对象
+	float_t currentArmAngle[7][1];	// 保存当前关节角度
 
 private:
 	// 定义机械臂Yaw关节组件类并实例化
